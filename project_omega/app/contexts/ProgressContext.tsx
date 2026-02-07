@@ -12,7 +12,8 @@ export type ModuleId =
   | 'probability' 
   | 'calculus' 
   | 'complex' 
-  | 'logs';
+  | 'logs'
+  | 'matrices';
 
 export interface ModuleProgress {
   id: ModuleId;
@@ -44,6 +45,7 @@ const defaultProgress: Record<ModuleId, ModuleProgress> = {
   calculus: { id: 'calculus', completedLevels: [], isMastered: false, xpEarned: 0 },
   complex: { id: 'complex', completedLevels: [], isMastered: false, xpEarned: 0 },
   logs: { id: 'logs', completedLevels: [], isMastered: false, xpEarned: 0 },
+  matrices: { id: 'matrices', completedLevels: [], isMastered: false, xpEarned: 0 },
 };
 
 const ProgressContext = createContext<ProgressContextType | undefined>(undefined);

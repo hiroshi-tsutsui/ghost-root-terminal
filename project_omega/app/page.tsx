@@ -116,6 +116,18 @@ export default function Home() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
         </svg>
       )
+    },
+    {
+      id: 'matrices',
+      title: 'Fabric Weaver',
+      desc: 'PROTOCOL: TRANSFORM\n行列 - 時空間の線形変換と歪曲',
+      colorClass: 'text-emerald-600 bg-emerald-50 group-hover:bg-emerald-100',
+      level: 'Math C / Protocol',
+      icon: (
+        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+        </svg>
+      )
     }
   ];
 

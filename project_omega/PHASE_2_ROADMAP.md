@@ -114,3 +114,12 @@ We are moving from a "Tool" to a "Platform".
   - Integration: Connected to Global State (`ProgressContext`).
   - Mechanics: Clearance Level and Sync Rate now persist to user profile.
   - Outcome: Users are officially "Ranked" in the system upon completion.
+- **[2026-02-08] Refinement: Trigonometry (Schematics)**
+  - Feature Added: "Request Schematics" (Sensei Mode Lite).
+  - Narrative Formalized: Created NARRATIVE.md for "Harmonic Resonance Tuner".
+- **[2026-02-08] Module Created: Matrices (Fabric Weaver)**
+  - Narrative Layer Injected: "Fabric Weaver" Protocol.
+  - UI Created: Void/Emerald Aesthetic.
+  - Concept: Linear Transformations as "Space-Time Warping".
+  - Mechanics: Match Target Grid (Red Ghost) using Matrix Input.
+  - Gap Filled: Math C (Linear Algebra) + Interactive Transformation Visualization.
