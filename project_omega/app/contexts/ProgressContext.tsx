@@ -29,6 +29,8 @@ interface ProgressContextType {
   addXp: (amount: number) => void;
   completeLevel: (moduleId: ModuleId, level: number) => void;
   resetProgress: () => void;
+  calibration: { status: 'PENDING' | 'COMPLETED'; rate: number };
+  completeCalibration: (rate: number) => void;
 }
 
 // --- Defaults ---
@@ -50,15 +52,18 @@ const ProgressContext = createContext<ProgressContextType | undefined>(undefined
 export function ProgressProvider({ children }: { children: ReactNode }) {
   const [xp, setXp] = useState(0);
   const [moduleProgress, setModuleProgress] = useState<Record<ModuleId, ModuleProgress>>(defaultProgress);
+  const [calibration, setCalibration] = useState<{ status: 'PENDING' | 'COMPLETED'; rate: number }>({ status: 'PENDING', rate: 0 });
   const [isLoaded, setIsLoaded] = useState(false);
 
   // Load from LocalStorage
   useEffect(() => {
     const savedXp = localStorage.getItem('omega_xp');
     const savedProgress = localStorage.getItem('omega_progress');
+    const savedCalibration = localStorage.getItem('omega_calibration');
 
     if (savedXp) setXp(parseInt(savedXp, 10));
     if (savedProgress) setModuleProgress(JSON.parse(savedProgress));
+    if (savedCalibration) setCalibration(JSON.parse(savedCalibration));
     
     setIsLoaded(true);
   }, []);
@@ -68,12 +73,18 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     if (!isLoaded) return;
     localStorage.setItem('omega_xp', xp.toString());
     localStorage.setItem('omega_progress', JSON.stringify(moduleProgress));
-  }, [xp, moduleProgress, isLoaded]);
+    localStorage.setItem('omega_calibration', JSON.stringify(calibration));
+  }, [xp, moduleProgress, calibration, isLoaded]);
 
   // Derived State
   const level = Math.floor(xp / 1000) + 1;
   
   const getTitle = (lvl: number) => {
+    if (calibration.status === 'COMPLETED') {
+      if (calibration.rate === 100) return "OMEGA Operator";
+      if (calibration.rate >= 75) return "Architect";
+      if (calibration.rate >= 50) return "Operator";
+    }
     if (lvl < 2) return "Novice Operator";
     if (lvl < 5) return "Apprentice";
     if (lvl < 10) return "Analyst";
@@ -83,6 +94,13 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
 
   const addXp = (amount: number) => {
     setXp(prev => prev + amount);
+  };
+
+  const completeCalibration = (rate: number) => {
+    setCalibration({ status: 'COMPLETED', rate });
+    // Award XP based on rate
+    const xpReward = rate * 10; // e.g., 1000 XP for 100%
+    addXp(xpReward);
   };
 
   const completeLevel = (moduleId: ModuleId, levelNum: number) => {
@@ -110,8 +128,10 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
   const resetProgress = () => {
     setXp(0);
     setModuleProgress(defaultProgress);
+    setCalibration({ status: 'PENDING', rate: 0 });
     localStorage.removeItem('omega_xp');
     localStorage.removeItem('omega_progress');
+    localStorage.removeItem('omega_calibration');
   };
 
   return (
@@ -122,7 +142,9 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       moduleProgress, 
       addXp, 
       completeLevel,
-      resetProgress
+      resetProgress,
+      calibration,
+      completeCalibration
     }}>
       {children}
     </ProgressContext.Provider>

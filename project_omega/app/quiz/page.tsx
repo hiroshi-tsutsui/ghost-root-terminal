@@ -4,6 +4,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useProgress } from '../contexts/ProgressContext'; // Import context
 
 const anomalies = [
   {
@@ -41,6 +42,7 @@ const anomalies = [
 ];
 
 export default function CalibrationProtocol() {
+  const { completeCalibration, calibration } = useProgress();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [syncRate, setSyncRate] = useState(100); // Starts at 100%, drops on error
   const [status, setStatus] = useState<"ACTIVE" | "COMPLETED">("ACTIVE");
@@ -62,13 +64,15 @@ export default function CalibrationProtocol() {
     setSelectedOption(option);
 
     const isCorrect = option === anomalies[currentIndex].answer;
+    let newSyncRate = syncRate;
 
     if (isCorrect) {
       setFeedback("STABILIZED");
       addLog(`ANOMALY ${anomalies[currentIndex].id} NEUTRALIZED.`);
     } else {
       setFeedback("DESYNC");
-      setSyncRate(prev => Math.max(0, prev - 25));
+      newSyncRate = Math.max(0, syncRate - 25);
+      setSyncRate(newSyncRate);
       addLog(`CRITICAL ERROR: ${anomalies[currentIndex].id} FAILED.`);
     }
 
@@ -80,6 +84,7 @@ export default function CalibrationProtocol() {
       } else {
         setStatus("COMPLETED");
         addLog("CALIBRATION COMPLETE. GENERATING REPORT...");
+        completeCalibration(newSyncRate);
       }
     }, 2000);
   };

@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useProgress, ModuleId } from './contexts/ProgressContext';
 
 export default function Home() {
-  const { moduleProgress } = useProgress();
+  const { moduleProgress, calibration } = useProgress();
 
   const modules = [
     {
@@ -152,7 +152,14 @@ export default function Home() {
             <div className="flex justify-between items-end mb-4 border-b border-gray-100 pb-4">
                 <div>
                     <div className="text-[10px] text-gray-400 uppercase tracking-widest font-bold">Identity</div>
-                    <div className="text-lg font-bold text-gray-900">OPERATOR: LOCAL</div>
+                    <div className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                      OPERATOR: {calibration?.status === 'COMPLETED' ? 'VERIFIED' : 'LOCAL'}
+                      {calibration?.status === 'COMPLETED' && (
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-green-100 text-green-700 border border-green-200">
+                          {calibration.rate}%
+                        </span>
+                      )}
+                    </div>
                 </div>
                 <div className="text-right">
                     <div className="text-[10px] text-gray-400 uppercase tracking-widest font-bold">Clearance Level</div>

@@ -110,3 +110,7 @@ We are moving from a "Tool" to a "Platform".
   - Style: Radical Clarity meets Void Aesthetic.
   - Concept: "Math is the Source Code of Reality."
   - Outcome: Users now have a dedicated "Lore" entry point explaining their role as Operators.
+- **[2026-02-08] Narrative Core: Calibration Protocol (The Gauntlet)**
+  - Integration: Connected to Global State (`ProgressContext`).
+  - Mechanics: Clearance Level and Sync Rate now persist to user profile.
+  - Outcome: Users are officially "Ranked" in the system upon completion.
