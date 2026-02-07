@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from 'react';
+import BallsInBins from '../components/BallsInBins';
 
 export default function ProbabilityPage() {
   const [mean, setMean] = useState(0);
@@ -85,48 +86,56 @@ export default function ProbabilityPage() {
   }, [mean, stdDev]);
 
   return (
-    <div className="flex flex-col h-screen bg-white text-black">
+    <div className="flex flex-col min-h-screen bg-white text-black">
       <header className="p-4 bg-gray-100 border-b flex justify-between items-center">
         <h1 className="text-xl font-bold">Probability (確率・統計) - Math A/B</h1>
         <a href="/" className="text-blue-500 hover:underline">Back to Home</a>
       </header>
 
-      <div className="flex flex-col md:flex-row gap-8 p-8 items-start justify-center flex-1">
+      <div className="flex flex-col p-8 gap-8 items-center">
         
-        <div className="w-full max-w-xs space-y-6">
-           <div className="bg-purple-50 p-4 rounded-lg">
-             <h3 className="font-bold text-lg mb-2">Normal Distribution</h3>
-             <p className="font-mono text-sm">f(x) = (1/σ√(2π)) * e^(-(x-μ)²/2σ²)</p>
-           </div>
+        {/* Normal Distribution Section */}
+        <div className="flex flex-col md:flex-row gap-8 items-start justify-center w-full max-w-6xl">
+            <div className="w-full max-w-xs space-y-6">
+            <div className="bg-purple-50 p-4 rounded-lg">
+                <h3 className="font-bold text-lg mb-2">Normal Distribution</h3>
+                <p className="font-mono text-sm">f(x) = (1/σ√(2π)) * e^(-(x-μ)²/2σ²)</p>
+            </div>
 
-           <div className="space-y-2">
-             <label className="font-bold block">Mean (μ): {mean.toFixed(1)}</label>
-             <input 
-               type="range" min="-3" max="3" step="0.1" 
-               value={mean} onChange={(e) => setMean(parseFloat(e.target.value))}
-               className="w-full accent-purple-600"
-             />
-           </div>
+            <div className="space-y-2">
+                <label className="font-bold block">Mean (μ): {mean.toFixed(1)}</label>
+                <input 
+                type="range" min="-3" max="3" step="0.1" 
+                value={mean} onChange={(e) => setMean(parseFloat(e.target.value))}
+                className="w-full accent-purple-600"
+                />
+            </div>
 
-           <div className="space-y-2">
-             <label className="font-bold block">Std Dev (σ): {stdDev.toFixed(1)}</label>
-             <input 
-               type="range" min="0.5" max="3" step="0.1" 
-               value={stdDev} onChange={(e) => setStdDev(parseFloat(e.target.value))}
-               className="w-full accent-green-600"
-             />
-           </div>
+            <div className="space-y-2">
+                <label className="font-bold block">Std Dev (σ): {stdDev.toFixed(1)}</label>
+                <input 
+                type="range" min="0.5" max="3" step="0.1" 
+                value={stdDev} onChange={(e) => setStdDev(parseFloat(e.target.value))}
+                className="w-full accent-green-600"
+                />
+            </div>
 
-           <div className="bg-gray-50 p-4 rounded border">
-             <h3 className="font-bold border-b pb-1 mb-2">Properties</h3>
-             <p><strong>68% Rule:</strong> The shaded area represents roughly 68% of the data (within ±1σ).</p>
-             <p><strong>Center:</strong> {mean}</p>
-             <p><strong>Spread:</strong> {stdDev}</p>
-           </div>
+            <div className="bg-gray-50 p-4 rounded border">
+                <h3 className="font-bold border-b pb-1 mb-2">Properties</h3>
+                <p><strong>68% Rule:</strong> The shaded area represents roughly 68% of the data (within ±1σ).</p>
+                <p><strong>Center:</strong> {mean}</p>
+                <p><strong>Spread:</strong> {stdDev}</p>
+            </div>
+            </div>
+
+            <div className="border shadow-lg rounded bg-white">
+            <canvas ref={canvasRef} width={600} height={400} />
+            </div>
         </div>
 
-        <div className="border shadow-lg rounded bg-white">
-           <canvas ref={canvasRef} width={600} height={400} />
+        {/* Balls in Bins Section */}
+        <div className="w-full max-w-4xl border-t pt-8">
+            <BallsInBins />
         </div>
 
       </div>

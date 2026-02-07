@@ -1,20 +1,46 @@
 "use client";
 
 import { useState, useEffect, useRef } from 'react';
+import * as math from 'mathjs';
 
 export default function CalculusPage() {
   const [xVal, setXVal] = useState(1);
+  const [funcStr, setFuncStr] = useState("0.5*x^3 - 2*x");
+  const [error, setError] = useState<string | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  // Function: f(x) = 0.5x^3 - 2x
-  const f = (x: number) => 0.5 * Math.pow(x, 3) - 2 * x;
-  
-  // Derivative: f'(x) = 1.5x^2 - 2
-  const df = (x: number) => 1.5 * Math.pow(x, 2) - 2;
+  // Dynamic Evaluation
+  const evaluateFunc = (expression: string, x: number) => {
+    try {
+      return math.evaluate(expression, { x });
+    } catch (e) {
+      return NaN;
+    }
+  };
 
-  // Integral: F(x) = 0.125x^4 - x^2 (Antiderivative)
-  const F = (x: number) => 0.125 * Math.pow(x, 4) - Math.pow(x, 2);
-  const integralVal = F(xVal) - F(0); // Definite integral from 0 to xVal
+  const evaluateDerivative = (expression: string, x: number) => {
+    try {
+        // Attempt symbolic derivative
+        const d = math.derivative(expression, 'x');
+        return d.evaluate({ x });
+    } catch (e) {
+        // Fallback to numerical derivative if symbolic fails
+        const h = 0.001;
+        return (evaluateFunc(expression, x + h) - evaluateFunc(expression, x - h)) / (2 * h);
+    }
+  };
+
+  // Numerical Integration (Trapezoidal Rule) from 0 to x
+  const integrate = (expression: string, end: number) => {
+      const start = 0;
+      const n = 100; // steps
+      const h = (end - start) / n;
+      let sum = 0.5 * (evaluateFunc(expression, start) + evaluateFunc(expression, end));
+      for (let i = 1; i < n; i++) {
+          sum += evaluateFunc(expression, start + i * h);
+      }
+      return sum * h;
+  };
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -32,6 +58,15 @@ export default function CalculusPage() {
     const scale = 40; // pixels per unit
     const centerX = width / 2;
     const centerY = height / 2;
+
+    // Validate function
+    try {
+        math.evaluate(funcStr, { x: 0 });
+        setError(null);
+    } catch (e) {
+        setError("Invalid function syntax");
+        return;
+    }
 
     // Draw Grid
     ctx.strokeStyle = '#eee';
@@ -55,28 +90,43 @@ export default function CalculusPage() {
     ctx.strokeStyle = 'blue';
     ctx.lineWidth = 3;
     ctx.beginPath();
+    let first = true;
     for (let pixelX = 0; pixelX < width; pixelX++) {
       const x = (pixelX - centerX) / scale;
-      const y = f(x);
+      const y = evaluateFunc(funcStr, x);
+      if (isNaN(y) || !isFinite(y)) {
+          first = true;
+          continue;
+      }
+      
       const pixelY = centerY - (y * scale);
-      if (pixelX === 0) ctx.moveTo(pixelX, pixelY);
-      else ctx.lineTo(pixelX, pixelY);
+      
+      // Prevent drawing across large jumps (asymptotes)
+      if (pixelY < -height || pixelY > height * 2) {
+          first = true;
+          continue;
+      }
+
+      if (first) {
+          ctx.moveTo(pixelX, pixelY);
+          first = false;
+      } else {
+          ctx.lineTo(pixelX, pixelY);
+      }
     }
     ctx.stroke();
 
     // Draw Tangent Line at xVal
-    const yVal = f(xVal);
-    const slope = df(xVal);
+    const yVal = evaluateFunc(funcStr, xVal);
+    const slope = evaluateDerivative(funcStr, xVal);
     
-    // Tangent Line equation: y - y1 = m(x - x1) => y = m(x - x1) + y1
-    // Draw a line segment around the point
+    // Tangent Line equation: y - y1 = m(x - x1)
     const tangentLength = 3; // units
     const xStart = xVal - tangentLength;
     const xEnd = xVal + tangentLength;
     const yStart = slope * (xStart - xVal) + yVal;
     const yEnd = slope * (xEnd - xVal) + yVal;
 
-    // Convert to pixel coordinates
     const pXStart = centerX + xStart * scale;
     const pYStart = centerY - yStart * scale;
     const pXEnd = centerX + xEnd * scale;
@@ -105,12 +155,11 @@ export default function CalculusPage() {
     ctx.moveTo(centerX, centerY); // Start at (0,0)
     
     const step = 0.05;
-    // Iterate from 0 to xVal
     const start = Math.min(0, xVal);
     const end = Math.max(0, xVal);
     
     for (let x = start; x <= end; x += step) {
-        const y = f(x);
+        const y = evaluateFunc(funcStr, x);
         const px = centerX + x * scale;
         const py = centerY - y * scale;
         ctx.lineTo(px, py);
@@ -121,7 +170,11 @@ export default function CalculusPage() {
     ctx.fill();
 
 
-  }, [xVal]);
+  }, [xVal, funcStr]);
+
+  const currentY = evaluateFunc(funcStr, xVal);
+  const currentSlope = evaluateDerivative(funcStr, xVal);
+  const currentIntegral = integrate(funcStr, xVal);
 
   return (
     <div className="flex flex-col h-screen bg-white text-black">
@@ -134,7 +187,15 @@ export default function CalculusPage() {
         <div className="w-full max-w-xs space-y-6">
            <div className="bg-blue-50 p-4 rounded-lg">
              <h3 className="font-bold text-lg mb-2">Function</h3>
-             <p className="font-mono text-xl">f(x) = 0.5x³ - 2x</p>
+             <input 
+                type="text" 
+                value={funcStr} 
+                onChange={(e) => setFuncStr(e.target.value)}
+                className="w-full p-2 border rounded font-mono text-lg mb-2"
+                placeholder="e.g. sin(x) + x^2"
+             />
+             {error && <p className="text-red-500 text-sm">{error}</p>}
+             <p className="text-xs text-gray-500">Supports: x^2, sin(x), log(x), etc.</p>
            </div>
 
            <div className="space-y-2">
@@ -148,9 +209,9 @@ export default function CalculusPage() {
 
            <div className="bg-gray-50 p-4 rounded border">
              <h3 className="font-bold border-b pb-1 mb-2">Analysis at x = {xVal.toFixed(2)}</h3>
-             <p><strong>f(x):</strong> {f(xVal).toFixed(3)}</p>
-             <p className="text-red-600"><strong>Slope (Derivative):</strong> {df(xVal).toFixed(3)}</p>
-             <p className="text-blue-600"><strong>Area (Integral 0→x):</strong> {integralVal.toFixed(3)}</p>
+             <p><strong>f(x):</strong> {isNaN(currentY) ? 'Err' : currentY.toFixed(3)}</p>
+             <p className="text-red-600"><strong>Slope (Derivative):</strong> {isNaN(currentSlope) ? 'Err' : currentSlope.toFixed(3)}</p>
+             <p className="text-blue-600"><strong>Area (Integral 0→x):</strong> {isNaN(currentIntegral) ? 'Err' : currentIntegral.toFixed(3)}</p>
            </div>
            
            <div className="text-sm text-gray-500">
