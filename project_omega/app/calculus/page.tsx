@@ -1,7 +1,9 @@
+// @ts-nocheck
 "use client";
 
 import { useState, useEffect, useRef } from 'react';
 import * as math from 'mathjs';
+import Link from 'next/link';
 
 export default function CalculusPage() {
   const [xVal, setXVal] = useState(1);
@@ -9,7 +11,6 @@ export default function CalculusPage() {
   const [error, setError] = useState<string | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  // Dynamic Evaluation
   const evaluateFunc = (expression: string, x: number) => {
     try {
       return math.evaluate(expression, { x });
@@ -20,20 +21,17 @@ export default function CalculusPage() {
 
   const evaluateDerivative = (expression: string, x: number) => {
     try {
-        // Attempt symbolic derivative
         const d = math.derivative(expression, 'x');
         return d.evaluate({ x });
     } catch (e) {
-        // Fallback to numerical derivative if symbolic fails
         const h = 0.001;
         return (evaluateFunc(expression, x + h) - evaluateFunc(expression, x - h)) / (2 * h);
     }
   };
 
-  // Numerical Integration (Trapezoidal Rule) from 0 to x
   const integrate = (expression: string, end: number) => {
       const start = 0;
-      const n = 100; // steps
+      const n = 100;
       const h = (end - start) / n;
       let sum = 0.5 * (evaluateFunc(expression, start) + evaluateFunc(expression, end));
       for (let i = 1; i < n; i++) {
@@ -48,28 +46,30 @@ export default function CalculusPage() {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
+    const dpr = window.devicePixelRatio || 1;
+    // We need to handle resizing properly for retina displays, but for now fixed width logic
+    // Just ensure we use the display size for style and actual pixels for drawing if we wanted sharp text
+    // Simpler here: just use width/height from attributes.
+
     const width = canvas.width;
     const height = canvas.height;
     
-    // Clear canvas
     ctx.clearRect(0, 0, width, height);
     
-    // Settings
-    const scale = 40; // pixels per unit
+    const scale = 40;
     const centerX = width / 2;
     const centerY = height / 2;
 
-    // Validate function
     try {
         math.evaluate(funcStr, { x: 0 });
         setError(null);
     } catch (e) {
-        setError("Invalid function syntax");
+        setError("関数の構文エラー");
         return;
     }
 
-    // Draw Grid
-    ctx.strokeStyle = '#eee';
+    // Grid
+    ctx.strokeStyle = '#f3f4f6';
     ctx.lineWidth = 1;
     for (let x = 0; x <= width; x += scale) {
       ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, height); ctx.stroke();
@@ -79,16 +79,34 @@ export default function CalculusPage() {
     }
 
     // Axes
-    ctx.strokeStyle = '#333';
+    ctx.strokeStyle = '#e5e7eb';
     ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.moveTo(0, centerY); ctx.lineTo(width, centerY); // X
-    ctx.moveTo(centerX, 0); ctx.lineTo(centerX, height); // Y
+    ctx.moveTo(0, centerY); ctx.lineTo(width, centerY); 
+    ctx.moveTo(centerX, 0); ctx.lineTo(centerX, height);
     ctx.stroke();
 
-    // Plot Function f(x)
-    ctx.strokeStyle = 'blue';
+    // Area (Integral)
+    ctx.fillStyle = 'rgba(59, 130, 246, 0.1)';
+    ctx.beginPath();
+    ctx.moveTo(centerX, centerY);
+    const step = 0.05;
+    const start = Math.min(0, xVal);
+    const end = Math.max(0, xVal);
+    for (let x = start; x <= end; x += step) {
+        const y = evaluateFunc(funcStr, x);
+        const px = centerX + x * scale;
+        const py = centerY - y * scale;
+        ctx.lineTo(px, py);
+    }
+    ctx.lineTo(centerX + xVal * scale, centerY);
+    ctx.lineTo(centerX, centerY);
+    ctx.fill();
+
+    // Function
+    ctx.strokeStyle = '#2563eb';
     ctx.lineWidth = 3;
+    ctx.lineJoin = 'round';
     ctx.beginPath();
     let first = true;
     for (let pixelX = 0; pixelX < width; pixelX++) {
@@ -98,15 +116,11 @@ export default function CalculusPage() {
           first = true;
           continue;
       }
-      
       const pixelY = centerY - (y * scale);
-      
-      // Prevent drawing across large jumps (asymptotes)
       if (pixelY < -height || pixelY > height * 2) {
           first = true;
           continue;
       }
-
       if (first) {
           ctx.moveTo(pixelX, pixelY);
           first = false;
@@ -116,23 +130,20 @@ export default function CalculusPage() {
     }
     ctx.stroke();
 
-    // Draw Tangent Line at xVal
+    // Tangent Line
     const yVal = evaluateFunc(funcStr, xVal);
     const slope = evaluateDerivative(funcStr, xVal);
-    
-    // Tangent Line equation: y - y1 = m(x - x1)
-    const tangentLength = 3; // units
+    const tangentLength = 4;
     const xStart = xVal - tangentLength;
     const xEnd = xVal + tangentLength;
     const yStart = slope * (xStart - xVal) + yVal;
     const yEnd = slope * (xEnd - xVal) + yVal;
-
     const pXStart = centerX + xStart * scale;
     const pYStart = centerY - yStart * scale;
     const pXEnd = centerX + xEnd * scale;
     const pYEnd = centerY - yEnd * scale;
 
-    ctx.strokeStyle = 'red';
+    ctx.strokeStyle = '#ef4444';
     ctx.lineWidth = 2;
     ctx.setLineDash([5, 5]);
     ctx.beginPath();
@@ -141,34 +152,17 @@ export default function CalculusPage() {
     ctx.stroke();
     ctx.setLineDash([]);
 
-    // Draw Point
+    // Point
     const pX = centerX + xVal * scale;
     const pY = centerY - yVal * scale;
-    ctx.fillStyle = 'red';
+    ctx.fillStyle = '#ef4444';
     ctx.beginPath();
-    ctx.arc(pX, pY, 5, 0, 2 * Math.PI);
+    ctx.arc(pX, pY, 6, 0, 2 * Math.PI);
     ctx.fill();
-
-    // Area under curve (Integral) from 0 to xVal
-    ctx.fillStyle = 'rgba(0, 0, 255, 0.1)';
+    ctx.fillStyle = 'white';
     ctx.beginPath();
-    ctx.moveTo(centerX, centerY); // Start at (0,0)
-    
-    const step = 0.05;
-    const start = Math.min(0, xVal);
-    const end = Math.max(0, xVal);
-    
-    for (let x = start; x <= end; x += step) {
-        const y = evaluateFunc(funcStr, x);
-        const px = centerX + x * scale;
-        const py = centerY - y * scale;
-        ctx.lineTo(px, py);
-    }
-    // Close shape
-    ctx.lineTo(centerX + xVal * scale, centerY); // Drop to x-axis
-    ctx.lineTo(centerX, centerY); // Back to origin
+    ctx.arc(pX, pY, 3, 0, 2 * Math.PI);
     ctx.fill();
-
 
   }, [xVal, funcStr]);
 
@@ -177,51 +171,86 @@ export default function CalculusPage() {
   const currentIntegral = integrate(funcStr, xVal);
 
   return (
-    <div className="flex flex-col h-screen bg-white text-black">
-       <header className="p-4 bg-gray-100 border-b flex justify-between items-center">
-        <h1 className="text-xl font-bold">Calculus (微積分) - Math III</h1>
-        <a href="/" className="text-blue-500 hover:underline">Back to Home</a>
-      </header>
+    <div className="flex h-screen bg-gray-50 text-gray-900 font-sans">
+       <div className="w-96 flex flex-col border-r bg-white shadow-sm z-10">
+        <header className="p-6 border-b">
+            <Link href="/" className="text-xs font-medium text-gray-400 hover:text-gray-900 transition-colors mb-2 block">← ホームに戻る</Link>
+            <h1 className="text-2xl font-bold tracking-tight">微分積分</h1>
+            <p className="text-sm text-gray-500 mt-1">数学III / 極限と関数</p>
+        </header>
 
-      <div className="flex flex-col md:flex-row gap-8 p-8 items-start justify-center flex-1">
-        <div className="w-full max-w-xs space-y-6">
-           <div className="bg-blue-50 p-4 rounded-lg">
-             <h3 className="font-bold text-lg mb-2">Function</h3>
-             <input 
-                type="text" 
-                value={funcStr} 
-                onChange={(e) => setFuncStr(e.target.value)}
-                className="w-full p-2 border rounded font-mono text-lg mb-2"
-                placeholder="e.g. sin(x) + x^2"
-             />
-             {error && <p className="text-red-500 text-sm">{error}</p>}
-             <p className="text-xs text-gray-500">Supports: x^2, sin(x), log(x), etc.</p>
+        <div className="flex-1 overflow-y-auto p-6 space-y-8">
+           
+           <div className="space-y-4">
+             <label className="text-sm font-semibold text-gray-900 block">関数 f(x)</label>
+             <div className="relative">
+                <input 
+                    type="text" 
+                    value={funcStr} 
+                    onChange={(e) => setFuncStr(e.target.value)}
+                    className="w-full rounded-lg border-gray-200 bg-gray-50 p-3 font-mono text-sm focus:border-blue-500 focus:ring-blue-500"
+                    placeholder="e.g. sin(x) + x^2"
+                />
+                <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+                    <span className="text-xs text-gray-400">f(x)=</span>
+                </div>
+             </div>
+             {error && <p className="text-red-500 text-xs flex items-center">⚠️ {error}</p>}
+             <p className="text-xs text-gray-400">入力例: x^2, sin(x), log(x), exp(x)</p>
            </div>
 
-           <div className="space-y-2">
-             <label className="font-bold block">x value: {xVal.toFixed(2)}</label>
+           <div className="space-y-4">
+             <div className="flex justify-between">
+                <label className="text-sm font-semibold text-gray-900">x の値</label>
+                <span className="font-mono text-sm font-bold text-blue-600">{xVal.toFixed(2)}</span>
+             </div>
              <input 
                type="range" min="-4" max="4" step="0.01" 
                value={xVal} onChange={(e) => setXVal(parseFloat(e.target.value))}
-               className="w-full accent-blue-600"
+               className="w-full accent-blue-600 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
              />
+             <div className="flex justify-between text-xs text-gray-400 font-mono">
+                <span>-4</span>
+                <span>0</span>
+                <span>4</span>
+             </div>
            </div>
 
-           <div className="bg-gray-50 p-4 rounded border">
-             <h3 className="font-bold border-b pb-1 mb-2">Analysis at x = {xVal.toFixed(2)}</h3>
-             <p><strong>f(x):</strong> {isNaN(currentY) ? 'Err' : currentY.toFixed(3)}</p>
-             <p className="text-red-600"><strong>Slope (Derivative):</strong> {isNaN(currentSlope) ? 'Err' : currentSlope.toFixed(3)}</p>
-             <p className="text-blue-600"><strong>Area (Integral 0→x):</strong> {isNaN(currentIntegral) ? 'Err' : currentIntegral.toFixed(3)}</p>
+           <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm space-y-4">
+             <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider border-b border-gray-100 pb-2">x = {xVal.toFixed(2)} における解析</h3>
+             
+             <div className="flex justify-between items-center">
+                <span className="text-sm text-gray-600">値 f(x)</span>
+                <span className="font-mono font-medium text-gray-900">{isNaN(currentY) ? '-' : currentY.toFixed(3)}</span>
+             </div>
+             
+             <div className="flex justify-between items-center">
+                <div className="flex items-center">
+                    <span className="w-2 h-2 rounded-full bg-red-500 mr-2"></span>
+                    <span className="text-sm text-gray-600">傾き (微分)</span>
+                </div>
+                <span className="font-mono font-medium text-red-600">{isNaN(currentSlope) ? '-' : currentSlope.toFixed(3)}</span>
+             </div>
+
+             <div className="flex justify-between items-center">
+                <div className="flex items-center">
+                    <span className="w-2 h-2 rounded-full bg-blue-100 border border-blue-300 mr-2"></span>
+                    <span className="text-sm text-gray-600">面積 (積分 0→x)</span>
+                </div>
+                <span className="font-mono font-medium text-blue-600">{isNaN(currentIntegral) ? '-' : currentIntegral.toFixed(3)}</span>
+             </div>
            </div>
            
-           <div className="text-sm text-gray-500">
-             <p>The <span className="text-red-500">Red Line</span> represents the tangent (derivative).</p>
-             <p>The <span className="text-blue-200 bg-blue-500 px-1 text-xs text-white">Blue Shade</span> represents the integral (area).</p>
+           <div className="p-4 bg-blue-50 rounded-lg text-xs text-blue-800 space-y-1">
+             <p>• <span className="font-bold">赤線</span> は接線を表し、その傾きが微分係数です。</p>
+             <p>• <span className="font-bold">青色の領域</span> は、原点からxまでの定積分（符号付き面積）を表します。</p>
            </div>
         </div>
+      </div>
 
-        <div className="border shadow-lg rounded bg-white">
-           <canvas ref={canvasRef} width={600} height={500} />
+      <div className="flex-1 flex items-center justify-center bg-gray-50/50 p-8 overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-2">
+           <canvas ref={canvasRef} width={800} height={600} className="rounded-xl w-full h-auto max-h-[80vh] object-contain" />
         </div>
       </div>
     </div>

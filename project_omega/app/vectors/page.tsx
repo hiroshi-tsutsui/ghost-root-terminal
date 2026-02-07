@@ -1,14 +1,11 @@
 // @ts-nocheck
 "use client";
 
-import { useState, useRef, useMemo } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, Grid, Text, Line, Plane } from '@react-three/drei';
+import { useState } from 'react';
+import { Canvas } from '@react-three/fiber';
+import { OrbitControls, Grid, Text, Line } from '@react-three/drei';
 import * as THREE from 'three';
-
-// --- Types ---
-// Extend JSX.IntrinsicElements to include Three.js elements for R3F
-import { ThreeElements } from '@react-three/fiber';
+import Link from 'next/link';
 
 function VectorArrow({ start = [0, 0, 0], end, color = 'orange', label = '' }: { start?: [number, number, number], end: [number, number, number], color?: string, label?: string }) {
   const startVec = new THREE.Vector3(...start);
@@ -18,38 +15,30 @@ function VectorArrow({ start = [0, 0, 0], end, color = 'orange', label = '' }: {
   
   if (length < 0.001) return null;
 
-  // Normalize direction for rotation
   const dirNormalized = direction.clone().normalize();
-  
-  // Quaternion for rotation (align Y-up cylinder to direction: Vector3(0,1,0))
   const quaternion = new THREE.Quaternion();
   quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dirNormalized);
-  
-  // Midpoint for cylinder
   const midPoint = startVec.clone().add(direction.clone().multiplyScalar(0.5));
 
   return (
     <group>
-      {/* Shaft */}
       <mesh position={midPoint} quaternion={quaternion}>
-        <cylinderGeometry args={[0.05, 0.05, length, 8]} />
+        <cylinderGeometry args={[0.08, 0.08, length, 12]} />
         <meshStandardMaterial color={color} />
       </mesh>
-      
-      {/* Cone head */}
       <mesh position={endVec} quaternion={quaternion}>
-        <coneGeometry args={[0.15, 0.4, 16]} />
+        <coneGeometry args={[0.2, 0.5, 16]} />
         <meshStandardMaterial color={color} />
       </mesh>
-
-      {/* Label */}
       {label && (
         <Text
-          position={endVec.clone().add(new THREE.Vector3(0, 0.2, 0))}
-          fontSize={0.3}
-          color="black"
+          position={endVec.clone().add(new THREE.Vector3(0, 0.3, 0))}
+          fontSize={0.4}
+          color="#374151"
           anchorX="center"
           anchorY="middle"
+          outlineWidth={0.02}
+          outlineColor="white"
         >
           {label}
         </Text>
@@ -62,31 +51,18 @@ function PlaneVisualizer({ normal, constant }: { normal: [number, number, number
     const n = new THREE.Vector3(...normal);
     if (n.lengthSq() === 0) return null;
     
-    // Plane equation: n . p = constant
-    // Three.js Plane(normal, constant) uses Hess normal form: ax + by + cz + d = 0
-    // So if n . p = k, then n . p - k = 0. So d = -k.
-    // Wait, Three.js Plane constant is distance from origin along normal?
-    // "constant: The negative distance from the origin to the plane along the normal vector."
-    // Let's use the PlaneHelper or just a mesh.
-    
-    // Create a mesh oriented to the normal.
     const quaternion = new THREE.Quaternion();
     quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), n.clone().normalize());
-    
-    // Position: We need a point on the plane.
-    // If n = (a, b, c), point P = (a, b, c) * (constant / |n|^2) satisfies n.P = constant.
     const pos = n.clone().multiplyScalar(constant / n.lengthSq());
 
     return (
         <group position={pos} quaternion={quaternion}>
             <mesh>
                 <planeGeometry args={[10, 10]} />
-                <meshStandardMaterial color="cyan" transparent opacity={0.3} side={THREE.DoubleSide} />
+                <meshStandardMaterial color="#06b6d4" transparent opacity={0.15} side={THREE.DoubleSide} />
             </mesh>
             <gridHelper args={[10, 10]} rotation={[Math.PI/2, 0, 0]} />
-            
-            {/* Draw Normal Vector from center of plane */}
-            <VectorArrow start={[0,0,0]} end={[0, 0, 2]} color="cyan" label="n" />
+            <VectorArrow start={[0,0,0]} end={[0, 0, 2]} color="#06b6d4" label="n" />
         </group>
     );
 }
@@ -98,19 +74,19 @@ function Scene({ v1, v2, planeNormal, planeConstant, showPlane }: { v1: [number,
 
   return (
     <>
-      <ambientLight intensity={0.5} />
-      <pointLight position={[10, 10, 10]} />
+      <ambientLight intensity={0.7} />
+      <pointLight position={[10, 10, 10]} intensity={0.8} />
+      <pointLight position={[-10, -10, -10]} intensity={0.5} />
       
-      <Grid infiniteGrid fadeDistance={30} fadeStrength={5} sectionColor="white" cellColor="gray"/>
+      <Grid infiniteGrid fadeDistance={40} fadeStrength={4} sectionColor="#9ca3af" cellColor="#e5e7eb" />
       
-      {/* Axes Helper (Custom Lines) */}
-      <Line points={[[0, 0, 0], [10, 0, 0]]} color="red" lineWidth={2} />
-      <Line points={[[0, 0, 0], [0, 10, 0]]} color="green" lineWidth={2} />
-      <Line points={[[0, 0, 0], [0, 0, 10]]} color="blue" lineWidth={2} />
+      <Line points={[[0, 0, 0], [10, 0, 0]]} color="#ef4444" lineWidth={3} />
+      <Line points={[[0, 0, 0], [0, 10, 0]]} color="#22c55e" lineWidth={3} />
+      <Line points={[[0, 0, 0], [0, 0, 10]]} color="#3b82f6" lineWidth={3} />
 
-      <VectorArrow end={v1} color="blue" label={`v1`} />
-      <VectorArrow end={v2} color="red" label={`v2`} />
-      <VectorArrow end={[crossProd.x, crossProd.y, crossProd.z]} color="purple" label="Cross" />
+      <VectorArrow end={v1} color="#3b82f6" label="a" />
+      <VectorArrow end={v2} color="#ef4444" label="b" />
+      <VectorArrow end={[crossProd.x, crossProd.y, crossProd.z]} color="#a855f7" label="a×b" />
       
       {showPlane && <PlaneVisualizer normal={planeNormal} constant={planeConstant} />}
 
@@ -123,9 +99,8 @@ export default function VectorsPage() {
   const [v1, setV1] = useState<[number, number, number]>([2, 1, 0]);
   const [v2, setV2] = useState<[number, number, number]>([0, 2, 1]);
   
-  // Plane State
   const [showPlane, setShowPlane] = useState(false);
-  const [planeNormal, setPlaneNormal] = useState<[number, number, number]>([0, 1, 0]); // Default horizontal plane
+  const [planeNormal, setPlaneNormal] = useState<[number, number, number]>([0, 1, 0]); 
   const [planeConstant, setPlaneConstant] = useState(0);
 
   const vec1 = new THREE.Vector3(...v1);
@@ -141,79 +116,108 @@ export default function VectorsPage() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-white text-black">
-      <header className="p-4 bg-gray-100 border-b flex justify-between items-center">
-        <h1 className="text-xl font-bold">Vectors & Planes (ベクトル・平面) - Math B</h1>
-        <a href="/" className="text-blue-500 hover:underline">Back to Home</a>
-      </header>
+    <div className="flex h-screen bg-gray-50 text-gray-900 font-sans">
+      <div className="w-96 flex flex-col border-r bg-white shadow-sm z-10">
+        <header className="p-6 border-b">
+            <Link href="/" className="text-xs font-medium text-gray-400 hover:text-gray-900 transition-colors mb-2 block">← ホームに戻る</Link>
+            <h1 className="text-2xl font-bold tracking-tight">空間ベクトル</h1>
+            <p className="text-sm text-gray-500 mt-1">数学B / ベクトル方程式</p>
+        </header>
 
-      <div className="flex flex-1 overflow-hidden">
-        {/* Controls Sidebar */}
-        <div className="w-80 p-4 bg-gray-50 border-r overflow-y-auto space-y-6">
+        <div className="flex-1 overflow-y-auto p-6 space-y-8">
           
-          <div className="space-y-2">
-            <h3 className="font-bold text-lg text-blue-600">Vector A (Blue)</h3>
-            <div className="grid grid-cols-3 gap-2">
-              <label className="text-sm">X <input type="number" value={v1[0]} onChange={(e) => updateVec(setV1, v1, 0, parseFloat(e.target.value))} className="w-full border p-1 rounded" /></label>
-              <label className="text-sm">Y <input type="number" value={v1[1]} onChange={(e) => updateVec(setV1, v1, 1, parseFloat(e.target.value))} className="w-full border p-1 rounded" /></label>
-              <label className="text-sm">Z <input type="number" value={v1[2]} onChange={(e) => updateVec(setV1, v1, 2, parseFloat(e.target.value))} className="w-full border p-1 rounded" /></label>
+          <div className="space-y-4">
+            <h3 className="text-sm font-semibold text-gray-900 flex items-center">
+                <span className="w-3 h-3 rounded-full bg-blue-500 mr-2"></span>
+                ベクトル a
+            </h3>
+            <div className="grid grid-cols-3 gap-3">
+              {['x', 'y', 'z'].map((axis, i) => (
+                <div key={axis}>
+                    <label className="block text-xs font-medium text-gray-500 mb-1 uppercase">{axis}</label>
+                    <input type="number" value={v1[i]} onChange={(e) => updateVec(setV1, v1, i, parseFloat(e.target.value))} className="w-full rounded-md border-gray-200 bg-gray-50 text-sm focus:border-blue-500 focus:ring-blue-500 p-2" />
+                </div>
+              ))}
             </div>
           </div>
 
-          <div className="space-y-2">
-            <h3 className="font-bold text-lg text-red-600">Vector B (Red)</h3>
-            <div className="grid grid-cols-3 gap-2">
-              <label className="text-sm">X <input type="number" value={v2[0]} onChange={(e) => updateVec(setV2, v2, 0, parseFloat(e.target.value))} className="w-full border p-1 rounded" /></label>
-              <label className="text-sm">Y <input type="number" value={v2[1]} onChange={(e) => updateVec(setV2, v2, 1, parseFloat(e.target.value))} className="w-full border p-1 rounded" /></label>
-              <label className="text-sm">Z <input type="number" value={v2[2]} onChange={(e) => updateVec(setV2, v2, 2, parseFloat(e.target.value))} className="w-full border p-1 rounded" /></label>
+          <div className="space-y-4">
+            <h3 className="text-sm font-semibold text-gray-900 flex items-center">
+                <span className="w-3 h-3 rounded-full bg-red-500 mr-2"></span>
+                ベクトル b
+            </h3>
+            <div className="grid grid-cols-3 gap-3">
+              {['x', 'y', 'z'].map((axis, i) => (
+                <div key={axis}>
+                    <label className="block text-xs font-medium text-gray-500 mb-1 uppercase">{axis}</label>
+                    <input type="number" value={v2[i]} onChange={(e) => updateVec(setV2, v2, i, parseFloat(e.target.value))} className="w-full rounded-md border-gray-200 bg-gray-50 text-sm focus:border-red-500 focus:ring-red-500 p-2" />
+                </div>
+              ))}
             </div>
           </div>
           
-          <div className="space-y-2 border-t pt-4">
+          <div className="pt-6 border-t border-gray-100 space-y-4">
              <div className="flex justify-between items-center">
-                <h3 className="font-bold text-lg text-cyan-600">Plane (Cyan)</h3>
-                <label className="text-sm flex items-center gap-1">
-                    <input type="checkbox" checked={showPlane} onChange={(e) => setShowPlane(e.target.checked)} /> Show
+                <h3 className="text-sm font-semibold text-gray-900 flex items-center">
+                    <span className="w-3 h-3 rounded-full bg-cyan-500 mr-2"></span>
+                    平面
+                </h3>
+                <label className="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" checked={showPlane} onChange={(e) => setShowPlane(e.target.checked)} className="sr-only peer" />
+                    <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
                 </label>
              </div>
+             
              {showPlane && (
-                 <>
-                    <p className="text-xs text-gray-500">Equation: nx*x + ny*y + nz*z = d</p>
-                    <label className="text-sm font-bold">Normal Vector (n)</label>
-                    <div className="grid grid-cols-3 gap-2">
-                        <label className="text-sm">nX <input type="number" value={planeNormal[0]} onChange={(e) => updateVec(setPlaneNormal, planeNormal, 0, parseFloat(e.target.value))} className="w-full border p-1 rounded" /></label>
-                        <label className="text-sm">nY <input type="number" value={planeNormal[1]} onChange={(e) => updateVec(setPlaneNormal, planeNormal, 1, parseFloat(e.target.value))} className="w-full border p-1 rounded" /></label>
-                        <label className="text-sm">nZ <input type="number" value={planeNormal[2]} onChange={(e) => updateVec(setPlaneNormal, planeNormal, 2, parseFloat(e.target.value))} className="w-full border p-1 rounded" /></label>
+                 <div className="p-4 bg-gray-50 rounded-lg space-y-4 transition-all animate-in fade-in slide-in-from-top-2">
+                    <p className="text-xs font-mono text-gray-500 text-center bg-white p-2 rounded border">nx + ny + nz = d</p>
+                    <div>
+                        <label className="text-xs font-medium text-gray-700 mb-2 block">法線ベクトル (n)</label>
+                        <div className="grid grid-cols-3 gap-2">
+                            {['x', 'y', 'z'].map((axis, i) => (
+                                <input key={axis} type="number" placeholder={axis} value={planeNormal[i]} onChange={(e) => updateVec(setPlaneNormal, planeNormal, i, parseFloat(e.target.value))} className="w-full rounded border-gray-200 text-xs p-1.5" />
+                            ))}
+                        </div>
                     </div>
-                    <label className="text-sm font-bold block mt-2">Distance (d)</label>
-                    <input type="number" value={planeConstant} onChange={(e) => setPlaneConstant(parseFloat(e.target.value))} className="w-full border p-1 rounded" />
-                 </>
+                    <div>
+                        <label className="text-xs font-medium text-gray-700 mb-2 block">原点からの距離 (d)</label>
+                        <input type="number" value={planeConstant} onChange={(e) => setPlaneConstant(parseFloat(e.target.value))} className="w-full rounded border-gray-200 text-xs p-1.5" />
+                    </div>
+                 </div>
              )}
           </div>
 
-          <div className="p-4 bg-white rounded shadow-sm border space-y-2 text-sm">
-            <h3 className="font-bold border-b pb-1">Calculations</h3>
-            <p><strong>Dot Product:</strong> {dotProduct.toFixed(2)}</p>
-            <p><strong>Cross Product:</strong> ({crossProd.x.toFixed(2)}, {crossProd.y.toFixed(2)}, {crossProd.z.toFixed(2)})</p>
-            <p><strong>Angle (θ):</strong> {angleDeg}°</p>
+          <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm space-y-3">
+            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">計算結果</h3>
+            <div className="flex justify-between items-center border-b border-gray-100 pb-2">
+                <span className="text-sm text-gray-600">内積 (a・b)</span>
+                <span className="font-mono font-medium">{dotProduct.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between items-center border-b border-gray-100 pb-2">
+                <span className="text-sm text-gray-600">外積 (a×b)</span>
+                <span className="font-mono font-medium">({crossProd.x.toFixed(1)}, {crossProd.y.toFixed(1)}, {crossProd.z.toFixed(1)})</span>
+            </div>
+            <div className="flex justify-between items-center">
+                <span className="text-sm text-gray-600">なす角 (θ)</span>
+                <span className="font-mono font-medium">{angleDeg}°</span>
+            </div>
           </div>
-          
-          <div className="text-xs text-gray-500 mt-4">
-             <p>Use mouse to rotate/pan/zoom.</p>
+
+          <div className="text-xs text-gray-400 text-center pt-4">
+             ドラッグで回転 • スクロールで拡大
           </div>
 
         </div>
+      </div>
 
-        {/* 3D Canvas */}
-        <div className="flex-1 bg-gray-900 relative">
-          <Canvas camera={{ position: [5, 5, 5], fov: 50 }}>
-            <Scene v1={v1} v2={v2} planeNormal={planeNormal} planeConstant={planeConstant} showPlane={showPlane} />
-          </Canvas>
-          <div className="absolute top-4 left-4 text-white bg-black/50 p-2 rounded text-xs">
-             <span className="text-red-400 font-bold">X</span>
-             <span className="text-green-400 font-bold ml-2">Y</span>
-             <span className="text-blue-400 font-bold ml-2">Z</span>
-          </div>
+      <div className="flex-1 relative bg-white">
+        <Canvas camera={{ position: [6, 4, 8], fov: 45 }}>
+          <Scene v1={v1} v2={v2} planeNormal={planeNormal} planeConstant={planeConstant} showPlane={showPlane} />
+        </Canvas>
+        <div className="absolute bottom-6 left-6 flex gap-4 text-xs font-medium bg-white/90 backdrop-blur px-4 py-2 rounded-full shadow-sm border border-gray-200">
+           <span className="flex items-center text-red-500"><span className="w-2 h-2 rounded-full bg-red-500 mr-2"></span>X軸</span>
+           <span className="flex items-center text-green-500"><span className="w-2 h-2 rounded-full bg-green-500 mr-2"></span>Y軸</span>
+           <span className="flex items-center text-blue-500"><span className="w-2 h-2 rounded-full bg-blue-500 mr-2"></span>Z軸</span>
         </div>
       </div>
     </div>
