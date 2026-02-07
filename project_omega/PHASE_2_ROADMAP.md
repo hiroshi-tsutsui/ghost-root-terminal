@@ -123,6 +123,12 @@ We are moving from a "Tool" to a "Platform".
   - Concept: Linear Transformations as "Space-Time Warping".
   - Mechanics: Match Target Grid (Red Ghost) using Matrix Input.
   - Gap Filled: Math C (Linear Algebra) + Interactive Transformation Visualization.
+- **[2026-02-08] Module Created: Functions (Causality Engine)**
+  - Narrative Layer Injected: "Causality Engine" Protocol.
+  - UI Created: "The Matrix" Aesthetic (Amber/Black).
+  - Mechanics: "Black Box" Debugger. Inject Signal -> Observe Output -> Deduce Function.
+  - Goal: Teach function mapping and inverse logic via "System Repair" metaphors.
+  - Status: Core Loop Operational (Linear, Quadratic, Exponential levels).
 - **[2026-02-08] Narrative Core: The System Codex (Lore Database)**
   - Narrative Layer Injected: Global "System Logs" (`/codex`).
   - UI Created: Terminal/Hacker Aesthetic (Black/Green).
