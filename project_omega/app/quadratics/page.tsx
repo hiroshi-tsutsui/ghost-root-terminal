@@ -9,6 +9,10 @@ export default function QuadraticsPage() {
   const [b, setB] = useState(0);
   const [c, setC] = useState(0);
   
+  // Real World State
+  const [isThrowMode, setIsThrowMode] = useState(false);
+  const [throwTime, setThrowTime] = useState(0);
+  
   // Sensei Mode State
   const [isSenseiMode, setIsSenseiMode] = useState(false);
   const [level, setLevel] = useState(1);
@@ -74,22 +78,13 @@ export default function QuadraticsPage() {
 
   useEffect(() => {
     if (!isSenseiMode) return;
-
     const currentLevelData = LEVELS[level];
     if (!currentLevelData) return;
-
     const currentStepData = currentLevelData.steps[lessonStep];
     if (!currentStepData) return;
-
     setSenseiMessage(currentStepData.message);
-
-    // Check condition
     if (currentStepData.check()) {
-        if (!taskCompleted) {
-             setTaskCompleted(true);
-             // Auto-advance for simple checks, or show a "Next" button? 
-             // Let's show a "Next" button or "Good Job" effect.
-        }
+        if (!taskCompleted) setTaskCompleted(true);
     } else {
         setTaskCompleted(false);
     }
@@ -98,14 +93,12 @@ export default function QuadraticsPage() {
   const advanceLesson = () => {
       const currentLevelData = LEVELS[level];
       const currentStepData = currentLevelData.steps[lessonStep];
-
       if (currentStepData.isFinal) {
           if (LEVELS[level + 1]) {
               setLevel(level + 1);
               setLessonStep(0);
-              setA(1); setB(0); setC(0); // Reset for new level
+              setA(1); setB(0); setC(0); 
           } else {
-              // Game Over / Win
               setSenseiMessage("すべてのレッスンを完了しました！自由に実験してみてください。");
               setIsSenseiMode(false);
           }
@@ -115,6 +108,21 @@ export default function QuadraticsPage() {
       setTaskCompleted(false);
   };
 
+  // --- Throw Animation Loop ---
+  useEffect(() => {
+      if (!isThrowMode) return;
+      let animId: number;
+      
+      const animate = () => {
+          setThrowTime(prev => {
+              if (prev > 10) return 0; // Reset after 10s (arbitrary scale)
+              return prev + 0.1;
+          });
+          animId = requestAnimationFrame(animate);
+      };
+      animId = requestAnimationFrame(animate);
+      return () => cancelAnimationFrame(animId);
+  }, [isThrowMode]);
 
   // --- Drawing Logic ---
   useEffect(() => {
@@ -130,7 +138,7 @@ export default function QuadraticsPage() {
     
     const centerX = width / 2;
     const centerY = height / 2;
-    const scale = 30; // Slightly larger scale
+    const scale = 30; 
 
     // Grid
     ctx.strokeStyle = '#f5f5f7';
@@ -150,34 +158,75 @@ export default function QuadraticsPage() {
     ctx.moveTo(centerX, 0); ctx.lineTo(centerX, height);
     ctx.stroke();
 
-    // Completing Square Visualizer (Square area)
-    if (a > 0) { // Only show for positive a for simplicity
-        const p = -b / (2 * a);
-        const q = -(b * b - 4 * a * c) / (4 * a);
+    if (isThrowMode) {
+        // Draw Ground
+        ctx.fillStyle = '#e5e5e7';
+        ctx.fillRect(0, centerY, width, height/2);
         
-        // Draw square centered at vertex x, on axis y=0?
-        // Or just draw the geometric square (x + b/2a)^2?
-        // Let's visualize the term (x-p)^2 as a square.
-        // We pick a specific x to show the square at?
-        // Let's just draw the "Vertex Form" construction lines.
+        // Physics: y = v0*t - 0.5*g*t^2 + h0
+        // Let's map x to time for trail, or just animate a ball?
+        // Let's visualize y = ax^2 + bx + c as a trajectory
+        // x = time. y = height.
+        // Assuming user sets parameters to model a throw.
+        // Usually a < 0 for gravity.
         
-        // Draw axis of symmetry
-        ctx.strokeStyle = '#34c759'; // Green
-        ctx.setLineDash([5, 5]);
-        ctx.beginPath();
-        ctx.moveTo(centerX + p * scale, 0);
-        ctx.lineTo(centerX + p * scale, height);
-        ctx.stroke();
-        ctx.setLineDash([]);
+        // Let's draw the character throwing
+        const startX = centerX; // t=0
+        const startY = centerY - c * scale; // h0
         
-        // Draw q line (min/max value)
-        ctx.strokeStyle = '#ff3b30'; // Red
-        ctx.setLineDash([5, 5]);
-        ctx.beginPath();
-        ctx.moveTo(0, centerY - q * scale);
-        ctx.lineTo(width, centerY - q * scale);
-        ctx.stroke();
-        ctx.setLineDash([]);
+        ctx.font = '24px serif';
+        ctx.fillText('🏃', startX - 20, startY);
+
+        // Draw Ball at current time t (mapped to x)
+        // Let's say x-axis is distance/time.
+        // x = t. 
+        const t = throwTime; 
+        // For visualization, we use the graph parameters directly.
+        // y = ax^2 + bx + c.
+        // If x is time, we scan from x=0 to ...
+        
+        // Draw ball at current x
+        // We map `throwTime` (which goes 0->10) to x-axis
+        // CenterX is x=0. 
+        
+        // To make it look like a throw, let's say the throw starts at x=0 (center)
+        // and goes to positive x.
+        const currentX = throwTime; // 0 to 10
+        const currentY = a * currentX * currentX + b * currentX + c;
+        
+        const plotX = centerX + currentX * scale;
+        const plotY = centerY - currentY * scale;
+
+        // Draw ball
+        if (plotY < height + 20) { // Don't draw if way below ground
+            ctx.fillStyle = '#ff3b30';
+            ctx.beginPath();
+            ctx.arc(plotX, plotY, 8, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+    } else {
+        // Standard Graph Mode
+         // Completing Square Visualizer (Square area)
+        if (a > 0) { 
+            const p = -b / (2 * a);
+            const q = -(b * b - 4 * a * c) / (4 * a);
+            ctx.strokeStyle = '#34c759'; 
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+            ctx.moveTo(centerX + p * scale, 0);
+            ctx.lineTo(centerX + p * scale, height);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            ctx.strokeStyle = '#ff3b30'; 
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+            ctx.moveTo(0, centerY - q * scale);
+            ctx.lineTo(width, centerY - q * scale);
+            ctx.stroke();
+            ctx.setLineDash([]);
+        }
     }
 
     // Parabola - Apple Blue
@@ -193,6 +242,7 @@ export default function QuadraticsPage() {
       const y = a * x * x + b * x + c;
       const pixelY = centerY - (y * scale);
       
+      // Optimization: Don't draw if wildly out of bounds
       if (pixelY < -height || pixelY > height * 2) {
           first = true;
           continue;
@@ -207,38 +257,31 @@ export default function QuadraticsPage() {
     }
     ctx.stroke();
 
-    // Vertex point
-    if (a !== 0) {
+    // Vertex point (only in standard mode)
+    if (!isThrowMode && a !== 0) {
         const vx = -b / (2 * a);
         const vy = a * vx * vx + b * vx + c;
         const pVx = centerX + vx * scale;
         const pVy = centerY - (vy * scale);
         
-        // Outer halo
-        ctx.fillStyle = 'rgba(255, 59, 48, 0.2)'; // Apple Red
+        ctx.fillStyle = 'rgba(255, 59, 48, 0.2)';
         ctx.beginPath();
         ctx.arc(pVx, pVy, 12, 0, 2 * Math.PI);
         ctx.fill();
-
-        // Inner dot
         ctx.fillStyle = '#ff3b30';
         ctx.beginPath();
         ctx.arc(pVx, pVy, 6, 0, 2 * Math.PI);
         ctx.fill();
-        
-        // White center
         ctx.fillStyle = 'white';
         ctx.beginPath();
         ctx.arc(pVx, pVy, 2.5, 0, 2 * Math.PI);
         ctx.fill();
     }
 
-  }, [a, b, c]);
+  }, [a, b, c, isThrowMode, throwTime]);
 
   const vertexX = a !== 0 ? -b / (2 * a) : 0;
   const vertexY = a * vertexX * vertexX + b * vertexX + c;
-
-  // Completing the Square Calculation
   const p = -b / (2 * a);
   const q = c - (b * b) / (4 * a);
   const pStr = p >= 0 ? `- ${p.toFixed(2)}` : `+ ${Math.abs(p).toFixed(2)}`;
@@ -256,24 +299,46 @@ export default function QuadraticsPage() {
                 <h1 className="text-lg font-semibold tracking-tight text-[#1d1d1f]">二次関数 <span className="text-[#86868b] font-normal ml-2 text-sm">数学I / グラフと性質</span></h1>
              </div>
              
-             {/* Sensei Mode Toggle */}
-             <button 
-                onClick={() => {
-                    setIsSenseiMode(!isSenseiMode);
-                    if (!isSenseiMode) {
-                        setA(1); setB(0); setC(0);
-                        setLevel(1);
-                        setLessonStep(0);
-                    }
-                }}
-                className={`px-4 py-2 rounded-full text-sm font-bold transition-all ${
-                    isSenseiMode 
-                    ? 'bg-blue-600 text-white shadow-lg scale-105' 
-                    : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
-                }`}
-             >
-                {isSenseiMode ? '🎓 Sensei Mode ON' : '🎓 Sensei Mode OFF'}
-             </button>
+             <div className="flex items-center gap-3">
+                 <button 
+                    onClick={() => {
+                        setIsThrowMode(!isThrowMode);
+                        if (!isThrowMode) {
+                            // Set suitable gravity/throw params
+                            setA(-0.5); setB(2); setC(1);
+                            setThrowTime(0);
+                        } else {
+                            setA(1); setB(0); setC(0);
+                        }
+                    }}
+                    className={`px-4 py-2 rounded-full text-xs font-bold transition-all ${
+                        isThrowMode
+                        ? 'bg-orange-500 text-white shadow-lg' 
+                        : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+                    }`}
+                 >
+                    {isThrowMode ? '🏀 Throw Mode ON' : '🏀 Throw Mode'}
+                 </button>
+
+                 <button 
+                    onClick={() => {
+                        setIsSenseiMode(!isSenseiMode);
+                        if (!isSenseiMode) {
+                            setA(1); setB(0); setC(0);
+                            setLevel(1);
+                            setLessonStep(0);
+                            setIsThrowMode(false);
+                        }
+                    }}
+                    className={`px-4 py-2 rounded-full text-xs font-bold transition-all ${
+                        isSenseiMode 
+                        ? 'bg-blue-600 text-white shadow-lg scale-105' 
+                        : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                    }`}
+                 >
+                    {isSenseiMode ? '🎓 Sensei Mode ON' : '🎓 Sensei Mode OFF'}
+                 </button>
+             </div>
          </div>
       </header>
 
@@ -313,11 +378,21 @@ export default function QuadraticsPage() {
                     <p className="font-mono text-xl font-bold text-[#1d1d1f] tracking-wider">
                     y = <span className="text-[#0071e3]">{a === 0 ? '' : `${a}x²`}</span> {b >= 0 ? '+' : ''} <span className="text-[#34c759]">{b}x</span> {c >= 0 ? '+' : ''} <span className="text-[#ff3b30]">{c}</span>
                     </p>
-                    {a !== 0 && (
+                    {a !== 0 && !isThrowMode && (
                         <div className="pt-4 border-t border-gray-200">
                              <p className="text-xs text-[#86868b] uppercase tracking-wide mb-1">平方完成 (Vertex Form)</p>
                              <p className="font-mono text-lg font-bold text-[#86868b]">
                                 y = {a}(x {pStr})² {qStr}
+                             </p>
+                        </div>
+                    )}
+                     {isThrowMode && (
+                        <div className="pt-4 border-t border-orange-200">
+                             <p className="text-xs text-orange-600 uppercase tracking-wide mb-1">物理モデル</p>
+                             <p className="text-xs text-gray-500">
+                                a: 重力加速度 (Gravity)<br/>
+                                b: 初速度 (Initial Velocity)<br/>
+                                c: 初期高さ (Initial Height)
                              </p>
                         </div>
                     )}
@@ -333,7 +408,7 @@ export default function QuadraticsPage() {
                             <span className="font-mono text-lg font-bold text-[#0071e3]">{a.toFixed(1)}</span>
                         </div>
                         <input 
-                            type="range" min="-5" max="5" step="1" 
+                            type="range" min="-5" max="5" step="0.1" 
                             value={a} onChange={(e) => setA(parseFloat(e.target.value))}
                             className="w-full"
                         />
@@ -348,7 +423,7 @@ export default function QuadraticsPage() {
                             <span className="font-mono text-lg font-bold text-[#34c759]">{b.toFixed(1)}</span>
                         </div>
                         <input 
-                            type="range" min="-10" max="10" step="1" 
+                            type="range" min="-10" max="10" step="0.1" 
                             value={b} onChange={(e) => setB(parseFloat(e.target.value))}
                             className="w-full"
                         />
@@ -363,7 +438,7 @@ export default function QuadraticsPage() {
                             <span className="font-mono text-lg font-bold text-[#ff3b30]">{c.toFixed(1)}</span>
                         </div>
                         <input 
-                            type="range" min="-10" max="10" step="1" 
+                            type="range" min="-10" max="10" step="0.1" 
                             value={c} onChange={(e) => setC(parseFloat(e.target.value))}
                             className="w-full"
                         />

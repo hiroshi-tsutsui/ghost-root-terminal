@@ -6,12 +6,135 @@ import Link from 'next/link';
 import BallsInBins from '../components/BallsInBins';
 import { motion, AnimatePresence } from 'framer-motion';
 
+// --- Monty Hall Component ---
+function MontyHallGame() {
+    const [doors, setDoors] = useState([0, 1, 2]);
+    const [carPos, setCarPos] = useState<number | null>(null);
+    const [selectedDoor, setSelectedDoor] = useState<number | null>(null);
+    const [openedDoor, setOpenedDoor] = useState<number | null>(null);
+    const [gameState, setGameState] = useState<'pick' | 'reveal' | 'result'>('pick');
+    const [finalPick, setFinalPick] = useState<number | null>(null);
+    const [result, setResult] = useState<'win' | 'lose' | null>(null);
+    const [stats, setStats] = useState({ switchWins: 0, switchTotal: 0, stayWins: 0, stayTotal: 0 });
+
+    const resetGame = () => {
+        setCarPos(Math.floor(Math.random() * 3));
+        setSelectedDoor(null);
+        setOpenedDoor(null);
+        setFinalPick(null);
+        setResult(null);
+        setGameState('pick');
+    };
+
+    useEffect(() => {
+        resetGame();
+    }, []);
+
+    const handleDoorClick = (doorIdx: number) => {
+        if (gameState === 'pick') {
+            setSelectedDoor(doorIdx);
+            // Host opens a door
+            // Must be not selected, and not car.
+            const available = doors.filter(d => d !== doorIdx && d !== carPos);
+            const toOpen = available[Math.floor(Math.random() * available.length)];
+            setOpenedDoor(toOpen);
+            setGameState('reveal');
+        }
+    };
+
+    const handleDecision = (switchDoor: boolean) => {
+        let final = selectedDoor;
+        if (switchDoor) {
+            final = doors.find(d => d !== selectedDoor && d !== openedDoor)!;
+        }
+        setFinalPick(final);
+        const win = final === carPos;
+        setResult(win ? 'win' : 'lose');
+        setGameState('result');
+        
+        // Update stats
+        if (switchDoor) {
+            setStats(s => ({ ...s, switchTotal: s.switchTotal + 1, switchWins: s.switchWins + (win ? 1 : 0) }));
+        } else {
+            setStats(s => ({ ...s, stayTotal: s.stayTotal + 1, stayWins: s.stayWins + (win ? 1 : 0) }));
+        }
+    };
+
+    return (
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+             <div className="flex justify-between items-center mb-6">
+                <h3 className="font-bold text-lg">Monty Hall Problem</h3>
+                <button onClick={resetGame} className="text-xs bg-gray-100 px-3 py-1 rounded hover:bg-gray-200">Reset</button>
+             </div>
+
+             <div className="grid grid-cols-3 gap-4 mb-8">
+                 {[0, 1, 2].map(door => (
+                     <div 
+                        key={door}
+                        onClick={() => handleDoorClick(door)}
+                        className={`
+                            h-32 rounded-xl flex items-center justify-center text-3xl cursor-pointer transition-all border-4
+                            ${openedDoor === door ? 'bg-gray-100 border-gray-200' : 'bg-gradient-to-br from-orange-400 to-orange-600 border-orange-700 shadow-lg hover:-translate-y-1'}
+                            ${selectedDoor === door ? 'ring-4 ring-blue-400 ring-offset-2' : ''}
+                            ${gameState === 'result' && door === carPos ? 'bg-green-500 border-green-700' : ''}
+                        `}
+                     >
+                         {openedDoor === door ? (door === carPos ? '🚗' : '🐐') : (
+                             gameState === 'result' && door === carPos ? '🚗' : `🚪 ${door+1}`
+                         )}
+                     </div>
+                 ))}
+             </div>
+
+             {gameState === 'pick' && <p className="text-center font-bold text-gray-600">Pick a door!</p>}
+             
+             {gameState === 'reveal' && (
+                 <div className="text-center space-y-4 animate-fade-in">
+                     <p className="font-bold">Host opened Door {openedDoor! + 1}. It's a goat!</p>
+                     <p>Do you want to switch?</p>
+                     <div className="flex justify-center gap-4">
+                         <button onClick={() => handleDecision(false)} className="px-6 py-2 bg-gray-200 rounded-lg font-bold">Stay</button>
+                         <button onClick={() => handleDecision(true)} className="px-6 py-2 bg-blue-600 text-white rounded-lg font-bold shadow-lg hover:scale-105 transition-transform">Switch!</button>
+                     </div>
+                 </div>
+             )}
+
+             {gameState === 'result' && (
+                 <div className="text-center animate-bounce">
+                     <p className="text-2xl font-bold mb-2">{result === 'win' ? 'You Won! 🎉' : 'You Lost 🐐'}</p>
+                     <button onClick={resetGame} className="text-blue-600 underline text-sm">Play Again</button>
+                 </div>
+             )}
+
+             <div className="mt-8 grid grid-cols-2 gap-4 text-xs bg-gray-50 p-4 rounded-xl">
+                 <div className="text-center">
+                     <div className="font-bold text-gray-500 uppercase mb-1">Stay Win Rate</div>
+                     <div className="text-xl font-mono">{stats.stayTotal ? ((stats.stayWins/stats.stayTotal)*100).toFixed(1) : 0}%</div>
+                     <div className="text-gray-400">{stats.stayWins}/{stats.stayTotal}</div>
+                 </div>
+                 <div className="text-center border-l border-gray-200">
+                     <div className="font-bold text-blue-600 uppercase mb-1">Switch Win Rate</div>
+                     <div className="text-xl font-mono text-blue-600">{stats.switchTotal ? ((stats.switchWins/stats.switchTotal)*100).toFixed(1) : 0}%</div>
+                     <div className="text-gray-400">{stats.switchWins}/{stats.switchTotal}</div>
+                 </div>
+             </div>
+             <p className="text-[10px] text-gray-400 text-center mt-2">Theory: Stay ≈ 33.3%, Switch ≈ 66.6%</p>
+        </div>
+    );
+}
+
 export default function ProbabilityPage() {
   const [mean, setMean] = useState(0);
   const [stdDev, setStdDev] = useState(1);
   const [senseiMode, setSenseiMode] = useState(false);
   const [lessonStep, setLessonStep] = useState(0);
   const [showConfetti, setShowConfetti] = useState(false);
+  
+  // Conditional Prob State
+  const [probA, setProbA] = useState(0.5); // Intersection actually? No, P(A|B) logic
+  const [probB, setProbB] = useState(0.5);
+  const [probIntersection, setProbIntersection] = useState(0.2);
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const normal = (x: number, mean: number, stdDev: number) => {
@@ -21,15 +144,12 @@ export default function ProbabilityPage() {
   // Sensei Logic
   useEffect(() => {
     if (!senseiMode) return;
-
     if (lessonStep === 1) {
-        // Mean Lesson: Set Mean to 2.0
         if (Math.abs(mean - 2.0) < 0.1) {
              setShowConfetti(true);
              setTimeout(() => { setShowConfetti(false); setLessonStep(2); }, 2000);
         }
     } else if (lessonStep === 2) {
-        // Std Dev Lesson: Set Std Dev to 0.5 (Narrow)
         if (Math.abs(stdDev - 0.5) < 0.1) {
              setShowConfetti(true);
              setTimeout(() => { setShowConfetti(false); setLessonStep(3); }, 2000);
@@ -37,6 +157,7 @@ export default function ProbabilityPage() {
     }
   }, [mean, stdDev, lessonStep, senseiMode]);
 
+  // Normal Dist Canvas
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -117,6 +238,8 @@ export default function ProbabilityPage() {
     ctx.fillText('μ-σ', centerX + (mean - stdDev) * scaleX, centerY + 20);
 
   }, [mean, stdDev]);
+
+  const conditionalProb = probB > 0 ? (probIntersection / probB) : 0;
 
   return (
     <div className="flex flex-col min-h-screen bg-[#F5F5F7] text-[#1d1d1f] font-sans">
@@ -266,43 +389,54 @@ export default function ProbabilityPage() {
             <BallsInBins />
         </section>
 
-        {/* Conditional Probability (Venn Diagram) */}
-        <section className="apple-card p-6 fade-in-up delay-300">
-            <h3 className="text-xl font-bold text-[#1d1d1f] mb-4">条件付き確率 (Conditional Probability)</h3>
-            <div className="flex flex-col md:flex-row gap-8">
-                <div className="w-full md:w-1/2 flex items-center justify-center bg-white p-4 rounded-xl border border-dashed border-gray-200 min-h-[300px]">
-                    {/* SVG Venn Diagram */}
-                    <svg viewBox="0 0 400 300" className="w-full h-full max-w-[400px]">
-                        {/* Circle A */}
-                        <circle cx="150" cy="150" r="100" fill="rgba(0, 113, 227, 0.2)" stroke="#0071e3" strokeWidth="2" />
-                        <text x="100" y="150" fill="#0071e3" fontWeight="bold">A</text>
-                        
-                        {/* Circle B */}
-                        <circle cx="250" cy="150" r="100" fill="rgba(52, 199, 89, 0.2)" stroke="#34c759" strokeWidth="2" />
-                        <text x="300" y="150" fill="#34c759" fontWeight="bold">B</text>
-                        
-                        {/* Intersection Label */}
-                        <text x="200" y="150" fill="#1d1d1f" fontSize="12" textAnchor="middle">A∩B</text>
+        {/* Conditional Probability (Venn & Monty Hall) */}
+        <section className="fade-in-up delay-300 grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Venn Logic */}
+            <div className="apple-card p-6">
+                 <h3 className="text-xl font-bold text-[#1d1d1f] mb-4">条件付き確率 (Formula)</h3>
+                 
+                 <div className="flex items-center justify-center py-6">
+                    <svg viewBox="0 0 300 200" className="w-full h-auto max-w-[300px]">
+                        <circle cx="100" cy="100" r="70" fill="rgba(0, 113, 227, 0.1)" stroke="#0071e3" strokeWidth="2" />
+                        <text x="60" y="100" fill="#0071e3" fontWeight="bold">A</text>
+                        <circle cx="200" cy="100" r="70" fill="rgba(52, 199, 89, 0.1)" stroke="#34c759" strokeWidth="2" />
+                        <text x="240" y="100" fill="#34c759" fontWeight="bold">B</text>
+                        {/* Intersection - approximated visually */}
+                         <path d="M 175,45 A 70,70 0 0,0 175,155 A 70,70 0 0,0 175,45" fill="rgba(29, 29, 31, 0.2)" />
+                         <text x="150" y="100" fill="#1d1d1f" fontSize="10" textAnchor="middle">A∩B</text>
                     </svg>
-                </div>
-                <div className="w-full md:w-1/2 space-y-4">
+                 </div>
+
+                 <div className="space-y-4">
                     <p className="text-sm text-gray-600">
-                        事象Bが起こったとき、事象Aが起こる確率 P(A|B) は、<br/>
-                        <span className="font-mono bg-gray-100 p-1 rounded">P(A|B) = P(A∩B) / P(B)</span> で求められます。
+                        <span className="font-mono bg-gray-100 p-1 rounded">P(A|B) = P(A∩B) / P(B)</span>
                     </p>
-                    <div className="bg-green-50 p-4 rounded-xl border border-green-100">
-                        <p className="text-xs font-bold text-green-800 uppercase mb-2">P(B) - Denominator</p>
-                        <input type="range" className="w-full accent-green-500" />
+                    <div className="bg-green-50 p-3 rounded-lg border border-green-100">
+                        <div className="flex justify-between mb-1 text-xs font-bold text-green-800">
+                            <span>P(B) - Denominator</span>
+                            <span>{probB.toFixed(2)}</span>
+                        </div>
+                        <input type="range" min="0.01" max="1" step="0.01" value={probB} onChange={(e) => setProbB(parseFloat(e.target.value))} className="w-full accent-green-500" />
                     </div>
-                    <div className="bg-blue-50 p-4 rounded-xl border border-blue-100">
-                        <p className="text-xs font-bold text-blue-800 uppercase mb-2">P(A∩B) - Numerator</p>
-                        <input type="range" className="w-full accent-blue-500" />
+                    <div className="bg-blue-50 p-3 rounded-lg border border-blue-100">
+                        <div className="flex justify-between mb-1 text-xs font-bold text-blue-800">
+                             <span>P(A∩B) - Numerator</span>
+                             <span>{probIntersection.toFixed(2)}</span>
+                        </div>
+                        <input type="range" min="0" max={probB} step="0.01" value={probIntersection} onChange={(e) => setProbIntersection(parseFloat(e.target.value))} className="w-full accent-blue-500" />
                     </div>
-                     <div className="text-center p-4 bg-gray-50 rounded-xl">
-                        <span className="text-sm font-bold text-gray-500 block mb-1">Result: P(A|B)</span>
-                        <span className="text-3xl font-mono font-bold text-[#1d1d1f]">0.00</span>
+                     <div className="text-center p-3 bg-gray-50 rounded-lg">
+                        <span className="text-xs font-bold text-gray-500 block mb-1">Result: P(A|B)</span>
+                        <span className="text-2xl font-mono font-bold text-[#1d1d1f]">
+                            {conditionalProb > 1 ? 'Error' : (conditionalProb * 100).toFixed(1) + '%'}
+                        </span>
                     </div>
                 </div>
+            </div>
+
+            {/* Monty Hall Game */}
+            <div className="flex flex-col">
+                 <MontyHallGame />
             </div>
         </section>
 

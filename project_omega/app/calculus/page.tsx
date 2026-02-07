@@ -5,6 +5,70 @@ import { useState, useEffect, useRef } from 'react';
 import * as math from 'mathjs';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Canvas } from '@react-three/fiber';
+import { OrbitControls, Grid } from '@react-three/drei';
+import * as THREE from 'three';
+
+// --- 3D Components ---
+function RevolutionSurface({ funcStr, xVal }: { funcStr: string, xVal: number }) {
+  const meshRef = useRef<THREE.Mesh>(null);
+  
+  // Create geometry based on function
+  // We rotate f(x) around x-axis.
+  // Parametric surface:
+  // x = u (from 0 to xVal)
+  // y = f(u) * cos(v)
+  // z = f(u) * sin(v)
+  // v from 0 to 2PI
+  
+  // We need to construct geometry manually or use ParametricGeometry (which is deprecated/moved in newer three)
+  // Or easier: Use a LatheGeometry?
+  // LatheGeometry rotates a path around Y axis.
+  // Our function is y = f(x). We want rotation around x-axis.
+  // We can swap coordinates or rotate the mesh.
+  // Points for Lathe: (y, x) -> rotates around Y (which maps to X in our mental model if we rotate mesh)
+  
+  const [points, setPoints] = useState<THREE.Vector2[]>([]);
+
+  useEffect(() => {
+    try {
+        const pts = [];
+        const steps = 50;
+        // Range 0 to xVal (or slightly more/less)
+        // If xVal is negative, handle gracefully? Assumed > 0 for volume usually.
+        const limit = Math.max(0.1, xVal);
+        
+        for (let i = 0; i <= steps; i++) {
+            const u = (i / steps) * limit;
+            let y = 0;
+            try {
+                y = math.evaluate(funcStr, { x: u });
+            } catch { y = 0; }
+            
+            // Lathe expects Vector2(x, y). It rotates around Y.
+            // We want distance from axis as X component of Vector2.
+            // So Vector2(radius, height).
+            // Radius = f(x) = y. Height = x = u.
+            pts.push(new THREE.Vector2(Math.abs(y), u)); 
+        }
+        setPoints(pts);
+    } catch (e) {
+        console.error(e);
+    }
+  }, [funcStr, xVal]);
+
+  if (points.length < 2) return null;
+
+  return (
+    <group rotation={[0, 0, -Math.PI / 2]}> {/* Rotate so Y-axis (height) becomes X-axis */}
+        <mesh ref={meshRef}>
+            <latheGeometry args={[points, 32]} />
+            <meshStandardMaterial color="#0071e3" side={THREE.DoubleSide} transparent opacity={0.6} roughness={0.3} metalness={0.1} />
+        </mesh>
+    </group>
+  );
+}
+
 
 export default function CalculusPage() {
   const [xVal, setXVal] = useState(1);
@@ -13,6 +77,10 @@ export default function CalculusPage() {
   const [senseiMode, setSenseiMode] = useState(false);
   const [lessonStep, setLessonStep] = useState(0);
   const [showConfetti, setShowConfetti] = useState(false);
+  
+  // 3D Toggle
+  const [is3DMode, setIs3DMode] = useState(false);
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const evaluateFunc = (expression: string, x: number) => {
@@ -57,8 +125,6 @@ export default function CalculusPage() {
         }
     } else if (lessonStep === 3) {
         // Integral Lesson: Find Area = 2 for 2*x
-        setFuncStr("x"); // Area of triangle 0.5 * b * h -> 0.5 * x * x = 0.5 * x^2. Target Area=2 => x=2.
-        // Let's make it simpler: Integrate f(x)=2 from 0 to x. Area = 2x. Target Area = 4 => x=2.
         setFuncStr("2");
         const area = integrate("2", xVal);
         if (Math.abs(area - 4) < 0.2 && xVal > 0) {
@@ -70,7 +136,10 @@ export default function CalculusPage() {
   }, [xVal, lessonStep, senseiMode]);
 
 
+  // 2D Drawing Effect
   useEffect(() => {
+    if (is3DMode) return; // Skip 2D drawing if 3D
+
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -184,8 +253,7 @@ export default function CalculusPage() {
     const pX = centerX + xVal * scale;
     const pY = centerY - yVal * scale;
     
-    // Volume of Revolution (Visual Hint)
-    // Draw the reflected curve and ellipses to suggest 3D solid
+    // Volume of Revolution (Visual Hint) - 2D Hack
     ctx.strokeStyle = 'rgba(0, 113, 227, 0.3)';
     ctx.lineWidth = 2;
     ctx.setLineDash([5, 5]);
@@ -202,32 +270,6 @@ export default function CalculusPage() {
     }
     ctx.stroke();
     ctx.setLineDash([]);
-
-    // Draw Ellipses at intervals to show "Solid" nature
-    ctx.strokeStyle = 'rgba(0, 113, 227, 0.2)';
-    ctx.lineWidth = 1;
-    for (let x = -4; x <= 4; x += 1) {
-        const y = evaluateFunc(funcStr, x);
-        if (Math.abs(y) > 0.1) {
-            const px = centerX + x * scale;
-            const py = centerY; // Center of ellipse is on axis
-            const ry = Math.abs(y * scale); // Radius Y
-            const rx = ry * 0.2; // Flattened X radius to look like perspective circle? 
-            // No, in side view (2D), the cross section is a vertical line.
-            // But to visualize "Revolution", we usually draw ellipses "perpendicular" to the axis.
-            // Since we are looking at side view 2D, we can't easily draw 3D ellipses.
-            // Let's draw vertical lines connecting +y and -y to show the solid slice.
-            ctx.beginPath();
-            ctx.moveTo(px, centerY - y * scale);
-            ctx.lineTo(px, centerY + y * scale);
-            ctx.stroke();
-            
-            // Draw an ellipse representing the circular cross-section seen from an angle?
-            // Hard in 2D canvas without 3D transform.
-            // Let's just shade the area between f(x) and -f(x)
-            
-        }
-    }
     
     // Shading the solid volume (Area between f(x) and -f(x))
     ctx.fillStyle = 'rgba(0, 113, 227, 0.05)';
@@ -264,7 +306,7 @@ export default function CalculusPage() {
     ctx.arc(pX, pY, 3, 0, 2 * Math.PI);
     ctx.fill();
 
-  }, [xVal, funcStr]);
+  }, [xVal, funcStr, is3DMode]);
 
   const currentY = evaluateFunc(funcStr, xVal);
   const currentSlope = evaluateDerivative(funcStr, xVal);
@@ -290,12 +332,20 @@ export default function CalculusPage() {
             </Link>
             <div className="flex justify-between items-center">
                 <h1 className="text-3xl font-bold tracking-tight text-[#1d1d1f]">微分積分</h1>
-                <button 
-                    onClick={() => { setSenseiMode(!senseiMode); setLessonStep(0); }}
-                    className={`px-3 py-1 rounded-full text-xs font-bold transition-all ${senseiMode ? 'bg-[#0071e3] text-white' : 'bg-gray-200 text-gray-500'}`}
-                >
-                    {senseiMode ? 'Sensei ON' : 'Sensei OFF'}
-                </button>
+                <div className="flex gap-2">
+                    <button 
+                        onClick={() => setIs3DMode(!is3DMode)}
+                        className={`px-3 py-1 rounded-full text-xs font-bold transition-all ${is3DMode ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-500'}`}
+                    >
+                        {is3DMode ? '3D View' : '2D View'}
+                    </button>
+                    <button 
+                        onClick={() => { setSenseiMode(!senseiMode); setLessonStep(0); }}
+                        className={`px-3 py-1 rounded-full text-xs font-bold transition-all ${senseiMode ? 'bg-[#0071e3] text-white' : 'bg-gray-200 text-gray-500'}`}
+                    >
+                        {senseiMode ? 'Sensei' : 'Sensei'}
+                    </button>
+                </div>
             </div>
             <p className="text-[#86868b] text-sm mt-1 font-medium">数学III / 極限と関数</p>
         </header>
@@ -311,6 +361,7 @@ export default function CalculusPage() {
                     exit={{ opacity: 0, y: -20 }}
                     className="apple-card p-5 border-2 border-[#0071e3] bg-[#0071e3]/5 relative overflow-hidden"
                 >
+                    {/* ... (Existing Sensei Content) ... */}
                     <div className="absolute top-0 right-0 p-2 opacity-10 text-6xl">🎓</div>
                     <h3 className="font-bold text-[#0071e3] mb-2">Sensei Mode</h3>
                     
@@ -435,11 +486,6 @@ export default function CalculusPage() {
                 <span className="font-mono text-base text-[#0071e3]">{isNaN(currentIntegral) ? '-' : currentIntegral.toFixed(3)}</span>
              </div>
            </div>
-           
-           <div className="p-4 bg-[#0071e3]/5 rounded-2xl border border-[#0071e3]/10 text-xs text-[#1d1d1f] space-y-2 fade-in-up delay-300">
-             <p className="flex items-start"><span className="w-1.5 h-1.5 rounded-full bg-[#ff3b30] mt-1.5 mr-2 flex-shrink-0"></span><span><span className="font-semibold">赤色の破線</span> は接線を表し、その傾きが微分係数です。</span></p>
-             <p className="flex items-start"><span className="w-1.5 h-1.5 rounded-full bg-[#0071e3] mt-1.5 mr-2 flex-shrink-0"></span><span><span className="font-semibold">青色の領域</span> は、原点からxまでの定積分（符号付き面積）を表します。</span></p>
-           </div>
         </div>
       </div>
 
@@ -451,9 +497,25 @@ export default function CalculusPage() {
                  <div className="text-6xl animate-bounce">🎉</div>
              </div>
         )}
-        <div className="apple-card p-2 shadow-2xl z-10 bg-white">
-           <canvas ref={canvasRef} width={800} height={600} className="rounded-xl w-full h-auto max-h-[85vh] object-contain bg-white" />
-        </div>
+        
+        {is3DMode ? (
+             <div className="w-full h-full shadow-2xl rounded-xl overflow-hidden relative bg-black/5">
+                <Canvas camera={{ position: [5, 5, 5], fov: 50 }}>
+                     <ambientLight intensity={0.5} />
+                     <directionalLight position={[10, 10, 5]} intensity={1} />
+                     <Grid infiniteGrid fadeDistance={50} sectionColor="#0071e3" cellColor="#ccc" />
+                     <RevolutionSurface funcStr={funcStr} xVal={xVal} />
+                     <OrbitControls makeDefault />
+                </Canvas>
+                <div className="absolute bottom-4 left-4 bg-white/80 backdrop-blur p-2 rounded text-xs font-bold text-gray-500">
+                    回転体の体積 (Volume of Revolution)
+                </div>
+             </div>
+        ) : (
+             <div className="apple-card p-2 shadow-2xl z-10 bg-white">
+                <canvas ref={canvasRef} width={800} height={600} className="rounded-xl w-full h-auto max-h-[85vh] object-contain bg-white" />
+             </div>
+        )}
       </div>
     </div>
   );
