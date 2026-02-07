@@ -1,0 +1,51 @@
+{
+  "taskGroups": [
+    {
+      "taskSpec": {
+        "runnables": [
+          {
+            "container": {
+              "imageUri": "us-central1-docker.pkg.dev/dev-dotsfty/yolo/yolo:v10-experimental",
+              "entrypoint": "python3",
+              "commands": [
+                "/app/experiments/v10_fusion_suite.py"
+              ]
+            },
+            "environment": {
+              "variables": {
+                "INPUT_VIDEO_PATH": "/mnt/share/lvlms/data/example.mp4",
+                "OUTPUT_BUCKET": "gs://dotsfty-ml-experiments-output/following_distance_v10/"
+              }
+            }
+          }
+        ],
+        "volumes": [
+          {
+            "gcs": {
+              "remotePath": "dotsfty-ml-experiments-src"
+            },
+            "mountPath": "/mnt/share"
+          }
+        ],
+        "computeResource": {
+          "cpuMilli": 4000,
+          "memoryMib": 16384,
+          "bootDiskMib": 50000
+        },
+        "maxRetryCount": 1
+      },
+      "taskCount": 1,
+      "parallelism": 1
+    }
+  ],
+  "allocationPolicy": {
+    "location": {
+      "allowedLocations": [
+        "regions/us-east1"
+      ]
+    }
+  },
+  "logsPolicy": {
+    "destination": "CLOUD_LOGGING"
+  }
+}

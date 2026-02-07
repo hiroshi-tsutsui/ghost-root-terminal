@@ -9,11 +9,9 @@ export default function BallsInBins() {
   const [running, setRunning] = useState(false);
   const [speed, setSpeed] = useState<number>(5);
   
-  // Use a ref to hold the current counts so the animation loop can access the latest without dependency issues
   const countsRef = useRef<number[]>(new Array(10).fill(0));
 
   useEffect(() => {
-    // Sync ref when bins changes (reset)
     countsRef.current = new Array(bins).fill(0);
     setCounts(new Array(bins).fill(0));
   }, [bins]);
@@ -36,9 +34,7 @@ export default function BallsInBins() {
             countsRef.current[randomBin]++;
         }
         
-        // Force update react state
         setCounts([...countsRef.current]);
-        
         animationFrameId = requestAnimationFrame(step);
       };
       animationFrameId = requestAnimationFrame(step);
@@ -52,78 +48,94 @@ export default function BallsInBins() {
   const average = totalBalls / bins;
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+    <div className="apple-card p-8 bg-white overflow-hidden">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-6">
         <div>
-            <h3 className="text-lg font-bold text-gray-900">球と箱のシミュレーション</h3>
-            <p className="text-sm text-gray-500 mt-1">{bins} 個の箱にランダムに球を投げ入れる実験 (大数の法則)</p>
+            <div className="flex items-center gap-3 mb-2">
+                <span className="w-10 h-10 rounded-xl bg-[#0071e3]/10 flex items-center justify-center text-xl">🎲</span>
+                <h3 className="text-xl font-bold text-[#1d1d1f]">球と箱のシミュレーション</h3>
+            </div>
+            <p className="text-sm text-[#86868b] mt-1 font-medium">{bins} 個の箱にランダムに球を投げ入れる実験 (大数の法則)</p>
         </div>
         
-        <div className="flex items-center gap-3">
-             <div className="flex items-center gap-2 mr-4">
-                <span className="text-xs font-medium text-gray-500">総数:</span>
-                <span className="font-mono text-sm font-bold text-gray-900">{totalBalls}</span>
+        <div className="flex items-center gap-4 bg-[#F5F5F7] p-2 rounded-2xl">
+             <div className="px-4 py-1 border-r border-gray-200">
+                <span className="text-[10px] uppercase font-bold text-[#86868b] tracking-wide block">総数</span>
+                <span className="font-mono text-lg font-bold text-[#1d1d1f]">{totalBalls}</span>
              </div>
              <button 
                 onClick={() => setRunning(!running)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium text-white shadow-sm transition-all ${running ? 'bg-red-500 hover:bg-red-600' : 'bg-blue-600 hover:bg-blue-700'}`}
+                className={`btn-apple transition-colors ${running ? 'bg-[#ff3b30] hover:bg-[#ff453a]' : 'bg-[#0071e3] hover:bg-[#0077ED]'}`}
             >
                 {running ? '停止' : '開始'}
             </button>
             <button 
                 onClick={reset}
-                className="px-4 py-2 rounded-lg border border-gray-200 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all"
+                className="btn-secondary"
             >
                 リセット
             </button>
         </div>
       </div>
 
-      <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-         <div>
-            <div className="flex justify-between text-xs text-gray-500 mb-2">
-                <span>箱の数: {bins}</span>
-                <span>2</span>
-                <span>50</span>
+      <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-8 bg-[#F5F5F7] p-6 rounded-2xl">
+         <div className="space-y-3">
+            <div className="flex justify-between items-end">
+                <span className="text-xs font-bold text-[#86868b] uppercase tracking-wide">箱の数</span>
+                <span className="font-mono text-lg font-bold text-[#1d1d1f]">{bins}</span>
             </div>
             <input 
                 type="range" min="2" max="50" value={bins} 
                 onChange={(e) => setBins(parseInt(e.target.value))}
-                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                className="w-full"
             />
-         </div>
-         <div>
-            <div className="flex justify-between text-xs text-gray-500 mb-2">
-                <span>速度: {speed}</span>
-                <span>1</span>
+            <div className="flex justify-between text-[10px] text-[#86868b] font-mono mt-1">
+                <span>2</span>
                 <span>50</span>
+            </div>
+         </div>
+         <div className="space-y-3">
+            <div className="flex justify-between items-end">
+                <span className="text-xs font-bold text-[#86868b] uppercase tracking-wide">速度</span>
+                <span className="font-mono text-lg font-bold text-[#34c759]">{speed}</span>
             </div>
             <input 
                 type="range" min="1" max="50" value={speed} 
                 onChange={(e) => setSpeed(parseInt(e.target.value))}
-                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-green-600"
+                className="w-full"
             />
+            <div className="flex justify-between text-[10px] text-[#86868b] font-mono mt-1">
+                <span>1</span>
+                <span>50</span>
+            </div>
          </div>
       </div>
 
-      <div className="h-64 flex items-end gap-1 border-b border-gray-200 pb-px relative bg-gray-50/50 rounded-lg p-4 select-none overflow-hidden">
+      <div className="h-72 flex items-end gap-1.5 border-b border-[#e5e5e5] pb-px relative bg-white rounded-xl p-4 select-none overflow-hidden">
+        {/* Background Grid */}
+        <div className="absolute inset-0 grid grid-rows-4 pointer-events-none">
+            {[...Array(4)].map((_, i) => (
+                <div key={i} className="border-t border-dashed border-gray-100 w-full h-full"></div>
+            ))}
+        </div>
+
         {/* Expected Line */}
         {totalBalls > 0 && (
              <div 
-                className="absolute left-0 right-0 border-t-2 border-dashed border-red-400 z-10 pointer-events-none opacity-50 flex items-end justify-end px-2"
-                style={{ bottom: `calc(${(average / maxCount) * 100}% + 1px)` }}
+                className="absolute left-0 right-0 border-t-2 border-dotted border-[#ff3b30] z-20 pointer-events-none opacity-80 flex items-end justify-end px-2 transition-all duration-500 ease-out"
+                style={{ bottom: `calc(${(average / maxCount) * 100}% + 2px)` }}
              >
-                <span className="text-[10px] text-red-500 bg-white/80 px-1 rounded -mb-5">平均: {average.toFixed(1)}</span>
+                <span className="text-[10px] font-bold text-[#ff3b30] bg-white/90 px-1.5 py-0.5 rounded shadow-sm mb-1 transform translate-y-full">平均: {average.toFixed(1)}</span>
              </div>
         )}
 
         {counts.map((count, i) => (
             <div 
                 key={i} 
-                className="bg-blue-500 rounded-t flex-1 hover:bg-blue-600 transition-all duration-75 relative group min-w-[4px]"
-                style={{ height: `${Math.max((count / maxCount) * 100, 2)}%`, opacity: 0.8 }}
+                className="bg-gradient-to-t from-[#0071e3] to-[#5l99ff] rounded-t-sm flex-1 hover:brightness-110 transition-all duration-300 ease-out relative group min-w-[4px]"
+                style={{ height: `${Math.max((count / maxCount) * 100, 2)}%`, opacity: 0.9 }}
             >
-                <div className="opacity-0 group-hover:opacity-100 absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-[10px] px-2 py-1 rounded shadow-lg z-20 whitespace-nowrap pointer-events-none">
+                <div className="opacity-0 group-hover:opacity-100 absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-[#1d1d1f] text-white text-[10px] font-bold px-2 py-1 rounded-lg shadow-xl z-30 whitespace-nowrap pointer-events-none transition-opacity duration-200">
                     箱 {i + 1}: {count}個
                 </div>
             </div>

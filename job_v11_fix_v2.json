@@ -1,0 +1,53 @@
+{
+  "taskGroups": [
+    {
+      "taskSpec": {
+        "runnables": [
+          {
+            "container": {
+              "imageUri": "us-central1-docker.pkg.dev/dev-dotsfty/yolo/yolo:v10-experimental",
+              "commands": [
+                "python3",
+                "/mnt/disks/share/experiments/v11_depth_fusion_v2.py"
+              ],
+              "volumes": [
+                "/mnt/disks/share:/mnt/disks/share:rw",
+                "/mnt/disks/data:/mnt/disks/data:ro"
+              ]
+            },
+            "environment": {
+              "variables": {
+                "OUTPUT_BUCKET": "/mnt/disks/share/output/v11_test_v2/",
+                "BATCH_TASK_COUNT": "50"
+              }
+            }
+          }
+        ],
+        "volumes": [
+          {
+            "gcs": {
+              "remotePath": "dotsfty-ml-experiments-src"
+            },
+            "mountPath": "/mnt/disks/share"
+          },
+          {
+            "gcs": {
+              "remotePath": "yolo-gcp"
+            },
+            "mountPath": "/mnt/disks/data"
+          }
+        ],
+        "computeResource": {
+          "cpuMilli": "4000",
+          "memoryMib": "16384"
+        },
+        "maxRetryCount": 1
+      },
+      "taskCount": 50,
+      "parallelism": 20
+    }
+  ],
+  "logsPolicy": {
+    "destination": "CLOUD_LOGGING"
+  }
+}

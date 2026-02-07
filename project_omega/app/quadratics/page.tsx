@@ -24,10 +24,10 @@ export default function QuadraticsPage() {
     
     const centerX = width / 2;
     const centerY = height / 2;
-    const scale = 20;
+    const scale = 30; // Slightly larger scale
 
     // Grid
-    ctx.strokeStyle = '#f3f4f6';
+    ctx.strokeStyle = '#f5f5f7';
     ctx.lineWidth = 1;
     for (let x = 0; x <= width; x += scale) {
       ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, height); ctx.stroke();
@@ -37,29 +37,34 @@ export default function QuadraticsPage() {
     }
 
     // Axes
-    ctx.strokeStyle = '#d1d5db';
+    ctx.strokeStyle = '#d1d1d6';
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.moveTo(0, centerY); ctx.lineTo(width, centerY); 
     ctx.moveTo(centerX, 0); ctx.lineTo(centerX, height);
     ctx.stroke();
 
-    // Parabola
-    ctx.strokeStyle = '#2563eb';
-    ctx.lineWidth = 3;
+    // Parabola - Apple Blue
+    ctx.strokeStyle = '#0071e3';
+    ctx.lineWidth = 4;
+    ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     ctx.beginPath();
 
+    let first = true;
     for (let pixelX = 0; pixelX < width; pixelX++) {
       const x = (pixelX - centerX) / scale;
       const y = a * x * x + b * x + c;
       const pixelY = centerY - (y * scale);
       
-      // Limit drawing to sensible canvas bounds to avoid rendering issues with extreme values
-      if (pixelY < -1000 || pixelY > height + 1000) continue;
+      if (pixelY < -height || pixelY > height * 2) {
+          first = true;
+          continue;
+      }
 
-      if (pixelX === 0) {
+      if (first) {
         ctx.moveTo(pixelX, pixelY);
+        first = false;
       } else {
         ctx.lineTo(pixelX, pixelY);
       }
@@ -67,15 +72,30 @@ export default function QuadraticsPage() {
     ctx.stroke();
 
     // Vertex point
-    const vx = a !== 0 ? -b / (2 * a) : 0;
-    const vy = a * vx * vx + b * vx + c;
-    const pVx = centerX + vx * scale;
-    const pVy = centerY - (vy * scale);
-    
-    ctx.fillStyle = '#dc2626';
-    ctx.beginPath();
-    ctx.arc(pVx, pVy, 5, 0, 2 * Math.PI);
-    ctx.fill();
+    if (a !== 0) {
+        const vx = -b / (2 * a);
+        const vy = a * vx * vx + b * vx + c;
+        const pVx = centerX + vx * scale;
+        const pVy = centerY - (vy * scale);
+        
+        // Outer halo
+        ctx.fillStyle = 'rgba(255, 59, 48, 0.2)'; // Apple Red
+        ctx.beginPath();
+        ctx.arc(pVx, pVy, 12, 0, 2 * Math.PI);
+        ctx.fill();
+
+        // Inner dot
+        ctx.fillStyle = '#ff3b30';
+        ctx.beginPath();
+        ctx.arc(pVx, pVy, 6, 0, 2 * Math.PI);
+        ctx.fill();
+        
+        // White center
+        ctx.fillStyle = 'white';
+        ctx.beginPath();
+        ctx.arc(pVx, pVy, 2.5, 0, 2 * Math.PI);
+        ctx.fill();
+    }
 
   }, [a, b, c]);
 
@@ -83,83 +103,98 @@ export default function QuadraticsPage() {
   const vertexY = a * vertexX * vertexX + b * vertexX + c;
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50 text-gray-900 font-sans">
-       <header className="p-4 bg-white border-b shadow-sm sticky top-0 z-20 flex justify-between items-center">
-        <div>
-             <Link href="/" className="text-xs font-medium text-gray-400 hover:text-gray-900 transition-colors mb-1 block">← ホームに戻る</Link>
-             <h1 className="text-lg font-bold tracking-tight">二次関数 <span className="text-gray-400 font-normal ml-2">数学I / グラフと性質</span></h1>
-        </div>
+    <div className="flex flex-col min-h-screen bg-[#F5F5F7] text-[#1d1d1f] font-sans">
+       <header className="fixed top-0 left-0 right-0 z-50 bg-white/70 backdrop-blur-xl border-b border-white/40 h-16 flex items-center px-6 transition-all supports-[backdrop-filter]:bg-white/60">
+         <div className="max-w-6xl mx-auto w-full flex items-center gap-4">
+             <Link href="/" className="group flex items-center text-sm font-medium text-[#86868b] hover:text-[#0071e3] transition-colors">
+               <span className="inline-block transition-transform group-hover:-translate-x-1 mr-1">←</span> ホーム
+             </Link>
+             <div className="h-4 w-px bg-gray-300"></div>
+             <h1 className="text-lg font-semibold tracking-tight text-[#1d1d1f]">二次関数 <span className="text-[#86868b] font-normal ml-2 text-sm">数学I / グラフと性質</span></h1>
+         </div>
       </header>
 
-      <main className="flex-1 max-w-5xl mx-auto w-full p-6">
-        <div className="flex flex-col md:flex-row gap-8 items-start">
+      <main className="flex-1 max-w-6xl mx-auto w-full p-6 pt-24">
+        <div className="flex flex-col lg:flex-row gap-8 items-start">
         
-        <div className="w-full md:w-1/3 space-y-6">
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                <div className="mb-6 p-4 bg-blue-50 rounded-xl text-center border border-blue-100">
-                    <p className="font-mono text-lg font-bold text-blue-900">
-                    y = {a === 0 ? '' : `${a}x²`} {b >= 0 ? '+' : ''}{b}x {c >= 0 ? '+' : ''}{c}
+        {/* Controls Panel */}
+        <div className="w-full lg:w-1/3 space-y-6">
+            <div className="apple-card p-6 fade-in-up delay-100">
+                <div className="mb-8 p-6 bg-[#F5F5F7] rounded-2xl text-center border border-black/[0.03]">
+                    <p className="font-mono text-xl font-bold text-[#1d1d1f] tracking-wider">
+                    y = <span className="text-[#0071e3]">{a === 0 ? '' : `${a}x²`}</span> {b >= 0 ? '+' : ''} <span className="text-[#34c759]">{b}x</span> {c >= 0 ? '+' : ''} <span className="text-[#ff3b30]">{c}</span>
                     </p>
                 </div>
 
-                <div className="space-y-6">
-                    <div className="space-y-2">
-                        <div className="flex justify-between">
-                            <label className="text-sm font-semibold text-gray-700">a (グラフの開き)</label>
-                            <span className="font-mono text-sm font-bold text-blue-600">{a.toFixed(1)}</span>
+                <div className="space-y-8">
+                    <div className="space-y-3">
+                        <div className="flex justify-between items-end">
+                            <label className="text-xs font-bold text-[#86868b] uppercase tracking-wide flex items-center">
+                                <span className="w-2 h-2 rounded-full bg-[#0071e3] mr-2"></span>
+                                a (グラフの開き)
+                            </label>
+                            <span className="font-mono text-lg font-bold text-[#0071e3]">{a.toFixed(1)}</span>
                         </div>
                         <input 
                             type="range" min="-5" max="5" step="0.1" 
                             value={a} onChange={(e) => setA(parseFloat(e.target.value))}
-                            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                            className="w-full"
                         />
                     </div>
 
-                    <div className="space-y-2">
-                        <div className="flex justify-between">
-                            <label className="text-sm font-semibold text-gray-700">b (軸の位置)</label>
-                            <span className="font-mono text-sm font-bold text-green-600">{b.toFixed(1)}</span>
+                    <div className="space-y-3">
+                        <div className="flex justify-between items-end">
+                            <label className="text-xs font-bold text-[#86868b] uppercase tracking-wide flex items-center">
+                                <span className="w-2 h-2 rounded-full bg-[#34c759] mr-2"></span>
+                                b (軸の位置)
+                            </label>
+                            <span className="font-mono text-lg font-bold text-[#34c759]">{b.toFixed(1)}</span>
                         </div>
                         <input 
                             type="range" min="-10" max="10" step="0.1" 
                             value={b} onChange={(e) => setB(parseFloat(e.target.value))}
-                            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-green-600"
+                            className="w-full"
                         />
                     </div>
 
-                    <div className="space-y-2">
-                        <div className="flex justify-between">
-                            <label className="text-sm font-semibold text-gray-700">c (y切片)</label>
-                            <span className="font-mono text-sm font-bold text-red-600">{c.toFixed(1)}</span>
+                    <div className="space-y-3">
+                        <div className="flex justify-between items-end">
+                            <label className="text-xs font-bold text-[#86868b] uppercase tracking-wide flex items-center">
+                                <span className="w-2 h-2 rounded-full bg-[#ff3b30] mr-2"></span>
+                                c (y切片)
+                            </label>
+                            <span className="font-mono text-lg font-bold text-[#ff3b30]">{c.toFixed(1)}</span>
                         </div>
                         <input 
                             type="range" min="-10" max="10" step="0.1" 
                             value={c} onChange={(e) => setC(parseFloat(e.target.value))}
-                            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-red-600"
+                            className="w-full"
                         />
                     </div>
                 </div>
             </div>
           
-            <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 space-y-3">
-                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider border-b border-gray-100 pb-2">グラフの性質</h3>
-                <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">頂点座標</span>
-                    <span className="font-mono font-medium text-gray-900">({vertexX.toFixed(2)}, {vertexY.toFixed(2)})</span>
+            <div className="apple-card p-6 space-y-4 fade-in-up delay-200">
+                <h3 className="text-xs font-bold text-[#86868b] uppercase tracking-wider border-b border-gray-100 pb-3">グラフの性質</h3>
+                <div className="flex justify-between items-center group">
+                    <span className="text-sm font-medium text-[#1d1d1f]">頂点座標</span>
+                    <span className="font-mono text-base font-medium text-[#ff3b30] group-hover:scale-105 transition-transform">({vertexX.toFixed(2)}, {vertexY.toFixed(2)})</span>
                 </div>
-                <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">軸の方程式</span>
-                    <span className="font-mono font-medium text-gray-900">x = {vertexX.toFixed(2)}</span>
+                <div className="flex justify-between items-center group">
+                    <span className="text-sm font-medium text-[#1d1d1f]">軸の方程式</span>
+                    <span className="font-mono text-base font-medium text-[#1d1d1f] group-hover:scale-105 transition-transform">x = {vertexX.toFixed(2)}</span>
                 </div>
             </div>
         </div>
 
-        <div className="w-full md:w-2/3 bg-white rounded-2xl shadow-sm border border-gray-100 p-4 flex items-center justify-center overflow-hidden">
+        {/* Canvas Panel */}
+        <div className="w-full lg:w-2/3 apple-card p-2 flex items-center justify-center overflow-hidden bg-white fade-in-up delay-300 relative min-h-[500px]">
+          <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:20px_20px] opacity-40 pointer-events-none"></div>
           <canvas 
             ref={canvasRef} 
-            width={600} 
+            width={800} 
             height={600} 
-            className="w-full h-auto max-w-full"
+            className="w-full h-auto max-w-full z-10"
           />
         </div>
       </div>

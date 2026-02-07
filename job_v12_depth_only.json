@@ -1,0 +1,58 @@
+{
+  "taskGroups": [
+    {
+      "taskSpec": {
+        "runnables": [
+          {
+            "container": {
+              "imageUri": "us-central1-docker.pkg.dev/dev-dotsfty/yolo/yolo:v10-experimental",
+              "commands": [
+                "python3",
+                "/mnt/disks/share/experiments/v12_depth_only.py"
+              ],
+              "volumes": [
+                "/mnt/disks/share:/mnt/disks/share",
+                "/mnt/disks/data:/mnt/disks/data"
+              ]
+            },
+            "environment": {
+               "variables": {
+                  "OUTPUT_BUCKET": "/mnt/disks/data/eagle/infer/output/v12_depth_only_experiment/",
+                  "BATCH_TASK_COUNT": "10"
+               }
+            }
+          }
+        ],
+        "volumes": [
+          {
+            "gcs": {
+              "remotePath": "dotsfty-ml-experiments-src"
+            },
+            "mountPath": "/mnt/disks/share"
+          },
+          {
+            "gcs": {
+              "remotePath": "yolo-gcp"
+            },
+            "mountPath": "/mnt/disks/data"
+          }
+        ]
+      },
+      "taskCount": 10,
+      "parallelism": 10
+    }
+  ],
+  "allocationPolicy": {
+    "instances": [
+      {
+        "policy": {
+          "machineType": "e2-standard-4",
+          "provisioningModel": "SPOT"
+        }
+      }
+    ]
+  },
+  "logsPolicy": {
+    "destination": "CLOUD_LOGGING"
+  }
+}

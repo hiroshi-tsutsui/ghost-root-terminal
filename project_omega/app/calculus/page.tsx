@@ -46,17 +46,12 @@ export default function CalculusPage() {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const dpr = window.devicePixelRatio || 1;
-    // We need to handle resizing properly for retina displays, but for now fixed width logic
-    // Just ensure we use the display size for style and actual pixels for drawing if we wanted sharp text
-    // Simpler here: just use width/height from attributes.
-
     const width = canvas.width;
     const height = canvas.height;
     
     ctx.clearRect(0, 0, width, height);
     
-    const scale = 40;
+    const scale = 50; // Zoomed in a bit more
     const centerX = width / 2;
     const centerY = height / 2;
 
@@ -69,7 +64,7 @@ export default function CalculusPage() {
     }
 
     // Grid
-    ctx.strokeStyle = '#f3f4f6';
+    ctx.strokeStyle = '#f5f5f7';
     ctx.lineWidth = 1;
     for (let x = 0; x <= width; x += scale) {
       ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, height); ctx.stroke();
@@ -79,15 +74,15 @@ export default function CalculusPage() {
     }
 
     // Axes
-    ctx.strokeStyle = '#e5e7eb';
+    ctx.strokeStyle = '#d1d1d6';
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.moveTo(0, centerY); ctx.lineTo(width, centerY); 
     ctx.moveTo(centerX, 0); ctx.lineTo(centerX, height);
     ctx.stroke();
 
-    // Area (Integral)
-    ctx.fillStyle = 'rgba(59, 130, 246, 0.1)';
+    // Area (Integral) - Apple Blue with opacity
+    ctx.fillStyle = 'rgba(0, 113, 227, 0.15)';
     ctx.beginPath();
     ctx.moveTo(centerX, centerY);
     const step = 0.05;
@@ -99,13 +94,16 @@ export default function CalculusPage() {
         const py = centerY - y * scale;
         ctx.lineTo(px, py);
     }
-    ctx.lineTo(centerX + xVal * scale, centerY);
+    const finalY = evaluateFunc(funcStr, xVal);
+    ctx.lineTo(centerX + xVal * scale, centerY - finalY * scale); // Connect to curve point
+    ctx.lineTo(centerX + xVal * scale, centerY); // Drop to axis
     ctx.lineTo(centerX, centerY);
     ctx.fill();
 
-    // Function
-    ctx.strokeStyle = '#2563eb';
-    ctx.lineWidth = 3;
+    // Function Curve - Apple Blue
+    ctx.strokeStyle = '#0071e3';
+    ctx.lineWidth = 4;
+    ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     ctx.beginPath();
     let first = true;
@@ -130,10 +128,10 @@ export default function CalculusPage() {
     }
     ctx.stroke();
 
-    // Tangent Line
+    // Tangent Line - Apple Red
     const yVal = evaluateFunc(funcStr, xVal);
     const slope = evaluateDerivative(funcStr, xVal);
-    const tangentLength = 4;
+    const tangentLength = 3;
     const xStart = xVal - tangentLength;
     const xEnd = xVal + tangentLength;
     const yStart = slope * (xStart - xVal) + yVal;
@@ -143,9 +141,9 @@ export default function CalculusPage() {
     const pXEnd = centerX + xEnd * scale;
     const pYEnd = centerY - yEnd * scale;
 
-    ctx.strokeStyle = '#ef4444';
-    ctx.lineWidth = 2;
-    ctx.setLineDash([5, 5]);
+    ctx.strokeStyle = '#ff3b30';
+    ctx.lineWidth = 2.5;
+    ctx.setLineDash([6, 6]);
     ctx.beginPath();
     ctx.moveTo(pXStart, pYStart);
     ctx.lineTo(pXEnd, pYEnd);
@@ -157,15 +155,15 @@ export default function CalculusPage() {
     const pY = centerY - yVal * scale;
     
     // Outer halo
-    ctx.fillStyle = 'rgba(239, 68, 68, 0.2)';
+    ctx.fillStyle = 'rgba(255, 59, 48, 0.2)';
     ctx.beginPath();
-    ctx.arc(pX, pY, 12, 0, 2 * Math.PI);
+    ctx.arc(pX, pY, 14, 0, 2 * Math.PI);
     ctx.fill();
 
     // Inner dot
-    ctx.fillStyle = '#ef4444';
+    ctx.fillStyle = '#ff3b30';
     ctx.beginPath();
-    ctx.arc(pX, pY, 6, 0, 2 * Math.PI);
+    ctx.arc(pX, pY, 7, 0, 2 * Math.PI);
     ctx.fill();
     
     // Center white dot
@@ -190,38 +188,40 @@ export default function CalculusPage() {
   ];
 
   return (
-    <div className="flex flex-col md:flex-row h-screen bg-gray-50 text-gray-900 font-sans overflow-hidden">
-       <div className="w-full md:w-96 flex flex-col border-r bg-white shadow-sm z-10 h-1/2 md:h-full overflow-y-auto">
-        <header className="p-6 border-b">
-            <Link href="/" className="text-xs font-medium text-gray-400 hover:text-gray-900 transition-colors mb-2 block">← ホームに戻る</Link>
-            <h1 className="text-2xl font-bold tracking-tight">微分積分</h1>
-            <p className="text-sm text-gray-500 mt-1">数学III / 極限と関数</p>
+    <div className="flex flex-col md:flex-row h-screen bg-[#F5F5F7] text-[#1d1d1f] font-sans overflow-hidden">
+      
+       {/* Sidebar */}
+       <div className="w-full md:w-[400px] flex flex-col border-r border-white/20 bg-white/70 backdrop-blur-xl z-10 h-1/2 md:h-full overflow-y-auto shadow-[4px_0_24px_rgba(0,0,0,0.02)]">
+        <header className="p-6 pb-4 border-b border-gray-200/50 sticky top-0 bg-white/50 backdrop-blur-md z-20">
+            <Link href="/" className="group flex items-center text-sm font-medium text-[#86868b] hover:text-[#0071e3] transition-colors mb-3">
+              <span className="inline-block transition-transform group-hover:-translate-x-1 mr-1">←</span> ホームに戻る
+            </Link>
+            <h1 className="text-3xl font-bold tracking-tight text-[#1d1d1f]">微分積分</h1>
+            <p className="text-[#86868b] text-sm mt-1 font-medium">数学III / 極限と関数</p>
         </header>
 
-        <div className="flex-1 overflow-y-auto p-6 space-y-8">
+        <div className="flex-1 overflow-y-auto p-6 space-y-8 pb-32">
            
-           <div className="space-y-4">
-             <label className="text-sm font-semibold text-gray-900 block">関数 f(x)</label>
-             <div className="relative">
+           {/* Function Input */}
+           <div className="apple-card p-5 fade-in-up delay-100">
+             <label className="text-xs font-semibold text-[#86868b] uppercase tracking-wide mb-3 block">関数 f(x)</label>
+             <div className="relative mb-4">
                 <input 
                     type="text" 
                     value={funcStr} 
                     onChange={(e) => setFuncStr(e.target.value)}
-                    className="w-full rounded-lg border-gray-200 bg-gray-50 p-3 font-mono text-sm focus:border-blue-500 focus:ring-blue-500"
+                    className="input-apple text-lg font-mono tracking-wide"
                     placeholder="e.g. sin(x) + x^2"
                 />
-                <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
-                    <span className="text-xs text-gray-400">f(x)=</span>
-                </div>
              </div>
-             {error && <p className="text-red-500 text-xs flex items-center">⚠️ {error}</p>}
+             {error && <p className="text-[#ff3b30] text-xs flex items-center mb-3">⚠️ {error}</p>}
              
-             <div className="flex flex-wrap gap-2 mt-2">
+             <div className="flex flex-wrap gap-2">
                 {presets.map((p) => (
                     <button 
                         key={p.label}
                         onClick={() => setFuncStr(p.val)}
-                        className="px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 rounded border border-gray-200 transition-colors"
+                        className="px-3 py-1.5 text-[11px] font-medium bg-[#f5f5f7] hover:bg-[#e8e8ed] text-[#1d1d1f] rounded-full transition-colors active:scale-95"
                     >
                         {p.label}
                     </button>
@@ -229,58 +229,62 @@ export default function CalculusPage() {
              </div>
            </div>
 
-           <div className="space-y-4">
-             <div className="flex justify-between">
-                <label className="text-sm font-semibold text-gray-900">x の値</label>
-                <span className="font-mono text-sm font-bold text-blue-600">{xVal.toFixed(2)}</span>
+           {/* Slider Control */}
+           <div className="apple-card p-5 fade-in-up delay-200">
+             <div className="flex justify-between items-end mb-4">
+                <label className="text-sm font-semibold text-[#1d1d1f]">x の値</label>
+                <span className="font-mono text-xl font-bold text-[#0071e3]">{xVal.toFixed(2)}</span>
              </div>
              <input 
                type="range" min="-4" max="4" step="0.01" 
                value={xVal} onChange={(e) => setXVal(parseFloat(e.target.value))}
-               className="w-full accent-blue-600 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+               className="w-full"
              />
-             <div className="flex justify-between text-xs text-gray-400 font-mono">
-                <span>-4</span>
-                <span>0</span>
-                <span>4</span>
+             <div className="flex justify-between text-[10px] text-[#86868b] font-mono mt-2">
+                <span>-4.0</span>
+                <span>0.0</span>
+                <span>4.0</span>
              </div>
            </div>
 
-           <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm space-y-4">
-             <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider border-b border-gray-100 pb-2">x = {xVal.toFixed(2)} における解析</h3>
+           {/* Analysis Panel */}
+           <div className="apple-card p-5 space-y-4 fade-in-up delay-300">
+             <h3 className="text-xs font-bold text-[#86868b] uppercase tracking-wider border-b border-gray-100 pb-3">x = {xVal.toFixed(2)} における解析</h3>
              
-             <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">値 f(x)</span>
-                <span className="font-mono font-medium text-gray-900">{isNaN(currentY) ? '-' : currentY.toFixed(3)}</span>
+             <div className="flex justify-between items-center group">
+                <span className="text-sm text-[#1d1d1f] font-medium">値 f(x)</span>
+                <span className="font-mono text-base text-[#1d1d1f]">{isNaN(currentY) ? '-' : currentY.toFixed(3)}</span>
              </div>
              
-             <div className="flex justify-between items-center">
+             <div className="flex justify-between items-center group">
                 <div className="flex items-center">
-                    <span className="w-2 h-2 rounded-full bg-red-500 mr-2"></span>
-                    <span className="text-sm text-gray-600">傾き (微分)</span>
+                    <span className="w-2 h-2 rounded-full bg-[#ff3b30] mr-2 shadow-sm group-hover:scale-125 transition-transform"></span>
+                    <span className="text-sm text-[#1d1d1f] font-medium">傾き (微分)</span>
                 </div>
-                <span className="font-mono font-medium text-red-600">{isNaN(currentSlope) ? '-' : currentSlope.toFixed(3)}</span>
+                <span className="font-mono text-base text-[#ff3b30]">{isNaN(currentSlope) ? '-' : currentSlope.toFixed(3)}</span>
              </div>
 
-             <div className="flex justify-between items-center">
+             <div className="flex justify-between items-center group">
                 <div className="flex items-center">
-                    <span className="w-2 h-2 rounded-full bg-blue-100 border border-blue-300 mr-2"></span>
-                    <span className="text-sm text-gray-600">面積 (積分 0→x)</span>
+                    <span className="w-2 h-2 rounded-full bg-[#0071e3] mr-2 shadow-sm group-hover:scale-125 transition-transform"></span>
+                    <span className="text-sm text-[#1d1d1f] font-medium">面積 (積分 0→x)</span>
                 </div>
-                <span className="font-mono font-medium text-blue-600">{isNaN(currentIntegral) ? '-' : currentIntegral.toFixed(3)}</span>
+                <span className="font-mono text-base text-[#0071e3]">{isNaN(currentIntegral) ? '-' : currentIntegral.toFixed(3)}</span>
              </div>
            </div>
            
-           <div className="p-4 bg-blue-50 rounded-lg text-xs text-blue-800 space-y-1">
-             <p>• <span className="font-bold">赤線</span> は接線を表し、その傾きが微分係数です。</p>
-             <p>• <span className="font-bold">青色の領域</span> は、原点からxまでの定積分（符号付き面積）を表します。</p>
+           <div className="p-4 bg-[#0071e3]/5 rounded-2xl border border-[#0071e3]/10 text-xs text-[#1d1d1f] space-y-2 fade-in-up delay-300">
+             <p className="flex items-start"><span className="w-1.5 h-1.5 rounded-full bg-[#ff3b30] mt-1.5 mr-2 flex-shrink-0"></span><span><span className="font-semibold">赤色の破線</span> は接線を表し、その傾きが微分係数です。</span></p>
+             <p className="flex items-start"><span className="w-1.5 h-1.5 rounded-full bg-[#0071e3] mt-1.5 mr-2 flex-shrink-0"></span><span><span className="font-semibold">青色の領域</span> は、原点からxまでの定積分（符号付き面積）を表します。</span></p>
            </div>
         </div>
       </div>
 
-      <div className="flex-1 flex items-center justify-center bg-gray-50/50 p-8 overflow-hidden">
-        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-2">
-           <canvas ref={canvasRef} width={800} height={600} className="rounded-xl w-full h-auto max-h-[80vh] object-contain" />
+      {/* Main Content */}
+      <div className="flex-1 flex items-center justify-center bg-[#F5F5F7] p-8 overflow-hidden relative">
+        <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-50"></div>
+        <div className="apple-card p-2 shadow-2xl z-10 bg-white">
+           <canvas ref={canvasRef} width={800} height={600} className="rounded-xl w-full h-auto max-h-[85vh] object-contain bg-white" />
         </div>
       </div>
     </div>
