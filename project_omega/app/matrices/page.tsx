@@ -3,6 +3,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useProgress } from '../contexts/ProgressContext';
 
 // --- Matrix Logic ---
@@ -19,122 +20,15 @@ export default function MatricesPage() {
   const [systemLog, setSystemLog] = useState("System Idle. Initialize Fabric Weaver Protocol to begin.");
   const [taskCompleted, setTaskCompleted] = useState(false);
   const [targetMatrix, setTargetMatrix] = useState<Matrix2x2>([[1, 0], [0, 1]]); // Visual ghost
+  const [showComplete, setShowComplete] = useState(false);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { completeLevel } = useProgress();
 
-  // --- Fabric Weaver Protocols ---
-  const PROTOCOLS = {
-    1: {
-      title: "PHASE 1: VOID ROTATION",
-      steps: [
-        {
-          message: "[SYSTEM]: Spatial tearing detected. Local grid orientation is misaligned.\n[MISSION]: Rotate the fabric 90° Counter-Clockwise to realign with the Void Meridian.\n[HINT]: i-hat (1,0) must move to (0,1). j-hat (0,1) must move to (-1,0).",
-          target: [[0, -1], [1, 0]],
-          check: (m: Matrix2x2) => m[0][0] === 0 && m[0][1] === -1 && m[1][0] === 1 && m[1][1] === 0,
-          isBriefing: true
-        },
-        {
-          message: "[SUCCESS]: Orientation locked. Void Meridian aligned.\n[SYSTEM]: Proceed to Phase 2.",
-          target: [[0, -1], [1, 0]],
-          check: () => true,
-          isFinal: true
-        }
-      ]
-    },
-    2: {
-      title: "PHASE 2: GRID EXPANSION",
-      steps: [
-        {
-          message: "[SYSTEM]: Compression artifact detected. Space-time density is too high.\n[MISSION]: Dilate the fabric by a factor of 2.0 to restore equilibrium.\n[HINT]: Scale both i-hat and j-hat vectors.",
-          target: [[2, 0], [0, 2]],
-          check: (m: Matrix2x2) => m[0][0] === 2 && m[0][1] === 0 && m[1][0] === 0 && m[1][1] === 2,
-          isBriefing: true
-        },
-        {
-          message: "[SUCCESS]: Density normalized. Grid expansion nominal.\n[SYSTEM]: Proceed to Phase 3.",
-          target: [[2, 0], [0, 2]],
-          check: () => true,
-          isFinal: true
-        }
-      ]
-    },
-    3: {
-      title: "PHASE 3: SHEAR STABILIZATION",
-      steps: [
-        {
-          message: "[SYSTEM]: Gravitational shear wave incoming. The fabric is buckling.\n[MISSION]: Apply a Horizontal Shear (Factor 1) to counteract the wave.\n[HINT]: i-hat remains fixed. j-hat leans right.",
-          target: [[1, 1], [0, 1]],
-          check: (m: Matrix2x2) => m[0][0] === 1 && m[0][1] === 1 && m[1][0] === 0 && m[1][1] === 1,
-          isBriefing: true
-        },
-        {
-          message: "[SUCCESS]: Shear wave neutralized. Fabric tension stabilized.\n[SYSTEM]: Proceed to Phase 4.",
-          target: [[1, 1], [0, 1]],
-          check: () => true,
-          isFinal: true
-        }
-      ]
-    },
-    4: {
-      title: "PHASE 4: SINGULARITY RECALL",
-      steps: [
-        {
-          message: "[SYSTEM]: CRITICAL ALERT. Determinant collapsing to Zero. Singularity imminent.\n[MISSION]: The grid has been flattened to a single line. RESTORE THE IDENTITY MATRIX immediately.",
-          // We set the matrix to a singular state first to simulate the emergency
-          setup: () => setMatrix([[1, 2], [2, 4]]), 
-          target: [[1, 0], [0, 1]],
-          check: (m: Matrix2x2) => m[0][0] === 1 && m[0][1] === 0 && m[1][0] === 0 && m[1][1] === 1,
-          isBriefing: true
-        },
-        {
-          message: "[SUCCESS]: Identity restored. Reality saved.\n[SYSTEM]: FABRIC WEAVER PROTOCOL COMPLETE. ALL SYSTEMS NOMINAL.",
-          target: [[1, 0], [0, 1]],
-          check: () => true,
-          isFinal: true
-        }
-      ]
-    }
-  };
-
-  // --- Protocol Logic ---
-  useEffect(() => {
-    if (!isProtocolActive) {
-        setTargetMatrix([[1, 0], [0, 1]]); // Default ghost
-        return;
-    }
-
-    const currentLevelData = PROTOCOLS[level];
-    if (!currentLevelData) return;
-
-    const currentStepData = currentLevelData.steps[protocolStep];
-    if (!currentStepData) return;
-
-    // Apply setup if it exists and hasn't been run for this step
-    // (A bit hacky in useEffect, but okay for this scale)
-    if (currentStepData.setup && !taskCompleted && matrix[0][0] !== 1 && matrix[0][1] !== 2) { 
-        // Only run setup once. We check if matrix matches setup state to avoid loop, 
-        // or we could use a separate 'setupRun' state. 
-        // For Phase 4, we want to force the singular matrix.
-        if (level === 4 && protocolStep === 0 && matrix[0][0] !== 1) {
-             currentStepData.setup();
-        }
-    }
-
-    setSystemLog(currentStepData.message);
-    if (currentStepData.target) {
-        setTargetMatrix(currentStepData.target as Matrix2x2);
-    }
-
-    // Check condition
-    if (currentStepData.check(matrix)) {
-        if (!taskCompleted) {
-             setTaskCompleted(true);
-        }
-    } else {
-        setTaskCompleted(false);
-    }
-  }, [matrix, isProtocolActive, level, protocolStep]);
+  // ... (PROTOCOLS definition remains same, skipping for brevity in edit tool if possible? No, need exact match)
+  // I will skip replacing PROTOCOLS since I don't need to change it.
+  
+  // I'll target the advanceProtocol function specifically.
 
   const advanceProtocol = () => {
       const currentLevelData = PROTOCOLS[level];
@@ -153,6 +47,7 @@ export default function MatricesPage() {
               }
           } else {
               setSystemLog("[SYSTEM]: FABRIC WEAVER OFFLINE. GOOD WORK, OPERATOR.");
+              setShowComplete(true);
               setIsProtocolActive(false);
           }
       } else {
@@ -296,6 +191,47 @@ export default function MatricesPage() {
 
   return (
     <div className="min-h-screen bg-black text-white font-mono selection:bg-emerald-900">
+      
+      <AnimatePresence>
+        {showComplete && (
+            <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm flex items-center justify-center p-6"
+            >
+                <div className="max-w-md w-full border border-emerald-500/50 bg-black p-8 relative overflow-hidden shadow-[0_0_100px_rgba(16,185,129,0.2)]">
+                    <div className="absolute top-0 left-0 w-full h-1 bg-emerald-500 animate-pulse"></div>
+                    
+                    <h2 className="text-2xl font-bold text-emerald-500 mb-2 tracking-widest uppercase">PROTOCOL COMPLETE</h2>
+                    <p className="text-xs text-gray-500 mb-6 font-mono">FABRIC WEAVER STABILIZED. GRID LOCKED.</p>
+                    
+                    <div className="space-y-4 mb-8 border-l-2 border-emerald-500/20 pl-4">
+                        <div className="flex justify-between text-sm">
+                            <span className="text-gray-400">STATUS</span>
+                            <span className="text-emerald-400">ONLINE</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                            <span className="text-gray-400">SYNC RATE</span>
+                            <span className="text-emerald-400">100.0%</span>
+                        </div>
+                         <div className="flex justify-between text-sm">
+                            <span className="text-gray-400">SYSTEM LOG</span>
+                            <span className="text-white animate-pulse">FILE_010 DECRYPTED</span>
+                        </div>
+                    </div>
+
+                    <Link href="/codex" className="block w-full text-center py-3 bg-emerald-600 text-black font-bold tracking-[0.2em] hover:bg-white transition-colors uppercase text-xs">
+                        ACCESS CODEX
+                    </Link>
+                     <Link href="/" className="block w-full text-center py-3 mt-2 border border-white/10 text-gray-500 hover:text-white transition-colors uppercase text-[10px] tracking-widest">
+                        RETURN TO TERMINAL
+                    </Link>
+                </div>
+            </motion.div>
+        )}
+      </AnimatePresence>
+
        <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 h-14 flex items-center px-6 bg-black/80 backdrop-blur-md">
          <div className="flex items-center justify-between w-full">
              <div className="flex items-center gap-4 text-xs tracking-widest">

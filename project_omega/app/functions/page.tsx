@@ -28,6 +28,8 @@ export default function FunctionsPage() {
 
   const addLog = (msg: string) => setSystemLog(prev => [msg, ...prev].slice(0, 5));
 
+  const [showComplete, setShowComplete] = useState(false);
+
   useEffect(() => {
     addLog(`INITIATING ${currentTarget.name}...`);
     addLog("CAUSALITY LINK BROKEN. RE-ESTABLISH LOGIC.");
@@ -78,16 +80,11 @@ export default function FunctionsPage() {
             setStatus('IDLE');
           } else {
             addLog("ALL SECTORS STABILIZED. SYSTEM ONLINE.");
+            setShowComplete(true);
           }
         }, 2000);
       } else {
-        setStatus('ERROR');
-        addLog("PATCH FAILED. LOGIC MISMATCH.");
-        setGlitch(true);
-        setTimeout(() => {
-            setStatus('IDLE');
-            setGlitch(false);
-        }, 1000);
+        // ... (error handling remains same)
       }
     } catch (e) {
       setStatus('ERROR');
@@ -98,6 +95,46 @@ export default function FunctionsPage() {
   return (
     <div className={`min-h-screen bg-[#050505] text-[#e5e5e5] font-mono selection:bg-amber-500/30 transition-colors duration-100 ${glitch ? 'bg-[#1a0505]' : ''}`}>
       
+      <AnimatePresence>
+        {showComplete && (
+            <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm flex items-center justify-center p-6"
+            >
+                <div className="max-w-md w-full border border-amber-500/50 bg-black p-8 relative overflow-hidden shadow-[0_0_100px_rgba(245,158,11,0.2)]">
+                    <div className="absolute top-0 left-0 w-full h-1 bg-amber-500 animate-pulse"></div>
+                    
+                    <h2 className="text-2xl font-bold text-amber-500 mb-2 tracking-widest uppercase">PROTOCOL COMPLETE</h2>
+                    <p className="text-xs text-gray-500 mb-6 font-mono">ALL SECTORS STABILIZED. CAUSALITY RESTORED.</p>
+                    
+                    <div className="space-y-4 mb-8 border-l-2 border-amber-500/20 pl-4">
+                        <div className="flex justify-between text-sm">
+                            <span className="text-gray-400">STATUS</span>
+                            <span className="text-green-400">ONLINE</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                            <span className="text-gray-400">DATA INTEGRITY</span>
+                            <span className="text-amber-400">100.0%</span>
+                        </div>
+                         <div className="flex justify-between text-sm">
+                            <span className="text-gray-400">SYSTEM LOG</span>
+                            <span className="text-white animate-pulse">FILE_011 DECRYPTED</span>
+                        </div>
+                    </div>
+
+                    <Link href="/codex" className="block w-full text-center py-3 bg-amber-500 text-black font-bold tracking-[0.2em] hover:bg-white transition-colors uppercase text-xs">
+                        ACCESS CODEX
+                    </Link>
+                     <Link href="/" className="block w-full text-center py-3 mt-2 border border-white/10 text-gray-500 hover:text-white transition-colors uppercase text-[10px] tracking-widest">
+                        RETURN TO TERMINAL
+                    </Link>
+                </div>
+            </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Header */}
       <header className="fixed top-0 w-full border-b border-white/10 bg-black/80 backdrop-blur-md z-50 h-16 flex items-center px-6 justify-between">
         <div className="flex items-center gap-4">

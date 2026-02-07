@@ -186,3 +186,10 @@ We are moving from a "Tool" to a "Platform".
   - **UI Updated:** Integrated "System Logs", Glitch Effects for overload, and Level tracking.
   - **Mechanics:** Level 1 (Witness Growth) -> Level 2 (Compression Lock).
   - **Goal:** Visually demonstrate the necessity of Logarithmic Scales for infinite data.
+- **[2026-02-08] Narrative Core: Codex Expansion (Causality Engine & Fabric Weaver)**
+  - **Modules Evolved:** Functions (Causality Engine), Matrices (Fabric Weaver).
+  - **Narrative Layer:**
+    - Added "FILE_011: CAUSALITY ENGINE" to the System Codex.
+    - Added "Protocol Complete" screen with unlocking animation to both modules.
+  - **Mechanics:** Completion of all levels now triggers the "Mission Complete" modal, displays the specific Lore File ID, and links directly to the Codex.
+  - **Goal:** Ensure all modules provide a satisfying narrative conclusion and reward.

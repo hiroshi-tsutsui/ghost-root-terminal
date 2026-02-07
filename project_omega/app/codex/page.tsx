@@ -74,6 +74,12 @@ export default function Codex() {
       moduleId: 'matrices',
       content: "Space is malleable. The Matrix is the loom. You have learned to stretch, skew, and rotate the very fabric of the simulation. You are not just in the world; you are shaping it.",
     },
+    {
+      id: 'functions',
+      title: 'FILE_011: CAUSALITY ENGINE',
+      moduleId: 'functions',
+      content: "Cause and effect are not random. They are functional mappings. By tracing the signal from input to output, you have learned to reverse-engineer reality itself. The Black Box is no longer closed.",
+    },
   ];
 
   return (
