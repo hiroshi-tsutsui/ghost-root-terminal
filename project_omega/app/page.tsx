@@ -2,149 +2,129 @@ import Link from 'next/link';
 
 export default function Home() {
   return (
-    <div className="max-w-7xl mx-auto px-6">
-      
-      {/* Hero Section */}
-      <div className="text-center max-w-4xl mx-auto mb-20 mt-12 space-y-8 fade-in-up">
-        <div className="inline-flex items-center px-3 py-1 rounded-full bg-white border border-gray-200 shadow-sm mb-4">
-          <span className="flex h-2 w-2 relative mr-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#0071e3]"></span>
-          </span>
-          <span className="text-xs font-semibold tracking-wide uppercase text-gray-500">v2.0 Now Available</span>
+    <div className="min-h-screen bg-[#F5F5F7] text-gray-900 font-sans selection:bg-blue-500/30">
+      {/* Apple-style Glass Header */}
+      <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 bg-white/70 backdrop-blur-md border-b border-gray-200/50 transition-all duration-300">
+        <div className="flex items-center space-x-2">
+          <div className="w-8 h-8 bg-gradient-to-tr from-blue-500 to-purple-600 rounded-lg shadow-sm flex items-center justify-center text-white font-bold text-lg">
+            Ω
+          </div>
+          <span className="text-xl font-semibold tracking-tight text-gray-900">Project Omega</span>
         </div>
-        
-        <h1 className="text-5xl md:text-7xl font-semibold tracking-tighter text-[#1d1d1f] leading-[1.1]">
-          数式を、<br className="md:hidden" />
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#1d1d1f] via-[#434344] to-[#1d1d1f]">
-            手で触れる体験へ。
-          </span>
-        </h1>
-        
-        <p className="text-xl md:text-2xl text-[#86868b] font-medium max-w-2xl mx-auto leading-relaxed">
-          Project Omegaは、日本の高校数学を再定義します。<br className="hidden md:block"/>
-          美しいビジュアルと直感的な操作で、本質的な理解を。
-        </p>
+        <nav className="hidden md:flex items-center space-x-6 text-sm font-medium text-gray-600">
+          <Link href="/" className="hover:text-blue-600 transition-colors">Home</Link>
+          <Link href="/about" className="hover:text-blue-600 transition-colors">About</Link>
+          <a href="https://github.com/hiroshi-tsutsui/math-viz-japan" target="_blank" rel="noopener noreferrer" className="hover:text-blue-600 transition-colors">GitHub</a>
+        </nav>
+      </header>
 
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-          <button className="btn-apple text-lg px-8 py-3 w-full sm:w-auto shadow-lg shadow-blue-500/30 hover:shadow-blue-500/40">
-            学習をスタート
-          </button>
-          <button className="btn-secondary text-lg px-8 py-3 w-full sm:w-auto bg-white hover:bg-gray-50 border border-gray-200">
-            デモを見る
-          </button>
+      <main className="flex flex-col items-center justify-center pt-32 pb-16 px-6">
+        <div className="max-w-5xl w-full text-center space-y-12">
+          
+          {/* Hero Section */}
+          <div className="space-y-6 animate-fade-in-up">
+            <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-gray-900">
+              Math, <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">Reimagined.</span>
+            </h1>
+            <p className="text-xl md:text-2xl text-gray-500 font-normal max-w-2xl mx-auto leading-relaxed">
+              Interactive visualizations for Japanese High School Mathematics.
+              <span className="block text-base text-gray-400 mt-2">見て、触れて、理解する。次世代の数学学習体験。</span>
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-16 text-left">
+            
+            {/* Math I: Quadratics */}
+            <Link href="/quadratics" className="group relative block p-8 bg-white rounded-3xl shadow-[0_2px_10px_rgba(0,0,0,0.03)] border border-gray-100/50 hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] hover:-translate-y-1 transition-all duration-300">
+              <div className="flex justify-between items-start mb-4">
+                <div className="p-3 bg-blue-50/50 rounded-2xl group-hover:bg-blue-100/50 transition-colors">
+                  <svg className="w-6 h-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-semibold tracking-wide uppercase bg-blue-50 text-blue-600">
+                  Math I
+                </span>
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">二次関数</h2>
+              <p className="text-gray-500 text-sm mb-6 leading-relaxed">
+                Parabola visualization, vertex control, and axis symmetry.
+                <br/>放物線の動きを直感的に理解。
+              </p>
+              <div className="flex items-center text-blue-600 text-sm font-semibold opacity-0 transform translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all">
+                Open App <span className="ml-1">→</span>
+              </div>
+            </Link>
+
+            {/* Math B: Vectors */}
+            <Link href="/vectors" className="group relative block p-8 bg-white rounded-3xl shadow-[0_2px_10px_rgba(0,0,0,0.03)] border border-gray-100/50 hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] hover:-translate-y-1 transition-all duration-300">
+               <div className="flex justify-between items-start mb-4">
+                <div className="p-3 bg-purple-50/50 rounded-2xl group-hover:bg-purple-100/50 transition-colors">
+                  <svg className="w-6 h-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                  </svg>
+                </div>
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-semibold tracking-wide uppercase bg-purple-50 text-purple-600">
+                  Math B
+                </span>
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2 group-hover:text-purple-600 transition-colors">ベクトル</h2>
+              <p className="text-gray-500 text-sm mb-6 leading-relaxed">
+                3D vector operations, dot/cross products, and spatial logic.
+                <br/>空間ベクトルの幾何学的意味。
+              </p>
+              <div className="flex items-center text-purple-600 text-sm font-semibold opacity-0 transform translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all">
+                 Open App <span className="ml-1">→</span>
+              </div>
+            </Link>
+
+            {/* Math III: Calculus */}
+            <Link href="/calculus" className="group relative block p-8 bg-white rounded-3xl shadow-[0_2px_10px_rgba(0,0,0,0.03)] border border-gray-100/50 hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] hover:-translate-y-1 transition-all duration-300">
+               <div className="flex justify-between items-start mb-4">
+                <div className="p-3 bg-red-50/50 rounded-2xl group-hover:bg-red-100/50 transition-colors">
+                  <svg className="w-6 h-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                  </svg>
+                </div>
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-semibold tracking-wide uppercase bg-red-50 text-red-600">
+                  Math III
+                </span>
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2 group-hover:text-red-600 transition-colors">微分積分</h2>
+              <p className="text-gray-500 text-sm mb-6 leading-relaxed">
+                Differentiation, integration, and limits in motion.
+                <br/>極限と変化の動的視覚化。
+              </p>
+              <div className="flex items-center text-red-600 text-sm font-semibold opacity-0 transform translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all">
+                 Open App <span className="ml-1">→</span>
+              </div>
+            </Link>
+
+            {/* Math A: Probability */}
+            <Link href="/probability" className="group relative block p-8 bg-white rounded-3xl shadow-[0_2px_10px_rgba(0,0,0,0.03)] border border-gray-100/50 hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] hover:-translate-y-1 transition-all duration-300">
+               <div className="flex justify-between items-start mb-4">
+                <div className="p-3 bg-yellow-50/50 rounded-2xl group-hover:bg-yellow-100/50 transition-colors">
+                  <svg className="w-6 h-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                </div>
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-semibold tracking-wide uppercase bg-yellow-50 text-yellow-800">
+                  Math A
+                </span>
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2 group-hover:text-yellow-600 transition-colors">確率・統計</h2>
+              <p className="text-gray-500 text-sm mb-6 leading-relaxed">
+                Distributions, combinations, and data analysis.
+                <br/>データの分布と確率の法則。
+              </p>
+              <div className="flex items-center text-yellow-600 text-sm font-semibold opacity-0 transform translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all">
+                 Open App <span className="ml-1">→</span>
+              </div>
+            </Link>
+
+          </div>
         </div>
-      </div>
-
-      {/* Dashboard Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 pb-12">
-        
-        {/* Card 1: Quadratics */}
-        <Link href="/quadratics" className="group apple-card p-8 md:p-10 fade-in-up delay-100 hover:ring-4 hover:ring-[#0071e3]/10 relative">
-          <div className="absolute top-0 right-0 p-6 opacity-50 group-hover:opacity-100 transition-opacity">
-             <svg className="w-6 h-6 text-gray-400 group-hover:text-[#0071e3]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-             </svg>
-          </div>
-          <div className="flex flex-col h-full justify-between space-y-20">
-            <div>
-              <span className="text-xs font-bold tracking-wider text-[#86868b] uppercase mb-2 block">Math I</span>
-              <h2 className="text-3xl font-semibold text-[#1d1d1f] mb-3 group-hover:text-[#0071e3] transition-colors">二次関数</h2>
-              <p className="text-[#86868b] font-medium leading-relaxed max-w-sm">
-                放物線の形状や軸の移動をパラメータで制御。<br/>
-                頂点、軸の方程式をリアルタイムに可視化。
-              </p>
-            </div>
-            <div className="relative h-32 w-full bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 group-hover:border-blue-100 transition-colors">
-              {/* Abstract visualization placeholder */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                  <svg className="w-full h-24 text-blue-500/20" viewBox="0 0 100 50" preserveAspectRatio="none">
-                      <path d="M0,50 Q50,0 100,50" fill="none" stroke="currentColor" strokeWidth="2" />
-                  </svg>
-              </div>
-            </div>
-          </div>
-        </Link>
-
-        {/* Card 2: Vectors */}
-        <Link href="/vectors" className="group apple-card p-8 md:p-10 fade-in-up delay-200 hover:ring-4 hover:ring-purple-500/10 relative">
-          <div className="absolute top-0 right-0 p-6 opacity-50 group-hover:opacity-100 transition-opacity">
-             <svg className="w-6 h-6 text-gray-400 group-hover:text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-             </svg>
-          </div>
-          <div className="flex flex-col h-full justify-between space-y-20">
-            <div>
-              <span className="text-xs font-bold tracking-wider text-[#86868b] uppercase mb-2 block">Math B / C</span>
-              <h2 className="text-3xl font-semibold text-[#1d1d1f] mb-3 group-hover:text-purple-600 transition-colors">ベクトル</h2>
-              <p className="text-[#86868b] font-medium leading-relaxed max-w-sm">
-                空間ベクトルの内積・外積を3Dで操作。<br/>
-                幾何学的な意味を視覚的に理解できます。
-              </p>
-            </div>
-            <div className="relative h-32 w-full bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 group-hover:border-purple-100 transition-colors">
-               <div className="absolute inset-0 flex items-center justify-center">
-                  <svg className="w-24 h-24 text-purple-500/20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-                  </svg>
-              </div>
-            </div>
-          </div>
-        </Link>
-
-        {/* Card 3: Calculus */}
-        <Link href="/calculus" className="group apple-card p-8 md:p-10 fade-in-up delay-300 hover:ring-4 hover:ring-red-500/10 relative">
-           <div className="absolute top-0 right-0 p-6 opacity-50 group-hover:opacity-100 transition-opacity">
-             <svg className="w-6 h-6 text-gray-400 group-hover:text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-             </svg>
-          </div>
-          <div className="flex flex-col h-full justify-between space-y-20">
-            <div>
-              <span className="text-xs font-bold tracking-wider text-[#86868b] uppercase mb-2 block">Math III</span>
-              <h2 className="text-3xl font-semibold text-[#1d1d1f] mb-3 group-hover:text-red-600 transition-colors">微分積分</h2>
-              <p className="text-[#86868b] font-medium leading-relaxed max-w-sm">
-                接線の傾きや面積の変化を動的に観察。<br/>
-                極限の概念をグラフで確認できます。
-              </p>
-            </div>
-            <div className="relative h-32 w-full bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 group-hover:border-red-100 transition-colors">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <svg className="w-24 h-24 text-red-500/20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                  </svg>
-              </div>
-            </div>
-          </div>
-        </Link>
-
-        {/* Card 4: Probability */}
-        <Link href="/probability" className="group apple-card p-8 md:p-10 fade-in-up delay-100 hover:ring-4 hover:ring-yellow-500/10 relative">
-           <div className="absolute top-0 right-0 p-6 opacity-50 group-hover:opacity-100 transition-opacity">
-             <svg className="w-6 h-6 text-gray-400 group-hover:text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-             </svg>
-          </div>
-          <div className="flex flex-col h-full justify-between space-y-20">
-            <div>
-              <span className="text-xs font-bold tracking-wider text-[#86868b] uppercase mb-2 block">Math A</span>
-              <h2 className="text-3xl font-semibold text-[#1d1d1f] mb-3 group-hover:text-yellow-600 transition-colors">確率・統計</h2>
-              <p className="text-[#86868b] font-medium leading-relaxed max-w-sm">
-                確率分布やデータの散らばりをシミュレーション。<br/>
-                正規分布、二項分布を直感的に学びます。
-              </p>
-            </div>
-            <div className="relative h-32 w-full bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 group-hover:border-yellow-100 transition-colors">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <svg className="w-24 h-24 text-yellow-500/20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                  </svg>
-              </div>
-            </div>
-          </div>
-        </Link>
-
-      </div>
+      </main>
     </div>
   );
 }
