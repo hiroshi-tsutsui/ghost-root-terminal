@@ -147,3 +147,8 @@ We are moving from a "Tool" to a "Platform".
   - Core Concept: Multiplication by $i$ as a "Rotation into the Void".
   - Missions: The Pivot, The Spiral, The Mirror.
   - Status: Narrative Layer fully aligned with UI.
+- **[2026-02-08] Narrative Formalized: Quadratics (Gravity Well Calibration)**
+  - Created NARRATIVE.md: Formalized "Gravity Well Protocol".
+  - Core Concept: Parabola = Gravity Well; Vertex = Singularity.
+  - Missions: Field Strength Containment, Depth Alignment, Lateral Stabilization.
+  - UI Refined: Unlockable "Lore Fragment" added upon protocol completion.

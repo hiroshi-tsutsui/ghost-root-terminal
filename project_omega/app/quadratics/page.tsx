@@ -121,7 +121,7 @@ export default function QuadraticsPage() {
               setProtocolStep(0);
               setA(1); setB(0); setC(0);
           } else {
-              setSystemLog("[SYSTEM]: ALL PHASES COMPLETE. GRAVITY WELL SECURE. RETURNING TO IDLE STATE.");
+              setSystemLog("[SYSTEM]: ALL PHASES COMPLETE. GRAVITY WELL SECURE.\n[LORE UNLOCKED]: \"The Parabola is the shape of consequence. What goes up must come down, unless it escapes velocity. You control the fall.\"\nRETURNING TO IDLE STATE.");
               setIsProtocolActive(false);
           }
       } else {
