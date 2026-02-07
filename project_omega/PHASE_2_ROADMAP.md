@@ -158,3 +158,8 @@ We are moving from a "Tool" to a "Platform".
   - Core Concept: Parabola = Gravity Well; Vertex = Singularity.
   - Missions: Field Strength Containment, Depth Alignment, Lateral Stabilization.
   - UI Refined: Unlockable "Lore Fragment" added upon protocol completion.
+- **[2026-02-08] Module Evolved: Functions (Causality Engine)**
+  - Narrative Layer Expanded: "Protocol: Causality Engine" (5 Sectors).
+  - Mechanics: Integrated `ProgressContext` + "Black Box" levels (Drift -> Runaway).
+  - UI Updated: System Logs, Glitch Effects, Status Toggles.
+  - Integration: Added to Main Dashboard & Progress Context.
