@@ -20,6 +20,8 @@ export default function TrigPage() {
   const targetFreq = 2.0;
   const targetPhase = 90; 
 
+  const [showHint, setShowHint] = useState(false);
+
   // --- NARRATIVE ---
   const [logMessage, setLogMessage] = useState("INITIALIZING HARMONIC RESONANCE SCAN...");
 
@@ -47,11 +49,11 @@ export default function TrigPage() {
       setResonance(score);
 
       if (score > 95) {
-        setLogMessage("RESONANCE STABLE. WAVEFORM LOCKED.");
+        setLogMessage("RESONANCE LOCKED. HARMONY RESTORED. [SYNC: 100%]");
       } else if (score > 70) {
-        setLogMessage("APPROACHING HARMONIC SYNC...");
+        setLogMessage("APPROACHING HARMONIC SYNC... [Keep Tuning]");
       } else {
-        setLogMessage("SIGNAL DISSONANCE DETECTED. ADJUST PARAMETERS.");
+        setLogMessage("SIGNAL DISSONANCE DETECTED. REALITY WAVE UNSTABLE.");
       }
 
       draw(t);
@@ -197,7 +199,24 @@ export default function TrigPage() {
                     </div>
 
                     <div className="mt-8 pt-4 border-t border-gray-800">
-                        <p className="text-xs text-gray-500 font-mono mb-2">SYSTEM LOG:</p>
+                        <div className="flex justify-between items-center mb-2">
+                           <p className="text-xs text-gray-500 font-mono">SYSTEM LOG:</p>
+                           <button 
+                             onClick={() => setShowHint(!showHint)}
+                             className="text-[10px] text-cyan-600 hover:text-cyan-400 border border-cyan-900 px-2 py-1 rounded"
+                           >
+                              {showHint ? "HIDE SCHEMATICS" : "REQUEST SCHEMATICS"}
+                           </button>
+                        </div>
+                        
+                        {showHint && (
+                           <div className="mb-4 bg-blue-900/10 border border-blue-900/30 p-2 rounded text-[10px] font-mono text-cyan-400">
+                              <p className="mb-1">TARGET_AMP: {targetAmp.toFixed(1)} UNITS</p>
+                              <p className="mb-1">TARGET_FREQ: {targetFreq.toFixed(1)} HZ</p>
+                              <p>TARGET_PHASE: {targetPhase}°</p>
+                           </div>
+                        )}
+
                         <div className="text-xs text-green-400 font-mono h-12 overflow-hidden whitespace-pre-wrap">
                             {'>'} {logMessage}
                         </div>
