@@ -152,13 +152,23 @@ export default function CalculusPage() {
     ctx.stroke();
     ctx.setLineDash([]);
 
-    // Point
+    // Tangent Point Pulse
     const pX = centerX + xVal * scale;
     const pY = centerY - yVal * scale;
+    
+    // Outer halo
+    ctx.fillStyle = 'rgba(239, 68, 68, 0.2)';
+    ctx.beginPath();
+    ctx.arc(pX, pY, 12, 0, 2 * Math.PI);
+    ctx.fill();
+
+    // Inner dot
     ctx.fillStyle = '#ef4444';
     ctx.beginPath();
     ctx.arc(pX, pY, 6, 0, 2 * Math.PI);
     ctx.fill();
+    
+    // Center white dot
     ctx.fillStyle = 'white';
     ctx.beginPath();
     ctx.arc(pX, pY, 3, 0, 2 * Math.PI);
@@ -170,9 +180,18 @@ export default function CalculusPage() {
   const currentSlope = evaluateDerivative(funcStr, xVal);
   const currentIntegral = integrate(funcStr, xVal);
 
+  const presets = [
+    { label: "二次関数", val: "0.5*x^3 - 2*x" },
+    { label: "サイン", val: "sin(x)" },
+    { label: "コサイン", val: "cos(x)" },
+    { label: "指数", val: "exp(x)" },
+    { label: "対数", val: "log(x)" },
+    { label: "タンジェント", val: "tan(x)" }
+  ];
+
   return (
-    <div className="flex h-screen bg-gray-50 text-gray-900 font-sans">
-       <div className="w-96 flex flex-col border-r bg-white shadow-sm z-10">
+    <div className="flex flex-col md:flex-row h-screen bg-gray-50 text-gray-900 font-sans overflow-hidden">
+       <div className="w-full md:w-96 flex flex-col border-r bg-white shadow-sm z-10 h-1/2 md:h-full overflow-y-auto">
         <header className="p-6 border-b">
             <Link href="/" className="text-xs font-medium text-gray-400 hover:text-gray-900 transition-colors mb-2 block">← ホームに戻る</Link>
             <h1 className="text-2xl font-bold tracking-tight">微分積分</h1>
@@ -196,7 +215,18 @@ export default function CalculusPage() {
                 </div>
              </div>
              {error && <p className="text-red-500 text-xs flex items-center">⚠️ {error}</p>}
-             <p className="text-xs text-gray-400">入力例: x^2, sin(x), log(x), exp(x)</p>
+             
+             <div className="flex flex-wrap gap-2 mt-2">
+                {presets.map((p) => (
+                    <button 
+                        key={p.label}
+                        onClick={() => setFuncStr(p.val)}
+                        className="px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 rounded border border-gray-200 transition-colors"
+                    >
+                        {p.label}
+                    </button>
+                ))}
+             </div>
            </div>
 
            <div className="space-y-4">
