@@ -8,7 +8,7 @@ export default function Home() {
         <div className="max-w-5xl w-full text-center space-y-12">
           
           {/* Hero Section */}
-          <div className="space-y-6 animate-fade-in-up">
+          <div style={{ textAlign: 'center', marginTop: '4rem' }} className="space-y-6 animate-fade-in-up">
             <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-gray-900 leading-tight">
               数式を、<br className="md:hidden" />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">体験する。</span>
@@ -25,7 +25,7 @@ export default function Home() {
             <Link href="/quadratics" className="group relative block p-8 bg-white rounded-3xl shadow-[0_2px_10px_rgba(0,0,0,0.03)] border border-gray-100/50 hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] hover:-translate-y-1 transition-all duration-300">
               <div className="flex justify-between items-start mb-4">
                 <div className="p-3 bg-blue-50/50 rounded-2xl group-hover:bg-blue-100/50 transition-colors">
-                  <svg className="w-6 h-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg style={{ width: '48px', height: '48px' }} className="w-6 h-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                 </div>
@@ -52,7 +52,7 @@ export default function Home() {
             <Link href="/vectors" className="group relative block p-8 bg-white rounded-3xl shadow-[0_2px_10px_rgba(0,0,0,0.03)] border border-gray-100/50 hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] hover:-translate-y-1 transition-all duration-300">
                <div className="flex justify-between items-start mb-4">
                 <div className="p-3 bg-purple-50/50 rounded-2xl group-hover:bg-purple-100/50 transition-colors">
-                  <svg className="w-6 h-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg style={{ width: '48px', height: '48px' }} className="w-6 h-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
                   </svg>
                 </div>
@@ -79,7 +79,7 @@ export default function Home() {
             <Link href="/calculus" className="group relative block p-8 bg-white rounded-3xl shadow-[0_2px_10px_rgba(0,0,0,0.03)] border border-gray-100/50 hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] hover:-translate-y-1 transition-all duration-300">
                <div className="flex justify-between items-start mb-4">
                 <div className="p-3 bg-red-50/50 rounded-2xl group-hover:bg-red-100/50 transition-colors">
-                  <svg className="w-6 h-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg style={{ width: '48px', height: '48px' }} className="w-6 h-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                   </svg>
                 </div>
@@ -106,7 +106,7 @@ export default function Home() {
             <Link href="/probability" className="group relative block p-8 bg-white rounded-3xl shadow-[0_2px_10px_rgba(0,0,0,0.03)] border border-gray-100/50 hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] hover:-translate-y-1 transition-all duration-300">
                <div className="flex justify-between items-start mb-4">
                 <div className="p-3 bg-yellow-50/50 rounded-2xl group-hover:bg-yellow-100/50 transition-colors">
-                  <svg className="w-6 h-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg style={{ width: '48px', height: '48px' }} className="w-6 h-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                   </svg>
                 </div>
