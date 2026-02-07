@@ -1,9 +1,6 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "project_omega/package.json",
-      "use": "@vercel/next"
-    }
-  ]
+  "framework": "nextjs",
+  "buildCommand": "cd project_omega && npm install && npm run build",
+  "outputDirectory": "project_omega/.next",
+  "ignoreCommand": "git diff --quiet HEAD^ HEAD ./project_omega/"
 }
