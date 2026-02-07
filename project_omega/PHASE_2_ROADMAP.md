@@ -171,8 +171,8 @@ We are moving from a "Tool" to a "Platform".
   - **Aesthetic:** Dark Mode / Void Grid / Monospace.
   - **Features:** Real-time Rank Tracking, Protocol Status Lights, "System Root" footer.
   - **Impact:** Unified the visual language. The "Simulation" is now contiguous from entry to exit.
-- **[2026-02-08] Refinement: Calculus (Visual Overhaul)**
+- **[2026-02-08] Refinement: Complex (Visual Overhaul)**
   - **Action:** Full conversion to "Void/Stark" aesthetic (Dark Mode, Monospace).
-  - **Narrative:** Removed localized text (Japanese) in favor of strict "Operator" terminology (English).
-  - **UI:** Replaced "Apple Clean" sidebar with "Mission Control" sidebar.
-  - **Goal:** Radical Clarity. No distractions. Just the Flux.
+  - **Narrative:** "Void Phase Analyzer" visual identity aligned with the rest of the suite.
+  - **Mechanics:** Added "Resonance" state tracking and System Log.
+  - **Goal:** Visual consistency across all 10 modules.
