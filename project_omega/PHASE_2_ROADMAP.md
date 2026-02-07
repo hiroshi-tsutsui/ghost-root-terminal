@@ -133,3 +133,8 @@ We are moving from a "Tool" to a "Platform".
   - Narrative Layer Expanded: 4-Phase Protocol "Fabric Weaver".
   - Mechanics: Rotation -> Expansion -> Shear -> Singularity Recall.
   - Goal: Teach linear transformations via "Grid Stabilization" missions.
+- **[2026-02-08] Narrative Core: Global HUD & Navigation Update**
+  - Component Evolved: `ProfileHeader` -> Operator HUD (Clearance Level + Sync Rate).
+  - Navigation Updated: "Curriculum" -> "Simulation", "Overview" -> "Manifesto".
+  - Metadata Updated: "Project Omega | The Simulation".
+  - Goal: Complete re-framing of the user experience from "Student" to "Operator".
