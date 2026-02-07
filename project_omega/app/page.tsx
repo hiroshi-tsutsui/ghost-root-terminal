@@ -83,9 +83,14 @@ export default function Home() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                   </svg>
                 </div>
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-semibold tracking-wide uppercase bg-red-50 text-red-600">
-                  数学 III
-                </span>
+                <div className="flex flex-col items-end gap-2">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-semibold tracking-wide uppercase bg-red-50 text-red-600">
+                    数学 III
+                    </span>
+                    <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-green-100 text-green-700 animate-pulse">
+                    Sensei Mode 🎓
+                    </span>
+                </div>
               </div>
               <h2 className="text-2xl font-bold text-gray-900 mb-2 group-hover:text-red-600 transition-colors">微分積分</h2>
               <p className="text-gray-500 text-sm mb-6 leading-relaxed">
@@ -105,9 +110,14 @@ export default function Home() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                   </svg>
                 </div>
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-semibold tracking-wide uppercase bg-yellow-50 text-yellow-800">
-                  数学 A
-                </span>
+                <div className="flex flex-col items-end gap-2">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-semibold tracking-wide uppercase bg-yellow-50 text-yellow-800">
+                    数学 A
+                    </span>
+                    <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-green-100 text-green-700 animate-pulse">
+                    Sensei Mode 🎓
+                    </span>
+                </div>
               </div>
               <h2 className="text-2xl font-bold text-gray-900 mb-2 group-hover:text-yellow-600 transition-colors">確率・統計</h2>
               <p className="text-gray-500 text-sm mb-6 leading-relaxed">
@@ -120,6 +130,13 @@ export default function Home() {
             </Link>
 
           </div>
+          
+           {/* Mastery Quiz Link */}
+           <div className="mt-16 pt-8 border-t border-gray-200">
+                <Link href="/quiz" className="inline-flex items-center px-8 py-4 bg-gray-900 text-white rounded-full font-bold hover:bg-gray-800 transition-all shadow-lg hover:shadow-xl hover:-translate-y-1">
+                    🏆 Mastery Quiz に挑戦する
+                </Link>
+           </div>
         </div>
       </div>
     </div>
