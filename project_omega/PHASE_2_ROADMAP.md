@@ -138,3 +138,7 @@ We are moving from a "Tool" to a "Platform".
   - Navigation Updated: "Curriculum" -> "Simulation", "Overview" -> "Manifesto".
   - Metadata Updated: "Project Omega | The Simulation".
   - Goal: Complete re-framing of the user experience from "Student" to "Operator".
+- **[2026-02-08] Module Evolved: Sequences (Chronos Pattern Recognition)**
+  - Narrative Layer Expanded: 3-Phase Protocol "Temporal Weaver" (Linear Anchor, Entropy Dampening, Stasis Lock).
+  - Mechanics: Integrated `isProtocolActive` state with guided mission steps.
+  - Goal: From "Sandox" to "Operator Training" (Timeline Stabilization).
