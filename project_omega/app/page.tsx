@@ -3,22 +3,8 @@ import Link from 'next/link';
 export default function Home() {
   return (
     <div className="min-h-screen bg-[#F5F5F7] text-gray-900 font-sans selection:bg-blue-500/30">
-      {/* Apple-style Glass Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 bg-white/70 backdrop-blur-md border-b border-gray-200/50 transition-all duration-300">
-        <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 bg-gradient-to-tr from-blue-500 to-purple-600 rounded-lg shadow-sm flex items-center justify-center text-white font-bold text-lg">
-            Ω
-          </div>
-          <span className="text-xl font-semibold tracking-tight text-gray-900">Project Omega</span>
-        </div>
-        <nav className="hidden md:flex items-center space-x-6 text-sm font-medium text-gray-600">
-          <Link href="/" className="hover:text-blue-600 transition-colors">ホーム</Link>
-          <Link href="/about" className="hover:text-blue-600 transition-colors">概要</Link>
-          <a href="https://github.com/hiroshi-tsutsui/math-viz-japan" target="_blank" rel="noopener noreferrer" className="hover:text-blue-600 transition-colors">GitHub</a>
-        </nav>
-      </header>
-
-      <main className="flex flex-col items-center justify-center pt-32 pb-16 px-6">
+      
+      <div className="flex flex-col items-center justify-center pt-16 pb-16 px-6">
         <div className="max-w-5xl w-full text-center space-y-12">
           
           {/* Hero Section */}
@@ -43,9 +29,14 @@ export default function Home() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                 </div>
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-semibold tracking-wide uppercase bg-blue-50 text-blue-600">
-                  数学 I
-                </span>
+                <div className="flex flex-col items-end gap-2">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-semibold tracking-wide uppercase bg-blue-50 text-blue-600">
+                    数学 I
+                    </span>
+                    <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-green-100 text-green-700 animate-pulse">
+                    Sensei Mode 🎓
+                    </span>
+                </div>
               </div>
               <h2 className="text-2xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">二次関数</h2>
               <p className="text-gray-500 text-sm mb-6 leading-relaxed">
@@ -65,9 +56,14 @@ export default function Home() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
                   </svg>
                 </div>
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-semibold tracking-wide uppercase bg-purple-50 text-purple-600">
-                  数学 B / C
-                </span>
+                <div className="flex flex-col items-end gap-2">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-semibold tracking-wide uppercase bg-purple-50 text-purple-600">
+                    数学 B / C
+                    </span>
+                    <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-green-100 text-green-700 animate-pulse">
+                    Sensei Mode 🎓
+                    </span>
+                </div>
               </div>
               <h2 className="text-2xl font-bold text-gray-900 mb-2 group-hover:text-purple-600 transition-colors">ベクトル</h2>
               <p className="text-gray-500 text-sm mb-6 leading-relaxed">
@@ -125,7 +121,7 @@ export default function Home() {
 
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 }
