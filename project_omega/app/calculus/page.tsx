@@ -8,34 +8,17 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Grid } from '@react-three/drei';
 import * as THREE from 'three';
+import { useProgress } from '../contexts/ProgressContext';
 
 // --- 3D Components ---
 function RevolutionSurface({ funcStr, xVal }: { funcStr: string, xVal: number }) {
   const meshRef = useRef<THREE.Mesh>(null);
-  
-  // Create geometry based on function
-  // We rotate f(x) around x-axis.
-  // Parametric surface:
-  // x = u (from 0 to xVal)
-  // y = f(u) * cos(v)
-  // z = f(u) * sin(v)
-  // v from 0 to 2PI
-  
-  // We need to construct geometry manually or use ParametricGeometry (which is deprecated/moved in newer three)
-  // Or easier: Use a LatheGeometry?
-  // LatheGeometry rotates a path around Y axis.
-  // Our function is y = f(x). We want rotation around x-axis.
-  // We can swap coordinates or rotate the mesh.
-  // Points for Lathe: (y, x) -> rotates around Y (which maps to X in our mental model if we rotate mesh)
-  
   const [points, setPoints] = useState<THREE.Vector2[]>([]);
 
   useEffect(() => {
     try {
         const pts = [];
         const steps = 50;
-        // Range 0 to xVal (or slightly more/less)
-        // If xVal is negative, handle gracefully? Assumed > 0 for volume usually.
         const limit = Math.max(0.1, xVal);
         
         for (let i = 0; i <= steps; i++) {
@@ -69,7 +52,6 @@ function RevolutionSurface({ funcStr, xVal }: { funcStr: string, xVal: number })
   );
 }
 
-
 export default function CalculusPage() {
   const [xVal, setXVal] = useState(1);
   const [funcStr, setFuncStr] = useState("0.5*x^3 - 2*x");
@@ -80,6 +62,9 @@ export default function CalculusPage() {
   
   // 3D Toggle
   const [is3DMode, setIs3DMode] = useState(false);
+  
+  // Global Progress
+  const { completeLevel } = useProgress();
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -112,7 +97,7 @@ export default function CalculusPage() {
       return sum * h;
   };
 
-  // Sensei Logic
+  // Sensei Logic (Protocol: FLUX_SYNC)
   useEffect(() => {
     if (!senseiMode) return;
 
@@ -121,6 +106,7 @@ export default function CalculusPage() {
         setFuncStr("x^2 - 2");
         if (Math.abs(evaluateDerivative("x^2 - 2", xVal)) < 0.1) {
             setShowConfetti(true);
+            completeLevel('calculus', 1); // Level 1 Complete
             setTimeout(() => { setShowConfetti(false); setLessonStep(2); }, 2000);
         }
     } else if (lessonStep === 3) {
@@ -129,12 +115,19 @@ export default function CalculusPage() {
         const area = integrate("2", xVal);
         if (Math.abs(area - 4) < 0.2 && xVal > 0) {
              setShowConfetti(true);
+             completeLevel('calculus', 2); // Level 2 Complete
              setTimeout(() => { setShowConfetti(false); setLessonStep(4); }, 2000);
+        }
+    } else if (lessonStep === 5) {
+        // Level 3: Dimensional Projection
+        if (is3DMode) {
+            setShowConfetti(true);
+            completeLevel('calculus', 3); // Level 3 Complete
+            setTimeout(() => { setShowConfetti(false); setLessonStep(6); }, 2000);
         }
     }
 
-  }, [xVal, lessonStep, senseiMode]);
-
+  }, [xVal, lessonStep, senseiMode, is3DMode]); // added is3DMode to deps
 
   // 2D Drawing Effect
   useEffect(() => {
@@ -331,7 +324,7 @@ export default function CalculusPage() {
               <span className="inline-block transition-transform group-hover:-translate-x-1 mr-1">{'<<'}</span> SYSTEM ROOT
             </Link>
             <div className="flex justify-between items-center">
-                <h1 className="text-2xl font-bold tracking-tighter text-[#fff] font-mono">FLUX ENGINE <span className="text-[#0071e3] text-xs align-top">v2.0</span></h1>
+                <h1 className="text-2xl font-bold tracking-tighter text-[#fff] font-mono">FLUX ENGINE <span className="text-[#0071e3] text-xs align-top">v2.1</span></h1>
                 <div className="flex gap-2">
                     <button 
                         onClick={() => setIs3DMode(!is3DMode)}
@@ -401,6 +394,25 @@ export default function CalculusPage() {
                         </div>
                     )}
                     {lessonStep === 4 && (
+                        <div>
+                            <p className="text-xs font-bold text-[#fff] mb-2 uppercase">Obj: Dimensional Projection</p>
+                            <p className="text-[10px] text-[#aaa] mb-4 font-mono">
+                                MASS STABILIZED.<br/>
+                                <span className="text-[#fff]">OBJECTIVE 3:</span> Project 2D Slice into 3D Manifold.<br/>
+                                ACTION: Toggle "VIEW: 3D".
+                            </p>
+                            <button onClick={() => setLessonStep(5)} className="w-full bg-[#0071e3] hover:bg-[#0077ed] text-white text-xs font-bold py-2 tracking-widest transition-colors">INITIATE PROJECTION</button>
+                        </div>
+                    )}
+                     {lessonStep === 5 && (
+                        <div>
+                            <p className="text-xs font-bold text-[#fff] mb-2 uppercase">Awaiting Projection</p>
+                            <p className="text-[10px] text-[#aaa] mb-4 font-mono">
+                                INSTRUCTION: Toggle <span className="text-[#0071e3]">VIEW: 3D</span> button in header.
+                            </p>
+                        </div>
+                    )}
+                    {lessonStep === 6 && (
                         <div>
                             <p className="text-xs font-bold text-[#fff] mb-2 uppercase">SYNC COMPLETE</p>
                             <p className="text-[10px] text-[#aaa] mb-4 font-mono">

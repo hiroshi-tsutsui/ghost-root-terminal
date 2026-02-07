@@ -176,3 +176,13 @@ We are moving from a "Tool" to a "Platform".
   - **Narrative:** "Void Phase Analyzer" visual identity aligned with the rest of the suite.
   - **Mechanics:** Added "Resonance" state tracking and System Log.
   - **Goal:** Visual consistency across all 10 modules.
+- **[2026-02-08] Module Evolved: Calculus (Flux Engine Integration)**
+  - **Status:** Integrated with Global State (\`ProgressContext\`).
+  - **Narrative:** "Temporal Stabilizer" Protocol now awards XP and tracks Level completion.
+  - **Mechanics:** Added Level 3: "Dimensional Projection" (requires 3D View activation).
+  - **Impact:** User actions now permanently affect their Operator Profile.
+- **[2026-02-08] Module Evolved: Calculus (Flux Engine Integration)**
+  - **Status:** Integrated with Global State ().
+  - **Narrative:** "Temporal Stabilizer" Protocol now awards XP and tracks Level completion.
+  - **Mechanics:** Added Level 3: "Dimensional Projection" (requires 3D View activation).
+  - **Impact:** User actions now permanently affect their Operator Profile.
