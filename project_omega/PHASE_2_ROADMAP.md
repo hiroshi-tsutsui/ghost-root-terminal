@@ -129,3 +129,7 @@ We are moving from a "Tool" to a "Platform".
   - Mechanics: Lore fragments unlock *only* upon module mastery.
   - Content: 10 "Files" written in the "Operator" voice, explaining the metaphysical significance of each math concept.
   - Goal: Provide a tangible reward for mastery beyond just a badge.
+- **[2026-02-08] Module Evolved: Matrices (Fabric Weaver)**
+  - Narrative Layer Expanded: 4-Phase Protocol "Fabric Weaver".
+  - Mechanics: Rotation -> Expansion -> Shear -> Singularity Recall.
+  - Goal: Teach linear transformations via "Grid Stabilization" missions.
