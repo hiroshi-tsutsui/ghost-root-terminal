@@ -12,8 +12,8 @@ export default function Home() {
           <span className="text-xl font-semibold tracking-tight text-gray-900">Project Omega</span>
         </div>
         <nav className="hidden md:flex items-center space-x-6 text-sm font-medium text-gray-600">
-          <Link href="/" className="hover:text-blue-600 transition-colors">Home</Link>
-          <Link href="/about" className="hover:text-blue-600 transition-colors">About</Link>
+          <Link href="/" className="hover:text-blue-600 transition-colors">ホーム</Link>
+          <Link href="/about" className="hover:text-blue-600 transition-colors">概要</Link>
           <a href="https://github.com/hiroshi-tsutsui/math-viz-japan" target="_blank" rel="noopener noreferrer" className="hover:text-blue-600 transition-colors">GitHub</a>
         </nav>
       </header>
@@ -23,12 +23,13 @@ export default function Home() {
           
           {/* Hero Section */}
           <div className="space-y-6 animate-fade-in-up">
-            <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-gray-900">
-              Math, <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">Reimagined.</span>
+            <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-gray-900 leading-tight">
+              数式を、<br className="md:hidden" />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">体験する。</span>
             </h1>
             <p className="text-xl md:text-2xl text-gray-500 font-normal max-w-2xl mx-auto leading-relaxed">
-              Interactive visualizations for Japanese High School Mathematics.
-              <span className="block text-base text-gray-400 mt-2">見て、触れて、理解する。次世代の数学学習体験。</span>
+              日本の高校数学を再定義するインタラクティブ・プラットフォーム。<br/>
+              <span className="block text-base text-gray-400 mt-2">見て、触れて、本質を理解する。</span>
             </p>
           </div>
 
@@ -43,16 +44,16 @@ export default function Home() {
                   </svg>
                 </div>
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-semibold tracking-wide uppercase bg-blue-50 text-blue-600">
-                  Math I
+                  数学 I
                 </span>
               </div>
               <h2 className="text-2xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">二次関数</h2>
               <p className="text-gray-500 text-sm mb-6 leading-relaxed">
-                Parabola visualization, vertex control, and axis symmetry.
-                <br/>放物線の動きを直感的に理解。
+                放物線の形状や軸の移動をパラメータで制御。<br/>
+                頂点、軸の方程式をリアルタイムに可視化。
               </p>
               <div className="flex items-center text-blue-600 text-sm font-semibold opacity-0 transform translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all">
-                Open App <span className="ml-1">→</span>
+                アプリを開く <span className="ml-1">→</span>
               </div>
             </Link>
 
@@ -65,16 +66,16 @@ export default function Home() {
                   </svg>
                 </div>
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-semibold tracking-wide uppercase bg-purple-50 text-purple-600">
-                  Math B
+                  数学 B / C
                 </span>
               </div>
               <h2 className="text-2xl font-bold text-gray-900 mb-2 group-hover:text-purple-600 transition-colors">ベクトル</h2>
               <p className="text-gray-500 text-sm mb-6 leading-relaxed">
-                3D vector operations, dot/cross products, and spatial logic.
-                <br/>空間ベクトルの幾何学的意味。
+                空間ベクトルの内積・外積を3Dで操作。<br/>
+                幾何学的な意味を視覚的に理解できます。
               </p>
               <div className="flex items-center text-purple-600 text-sm font-semibold opacity-0 transform translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all">
-                 Open App <span className="ml-1">→</span>
+                 アプリを開く <span className="ml-1">→</span>
               </div>
             </Link>
 
@@ -87,16 +88,16 @@ export default function Home() {
                   </svg>
                 </div>
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-semibold tracking-wide uppercase bg-red-50 text-red-600">
-                  Math III
+                  数学 III
                 </span>
               </div>
               <h2 className="text-2xl font-bold text-gray-900 mb-2 group-hover:text-red-600 transition-colors">微分積分</h2>
               <p className="text-gray-500 text-sm mb-6 leading-relaxed">
-                Differentiation, integration, and limits in motion.
-                <br/>極限と変化の動的視覚化。
+                接線の傾きや面積の変化を動的に観察。<br/>
+                極限の概念をグラフで確認できます。
               </p>
               <div className="flex items-center text-red-600 text-sm font-semibold opacity-0 transform translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all">
-                 Open App <span className="ml-1">→</span>
+                 アプリを開く <span className="ml-1">→</span>
               </div>
             </Link>
 
@@ -109,16 +110,16 @@ export default function Home() {
                   </svg>
                 </div>
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-semibold tracking-wide uppercase bg-yellow-50 text-yellow-800">
-                  Math A
+                  数学 A
                 </span>
               </div>
               <h2 className="text-2xl font-bold text-gray-900 mb-2 group-hover:text-yellow-600 transition-colors">確率・統計</h2>
               <p className="text-gray-500 text-sm mb-6 leading-relaxed">
-                Distributions, combinations, and data analysis.
-                <br/>データの分布と確率の法則。
+                確率分布やデータの散らばりをシミュレーション。<br/>
+                正規分布、二項分布を直感的に学びます。
               </p>
               <div className="flex items-center text-yellow-600 text-sm font-semibold opacity-0 transform translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all">
-                 Open App <span className="ml-1">→</span>
+                 アプリを開く <span className="ml-1">→</span>
               </div>
             </Link>
 
