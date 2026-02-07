@@ -123,3 +123,9 @@ We are moving from a "Tool" to a "Platform".
   - Concept: Linear Transformations as "Space-Time Warping".
   - Mechanics: Match Target Grid (Red Ghost) using Matrix Input.
   - Gap Filled: Math C (Linear Algebra) + Interactive Transformation Visualization.
+- **[2026-02-08] Narrative Core: The System Codex (Lore Database)**
+  - Narrative Layer Injected: Global "System Logs" (`/codex`).
+  - UI Created: Terminal/Hacker Aesthetic (Black/Green).
+  - Mechanics: Lore fragments unlock *only* upon module mastery.
+  - Content: 10 "Files" written in the "Operator" voice, explaining the metaphysical significance of each math concept.
+  - Goal: Provide a tangible reward for mastery beyond just a badge.

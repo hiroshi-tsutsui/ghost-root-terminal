@@ -197,6 +197,12 @@ export default function Home() {
                 <div className="text-[10px] text-gray-400 text-center uppercase tracking-widest">
                     {masteredCount} / {totalModules} Protocols Stabilized
                 </div>
+                
+                <div className="mt-4 pt-4 border-t border-gray-100 flex justify-center">
+                  <Link href="/codex" className="text-[10px] font-bold text-gray-400 hover:text-blue-600 tracking-widest uppercase transition-colors flex items-center gap-1 group">
+                    View System Logs <span className="group-hover:translate-x-1 transition-transform">→</span>
+                  </Link>
+                </div>
             </div>
           </div>
 
