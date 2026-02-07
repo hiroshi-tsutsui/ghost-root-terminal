@@ -171,8 +171,8 @@ We are moving from a "Tool" to a "Platform".
   - **Aesthetic:** Dark Mode / Void Grid / Monospace.
   - **Features:** Real-time Rank Tracking, Protocol Status Lights, "System Root" footer.
   - **Impact:** Unified the visual language. The "Simulation" is now contiguous from entry to exit.
-- **[2026-02-08] Narrative Core: The Hub (Mission Control)**
-  - **Evolution:** Replaced "SaaS Dashboard" with "Operator Terminal" ().
-  - **Aesthetic:** Dark Mode / Void Grid / Monospace.
-  - **Features:** Real-time Rank Tracking, Protocol Status Lights, "System Root" footer.
-  - **Impact:** Unified the visual language. The "Simulation" is now contiguous from entry to exit.
+- **[2026-02-08] Refinement: Calculus (Visual Overhaul)**
+  - **Action:** Full conversion to "Void/Stark" aesthetic (Dark Mode, Monospace).
+  - **Narrative:** Removed localized text (Japanese) in favor of strict "Operator" terminology (English).
+  - **UI:** Replaced "Apple Clean" sidebar with "Mission Control" sidebar.
+  - **Goal:** Radical Clarity. No distractions. Just the Flux.

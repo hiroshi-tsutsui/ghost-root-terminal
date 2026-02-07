@@ -313,41 +313,41 @@ export default function CalculusPage() {
   const currentIntegral = integrate(funcStr, xVal);
 
   const presets = [
-    { label: "二次関数", val: "0.5*x^3 - 2*x" },
-    { label: "サイン", val: "sin(x)" },
-    { label: "コサイン", val: "cos(x)" },
-    { label: "指数", val: "exp(x)" },
-    { label: "対数", val: "log(x)" },
-    { label: "タンジェント", val: "tan(x)" }
+    { label: "PARABOLIC TRAJECTORY", val: "0.5*x^3 - 2*x" },
+    { label: "HARMONIC WAVE (SIN)", val: "sin(x)" },
+    { label: "PHASE SHIFT (COS)", val: "cos(x)" },
+    { label: "EXPONENTIAL RUNAWAY", val: "exp(x)" },
+    { label: "ENTROPY COMPRESSION", val: "log(x)" },
+    { label: "VERTICAL ASYMPTOTE", val: "tan(x)" }
   ];
 
   return (
-    <div className="flex flex-col md:flex-row h-screen bg-[#F5F5F7] text-[#1d1d1f] font-sans overflow-hidden">
+    <div className="flex flex-col md:flex-row h-screen bg-[#050505] text-[#e0e0e0] font-mono overflow-hidden">
       
        {/* Sidebar */}
-       <div className="w-full md:w-[400px] flex flex-col border-r border-white/20 bg-white/70 backdrop-blur-xl z-10 h-1/2 md:h-full overflow-y-auto shadow-[4px_0_24px_rgba(0,0,0,0.02)]">
-        <header className="p-6 pb-4 border-b border-gray-200/50 sticky top-0 bg-white/50 backdrop-blur-md z-20">
-            <Link href="/" className="group flex items-center text-sm font-medium text-[#86868b] hover:text-[#0071e3] transition-colors mb-3">
-              <span className="inline-block transition-transform group-hover:-translate-x-1 mr-1">←</span> ホームに戻る
+       <div className="w-full md:w-[400px] flex flex-col border-r border-[#333] bg-[#0a0a0a]/90 backdrop-blur-xl z-10 h-1/2 md:h-full overflow-y-auto shadow-[4px_0_24px_rgba(0,113,227,0.1)]">
+        <header className="p-6 pb-4 border-b border-[#333] sticky top-0 bg-[#0a0a0a]/90 backdrop-blur-md z-20">
+            <Link href="/" className="group flex items-center text-xs font-bold text-[#86868b] hover:text-[#0071e3] transition-colors mb-3 tracking-widest uppercase">
+              <span className="inline-block transition-transform group-hover:-translate-x-1 mr-1">{'<<'}</span> SYSTEM ROOT
             </Link>
             <div className="flex justify-between items-center">
-                <h1 className="text-3xl font-bold tracking-tight text-[#1d1d1f]">Calculus / The Flux Engine</h1>
+                <h1 className="text-2xl font-bold tracking-tighter text-[#fff] font-mono">FLUX ENGINE <span className="text-[#0071e3] text-xs align-top">v2.0</span></h1>
                 <div className="flex gap-2">
                     <button 
                         onClick={() => setIs3DMode(!is3DMode)}
-                        className={`px-3 py-1 rounded-full text-xs font-bold transition-all ${is3DMode ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-500'}`}
+                        className={`px-3 py-1 rounded-sm text-[10px] font-bold tracking-widest border transition-all ${is3DMode ? 'bg-[#0071e3]/20 border-[#0071e3] text-[#0071e3]' : 'border-[#333] text-[#666] hover:border-[#666]'}`}
                     >
-                        {is3DMode ? '3D View' : '2D View'}
+                        {is3DMode ? 'VIEW: 3D' : 'VIEW: 2D'}
                     </button>
                     <button 
                         onClick={() => { setSenseiMode(!senseiMode); setLessonStep(0); }}
-                        className={`px-3 py-1 rounded-full text-xs font-bold transition-all ${senseiMode ? 'bg-[#0071e3] text-white' : 'bg-gray-200 text-gray-500'}`}
+                        className={`px-3 py-1 rounded-sm text-[10px] font-bold tracking-widest border transition-all ${senseiMode ? 'bg-[#0071e3] border-[#0071e3] text-white' : 'border-[#333] text-[#666] hover:border-[#666]'}`}
                     >
-                        {senseiMode ? 'SYNC MODE' : 'Initiate Sync'}
+                        {senseiMode ? 'SYNC: ACTIVE' : 'INIT SYNC'}
                     </button>
                 </div>
             </div>
-            <p className="text-[#86868b] text-sm mt-1 font-medium">OMEGA SIMULATION // TEMPORAL STABILIZER</p>
+            <p className="text-[#666] text-[10px] mt-2 font-mono tracking-[0.2em] uppercase">Temporal Stabilization Protocol</p>
         </header>
 
         <div className="flex-1 overflow-y-auto p-6 space-y-8 pb-32">
@@ -356,60 +356,58 @@ export default function CalculusPage() {
            <AnimatePresence>
             {senseiMode && (
                 <motion.div 
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    className="apple-card p-5 border-2 border-[#0071e3] bg-[#0071e3]/5 relative overflow-hidden"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="p-5 border border-[#0071e3] bg-[#0071e3]/10 relative overflow-hidden mb-4"
                 >
-                    {/* ... (Existing Sensei Content) ... */}
-                    <div className="absolute top-0 right-0 p-2 opacity-10 text-6xl">⚛️</div>
-                    <h3 className="font-bold text-[#0071e3] mb-2 tracking-widest uppercase text-xs">PROTOCOL: FLUX_SYNC</h3>
+                    <div className="absolute top-0 right-0 p-2 opacity-20 text-[#0071e3] text-4xl">⚛️</div>
+                    <h3 className="font-bold text-[#0071e3] mb-4 tracking-[0.2em] uppercase text-[10px] border-b border-[#0071e3]/30 pb-2">PROTOCOL: FLUX_SYNC</h3>
                     
                     {lessonStep === 0 && (
                         <div>
-                            <p className="text-sm mb-4">Operator, the timeline is unstable. We must synchronize the Flux Engine. First objective: <span className="font-bold">Predict the turning point.</span></p>
-                            <button onClick={() => setLessonStep(1)} className="btn-apple-primary w-full">INITIATE SEQUENCE</button>
+                            <p className="text-xs mb-4 text-[#ccc]">OPERATOR: Timeline instability detected. Flux Engine requires manual synchronization. <br/><br/><span className="text-[#fff]">OBJECTIVE 1:</span> Predict the turning point.</p>
+                            <button onClick={() => setLessonStep(1)} className="w-full bg-[#0071e3] hover:bg-[#0077ed] text-white text-xs font-bold py-2 tracking-widest transition-colors">INITIATE SEQUENCE</button>
                         </div>
                     )}
                     {lessonStep === 1 && (
                         <div>
-                            <p className="text-sm font-bold mb-1">Objective: Stabilize the Tangent</p>
-                            <p className="text-xs text-gray-600 mb-4">
-                                Function <span className="font-mono">f(x) = x^2 - 2</span> detected.<br/>
-                                Adjust the timeline (slider) until the <span className="text-[#ff3b30] font-bold">Predictive Tangent</span> is perfectly horizontal (Rate of Change = 0).
+                            <p className="text-xs font-bold text-[#fff] mb-2 uppercase">Obj: Stabilize Tangent Vector</p>
+                            <p className="text-[10px] text-[#aaa] mb-4 font-mono">
+                                TARGET: <span className="text-[#fff]">f(x) = x^2 - 2</span><br/>
+                                INSTRUCTION: Adjust <span className="text-[#0071e3]">Temporal Coordinate (Slider)</span> until Rate of Change = 0.
                             </p>
-                            <div className="text-xs bg-white/50 p-2 rounded font-mono">CURRENT FLUX: {currentSlope.toFixed(3)}</div>
+                            <div className="text-[10px] bg-[#000]/50 border border-[#333] p-2 font-mono text-[#0071e3]">CURRENT FLUX: {currentSlope.toFixed(3)}</div>
                         </div>
                     )}
                      {lessonStep === 2 && (
                         <div>
-                            <p className="text-sm font-bold mb-1">Equilibrium Achieved. 🎉</p>
-                            <p className="text-xs text-gray-600 mb-4">
-                                The turning point is secured. This is a local extremum.<br/>
-                                Next objective: <span className="font-bold">Accumulate Reality Mass.</span>
+                            <p className="text-xs font-bold text-[#fff] mb-2 uppercase">Equilibrium Achieved</p>
+                            <p className="text-[10px] text-[#aaa] mb-4 font-mono">
+                                Local extremum secured.<br/>
+                                <span className="text-[#fff]">OBJECTIVE 2:</span> Accumulate Reality Mass.
                             </p>
-                            <button onClick={() => setLessonStep(3)} className="btn-apple-primary w-full">PROCEED</button>
+                            <button onClick={() => setLessonStep(3)} className="w-full bg-[#0071e3] hover:bg-[#0077ed] text-white text-xs font-bold py-2 tracking-widest transition-colors">PROCEED</button>
                         </div>
                     )}
                     {lessonStep === 3 && (
                         <div>
-                            <p className="text-sm font-bold mb-1">Objective: Reality Accumulation</p>
-                            <p className="text-xs text-gray-600 mb-4">
-                                Function <span className="font-mono">f(x) = 2</span> (Constant Flow).<br/>
-                                Expand the timeline until the <span className="text-[#0071e3] font-bold">Accumulated Area</span> reaches precisely 4.0 units.
+                            <p className="text-xs font-bold text-[#fff] mb-2 uppercase">Obj: Mass Accumulation</p>
+                            <p className="text-[10px] text-[#aaa] mb-4 font-mono">
+                                TARGET: <span className="text-[#fff]">f(x) = 2</span> (Constant Flow)<br/>
+                                INSTRUCTION: Expand timeline until <span className="text-[#0071e3]">Accumulated Mass (Area)</span> = 4.00.
                             </p>
-                            <div className="text-xs bg-white/50 p-2 rounded font-mono">TOTAL MASS: {currentIntegral.toFixed(3)}</div>
+                            <div className="text-[10px] bg-[#000]/50 border border-[#333] p-2 font-mono text-[#0071e3]">TOTAL MASS: {currentIntegral.toFixed(3)}</div>
                         </div>
                     )}
                     {lessonStep === 4 && (
                         <div>
-                            <p className="text-sm font-bold mb-1">SYNC COMPLETE 🎓</p>
-                            <p className="text-xs text-gray-600 mb-4">
-                                Excellent work, Operator. You have mastered the Flux.<br/>
-                                "The First Derivative is not a number; it is a prophecy."<br/>
-                                The timeline is stable.
+                            <p className="text-xs font-bold text-[#fff] mb-2 uppercase">SYNC COMPLETE</p>
+                            <p className="text-[10px] text-[#aaa] mb-4 font-mono">
+                                Flux Engine Stabilized.<br/>
+                                "The First Derivative is not a number; it is a prophecy."
                             </p>
-                            <button onClick={() => setSenseiMode(false)} className="btn-apple-secondary w-full text-xs">RETURN TO IDLE</button>
+                            <button onClick={() => setSenseiMode(false)} className="w-full border border-[#333] hover:bg-[#333] text-[#ccc] text-xs font-bold py-2 tracking-widest transition-colors">RETURN TO IDLE</button>
                         </div>
                     )}
                 </motion.div>
@@ -417,25 +415,25 @@ export default function CalculusPage() {
            </AnimatePresence>
 
            {/* Function Input */}
-           <div className={`apple-card p-5 fade-in-up delay-100 ${senseiMode ? 'opacity-50 pointer-events-none' : ''}`}>
-             <label className="text-xs font-semibold text-[#86868b] uppercase tracking-wide mb-3 block">関数 f(x)</label>
+           <div className={`p-5 border border-[#333] bg-[#111] ${senseiMode ? 'opacity-20 pointer-events-none' : ''}`}>
+             <label className="text-[10px] font-bold text-[#666] uppercase tracking-widest mb-3 block">Input Signal f(x)</label>
              <div className="relative mb-4">
                 <input 
                     type="text" 
                     value={funcStr} 
                     onChange={(e) => setFuncStr(e.target.value)}
-                    className="input-apple text-lg font-mono tracking-wide"
+                    className="w-full bg-[#000] border border-[#333] text-[#fff] p-2 font-mono text-sm focus:border-[#0071e3] outline-none transition-colors"
                     placeholder="e.g. sin(x) + x^2"
                 />
              </div>
-             {error && <p className="text-[#ff3b30] text-xs flex items-center mb-3">⚠️ {error}</p>}
+             {error && <p className="text-[#ff3b30] text-[10px] flex items-center mb-3 font-mono">⚠️ {error}</p>}
              
              <div className="flex flex-wrap gap-2">
                 {presets.map((p) => (
                     <button 
                         key={p.label}
                         onClick={() => setFuncStr(p.val)}
-                        className="px-3 py-1.5 text-[11px] font-medium bg-[#f5f5f7] hover:bg-[#e8e8ed] text-[#1d1d1f] rounded-full transition-colors active:scale-95"
+                        className="px-2 py-1 text-[9px] font-mono border border-[#333] hover:border-[#666] text-[#888] hover:text-[#fff] transition-all uppercase"
                     >
                         {p.label}
                     </button>
@@ -444,17 +442,17 @@ export default function CalculusPage() {
            </div>
 
            {/* Slider Control */}
-           <div className="apple-card p-5 fade-in-up delay-200">
+           <div className="p-5 border border-[#333] bg-[#111]">
              <div className="flex justify-between items-end mb-4">
-                <label className="text-sm font-semibold text-[#1d1d1f]">x の値</label>
-                <span className="font-mono text-xl font-bold text-[#0071e3]">{xVal.toFixed(2)}</span>
+                <label className="text-[10px] font-bold text-[#666] uppercase tracking-widest">Temporal Coordinate (t)</label>
+                <span className="font-mono text-lg font-bold text-[#0071e3]">{xVal.toFixed(2)}</span>
              </div>
              <input 
                type="range" min="-4" max="4" step="0.01" 
                value={xVal} onChange={(e) => setXVal(parseFloat(e.target.value))}
-               className="w-full"
+               className="w-full h-1 bg-[#333] rounded-lg appearance-none cursor-pointer accent-[#0071e3]"
              />
-             <div className="flex justify-between text-[10px] text-[#86868b] font-mono mt-2">
+             <div className="flex justify-between text-[9px] text-[#444] font-mono mt-2">
                 <span>-4.0</span>
                 <span>0.0</span>
                 <span>4.0</span>
@@ -462,58 +460,60 @@ export default function CalculusPage() {
            </div>
 
            {/* Analysis Panel */}
-           <div className="apple-card p-5 space-y-4 fade-in-up delay-300">
-             <h3 className="text-xs font-bold text-[#86868b] uppercase tracking-wider border-b border-gray-100 pb-3">TEMPORAL COORDINATE: T = {xVal.toFixed(2)}</h3>
+           <div className="p-5 border border-[#333] bg-[#111] space-y-4">
+             <h3 className="text-[10px] font-bold text-[#666] uppercase tracking-widest border-b border-[#333] pb-2">TELEMETRY: T = {xVal.toFixed(2)}</h3>
              
              <div className="flex justify-between items-center group">
-                <span className="text-sm text-[#1d1d1f] font-medium">Position f(t)</span>
-                <span className="font-mono text-base text-[#1d1d1f]">{isNaN(currentY) ? '-' : currentY.toFixed(3)}</span>
+                <span className="text-xs text-[#aaa] font-mono uppercase">Position f(t)</span>
+                <span className="font-mono text-sm text-[#fff]">{isNaN(currentY) ? '-' : currentY.toFixed(3)}</span>
              </div>
              
              <div className="flex justify-between items-center group">
                 <div className="flex items-center">
-                    <span className="w-2 h-2 rounded-full bg-[#ff3b30] mr-2 shadow-sm group-hover:scale-125 transition-transform"></span>
-                    <span className="text-sm text-[#1d1d1f] font-medium">Velocity (Flux)</span>
+                    <span className="w-1.5 h-1.5 bg-[#ff3b30] mr-2"></span>
+                    <span className="text-xs text-[#aaa] font-mono uppercase">Flux (Derivative)</span>
                 </div>
-                <span className="font-mono text-base text-[#ff3b30]">{isNaN(currentSlope) ? '-' : currentSlope.toFixed(3)}</span>
+                <span className="font-mono text-sm text-[#ff3b30]">{isNaN(currentSlope) ? '-' : currentSlope.toFixed(3)}</span>
              </div>
 
              <div className="flex justify-between items-center group">
                 <div className="flex items-center">
-                    <span className="w-2 h-2 rounded-full bg-[#0071e3] mr-2 shadow-sm group-hover:scale-125 transition-transform"></span>
-                    <span className="text-sm text-[#1d1d1f] font-medium">Accumulated Mass</span>
+                    <span className="w-1.5 h-1.5 bg-[#0071e3] mr-2"></span>
+                    <span className="text-xs text-[#aaa] font-mono uppercase">Accumulated Mass</span>
                 </div>
-                <span className="font-mono text-base text-[#0071e3]">{isNaN(currentIntegral) ? '-' : currentIntegral.toFixed(3)}</span>
+                <span className="font-mono text-sm text-[#0071e3]">{isNaN(currentIntegral) ? '-' : currentIntegral.toFixed(3)}</span>
              </div>
            </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex items-center justify-center bg-[#F5F5F7] p-8 overflow-hidden relative">
-        <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-50"></div>
+      <div className="flex-1 flex items-center justify-center bg-[#050505] p-8 overflow-hidden relative">
+        <div className="absolute inset-0 bg-[radial-gradient(#1a1a1a_1px,transparent_1px)] [background-size:20px_20px] opacity-20"></div>
         {showConfetti && (
              <div className="absolute inset-0 pointer-events-none z-50 flex items-center justify-center">
-                 <div className="text-6xl animate-bounce">🎉</div>
+                 <div className="text-xs font-mono text-[#0071e3] border border-[#0071e3] p-4 bg-[#000]/80">
+                    >> STABILIZATION CONFIRMED
+                 </div>
              </div>
         )}
         
         {is3DMode ? (
-             <div className="w-full h-full shadow-2xl rounded-xl overflow-hidden relative bg-black/5">
+             <div className="w-full h-full border border-[#333] rounded-sm overflow-hidden relative bg-[#000]">
                 <Canvas camera={{ position: [5, 5, 5], fov: 50 }}>
                      <ambientLight intensity={0.5} />
                      <directionalLight position={[10, 10, 5]} intensity={1} />
-                     <Grid infiniteGrid fadeDistance={50} sectionColor="#0071e3" cellColor="#ccc" />
+                     <Grid infiniteGrid fadeDistance={50} sectionColor="#0071e3" cellColor="#333" />
                      <RevolutionSurface funcStr={funcStr} xVal={xVal} />
                      <OrbitControls makeDefault />
                 </Canvas>
-                <div className="absolute bottom-4 left-4 bg-white/80 backdrop-blur p-2 rounded text-xs font-bold text-gray-500">
-                    回転体の体積 (Volume of Revolution)
+                <div className="absolute bottom-4 left-4 bg-[#000]/80 border border-[#333] p-2 text-[10px] font-bold text-[#666] uppercase tracking-widest">
+                    Volume of Revolution
                 </div>
              </div>
         ) : (
-             <div className="apple-card p-2 shadow-2xl z-10 bg-white">
-                <canvas ref={canvasRef} width={800} height={600} className="rounded-xl w-full h-auto max-h-[85vh] object-contain bg-white" />
+             <div className="border border-[#333] p-1 shadow-2xl z-10 bg-[#0a0a0a]">
+                <canvas ref={canvasRef} width={800} height={600} className="w-full h-auto max-h-[85vh] object-contain bg-[#0a0a0a]" />
              </div>
         )}
       </div>
