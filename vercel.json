@@ -1,5 +1,9 @@
 {
-  "buildCommand": "cd project_omega && npm run build",
-  "outputDirectory": "project_omega/.next",
-  "framework": "nextjs"
+  "version": 2,
+  "builds": [
+    {
+      "src": "project_omega/package.json",
+      "use": "@vercel/next"
+    }
+  ]
 }
