@@ -1,149 +1,77 @@
-"use client";
-
-import { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
 
 export default function Home() {
-  const [a, setA] = useState(1);
-  const [b, setB] = useState(0);
-  const [c, setC] = useState(0);
-  
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    const width = canvas.width;
-    const height = canvas.height;
-    
-    // Clear canvas
-    ctx.clearRect(0, 0, width, height);
-    
-    // Draw Grid
-    ctx.strokeStyle = '#ddd';
-    ctx.lineWidth = 1;
-    
-    const centerX = width / 2;
-    const centerY = height / 2;
-    const scale = 20; // pixels per unit
-
-    // Grid lines
-    for (let x = 0; x <= width; x += scale) {
-      ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, height);
-      ctx.stroke();
-    }
-    for (let y = 0; y <= height; y += scale) {
-      ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(width, y);
-      ctx.stroke();
-    }
-
-    // Axes
-    ctx.strokeStyle = '#333';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(0, centerY);
-    ctx.lineTo(width, centerY); // X axis
-    ctx.moveTo(centerX, 0);
-    ctx.lineTo(centerX, height); // Y axis
-    ctx.stroke();
-
-    // Plot Parabola
-    ctx.strokeStyle = 'blue';
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-
-    for (let pixelX = 0; pixelX < width; pixelX++) {
-      // Convert pixel x to graph x
-      const x = (pixelX - centerX) / scale;
-      
-      // Calculate y
-      const y = a * x * x + b * x + c;
-      
-      // Convert graph y to pixel y (inverted y axis)
-      const pixelY = centerY - (y * scale);
-      
-      if (pixelX === 0) {
-        ctx.moveTo(pixelX, pixelY);
-      } else {
-        ctx.lineTo(pixelX, pixelY);
-      }
-    }
-    ctx.stroke();
-
-  }, [a, b, c]);
-
-  const vertexX = a !== 0 ? -b / (2 * a) : 0;
-  const vertexY = a * vertexX * vertexX + b * vertexX + c;
-
   return (
-    <main className="flex min-h-screen flex-col items-center p-24 bg-white text-black font-sans">
-      <h1 className="text-4xl font-bold mb-2">Project Omega: Niji Kansu</h1>
-      <h2 className="text-2xl text-gray-600 mb-8">二次関数 (Quadratic Functions)</h2>
-      
-      <div className="flex flex-col md:flex-row gap-8 w-full max-w-4xl items-start justify-center">
-        
-        <div className="flex flex-col gap-6 w-full max-w-xs bg-gray-50 p-6 rounded-xl shadow-sm">
-          <div className="space-y-2">
-            <div className="flex justify-between">
-              <label className="font-bold">a (Shape/Direction)</label>
-              <span className="font-mono">{a.toFixed(1)}</span>
-            </div>
-            <input 
-              type="range" min="-5" max="5" step="0.1" 
-              value={a} onChange={(e) => setA(parseFloat(e.target.value))}
-              className="w-full accent-blue-600"
-            />
-          </div>
+    <main className="flex min-h-screen flex-col items-center justify-center p-8 bg-gray-50 text-black font-sans">
+      <div className="max-w-5xl w-full text-center space-y-8">
+        <h1 className="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
+          Project Omega
+        </h1>
+        <p className="text-xl text-gray-600">
+          Interactive Japanese High School Mathematics Visualization Platform
+          <br/>
+          <span className="text-sm text-gray-500">（日本の高校数学可視化プロジェクト）</span>
+        </p>
 
-          <div className="space-y-2">
-            <div className="flex justify-between">
-              <label className="font-bold">b (Horizontal Slope)</label>
-              <span className="font-mono">{b.toFixed(1)}</span>
-            </div>
-            <input 
-              type="range" min="-10" max="10" step="0.1" 
-              value={b} onChange={(e) => setB(parseFloat(e.target.value))}
-              className="w-full accent-green-600"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <div className="flex justify-between">
-              <label className="font-bold">c (Vertical Intercept)</label>
-              <span className="font-mono">{c.toFixed(1)}</span>
-            </div>
-            <input 
-              type="range" min="-10" max="10" step="0.1" 
-              value={c} onChange={(e) => setC(parseFloat(e.target.value))}
-              className="w-full accent-red-600"
-            />
-          </div>
-
-          <div className="mt-4 p-4 bg-white rounded border border-gray-200">
-            <p className="font-mono text-lg font-bold text-center">
-              y = {a === 0 ? '' : `${a}x²`} {b >= 0 ? '+' : ''}{b}x {c >= 0 ? '+' : ''}{c}
-            </p>
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-12 text-left">
           
-          <div className="text-sm text-gray-500">
-            <p><strong>Vertex (頂点):</strong> ({vertexX.toFixed(2)}, {vertexY.toFixed(2)})</p>
-            <p><strong>Axis of Symmetry:</strong> x = {vertexX.toFixed(2)}</p>
-          </div>
-        </div>
+          {/* Math I: Quadratics */}
+          <Link href="/quadratics" className="group block p-6 bg-white rounded-xl shadow-sm border hover:shadow-md transition hover:border-blue-400">
+            <div className="flex justify-between items-center mb-2">
+              <h2 className="text-2xl font-bold group-hover:text-blue-600">二次関数</h2>
+              <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Math I</span>
+            </div>
+            <p className="text-gray-600 mb-4">Quadratic Functions</p>
+            <ul className="text-sm text-gray-500 list-disc list-inside">
+              <li>Parabola Visualization</li>
+              <li>Vertex & Axis of Symmetry</li>
+              <li>Parameter (a, b, c) controls</li>
+            </ul>
+          </Link>
 
-        <div className="border border-gray-300 shadow-lg rounded-lg overflow-hidden bg-white">
-          <canvas 
-            ref={canvasRef} 
-            width={600} 
-            height={600} 
-            className="block"
-          />
+          {/* Math B: Vectors */}
+          <Link href="/vectors" className="group block p-6 bg-white rounded-xl shadow-sm border hover:shadow-md transition hover:border-purple-400 relative overflow-hidden">
+            <div className="absolute top-0 right-0 bg-green-500 text-white text-xs px-2 py-1 rounded-bl">NEW</div>
+            <div className="flex justify-between items-center mb-2">
+              <h2 className="text-2xl font-bold group-hover:text-purple-600">ベクトル</h2>
+              <span className="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">Math B</span>
+            </div>
+            <p className="text-gray-600 mb-4">Vectors (Spatial)</p>
+            <ul className="text-sm text-gray-500 list-disc list-inside">
+              <li>3D Vector Visualization</li>
+              <li>Dot Product (内積)</li>
+              <li>Cross Product (外積)</li>
+            </ul>
+          </Link>
+
+          {/* Math III: Calculus */}
+          <Link href="/calculus" className="group block p-6 bg-white rounded-xl shadow-sm border hover:shadow-md transition hover:border-red-400 opacity-90">
+             <div className="flex justify-between items-center mb-2">
+              <h2 className="text-2xl font-bold group-hover:text-red-600">微積分</h2>
+              <span className="bg-red-100 text-red-800 text-xs px-2 py-1 rounded">Math III</span>
+            </div>
+            <p className="text-gray-600 mb-4">Calculus</p>
+             <ul className="text-sm text-gray-500 list-disc list-inside">
+              <li>Differentiation (Tangent lines)</li>
+              <li>Integration (Area)</li>
+              <li>Limits</li>
+            </ul>
+          </Link>
+
+          {/* Math A: Probability */}
+          <Link href="/probability" className="group block p-6 bg-white rounded-xl shadow-sm border hover:shadow-md transition hover:border-yellow-400 opacity-90">
+             <div className="flex justify-between items-center mb-2">
+              <h2 className="text-2xl font-bold group-hover:text-yellow-600">確率・統計</h2>
+              <span className="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">Math A/B</span>
+            </div>
+            <p className="text-gray-600 mb-4">Probability & Statistics</p>
+             <ul className="text-sm text-gray-500 list-disc list-inside">
+              <li>Distributions (Normal, Binomial)</li>
+              <li>Combinations & Permutations</li>
+              <li>Data Visualization</li>
+            </ul>
+          </Link>
+
         </div>
       </div>
     </main>
