@@ -181,8 +181,8 @@ We are moving from a "Tool" to a "Platform".
   - **Narrative:** "Temporal Stabilizer" Protocol now awards XP and tracks Level completion.
   - **Mechanics:** Added Level 3: "Dimensional Projection" (requires 3D View activation).
   - **Impact:** User actions now permanently affect their Operator Profile.
-- **[2026-02-08] Module Evolved: Calculus (Flux Engine Integration)**
-  - **Status:** Integrated with Global State ().
-  - **Narrative:** "Temporal Stabilizer" Protocol now awards XP and tracks Level completion.
-  - **Mechanics:** Added Level 3: "Dimensional Projection" (requires 3D View activation).
-  - **Impact:** User actions now permanently affect their Operator Profile.
+- **[2026-02-08] Module Evolved: Logs (Entropy Compressor)**
+  - **Narrative Formalized:** Created `NARRATIVE.md` defining "Protocol: Entropy Compressor".
+  - **UI Updated:** Integrated "System Logs", Glitch Effects for overload, and Level tracking.
+  - **Mechanics:** Level 1 (Witness Growth) -> Level 2 (Compression Lock).
+  - **Goal:** Visually demonstrate the necessity of Logarithmic Scales for infinite data.
