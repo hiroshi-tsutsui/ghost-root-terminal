@@ -150,6 +150,36 @@ export default function QuadraticsPage() {
     ctx.moveTo(centerX, 0); ctx.lineTo(centerX, height);
     ctx.stroke();
 
+    // Completing Square Visualizer (Square area)
+    if (a > 0) { // Only show for positive a for simplicity
+        const p = -b / (2 * a);
+        const q = -(b * b - 4 * a * c) / (4 * a);
+        
+        // Draw square centered at vertex x, on axis y=0?
+        // Or just draw the geometric square (x + b/2a)^2?
+        // Let's visualize the term (x-p)^2 as a square.
+        // We pick a specific x to show the square at?
+        // Let's just draw the "Vertex Form" construction lines.
+        
+        // Draw axis of symmetry
+        ctx.strokeStyle = '#34c759'; // Green
+        ctx.setLineDash([5, 5]);
+        ctx.beginPath();
+        ctx.moveTo(centerX + p * scale, 0);
+        ctx.lineTo(centerX + p * scale, height);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        
+        // Draw q line (min/max value)
+        ctx.strokeStyle = '#ff3b30'; // Red
+        ctx.setLineDash([5, 5]);
+        ctx.beginPath();
+        ctx.moveTo(0, centerY - q * scale);
+        ctx.lineTo(width, centerY - q * scale);
+        ctx.stroke();
+        ctx.setLineDash([]);
+    }
+
     // Parabola - Apple Blue
     ctx.strokeStyle = '#0071e3';
     ctx.lineWidth = 4;
@@ -207,6 +237,12 @@ export default function QuadraticsPage() {
 
   const vertexX = a !== 0 ? -b / (2 * a) : 0;
   const vertexY = a * vertexX * vertexX + b * vertexX + c;
+
+  // Completing the Square Calculation
+  const p = -b / (2 * a);
+  const q = c - (b * b) / (4 * a);
+  const pStr = p >= 0 ? `- ${p.toFixed(2)}` : `+ ${Math.abs(p).toFixed(2)}`;
+  const qStr = q >= 0 ? `+ ${q.toFixed(2)}` : `- ${Math.abs(q).toFixed(2)}`;
 
   return (
     <div className="flex flex-col min-h-screen bg-[#F5F5F7] text-[#1d1d1f] font-sans">
@@ -273,10 +309,18 @@ export default function QuadraticsPage() {
         {/* Controls Panel */}
         <div className="w-full lg:w-1/3 space-y-6">
             <div className={`apple-card p-6 fade-in-up delay-100 transition-opacity ${isSenseiMode && level === 1 && 'ring-2 ring-blue-500'}`}>
-                <div className="mb-8 p-6 bg-[#F5F5F7] rounded-2xl text-center border border-black/[0.03]">
+                <div className="mb-8 p-6 bg-[#F5F5F7] rounded-2xl text-center border border-black/[0.03] space-y-4">
                     <p className="font-mono text-xl font-bold text-[#1d1d1f] tracking-wider">
                     y = <span className="text-[#0071e3]">{a === 0 ? '' : `${a}x²`}</span> {b >= 0 ? '+' : ''} <span className="text-[#34c759]">{b}x</span> {c >= 0 ? '+' : ''} <span className="text-[#ff3b30]">{c}</span>
                     </p>
+                    {a !== 0 && (
+                        <div className="pt-4 border-t border-gray-200">
+                             <p className="text-xs text-[#86868b] uppercase tracking-wide mb-1">平方完成 (Vertex Form)</p>
+                             <p className="font-mono text-lg font-bold text-[#86868b]">
+                                y = {a}(x {pStr})² {qStr}
+                             </p>
+                        </div>
+                    )}
                 </div>
 
                 <div className="space-y-8">

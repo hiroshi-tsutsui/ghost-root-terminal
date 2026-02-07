@@ -266,6 +266,46 @@ export default function ProbabilityPage() {
             <BallsInBins />
         </section>
 
+        {/* Conditional Probability (Venn Diagram) */}
+        <section className="apple-card p-6 fade-in-up delay-300">
+            <h3 className="text-xl font-bold text-[#1d1d1f] mb-4">条件付き確率 (Conditional Probability)</h3>
+            <div className="flex flex-col md:flex-row gap-8">
+                <div className="w-full md:w-1/2 flex items-center justify-center bg-white p-4 rounded-xl border border-dashed border-gray-200 min-h-[300px]">
+                    {/* SVG Venn Diagram */}
+                    <svg viewBox="0 0 400 300" className="w-full h-full max-w-[400px]">
+                        {/* Circle A */}
+                        <circle cx="150" cy="150" r="100" fill="rgba(0, 113, 227, 0.2)" stroke="#0071e3" strokeWidth="2" />
+                        <text x="100" y="150" fill="#0071e3" fontWeight="bold">A</text>
+                        
+                        {/* Circle B */}
+                        <circle cx="250" cy="150" r="100" fill="rgba(52, 199, 89, 0.2)" stroke="#34c759" strokeWidth="2" />
+                        <text x="300" y="150" fill="#34c759" fontWeight="bold">B</text>
+                        
+                        {/* Intersection Label */}
+                        <text x="200" y="150" fill="#1d1d1f" fontSize="12" textAnchor="middle">A∩B</text>
+                    </svg>
+                </div>
+                <div className="w-full md:w-1/2 space-y-4">
+                    <p className="text-sm text-gray-600">
+                        事象Bが起こったとき、事象Aが起こる確率 P(A|B) は、<br/>
+                        <span className="font-mono bg-gray-100 p-1 rounded">P(A|B) = P(A∩B) / P(B)</span> で求められます。
+                    </p>
+                    <div className="bg-green-50 p-4 rounded-xl border border-green-100">
+                        <p className="text-xs font-bold text-green-800 uppercase mb-2">P(B) - Denominator</p>
+                        <input type="range" className="w-full accent-green-500" />
+                    </div>
+                    <div className="bg-blue-50 p-4 rounded-xl border border-blue-100">
+                        <p className="text-xs font-bold text-blue-800 uppercase mb-2">P(A∩B) - Numerator</p>
+                        <input type="range" className="w-full accent-blue-500" />
+                    </div>
+                     <div className="text-center p-4 bg-gray-50 rounded-xl">
+                        <span className="text-sm font-bold text-gray-500 block mb-1">Result: P(A|B)</span>
+                        <span className="text-3xl font-mono font-bold text-[#1d1d1f]">0.00</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
       </main>
     </div>
   );

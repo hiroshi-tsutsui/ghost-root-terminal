@@ -16,17 +16,27 @@ Long-term memory for Natasha.
 
 ## Key Projects
 - **dot-sfty-core-analytics (Following Distance)**:
-  - **V11 (Logic Fix)**: `v11-depth-fusion-fix-002` **SUCCEEDED**.
-  - **V11 (Render)**: `v11-depth-fusion-render-001` **RUNNING**. (Green/Red Overlays).
-  - **Goal**: Using Depth Fusion (Geometric vs. Depth Anything) to filter False Positives.
+  - **V11 (Ensemble)**: **SUCCEEDED** (701 Videos). Downloaded.
+  - **V12 (Depth Only)**: **SUCCEEDED** (701 Videos). Downloaded.
+  - **V13 (Real Depth Lite)**: **RUNNING** (270 Videos). 1 Task, 3 FPS.
+  - **Status**: V11/V12 suspected mock data. V13 is the validation run.
+
 - **Project Omega (Math App)**:
   - **Status**: Live at `https://projectomega-tau.vercel.app`.
-  - **Next Step**: Expand scope from Quadratic Functions to Full Japanese HS Syllabus (Vectors, Calc, Prob).
-- **Educational / Viral Apps**:
-  - **Memory Palace v1.0**: Live.
-  - **Maze Creator v2.0**: Live.
-  - **Sorting Viz v2.0**: Live.
+  - **Version**: v4.0 (In Progress).
+  - **Mandate**: **"A Real Product"**. Not a demo.
+  - **Scope**: 9 Modules (Quadratics, Vectors, Calculus, Probability + Trig, Complex, Sequences, Logs, Data).
+  - **Design**: "Radical Clarity" / Apple Style. Full Japanese.
+  - **Active Agent**: **Tony** (The Architect). Instruction: **Infinite Improvement Loop**.
 
 ## Capabilities
-- **Voice**: Jarvis (Ears-Only Mode). Piping audio to Natasha for processing.
+- **Voice**: Jarvis (Ears-Only Mode).
 - **OS**: Widow's Bite (AppleScript).
+- **Vision**: OpenClaw Browser Relay (Option A). Confirmed working.
+- **Node**: Paired "MacBook Pro" (edc86...) but headless mode lacks screen record. User must launch Desktop App for full FRIDAY vision.
+
+## Avengers Protocol
+- **Natasha**: Main Agent.
+- **Tony**: Engineer (Director/Architect).
+- **Wanda**: Designer (UI/UX).
+- **Hawkeye**: Overseer (Deployment Watch).

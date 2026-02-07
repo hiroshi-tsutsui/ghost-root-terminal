@@ -184,6 +184,68 @@ export default function CalculusPage() {
     const pX = centerX + xVal * scale;
     const pY = centerY - yVal * scale;
     
+    // Volume of Revolution (Visual Hint)
+    // Draw the reflected curve and ellipses to suggest 3D solid
+    ctx.strokeStyle = 'rgba(0, 113, 227, 0.3)';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([5, 5]);
+    ctx.beginPath();
+    // Draw reflected curve
+    let firstRef = true;
+    for (let pixelX = 0; pixelX < width; pixelX++) {
+      const x = (pixelX - centerX) / scale;
+      const y = -evaluateFunc(funcStr, x); // Reflected Y
+      const pixelY = centerY - (y * scale);
+      if (pixelY < -height || pixelY > height * 2) { firstRef = true; continue; }
+      if (firstRef) { ctx.moveTo(pixelX, pixelY); firstRef = false; }
+      else { ctx.lineTo(pixelX, pixelY); }
+    }
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Draw Ellipses at intervals to show "Solid" nature
+    ctx.strokeStyle = 'rgba(0, 113, 227, 0.2)';
+    ctx.lineWidth = 1;
+    for (let x = -4; x <= 4; x += 1) {
+        const y = evaluateFunc(funcStr, x);
+        if (Math.abs(y) > 0.1) {
+            const px = centerX + x * scale;
+            const py = centerY; // Center of ellipse is on axis
+            const ry = Math.abs(y * scale); // Radius Y
+            const rx = ry * 0.2; // Flattened X radius to look like perspective circle? 
+            // No, in side view (2D), the cross section is a vertical line.
+            // But to visualize "Revolution", we usually draw ellipses "perpendicular" to the axis.
+            // Since we are looking at side view 2D, we can't easily draw 3D ellipses.
+            // Let's draw vertical lines connecting +y and -y to show the solid slice.
+            ctx.beginPath();
+            ctx.moveTo(px, centerY - y * scale);
+            ctx.lineTo(px, centerY + y * scale);
+            ctx.stroke();
+            
+            // Draw an ellipse representing the circular cross-section seen from an angle?
+            // Hard in 2D canvas without 3D transform.
+            // Let's just shade the area between f(x) and -f(x)
+            
+        }
+    }
+    
+    // Shading the solid volume (Area between f(x) and -f(x))
+    ctx.fillStyle = 'rgba(0, 113, 227, 0.05)';
+    ctx.beginPath();
+    // Top curve
+    for (let pixelX = 0; pixelX < width; pixelX+=5) {
+        const x = (pixelX - centerX) / scale;
+        const y = evaluateFunc(funcStr, x);
+        ctx.lineTo(pixelX, centerY - y * scale);
+    }
+    // Bottom curve (reverse)
+    for (let pixelX = width; pixelX >= 0; pixelX-=5) {
+        const x = (pixelX - centerX) / scale;
+        const y = -evaluateFunc(funcStr, x);
+        ctx.lineTo(pixelX, centerY - y * scale);
+    }
+    ctx.fill();
+
     // Outer halo
     ctx.fillStyle = 'rgba(255, 59, 48, 0.2)';
     ctx.beginPath();
