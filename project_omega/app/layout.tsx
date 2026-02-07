@@ -35,8 +35,8 @@ export default function RootLayout({
               
               <div className="flex items-center gap-6">
                 <nav className="hidden md:flex items-center space-x-6 text-[14px] font-medium text-[#1d1d1f]/80">
-                  <Link href="#" className="hover:text-[#0071e3] transition-colors">Overview</Link>
-                  <Link href="#" className="hover:text-[#0071e3] transition-colors">Curriculum</Link>
+                  <Link href="/overview" className="hover:text-[#0071e3] transition-colors">Overview</Link>
+                  <Link href="/" className="hover:text-[#0071e3] transition-colors">Curriculum</Link>
                 </nav>
                 <ProfileHeader />
               </div>

@@ -99,3 +99,14 @@ We are moving from a "Tool" to a "Platform".
   - UI Updated: Main Dashboard now features an Operator HUD.
   - Ranks: Candidate -> Initiate -> Operator -> Architect -> Omega.
   - Goal: Gamify the entire platform under the "Simulation" narrative.
+- **[2026-02-08] Module Evolved: Quiz (Protocol: Calibration)**
+  - Narrative Layer Injected: "The Gauntlet" / System Stability Test.
+  - UI Updated: Full "Void" aesthetic, System Log sidebar, CRT effects.
+  - Terminology: "Anomalies" (Questions), "Sync Rate" (Score), "Clearance Level" (Result).
+  - Mechanics: Real-time stability decay simulation (visual only for now).
+  - Goal: Provide a high-stakes "Entrance Exam" feel.
+- **[2026-02-08] Narrative Core: The Awakening (Overview)**
+  - Narrative Layer Injected: "Manifesto" / Mission Briefing Page (`/overview`).
+  - Style: Radical Clarity meets Void Aesthetic.
+  - Concept: "Math is the Source Code of Reality."
+  - Outcome: Users now have a dedicated "Lore" entry point explaining their role as Operators.
