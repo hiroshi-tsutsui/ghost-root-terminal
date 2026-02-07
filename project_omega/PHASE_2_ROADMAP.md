@@ -163,3 +163,6 @@ We are moving from a "Tool" to a "Platform".
   - Mechanics: Integrated `ProgressContext` + "Black Box" levels (Drift -> Runaway).
   - UI Updated: System Logs, Glitch Effects, Status Toggles.
   - Integration: Added to Main Dashboard & Progress Context.
+- **[2026-02-08] Refinement: Probability & Sequences (Formalized Narrative)**
+  - Narrative Layer Formalized: Created NARRATIVE.md for both modules.
+  - Consistency Check: Verified 'Entropy Weaver' and 'Chronos Protocol' alignment with code.
