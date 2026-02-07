@@ -331,7 +331,7 @@ export default function CalculusPage() {
               <span className="inline-block transition-transform group-hover:-translate-x-1 mr-1">←</span> ホームに戻る
             </Link>
             <div className="flex justify-between items-center">
-                <h1 className="text-3xl font-bold tracking-tight text-[#1d1d1f]">微分積分</h1>
+                <h1 className="text-3xl font-bold tracking-tight text-[#1d1d1f]">Calculus / The Flux Engine</h1>
                 <div className="flex gap-2">
                     <button 
                         onClick={() => setIs3DMode(!is3DMode)}
@@ -343,11 +343,11 @@ export default function CalculusPage() {
                         onClick={() => { setSenseiMode(!senseiMode); setLessonStep(0); }}
                         className={`px-3 py-1 rounded-full text-xs font-bold transition-all ${senseiMode ? 'bg-[#0071e3] text-white' : 'bg-gray-200 text-gray-500'}`}
                     >
-                        {senseiMode ? 'Sensei' : 'Sensei'}
+                        {senseiMode ? 'SYNC MODE' : 'Initiate Sync'}
                     </button>
                 </div>
             </div>
-            <p className="text-[#86868b] text-sm mt-1 font-medium">数学III / 極限と関数</p>
+            <p className="text-[#86868b] text-sm mt-1 font-medium">OMEGA SIMULATION // TEMPORAL STABILIZER</p>
         </header>
 
         <div className="flex-1 overflow-y-auto p-6 space-y-8 pb-32">
@@ -362,54 +362,54 @@ export default function CalculusPage() {
                     className="apple-card p-5 border-2 border-[#0071e3] bg-[#0071e3]/5 relative overflow-hidden"
                 >
                     {/* ... (Existing Sensei Content) ... */}
-                    <div className="absolute top-0 right-0 p-2 opacity-10 text-6xl">🎓</div>
-                    <h3 className="font-bold text-[#0071e3] mb-2">Sensei Mode</h3>
+                    <div className="absolute top-0 right-0 p-2 opacity-10 text-6xl">⚛️</div>
+                    <h3 className="font-bold text-[#0071e3] mb-2 tracking-widest uppercase text-xs">PROTOCOL: FLUX_SYNC</h3>
                     
                     {lessonStep === 0 && (
                         <div>
-                            <p className="text-sm mb-4">ようこそ！微積分の直感的な理解を目指しましょう。まずは「微分（傾き）」から。</p>
-                            <button onClick={() => setLessonStep(1)} className="btn-apple-primary w-full">レッスン開始</button>
+                            <p className="text-sm mb-4">Operator, the timeline is unstable. We must synchronize the Flux Engine. First objective: <span className="font-bold">Predict the turning point.</span></p>
+                            <button onClick={() => setLessonStep(1)} className="btn-apple-primary w-full">INITIATE SEQUENCE</button>
                         </div>
                     )}
                     {lessonStep === 1 && (
                         <div>
-                            <p className="text-sm font-bold mb-1">Lesson 1: 傾きゼロを探せ</p>
+                            <p className="text-sm font-bold mb-1">Objective: Stabilize the Tangent</p>
                             <p className="text-xs text-gray-600 mb-4">
-                                関数 <span className="font-mono">f(x) = x^2 - 2</span> のグラフが表示されています。<br/>
-                                スライダーを動かして、<span className="text-[#ff3b30] font-bold">赤い接線</span>が水平（傾き0）になる点を探してください。
+                                Function <span className="font-mono">f(x) = x^2 - 2</span> detected.<br/>
+                                Adjust the timeline (slider) until the <span className="text-[#ff3b30] font-bold">Predictive Tangent</span> is perfectly horizontal (Rate of Change = 0).
                             </p>
-                            <div className="text-xs bg-white/50 p-2 rounded">現在の傾き: {currentSlope.toFixed(3)}</div>
+                            <div className="text-xs bg-white/50 p-2 rounded font-mono">CURRENT FLUX: {currentSlope.toFixed(3)}</div>
                         </div>
                     )}
                      {lessonStep === 2 && (
                         <div>
-                            <p className="text-sm font-bold mb-1">Excellent! 🎉</p>
+                            <p className="text-sm font-bold mb-1">Equilibrium Achieved. 🎉</p>
                             <p className="text-xs text-gray-600 mb-4">
-                                正解です！傾きが0になる点は「極値（頂点）」と呼ばれます。<br/>
-                                次は「積分（面積）」に挑戦しましょう。
+                                The turning point is secured. This is a local extremum.<br/>
+                                Next objective: <span className="font-bold">Accumulate Reality Mass.</span>
                             </p>
-                            <button onClick={() => setLessonStep(3)} className="btn-apple-primary w-full">次へ進む</button>
+                            <button onClick={() => setLessonStep(3)} className="btn-apple-primary w-full">PROCEED</button>
                         </div>
                     )}
                     {lessonStep === 3 && (
                         <div>
-                            <p className="text-sm font-bold mb-1">Lesson 2: 面積を作ろう</p>
+                            <p className="text-sm font-bold mb-1">Objective: Reality Accumulation</p>
                             <p className="text-xs text-gray-600 mb-4">
-                                関数 <span className="font-mono">f(x) = 2</span> (定数関数) です。<br/>
-                                原点からの<span className="text-[#0071e3] font-bold">青い面積</span>がちょうど「4.0」になるようにxを動かしてください。
+                                Function <span className="font-mono">f(x) = 2</span> (Constant Flow).<br/>
+                                Expand the timeline until the <span className="text-[#0071e3] font-bold">Accumulated Area</span> reaches precisely 4.0 units.
                             </p>
-                            <div className="text-xs bg-white/50 p-2 rounded">現在の面積: {currentIntegral.toFixed(3)}</div>
+                            <div className="text-xs bg-white/50 p-2 rounded font-mono">TOTAL MASS: {currentIntegral.toFixed(3)}</div>
                         </div>
                     )}
                     {lessonStep === 4 && (
                         <div>
-                            <p className="text-sm font-bold mb-1">Master! 🎓</p>
+                            <p className="text-sm font-bold mb-1">SYNC COMPLETE 🎓</p>
                             <p className="text-xs text-gray-600 mb-4">
-                                素晴らしい！底辺2 × 高さ2 = 面積4。<br/>
-                                これが定積分の基本です。<br/>
-                                君はもう微積分の直感を掴んでいます！
+                                Excellent work, Operator. You have mastered the Flux.<br/>
+                                "The First Derivative is not a number; it is a prophecy."<br/>
+                                The timeline is stable.
                             </p>
-                            <button onClick={() => setSenseiMode(false)} className="btn-apple-secondary w-full text-xs">自由モードに戻る</button>
+                            <button onClick={() => setSenseiMode(false)} className="btn-apple-secondary w-full text-xs">RETURN TO IDLE</button>
                         </div>
                     )}
                 </motion.div>
@@ -463,17 +463,17 @@ export default function CalculusPage() {
 
            {/* Analysis Panel */}
            <div className="apple-card p-5 space-y-4 fade-in-up delay-300">
-             <h3 className="text-xs font-bold text-[#86868b] uppercase tracking-wider border-b border-gray-100 pb-3">x = {xVal.toFixed(2)} における解析</h3>
+             <h3 className="text-xs font-bold text-[#86868b] uppercase tracking-wider border-b border-gray-100 pb-3">TEMPORAL COORDINATE: T = {xVal.toFixed(2)}</h3>
              
              <div className="flex justify-between items-center group">
-                <span className="text-sm text-[#1d1d1f] font-medium">値 f(x)</span>
+                <span className="text-sm text-[#1d1d1f] font-medium">Position f(t)</span>
                 <span className="font-mono text-base text-[#1d1d1f]">{isNaN(currentY) ? '-' : currentY.toFixed(3)}</span>
              </div>
              
              <div className="flex justify-between items-center group">
                 <div className="flex items-center">
                     <span className="w-2 h-2 rounded-full bg-[#ff3b30] mr-2 shadow-sm group-hover:scale-125 transition-transform"></span>
-                    <span className="text-sm text-[#1d1d1f] font-medium">傾き (微分)</span>
+                    <span className="text-sm text-[#1d1d1f] font-medium">Velocity (Flux)</span>
                 </div>
                 <span className="font-mono text-base text-[#ff3b30]">{isNaN(currentSlope) ? '-' : currentSlope.toFixed(3)}</span>
              </div>
@@ -481,7 +481,7 @@ export default function CalculusPage() {
              <div className="flex justify-between items-center group">
                 <div className="flex items-center">
                     <span className="w-2 h-2 rounded-full bg-[#0071e3] mr-2 shadow-sm group-hover:scale-125 transition-transform"></span>
-                    <span className="text-sm text-[#1d1d1f] font-medium">面積 (積分 0→x)</span>
+                    <span className="text-sm text-[#1d1d1f] font-medium">Accumulated Mass</span>
                 </div>
                 <span className="font-mono text-base text-[#0071e3]">{isNaN(currentIntegral) ? '-' : currentIntegral.toFixed(3)}</span>
              </div>

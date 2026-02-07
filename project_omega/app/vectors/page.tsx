@@ -136,72 +136,72 @@ export default function VectorsPage() {
   const crossProd = new THREE.Vector3().crossVectors(vec1, vec2);
   const angleDeg = (vec1.angleTo(vec2) * 180 / Math.PI).toFixed(1);
 
-  // --- Sensei Logic ---
+  // --- Sensei Logic (NARRATIVE LAYER: VECTOR_SYNC) ---
   const LEVELS = {
       1: {
-          title: "基礎 (Basics): 内積と直交",
+          title: "PHASE 1: Gyroscopic Stabilization (Dot Product)",
           steps: [
               {
-                  message: "【ミッション: ドローン制御の基礎】\nあなたはドローンパイロットの訓練生です。まずはドローンの進行方向と風向きの関係を理解する必要があります。直交する風はドローンの速度に影響を与えません。\n\n準備ができたら「ミッション開始」を押してください。",
+                  message: "【PROTOCOL: INITIATE_CALIBRATION】\nWelcome, Operator. The Void Scout drones require stabilization. You must align the thrusters to be independent of cross-winds.\n\nPress 'EXECUTE' to begin calibration.",
                   check: () => true,
                   isBriefing: true
               },
               {
-                  message: "訓練開始です。内積（・）について学びます。内積が 0 になると、2つのベクトルは「直交」します。ベクトル `a` を `(2, 0, 0)`、ベクトル `b` を `(0, 2, 0)` にしてみてください。",
+                  message: "Calibrating orthogonal thrusters (Dot Product). When the product is 0, the vectors are orthogonal (90°). Set Vector A to `(2, 0, 0)` and Vector B to `(0, 2, 0)`.",
                   check: () => v1[0] === 2 && v1[1] === 0 && v1[2] === 0 && v2[0] === 0 && v2[1] === 2 && v2[2] === 0
               },
               {
-                  message: "素晴らしい！なす角 (θ) が 90° になり、内積が 0 になりましたね。これが直交です。では、`b` の z成分を `2` に増やしてみましょう。",
+                  message: "Orthogonality achieved. Thrusters are isolated. Now, induce a drift by setting Vector B's Z-component to `2`.",
                   check: () => v2[2] >= 2
               },
               {
-                  message: "角度が変わりましたね！内積も 0 ではなくなりました。レベル1クリア！",
+                  message: "Drift detected. Dot product non-zero. Stabilization complete. Proceed to Phase 2.",
                   check: () => true,
                   isFinal: true
               }
           ]
       },
       2: {
-          title: "標準 (Standard): 外積の性質",
+          title: "PHASE 2: Torque Generation (Cross Product)",
           steps: [
               {
-                  message: "【ミッション: 回転モーメントの計算】\nエンジニア部門へようこそ。ここではドローンの回転モーメントを計算します。2つの力から生み出される回転力（トルク）は、外積によって計算されます。\n\n「ミッション開始」でシミュレーションを始めます。",
+                  message: "【PROTOCOL: ROTATIONAL_DYNAMICS】\nThe drone needs to rotate. Calculate the torque vector using the Cross Product. The resulting vector defines the axis of rotation.\n\nPress 'EXECUTE' to simulate torque.",
                   check: () => true,
                   isBriefing: true
               },
               {
-                  message: "次は「外積 (a×b)」です。外積は紫色の矢印で表示されています。`a` と `b` の両方に垂直なベクトルです。`a` を `(1, 0, 0)`、`b` を `(0, 1, 0)` にセットしてください。",
+                  message: "Generate torque (Vector A × Vector B). The purple vector represents the axis of rotation. Set A=`(1, 0, 0)` and B=`(0, 1, 0)`.",
                   check: () => v1[0] === 1 && v1[1] === 0 && v2[0] === 0 && v2[1] === 1
               },
               {
-                  message: "紫色の矢印が真上 (Z軸方向) を向いていますね！「右ねじの法則」に従います。では、`a` と `b` を入れ替えてみましょう。`a=(0,1,0)`, `b=(1,0,0)` にしてください。",
+                  message: "Torque vector established (Positive Z). The drone rotates counter-clockwise. Now reverse the inputs: A=`(0, 1, 0)`, B=`(1, 0, 0)`.",
                   check: () => v1[0] === 0 && v1[1] === 1 && v2[0] === 1 && v2[1] === 0
               },
               {
-                  message: "おっと！紫色の矢印が下を向きましたね！掛ける順序を変えると向きが逆になる。これが外積の性質です。レベル2クリア！",
+                  message: "Torque vector inverted (Negative Z). The drone rotates clockwise. The order of operations dictates the direction. Phase 2 Complete.",
                   check: () => true,
                   isFinal: true
               }
           ]
       },
       3: {
-          title: "応用 (Application): 平面の法線ベクトル",
+          title: "PHASE 3: Landing Protocol (Normal Vectors)",
           steps: [
              {
-                 message: "【ミッション: 着陸パッドの設計】\n最終試験です。ドローンを着陸させるための着陸パッドを設計してください。法線ベクトルを使って、パッドの傾きを調整します。\n\n「ミッション開始」で設計を開始します。",
+                 message: "【PROTOCOL: SURFACE_ALIGNMENT】\nFinal Sequence. Align the landing gear with the docking platform surface using the Normal Vector.\n\nPress 'EXECUTE' to engage landing gear.",
                  check: () => true,
                  isBriefing: true
              },
              {
-                 message: "まずは「平面を表示」のスイッチをONにしてください。",
+                 message: "Activate the surface grid. Toggle 'Show Plane'.",
                  check: () => showPlane === true
              },
              {
-                 message: "青い格子状の平面が現れました。法線ベクトル `n` を `(0, 0, 1)` にしてみてください。床のような平面になるはずです。",
+                 message: "The platform is currently undefined. Set the Normal Vector `n` to `(0, 0, 1)` to align it with the ground.",
                  check: () => planeNormal[0] === 0 && planeNormal[1] === 0 && planeNormal[2] === 1
              },
              {
-                 message: "完璧です！法線ベクトルは平面の向きを決定します。これで空間ベクトルの基礎マスターです！おめでとうございます！",
+                 message: "Platform alignment confirmed. Landing gear engaged. Navigation Systems: OPTIMAL. Excellent work, Operator.",
                  check: () => true,
                  isFinal: true
              }
@@ -235,7 +235,7 @@ export default function VectorsPage() {
               setLessonStep(0);
               // Reset specific values for new level if needed
           } else {
-              setSenseiMessage("すべてのレッスンを完了しました！");
+              setSenseiMessage("CALIBRATION COMPLETE. SYSTEM ONLINE.");
               setIsSenseiMode(false);
           }
       } else {
@@ -296,11 +296,11 @@ export default function VectorsPage() {
                         : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
                     }`}
                 >
-                    {isSenseiMode ? 'Sensei ON' : 'Sensei OFF'}
+                    {isSenseiMode ? 'SYNC: ACTIVE' : 'SYNC: OFFLINE'}
                 </button>
             </div>
-            <h1 className="text-3xl font-bold tracking-tight text-[#1d1d1f]">空間ベクトル</h1>
-            <p className="text-[#86868b] text-sm mt-1 font-medium">数学B / ベクトル方程式</p>
+            <h1 className="text-3xl font-bold tracking-tight text-[#1d1d1f]">VECTOR NAVIGATION</h1>
+            <p className="text-[#86868b] text-sm mt-1 font-medium">SPATIAL PROPULSION PROTOCOL</p>
         </header>
 
         <div className="flex-1 overflow-y-auto p-6 space-y-8 pb-32">
@@ -309,10 +309,10 @@ export default function VectorsPage() {
           {isSenseiMode && (
                 <div className={`p-4 border rounded-xl shadow-sm animate-fade-in ${currentStepIsBriefing ? 'bg-indigo-50 border-indigo-200' : 'bg-blue-50 border-blue-100'}`}>
                     <div className="flex items-start gap-3">
-                        <div className="text-2xl">{currentStepIsBriefing ? '🚀' : '👨‍🏫'}</div>
+                        <div className="text-2xl">{currentStepIsBriefing ? '🛸' : '🤖'}</div>
                         <div className="flex-1">
                             <h3 className={`font-bold text-xs uppercase mb-1 ${currentStepIsBriefing ? 'text-indigo-600' : 'text-blue-600'}`}>
-                                Level {level}: {LEVELS[level]?.title}
+                                {LEVELS[level]?.title}
                             </h3>
                             <p className="text-gray-800 text-sm font-medium leading-snug whitespace-pre-wrap">
                                 {senseiMessage}
@@ -326,7 +326,7 @@ export default function VectorsPage() {
                                         : 'bg-blue-600 hover:bg-blue-700'
                                     }`}
                                 >
-                                    {currentStepIsBriefing ? 'ミッション開始' : '次へ進む'}
+                                    {currentStepIsBriefing ? 'EXECUTE' : 'PROCEED'}
                                 </button>
                             )}
                         </div>
@@ -340,13 +340,13 @@ export default function VectorsPage() {
                 onClick={() => setInputMode('xyz')} 
                 className={`flex-1 text-[13px] py-1.5 rounded-[7px] font-medium transition-all duration-200 ${inputMode === 'xyz' ? 'bg-white shadow-sm text-black' : 'text-[#86868b] hover:text-black'}`}
              >
-                成分 (x,y,z)
+                COORDINATES (XYZ)
              </button>
              <button 
                 onClick={() => setInputMode('polar')} 
                 className={`flex-1 text-[13px] py-1.5 rounded-[7px] font-medium transition-all duration-200 ${inputMode === 'polar' ? 'bg-white shadow-sm text-black' : 'text-[#86868b] hover:text-black'}`}
              >
-                極座標 (r,θ,φ)
+                POLAR (r,θ,φ)
              </button>
           </div>
 
@@ -354,7 +354,7 @@ export default function VectorsPage() {
           <div className={`apple-card p-5 fade-in-up delay-100 transition-all ${isSenseiMode && level <= 2 && 'ring-2 ring-blue-500 bg-blue-50/30'}`}>
             <h3 className="text-sm font-semibold text-[#1d1d1f] flex items-center mb-4">
                 <span className="w-3 h-3 rounded-full bg-[#0071e3] mr-2 shadow-sm"></span>
-                ベクトル a
+                THRUSTER A
             </h3>
             {inputMode === 'xyz' ? (
                 <div className="grid grid-cols-3 gap-3">
@@ -378,21 +378,21 @@ export default function VectorsPage() {
                             <>
                                 <div className="space-y-2">
                                     <div className="flex justify-between text-xs font-medium text-[#86868b]">
-                                        <span>長さ r</span>
+                                        <span>LENGTH (r)</span>
                                         <span className="text-[#1d1d1f] font-mono">{r.toFixed(2)}</span>
                                     </div>
                                     <input type="range" min="0" max="10" step="0.1" value={r} onChange={(e) => updateFromPolar(setV1, parseFloat(e.target.value), theta, phi)} />
                                 </div>
                                 <div className="space-y-2">
                                     <div className="flex justify-between text-xs font-medium text-[#86868b]">
-                                        <span>方位 θ</span>
+                                        <span>AZIMUTH (θ)</span>
                                         <span className="text-[#1d1d1f] font-mono">{theta.toFixed(0)}°</span>
                                     </div>
                                     <input type="range" min="-180" max="180" value={theta} onChange={(e) => updateFromPolar(setV1, r, parseFloat(e.target.value), phi)} />
                                 </div>
                                 <div className="space-y-2">
                                     <div className="flex justify-between text-xs font-medium text-[#86868b]">
-                                        <span>天頂 φ</span>
+                                        <span>ZENITH (φ)</span>
                                         <span className="text-[#1d1d1f] font-mono">{phi.toFixed(0)}°</span>
                                     </div>
                                     <input type="range" min="0" max="180" value={phi} onChange={(e) => updateFromPolar(setV1, r, theta, parseFloat(e.target.value))} />
@@ -408,7 +408,7 @@ export default function VectorsPage() {
           <div className={`apple-card p-5 fade-in-up delay-200 transition-all ${isSenseiMode && level <= 2 && 'ring-2 ring-red-500 bg-red-50/30'}`}>
             <h3 className="text-sm font-semibold text-[#1d1d1f] flex items-center mb-4">
                 <span className="w-3 h-3 rounded-full bg-[#ff3b30] mr-2 shadow-sm"></span>
-                ベクトル b
+                THRUSTER B
             </h3>
             {inputMode === 'xyz' ? (
                 <div className="grid grid-cols-3 gap-3">
@@ -432,21 +432,21 @@ export default function VectorsPage() {
                             <>
                                 <div className="space-y-2">
                                     <div className="flex justify-between text-xs font-medium text-[#86868b]">
-                                        <span>長さ r</span>
+                                        <span>LENGTH (r)</span>
                                         <span className="text-[#1d1d1f] font-mono">{r.toFixed(2)}</span>
                                     </div>
                                     <input type="range" min="0" max="10" step="0.1" value={r} onChange={(e) => updateFromPolar(setV2, parseFloat(e.target.value), theta, phi)} />
                                 </div>
                                 <div className="space-y-2">
                                     <div className="flex justify-between text-xs font-medium text-[#86868b]">
-                                        <span>方位 θ</span>
+                                        <span>AZIMUTH (θ)</span>
                                         <span className="text-[#1d1d1f] font-mono">{theta.toFixed(0)}°</span>
                                     </div>
                                     <input type="range" min="-180" max="180" value={theta} onChange={(e) => updateFromPolar(setV2, r, parseFloat(e.target.value), phi)} />
                                 </div>
                                 <div className="space-y-2">
                                     <div className="flex justify-between text-xs font-medium text-[#86868b]">
-                                        <span>天頂 φ</span>
+                                        <span>ZENITH (φ)</span>
                                         <span className="text-[#1d1d1f] font-mono">{phi.toFixed(0)}°</span>
                                     </div>
                                     <input type="range" min="0" max="180" value={phi} onChange={(e) => updateFromPolar(setV2, r, theta, parseFloat(e.target.value))} />
@@ -462,7 +462,7 @@ export default function VectorsPage() {
              <div className={`flex justify-between items-center px-1 rounded-lg p-2 transition-all ${isSenseiMode && level === 3 && 'bg-green-100 ring-2 ring-green-500'}`}>
                 <h3 className="text-sm font-semibold text-[#1d1d1f] flex items-center">
                     <span className="w-3 h-3 rounded-full bg-[#af52de] mr-2"></span>
-                    平面を表示
+                    VISUALIZE LANDING PAD
                 </h3>
                 <label className="relative inline-flex items-center cursor-pointer">
                     <input type="checkbox" checked={showPlane} onChange={(e) => setShowPlane(e.target.checked)} className="sr-only peer" />
@@ -473,7 +473,7 @@ export default function VectorsPage() {
              <div className="flex justify-between items-center px-1">
                 <h3 className="text-sm font-semibold text-[#1d1d1f] flex items-center">
                     <span className="w-3 h-3 rounded-full bg-gray-400 mr-2"></span>
-                    成分補助線
+                    COMPONENT PROJECTION
                 </h3>
                 <label className="relative inline-flex items-center cursor-pointer">
                     <input type="checkbox" checked={showComponents} onChange={(e) => setShowComponents(e.target.checked)} className="sr-only peer" />
@@ -485,7 +485,7 @@ export default function VectorsPage() {
                  <div className="p-5 apple-card space-y-4 animate-in fade-in slide-in-from-top-2">
                     <p className="text-xs font-mono text-[#86868b] text-center bg-[#F5F5F7] p-2 rounded-lg">nx + ny + nz = d</p>
                     <div>
-                        <label className="text-[11px] font-semibold text-[#86868b] mb-2 block uppercase tracking-wide">法線ベクトル (n)</label>
+                        <label className="text-[11px] font-semibold text-[#86868b] mb-2 block uppercase tracking-wide">NORMAL VECTOR (n)</label>
                         <div className="grid grid-cols-3 gap-2">
                             {['x', 'y', 'z'].map((axis, i) => (
                                 <input key={axis} type="number" placeholder={axis} value={planeNormal[i]} onChange={(e) => updateVec(setPlaneNormal, planeNormal, i, parseFloat(e.target.value))} className="input-apple text-center p-2 text-sm" />
@@ -493,7 +493,7 @@ export default function VectorsPage() {
                         </div>
                     </div>
                     <div>
-                        <label className="text-[11px] font-semibold text-[#86868b] mb-2 block uppercase tracking-wide">距離 (d)</label>
+                        <label className="text-[11px] font-semibold text-[#86868b] mb-2 block uppercase tracking-wide">ALTITUDE OFFSET (d)</label>
                         <input type="number" value={planeConstant} onChange={(e) => setPlaneConstant(parseFloat(e.target.value))} className="input-apple text-center p-2 text-sm" />
                     </div>
                  </div>
@@ -501,17 +501,17 @@ export default function VectorsPage() {
           </div>
 
           <div className="apple-card p-5 space-y-4 fade-in-up delay-300">
-            <h3 className="text-xs font-bold text-[#86868b] uppercase tracking-wider">計算結果</h3>
+            <h3 className="text-xs font-bold text-[#86868b] uppercase tracking-wider">TELEMETRY DATA</h3>
             <div className="flex justify-between items-center border-b border-gray-100 pb-2">
-                <span className="text-sm text-[#1d1d1f]">内積 (a・b)</span>
+                <span className="text-sm text-[#1d1d1f]">DOT PRODUCT (a・b)</span>
                 <span className="font-mono font-medium text-[#1d1d1f]">{dotProduct.toFixed(2)}</span>
             </div>
             <div className="flex justify-between items-center border-b border-gray-100 pb-2">
-                <span className="text-sm text-[#1d1d1f]">外積 (a×b)</span>
+                <span className="text-sm text-[#1d1d1f]">CROSS PRODUCT (a×b)</span>
                 <span className="font-mono font-medium text-[#1d1d1f]">({crossProd.x.toFixed(1)}, {crossProd.y.toFixed(1)}, {crossProd.z.toFixed(1)})</span>
             </div>
             <div className="flex justify-between items-center">
-                <span className="text-sm text-[#1d1d1f]">なす角 (θ)</span>
+                <span className="text-sm text-[#1d1d1f]">INCIDENCE ANGLE (θ)</span>
                 <span className="font-mono font-medium text-[#1d1d1f]">{angleDeg}°</span>
             </div>
           </div>

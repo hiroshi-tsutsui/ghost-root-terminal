@@ -3,83 +3,85 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { useProgress } from '../contexts/ProgressContext';
 
 export default function QuadraticsPage() {
   const [a, setA] = useState(1);
   const [b, setB] = useState(0);
   const [c, setC] = useState(0);
   
-  // Sensei Mode State
-  const [isSenseiMode, setIsSenseiMode] = useState(false);
+  // Protocol State
+  const [isProtocolActive, setIsProtocolActive] = useState(false);
   const [level, setLevel] = useState(1);
-  const [lessonStep, setLessonStep] = useState(0);
-  const [senseiMessage, setSenseiMessage] = useState("");
+  const [protocolStep, setProtocolStep] = useState(0);
+  const [systemLog, setSystemLog] = useState("Waiting for Operator input...");
   const [taskCompleted, setTaskCompleted] = useState(false);
 
+  const { completeLevel } = useProgress();
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  // --- Sensei Logic ---
-  const LEVELS = {
+  // --- Gravity Well Protocol Logic ---
+  const PROTOCOLS = {
     1: {
-      title: "基礎 (Basics): グラフの開き方",
+      title: "PHASE 1: FIELD STRENGTH (a)",
       steps: [
         {
-          message: "【ミッション: アーチェリーの軌道計算】\nあなたはアーチェリーの選手です。弓の強さを調整して、矢の軌道をコントロールします。係数 `a` は弓の強さ（グラフの開き具合）を表しています。\n\n「ミッション開始」で調整を始めます。",
+          message: "[SYSTEM]: Gravity Well detected. Singularity unstable.\n[MISSION]: Adjust Field Strength (a) to contain the anomaly.\n[ACTION]: Initialize protocol.",
           check: () => true,
           isBriefing: true
         },
         { 
-          message: "まずは弓を強く引いてみましょう。`a` の値を `2` にしてみてください。矢の勢いが増し、軌道が鋭くなります。", 
+          message: "[WARNING]: Singularity expanding. Increase Field Strength to +2.0 to compress the event horizon.", 
           check: () => a === 2 
         },
         { 
-          message: "素晴らしい！グラフが細くなりましたね。次は逆向きの力を加えてみましょう。`a` を `-1` に設定してください。", 
+          message: "[ALERT]: Polarity inversion detected. Invert Field Strength to -1.0 to repel incoming debris.", 
           check: () => a === -1 
         },
         { 
-          message: "その通り！マイナスになるとグラフが下向きになります。「上に凸（とつ）」と言います。レベル1クリア！", 
+          message: "[SUCCESS]: Field Strength stabilized. Singularity containment field operational. Proceed to Phase 2.", 
           check: () => true,
           isFinal: true
         }
       ]
     },
     2: {
-      title: "標準 (Standard): 上下の移動",
+      title: "PHASE 2: VERTICAL OFFSET (c)",
       steps: [
         {
-          message: "【ミッション: 標高差の補正】\nターゲットが高台に設置されました。発射位置の高さ `c` (y切片) を調整して、ターゲットに狙いを定めます。\n\n「ミッション開始」で補正を開始します。",
+          message: "[SYSTEM]: Spatial drift detected. Singularity depth misalignment.\n[MISSION]: Adjust Vertical Offset (c) to re-align with the galactic plane.\n[ACTION]: Initialize protocol.",
           check: () => true,
           isBriefing: true
         },
         { 
-          message: "ターゲットが高い位置にあります。`c` を `3` に設定して、発射位置を上げてください。", 
+          message: "[WARNING]: Singularity too low. Raise Vertical Offset to +3.0 to breach the observation deck.", 
           check: () => c === 3 
         },
         { 
-          message: "グラフ全体が上に `+3` ズレましたね！今度はターゲットが谷底に移動しました。`c` を `-2` に下げてください。", 
+          message: "[ALERT]: Singularity breaching upper limits. Lower Vertical Offset to -2.0 for deep storage.", 
           check: () => c === -2 
         },
         { 
-          message: "完璧です！`c` はグラフを上下に平行移動させます。レベル2クリア！", 
+          message: "[SUCCESS]: Vertical alignment confirmed. Singularity stable in deep storage. Proceed to Phase 3.", 
           check: () => true,
           isFinal: true
         }
       ]
     },
     3: {
-      title: "応用 (Application): 軸の移動",
+      title: "PHASE 3: HORIZON SHIFT (b)",
       steps: [
         {
-          message: "【ミッション: 横風への対応】\n横風が吹いています。係数 `b` を調整して、矢の左右のズレを修正する必要があります。これは少し複雑な操作です。\n\n「ミッション開始」で風読みを開始します。",
+          message: "[SYSTEM]: Lateral instability detected. Cross-winds approaching critical velocity.\n[MISSION]: Adjust Horizon Shift (b) to compensate for lateral drift.\n[ACTION]: Initialize protocol.",
           check: () => true,
           isBriefing: true
         },
         { 
-          message: "風が右から吹いています。`b` を `2` に、`a` を `1` に戻して、着弾点を左にずらしてください。", 
+          message: "[WARNING]: Drift Vector Right. Set Horizon Shift (b) to +2.0 and Field Strength (a) to +1.0 to counter-steer Left.", 
           check: () => b === 2 && a === 1
         },
         { 
-            message: "軌道修正完了！頂点が左にズレました。頂点のx座標は `-b / 2a` で決まります。全ミッション完了です！おめでとうございます！",
+            message: "[SUCCESS]: Lateral drift compensated. Apex coordinates locked at x = -b / 2a.\n[SYSTEM]: GRAVITY WELL STABILIZED. OMEGA PROTOCOL SYNCED.",
             check: () => true,
             isFinal: true
         }
@@ -88,15 +90,15 @@ export default function QuadraticsPage() {
   };
 
   useEffect(() => {
-    if (!isSenseiMode) return;
+    if (!isProtocolActive) return;
 
-    const currentLevelData = LEVELS[level];
+    const currentLevelData = PROTOCOLS[level];
     if (!currentLevelData) return;
 
-    const currentStepData = currentLevelData.steps[lessonStep];
+    const currentStepData = currentLevelData.steps[protocolStep];
     if (!currentStepData) return;
 
-    setSenseiMessage(currentStepData.message);
+    setSystemLog(currentStepData.message);
 
     // Check condition
     if (currentStepData.check()) {
@@ -106,30 +108,29 @@ export default function QuadraticsPage() {
     } else {
         setTaskCompleted(false);
     }
-  }, [a, b, c, isSenseiMode, level, lessonStep]);
+  }, [a, b, c, isProtocolActive, level, protocolStep]);
 
-  const advanceLesson = () => {
-      const currentLevelData = LEVELS[level];
-      const currentStepData = currentLevelData.steps[lessonStep];
+  const advanceProtocol = () => {
+      const currentLevelData = PROTOCOLS[level];
+      const currentStepData = currentLevelData.steps[protocolStep];
 
       if (currentStepData.isFinal) {
-          if (LEVELS[level + 1]) {
+          completeLevel('quadratics', level);
+          if (PROTOCOLS[level + 1]) {
               setLevel(level + 1);
-              setLessonStep(0);
-              setA(1); setB(0); setC(0); // Reset for new level
+              setProtocolStep(0);
+              setA(1); setB(0); setC(0);
           } else {
-              // Game Over / Win
-              setSenseiMessage("すべてのレッスンを完了しました！自由に実験してみてください。");
-              setIsSenseiMode(false);
+              setSystemLog("[SYSTEM]: ALL PHASES COMPLETE. GRAVITY WELL SECURE. RETURNING TO IDLE STATE.");
+              setIsProtocolActive(false);
           }
       } else {
-          setLessonStep(lessonStep + 1);
+          setProtocolStep(protocolStep + 1);
       }
       setTaskCompleted(false);
   };
 
-
-  // --- Drawing Logic ---
+  // --- Visuals ---
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -139,14 +140,16 @@ export default function QuadraticsPage() {
     const width = canvas.width;
     const height = canvas.height;
     
-    ctx.clearRect(0, 0, width, height);
+    // Void Background
+    ctx.fillStyle = '#050505';
+    ctx.fillRect(0, 0, width, height);
     
     const centerX = width / 2;
     const centerY = height / 2;
-    const scale = 30; // Slightly larger scale
+    const scale = 30;
 
-    // Grid
-    ctx.strokeStyle = '#f5f5f7';
+    // Grid (Cyberpunk Style)
+    ctx.strokeStyle = '#1a1a1a';
     ctx.lineWidth = 1;
     for (let x = 0; x <= width; x += scale) {
       ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, height); ctx.stroke();
@@ -156,18 +159,26 @@ export default function QuadraticsPage() {
     }
 
     // Axes
-    ctx.strokeStyle = '#d1d1d6';
+    ctx.strokeStyle = '#333';
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.moveTo(0, centerY); ctx.lineTo(width, centerY); 
     ctx.moveTo(centerX, 0); ctx.lineTo(centerX, height);
     ctx.stroke();
 
-    // Parabola - Apple Blue
-    ctx.strokeStyle = '#0071e3';
+    // Parabola - Omega Neon
+    // Gradient stroke
+    const gradient = ctx.createLinearGradient(0, 0, width, height);
+    gradient.addColorStop(0, '#00f2ff'); // Cyan
+    gradient.addColorStop(1, '#bd00ff'); // Purple
+    
+    ctx.strokeStyle = gradient;
     ctx.lineWidth = 4;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = '#00f2ff';
+    
     ctx.beginPath();
 
     let first = true;
@@ -189,30 +200,30 @@ export default function QuadraticsPage() {
       }
     }
     ctx.stroke();
+    
+    // Reset shadow
+    ctx.shadowBlur = 0;
 
-    // Vertex point
+    // Vertex / Singularity Point
     if (a !== 0) {
         const vx = -b / (2 * a);
         const vy = a * vx * vx + b * vx + c;
         const pVx = centerX + vx * scale;
         const pVy = centerY - (vy * scale);
         
-        // Outer halo
-        ctx.fillStyle = 'rgba(255, 59, 48, 0.2)'; // Apple Red
+        // Singularity Glow
+        ctx.shadowBlur = 20;
+        ctx.shadowColor = '#ff0055';
+        ctx.fillStyle = '#ff0055'; 
         ctx.beginPath();
-        ctx.arc(pVx, pVy, 12, 0, 2 * Math.PI);
+        ctx.arc(pVx, pVy, 8, 0, 2 * Math.PI);
         ctx.fill();
-
-        // Inner dot
-        ctx.fillStyle = '#ff3b30';
-        ctx.beginPath();
-        ctx.arc(pVx, pVy, 6, 0, 2 * Math.PI);
-        ctx.fill();
+        ctx.shadowBlur = 0;
         
-        // White center
+        // Core
         ctx.fillStyle = 'white';
         ctx.beginPath();
-        ctx.arc(pVx, pVy, 2.5, 0, 2 * Math.PI);
+        ctx.arc(pVx, pVy, 3, 0, 2 * Math.PI);
         ctx.fill();
     }
 
@@ -221,158 +232,165 @@ export default function QuadraticsPage() {
   const vertexX = a !== 0 ? -b / (2 * a) : 0;
   const vertexY = a * vertexX * vertexX + b * vertexX + c;
 
-  const currentStepIsBriefing = LEVELS[level]?.steps[lessonStep]?.isBriefing;
+  const currentStepIsBriefing = PROTOCOLS[level]?.steps[protocolStep]?.isBriefing;
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#F5F5F7] text-[#1d1d1f] font-sans">
-       <header className="fixed top-0 left-0 right-0 z-50 bg-white/70 backdrop-blur-xl border-b border-white/40 h-16 flex items-center px-6 transition-all supports-[backdrop-filter]:bg-white/60">
-         <div className="max-w-6xl mx-auto w-full flex items-center justify-between gap-4">
+    <div className="flex flex-col min-h-screen bg-[#0a0a0a] text-gray-200 font-mono">
+       <header className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-xl border-b border-gray-800 h-16 flex items-center px-6">
+         <div className="max-w-7xl mx-auto w-full flex items-center justify-between gap-4">
              <div className="flex items-center gap-4">
-                <Link href="/" className="group flex items-center text-sm font-medium text-[#86868b] hover:text-[#0071e3] transition-colors">
-                <span className="inline-block transition-transform group-hover:-translate-x-1 mr-1">←</span> ホーム
+                <Link href="/" className="group flex items-center text-xs font-bold text-gray-500 hover:text-cyan-400 transition-colors uppercase tracking-widest">
+                <span className="inline-block transition-transform group-hover:-translate-x-1 mr-1">←</span> System Root
                 </Link>
-                <div className="h-4 w-px bg-gray-300"></div>
-                <h1 className="text-lg font-semibold tracking-tight text-[#1d1d1f]">二次関数 <span className="text-[#86868b] font-normal ml-2 text-sm">数学I / グラフと性質</span></h1>
+                <div className="h-4 w-px bg-gray-800"></div>
+                <h1 className="text-sm font-bold tracking-[0.2em] text-cyan-500 glow-text">
+                  MODULE: GRAVITY_WELL <span className="text-gray-600 ml-2">v2.0.1</span>
+                </h1>
              </div>
              
-             {/* Sensei Mode Toggle */}
+             {/* Protocol Toggle */}
              <button 
                 onClick={() => {
-                    setIsSenseiMode(!isSenseiMode);
-                    if (!isSenseiMode) {
+                    setIsProtocolActive(!isProtocolActive);
+                    if (!isProtocolActive) {
                         setA(1); setB(0); setC(0);
                         setLevel(1);
-                        setLessonStep(0);
+                        setProtocolStep(0);
                     }
                 }}
-                className={`px-4 py-2 rounded-full text-sm font-bold transition-all ${
-                    isSenseiMode 
-                    ? 'bg-blue-600 text-white shadow-lg scale-105' 
-                    : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                className={`px-4 py-1.5 rounded-sm text-xs font-bold tracking-widest border transition-all ${
+                    isProtocolActive 
+                    ? 'bg-cyan-900/30 border-cyan-500 text-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.3)]' 
+                    : 'bg-gray-900 border-gray-700 text-gray-500 hover:border-gray-500'
                 }`}
              >
-                {isSenseiMode ? '🎓 Sensei Mode ON' : '🎓 Sensei Mode OFF'}
+                {isProtocolActive ? 'PROTOCOL: ACTIVE' : 'PROTOCOL: STANDBY'}
              </button>
          </div>
       </header>
 
-      <main className="flex-1 max-w-6xl mx-auto w-full p-6 pt-24">
+      <main className="flex-1 max-w-7xl mx-auto w-full p-6 pt-24 grid grid-cols-1 lg:grid-cols-12 gap-6">
         
-        {/* Sensei Message Box */}
-        {isSenseiMode && (
-            <div className={`mb-8 p-6 bg-white border-l-4 rounded-r-xl shadow-md animate-fade-in flex flex-col md:flex-row items-start md:items-center justify-between gap-4 ${currentStepIsBriefing ? 'border-indigo-500 bg-indigo-50' : 'border-blue-500 bg-white'}`}>
-                <div className="flex items-start gap-4">
-                    <div className={`p-3 rounded-full text-2xl ${currentStepIsBriefing ? 'bg-indigo-100' : 'bg-blue-100'}`}>
-                        {currentStepIsBriefing ? '🚀' : '👨‍🏫'}
+        {/* Left Panel: Controls */}
+        <div className="lg:col-span-4 space-y-6">
+            
+            {/* System Log */}
+            {isProtocolActive && (
+                <div className={`p-4 bg-black border-l-2 rounded-r-sm shadow-lg animate-fade-in font-mono text-xs leading-relaxed ${currentStepIsBriefing ? 'border-cyan-500 text-cyan-300' : 'border-purple-500 text-purple-300'}`}>
+                    <div className="flex justify-between items-start mb-2 border-b border-white/10 pb-2">
+                        <span className="uppercase tracking-widest font-bold">
+                           // {PROTOCOLS[level]?.title}
+                        </span>
+                        {taskCompleted && <span className="text-green-400 animate-pulse">[READY]</span>}
                     </div>
-                    <div>
-                        <h3 className={`font-bold text-sm uppercase tracking-wide mb-1 ${currentStepIsBriefing ? 'text-indigo-600' : 'text-blue-600'}`}>
-                            Level {level}: {LEVELS[level]?.title}
-                        </h3>
-                        <p className="text-gray-800 font-medium text-lg leading-relaxed whitespace-pre-wrap">
-                            {senseiMessage}
-                        </p>
+                    <div className="whitespace-pre-wrap opacity-90 mb-4">
+                        {systemLog}
                     </div>
+                    {taskCompleted && (
+                        <button 
+                            onClick={advanceProtocol}
+                            className="w-full py-2 bg-white/10 hover:bg-white/20 text-white font-bold text-xs uppercase tracking-widest border border-white/20 transition-all"
+                        >
+                            {currentStepIsBriefing ? 'EXECUTE SEQUENCE >>' : 'NEXT SEQUENCE >>'}
+                        </button>
+                    )}
                 </div>
-                {taskCompleted && (
-                    <button 
-                        onClick={advanceLesson}
-                        className={`px-6 py-3 text-white font-bold rounded-lg shadow-md transition-all animate-bounce ${
-                            currentStepIsBriefing 
-                            ? 'bg-indigo-500 hover:bg-indigo-600' 
-                            : 'bg-green-500 hover:bg-green-600'
-                        }`}
-                    >
-                        {currentStepIsBriefing ? 'ミッション開始 →' : '次へ進む →'}
-                    </button>
-                )}
-            </div>
-        )}
+            )}
 
-        <div className="flex flex-col lg:flex-row gap-8 items-start">
-        
-        {/* Controls Panel */}
-        <div className="w-full lg:w-1/3 space-y-6">
-            <div className={`apple-card p-6 fade-in-up delay-100 transition-opacity ${isSenseiMode && level === 1 && 'ring-2 ring-blue-500'}`}>
-                <div className="mb-8 p-6 bg-[#F5F5F7] rounded-2xl text-center border border-black/[0.03]">
-                    <p className="font-mono text-xl font-bold text-[#1d1d1f] tracking-wider">
-                    y = <span className="text-[#0071e3]">{a === 0 ? '' : `${a}x²`}</span> {b >= 0 ? '+' : ''} <span className="text-[#34c759]">{b}x</span> {c >= 0 ? '+' : ''} <span className="text-[#ff3b30]">{c}</span>
+            <div className={`p-6 bg-[#111] border border-gray-800 rounded-sm transition-all ${isProtocolActive && level === 1 && 'ring-1 ring-cyan-500'}`}>
+                <div className="mb-6 p-4 bg-black rounded-sm border border-gray-800 text-center">
+                    <p className="font-mono text-lg font-bold text-gray-300 tracking-wider">
+                    ƒ(x) = <span className="text-cyan-400">{a === 0 ? '' : `${a}x²`}</span> {b >= 0 ? '+' : ''} <span className="text-green-400">{b}x</span> {c >= 0 ? '+' : ''} <span className="text-purple-400">{c}</span>
                     </p>
                 </div>
 
                 <div className="space-y-8">
-                    <div className={`space-y-3 transition-opacity ${isSenseiMode && level !== 1 && level !== 3 && 'opacity-50 pointer-events-none'}`}>
+                    {/* A Slider */}
+                    <div className={`space-y-2 transition-opacity ${isProtocolActive && level !== 1 && level !== 3 && 'opacity-30 blur-[1px] pointer-events-none'}`}>
                         <div className="flex justify-between items-end">
-                            <label className="text-xs font-bold text-[#86868b] uppercase tracking-wide flex items-center">
-                                <span className="w-2 h-2 rounded-full bg-[#0071e3] mr-2"></span>
-                                a (グラフの開き)
+                            <label className="text-[10px] font-bold text-cyan-500 uppercase tracking-widest">
+                                Field Strength (a)
                             </label>
-                            <span className="font-mono text-lg font-bold text-[#0071e3]">{a.toFixed(1)}</span>
+                            <span className="font-mono text-sm font-bold text-cyan-400">{a.toFixed(1)}</span>
                         </div>
                         <input 
                             type="range" min="-5" max="5" step="1" 
                             value={a} onChange={(e) => setA(parseFloat(e.target.value))}
-                            className="w-full"
+                            className="w-full accent-cyan-500 h-1 bg-gray-800 rounded-lg appearance-none cursor-pointer"
                         />
                     </div>
 
-                    <div className={`space-y-3 transition-opacity ${isSenseiMode && level !== 3 && 'opacity-50 pointer-events-none'}`}>
+                    {/* B Slider */}
+                    <div className={`space-y-2 transition-opacity ${isProtocolActive && level !== 3 && 'opacity-30 blur-[1px] pointer-events-none'}`}>
                         <div className="flex justify-between items-end">
-                            <label className="text-xs font-bold text-[#86868b] uppercase tracking-wide flex items-center">
-                                <span className="w-2 h-2 rounded-full bg-[#34c759] mr-2"></span>
-                                b (軸の位置)
+                            <label className="text-[10px] font-bold text-green-500 uppercase tracking-widest">
+                                Horizon Shift (b)
                             </label>
-                            <span className="font-mono text-lg font-bold text-[#34c759]">{b.toFixed(1)}</span>
+                            <span className="font-mono text-sm font-bold text-green-400">{b.toFixed(1)}</span>
                         </div>
                         <input 
                             type="range" min="-10" max="10" step="1" 
                             value={b} onChange={(e) => setB(parseFloat(e.target.value))}
-                            className="w-full"
+                            className="w-full accent-green-500 h-1 bg-gray-800 rounded-lg appearance-none cursor-pointer"
                         />
                     </div>
 
-                    <div className={`space-y-3 transition-opacity ${isSenseiMode && level !== 2 && 'opacity-50 pointer-events-none'}`}>
+                    {/* C Slider */}
+                    <div className={`space-y-2 transition-opacity ${isProtocolActive && level !== 2 && 'opacity-30 blur-[1px] pointer-events-none'}`}>
                         <div className="flex justify-between items-end">
-                            <label className="text-xs font-bold text-[#86868b] uppercase tracking-wide flex items-center">
-                                <span className="w-2 h-2 rounded-full bg-[#ff3b30] mr-2"></span>
-                                c (y切片)
+                            <label className="text-[10px] font-bold text-purple-500 uppercase tracking-widest">
+                                Vertical Offset (c)
                             </label>
-                            <span className="font-mono text-lg font-bold text-[#ff3b30]">{c.toFixed(1)}</span>
+                            <span className="font-mono text-sm font-bold text-purple-400">{c.toFixed(1)}</span>
                         </div>
                         <input 
                             type="range" min="-10" max="10" step="1" 
                             value={c} onChange={(e) => setC(parseFloat(e.target.value))}
-                            className="w-full"
+                            className="w-full accent-purple-500 h-1 bg-gray-800 rounded-lg appearance-none cursor-pointer"
                         />
                     </div>
                 </div>
             </div>
           
-            <div className="apple-card p-6 space-y-4 fade-in-up delay-200">
-                <h3 className="text-xs font-bold text-[#86868b] uppercase tracking-wider border-b border-gray-100 pb-3">グラフの性質</h3>
+            <div className="p-4 bg-[#111] border border-gray-800 rounded-sm space-y-3">
+                <h3 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest border-b border-gray-800 pb-2">Telemetry Data</h3>
                 <div className="flex justify-between items-center group">
-                    <span className="text-sm font-medium text-[#1d1d1f]">頂点座標</span>
-                    <span className="font-mono text-base font-medium text-[#ff3b30] group-hover:scale-105 transition-transform">({vertexX.toFixed(2)}, {vertexY.toFixed(2)})</span>
+                    <span className="text-xs text-gray-400">Singularity Coords</span>
+                    <span className="font-mono text-sm text-red-400">({vertexX.toFixed(2)}, {vertexY.toFixed(2)})</span>
                 </div>
                 <div className="flex justify-between items-center group">
-                    <span className="text-sm font-medium text-[#1d1d1f]">軸の方程式</span>
-                    <span className="font-mono text-base font-medium text-[#1d1d1f] group-hover:scale-105 transition-transform">x = {vertexX.toFixed(2)}</span>
+                    <span className="text-xs text-gray-400">Axis of Symmetry</span>
+                    <span className="font-mono text-sm text-gray-300">x = {vertexX.toFixed(2)}</span>
                 </div>
             </div>
         </div>
 
-        {/* Canvas Panel */}
-        <div className="w-full lg:w-2/3 apple-card p-2 flex items-center justify-center overflow-hidden bg-white fade-in-up delay-300 relative min-h-[500px]">
-          <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:20px_20px] opacity-40 pointer-events-none"></div>
+        {/* Right Panel: Viewport */}
+        <div className="lg:col-span-8 bg-black border border-gray-800 rounded-sm relative overflow-hidden flex items-center justify-center min-h-[600px] shadow-[inset_0_0_20px_rgba(0,0,0,0.8)]">
+          {/* CRT Scanline Effect */}
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] z-20 pointer-events-none bg-[length:100%_4px,3px_100%]"></div>
+          
+          <div className="absolute top-4 left-4 z-30 font-mono text-[10px] text-cyan-600 tracking-widest opacity-70">
+              VIEWPORT: ORBITAL_PLANE_XZ<br/>
+              ZOOM: 30x<br/>
+              GRID: ACTIVE
+          </div>
+
           <canvas 
             ref={canvasRef} 
-            width={800} 
-            height={600} 
-            className="w-full h-auto max-w-full z-10"
+            width={900} 
+            height={700} 
+            className="w-full h-full object-contain z-10"
           />
         </div>
-      </div>
+
       </main>
+      
+      <style jsx global>{`
+        .glow-text {
+            text-shadow: 0 0 10px rgba(6,182,212,0.5);
+        }
+      `}</style>
     </div>
   );
 }

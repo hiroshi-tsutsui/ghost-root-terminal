@@ -4,25 +4,66 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 
 export default function TrigPage() {
-  const [angle, setAngle] = useState(0); // Degrees 0-360
-  const [isPlaying, setIsPlaying] = useState(false);
+  // --- STATE ---
+  const [angle, setAngle] = useState(0); 
+  const [amplitude, setAmplitude] = useState(1.0);
+  const [frequency, setFrequency] = useState(1.0);
+  const [phase, setPhase] = useState(0);
+  
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [resonance, setResonance] = useState(0); // 0-100%
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  // Animation loop
+  // Target values (The "Solution" to find)
+  // Hardcoded for now, could be randomized level-by-level
+  const targetAmp = 1.5;
+  const targetFreq = 2.0;
+  const targetPhase = 90; 
+
+  // --- NARRATIVE ---
+  const [logMessage, setLogMessage] = useState("INITIALIZING HARMONIC RESONANCE SCAN...");
+
+  // --- ANIMATION LOOP ---
   useEffect(() => {
     let animationFrameId: number;
-    if (isPlaying) {
-      const animate = () => {
-        setAngle(prev => (prev + 1) % 360);
-        animationFrameId = requestAnimationFrame(animate);
-      };
-      animationFrameId = requestAnimationFrame(animate);
-    }
-    return () => cancelAnimationFrame(animationFrameId);
-  }, [isPlaying]);
+    let t = 0;
 
-  // Drawing
-  useEffect(() => {
+    const animate = () => {
+      if (isPlaying) {
+        setAngle(prev => (prev + 2) % 360);
+        t += 0.02;
+      }
+      
+      // Calculate Resonance (How close are we?)
+      // Simple distance metric
+      const ampDiff = Math.abs(amplitude - targetAmp);
+      const freqDiff = Math.abs(frequency - targetFreq);
+      const phaseDiff = Math.abs(phase - targetPhase);
+      
+      // Normalize to 0-100 score
+      // Allow some tolerance
+      let score = 100 - (ampDiff * 20 + freqDiff * 20 + (phaseDiff / 3.6));
+      score = Math.max(0, Math.min(100, score));
+      setResonance(score);
+
+      if (score > 95) {
+        setLogMessage("RESONANCE STABLE. WAVEFORM LOCKED.");
+      } else if (score > 70) {
+        setLogMessage("APPROACHING HARMONIC SYNC...");
+      } else {
+        setLogMessage("SIGNAL DISSONANCE DETECTED. ADJUST PARAMETERS.");
+      }
+
+      draw(t);
+      animationFrameId = requestAnimationFrame(animate);
+    };
+    
+    animationFrameId = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(animationFrameId);
+  }, [isPlaying, amplitude, frequency, phase]);
+
+  // --- DRAWING ---
+  const draw = (time: number) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -32,108 +73,150 @@ export default function TrigPage() {
     const height = canvas.height;
     ctx.clearRect(0, 0, width, height);
 
-    const cx = 150; // Unit circle center X
-    const cy = height / 2; // Unit circle center Y
-    const r = 100; // Radius
-    
-    // Grid
-    ctx.strokeStyle = '#f0f0f0';
+    // Background Grid (Oscilloscope Style)
+    ctx.strokeStyle = '#1a1a1a';
     ctx.lineWidth = 1;
-    // ... grid drawing ...
-
-    // Unit Circle
+    for (let x = 0; x < width; x += 50) {
+      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, height); ctx.stroke();
+    }
+    for (let y = 0; y < height; y += 50) {
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(width, y); ctx.stroke();
+    }
+    
+    // Axis
     ctx.strokeStyle = '#333';
     ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.arc(cx, cy, r, 0, Math.PI * 2);
-    ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0, height/2); ctx.lineTo(width, height/2); ctx.stroke();
 
-    // Angle calculations
-    const rad = (angle * Math.PI) / 180;
-    const px = cx + r * Math.cos(rad);
-    const py = cy - r * Math.sin(rad); // Canvas Y is inverted
+    const cy = height / 2;
+    const unitScale = 50; // 50px = 1 unit
 
-    // Radius line
-    ctx.strokeStyle = '#0071e3';
-    ctx.beginPath();
-    ctx.moveTo(cx, cy);
-    ctx.lineTo(px, py);
-    ctx.stroke();
-
-    // Point on circle
-    ctx.fillStyle = '#ff3b30';
-    ctx.beginPath();
-    ctx.arc(px, py, 5, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Projection line to wave
-    ctx.strokeStyle = '#ff3b30'; // Red dashed
+    // --- DRAW TARGET WAVE (GHOST) ---
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+    ctx.lineWidth = 4;
     ctx.setLineDash([5, 5]);
     ctx.beginPath();
-    ctx.moveTo(px, py);
-    ctx.lineTo(350, py); // Start of wave area
+    for (let x = 0; x < width; x++) {
+      // Map x to radians
+      const rad = (x / unitScale) * 0.5; // Scale factor
+      const y = cy - (targetAmp * unitScale) * Math.sin((targetFreq * rad) + (targetPhase * Math.PI / 180));
+      if (x === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
     ctx.stroke();
     ctx.setLineDash([]);
 
-    // Sine Wave
-    const waveStartX = 350;
-    ctx.strokeStyle = '#34c759'; // Green
-    ctx.lineWidth = 2;
-    ctx.beginPath();
+
+    // --- DRAW PLAYER WAVE ---
+    // Color shifts based on resonance
+    const waveColor = resonance > 90 ? '#00ff00' : (resonance > 50 ? '#ffff00' : '#ff0055');
     
-    // Draw wave history? Or just static wave with current point?
-    // Let's draw the wave from 0 to 360 degrees mapped to x
-    for (let x = 0; x < 400; x++) {
-        const plotRad = (x / 200) * Math.PI; // Scale x to radians
-        const plotY = cy - r * Math.sin(plotRad);
-        if (x === 0) ctx.moveTo(waveStartX + x, plotY);
-        else ctx.lineTo(waveStartX + x, plotY);
+    ctx.strokeStyle = waveColor;
+    ctx.lineWidth = 3;
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = waveColor;
+    
+    ctx.beginPath();
+    for (let x = 0; x < width; x++) {
+      const rad = (x / unitScale) * 0.5; 
+      // y = A * sin(B * (x + C)) + D
+      const y = cy - (amplitude * unitScale) * Math.sin((frequency * rad) + (phase * Math.PI / 180));
+      if (x === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
     }
     ctx.stroke();
+    ctx.shadowBlur = 0;
 
-    // Current point on wave
-    const waveCurrentX = waveStartX + (rad / Math.PI) * 200; 
-    // Wait, let's map 0-2PI to width of 400px (so 200px per PI)
-    // 360 deg = 2PI approx 6.28. 
-    // Let's map 360 deg to 360 px for simplicity?
-    
-    const waveX = waveStartX + angle;
-    ctx.fillStyle = '#34c759';
-    ctx.beginPath();
-    ctx.arc(waveX, py, 5, 0, Math.PI * 2);
-    ctx.fill();
-
-  }, [angle]);
+    // --- DRAW UNIT CIRCLE VISUALIZATION (Optional Overlay) ---
+    // Keeping it simple for now to focus on the wave matching.
+  };
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#F5F5F7]">
-        <header className="bg-white/70 backdrop-blur-md border-b h-16 flex items-center px-6 fixed w-full z-10">
-             <Link href="/" className="text-sm font-medium text-gray-500 hover:text-blue-600">← Home</Link>
-             <h1 className="ml-4 font-bold text-gray-900">三角比 (Trigonometry)</h1>
+    <div className="flex flex-col min-h-screen bg-black text-green-500 font-mono">
+        {/* HEADER */}
+        <header className="border-b border-green-900/30 h-16 flex items-center justify-between px-6 sticky top-0 bg-black/80 backdrop-blur-md z-10">
+             <div className="flex items-center gap-4">
+                 <Link href="/" className="text-sm font-bold text-gray-500 hover:text-green-400">← EXIT SIMULATION</Link>
+                 <h1 className="text-xl font-bold tracking-widest text-white">PROTOCOL: HARMONIC_SYNC</h1>
+             </div>
+             <div className="flex items-center gap-2">
+                 <div className={`w-3 h-3 rounded-full ${resonance > 95 ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}></div>
+                 <span className="text-xs text-gray-400">STATUS: {resonance > 95 ? 'LOCKED' : 'SEARCHING'}</span>
+             </div>
         </header>
-        <main className="pt-24 p-6 max-w-6xl mx-auto w-full flex flex-col md:flex-row gap-6">
-            <div className="w-full md:w-1/3 space-y-6">
-                <div className="bg-white p-6 rounded-2xl shadow-sm">
-                    <h2 className="text-lg font-bold mb-4">Unit Circle & Wave</h2>
-                    <div className="flex items-center gap-4 mb-4">
-                        <label className="text-sm font-bold text-gray-500">Angle (θ)</label>
-                        <span className="font-mono text-xl">{angle}°</span>
+
+        <main className="flex-1 flex flex-col md:flex-row p-6 gap-6 overflow-hidden">
+            
+            {/* CONTROLS PANEL */}
+            <div className="w-full md:w-1/3 space-y-6 order-2 md:order-1">
+                <div className="bg-gray-900/50 border border-gray-800 p-6 rounded-sm shadow-lg">
+                    <div className="mb-6 border-b border-gray-800 pb-2">
+                         <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider">Parameters</h2>
                     </div>
-                    <input 
-                        type="range" min="0" max="360" value={angle} 
-                        onChange={(e) => setAngle(parseInt(e.target.value))}
-                        className="w-full"
-                    />
-                    <button 
-                        onClick={() => setIsPlaying(!isPlaying)}
-                        className="mt-4 w-full py-2 bg-blue-600 text-white rounded-lg font-bold"
-                    >
-                        {isPlaying ? 'Stop Animation' : 'Start Animation'}
-                    </button>
+
+                    {/* AMPLITUDE */}
+                    <div className="mb-8">
+                        <div className="flex justify-between mb-2">
+                            <label className="text-xs font-bold text-blue-400">AMPLITUDE (Energy)</label>
+                            <span className="text-xs text-white">{amplitude.toFixed(1)}</span>
+                        </div>
+                        <input 
+                            type="range" min="0.1" max="3.0" step="0.1"
+                            value={amplitude} 
+                            onChange={(e) => setAmplitude(parseFloat(e.target.value))}
+                            className="w-full h-2 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-blue-500"
+                        />
+                    </div>
+
+                    {/* FREQUENCY */}
+                    <div className="mb-8">
+                        <div className="flex justify-between mb-2">
+                            <label className="text-xs font-bold text-purple-400">FREQUENCY (Hertz)</label>
+                            <span className="text-xs text-white">{frequency.toFixed(1)}</span>
+                        </div>
+                        <input 
+                            type="range" min="0.1" max="5.0" step="0.1"
+                            value={frequency} 
+                            onChange={(e) => setFrequency(parseFloat(e.target.value))}
+                            className="w-full h-2 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-purple-500"
+                        />
+                    </div>
+
+                    {/* PHASE */}
+                    <div className="mb-8">
+                        <div className="flex justify-between mb-2">
+                            <label className="text-xs font-bold text-yellow-400">PHASE (Shift)</label>
+                            <span className="text-xs text-white">{phase}°</span>
+                        </div>
+                        <input 
+                            type="range" min="0" max="360" step="15"
+                            value={phase} 
+                            onChange={(e) => setPhase(parseInt(e.target.value))}
+                            className="w-full h-2 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-yellow-500"
+                        />
+                    </div>
+
+                    <div className="mt-8 pt-4 border-t border-gray-800">
+                        <p className="text-xs text-gray-500 font-mono mb-2">SYSTEM LOG:</p>
+                        <div className="text-xs text-green-400 font-mono h-12 overflow-hidden whitespace-pre-wrap">
+                            {'>'} {logMessage}
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div className="w-full md:w-2/3 bg-white rounded-2xl shadow-sm p-4 flex justify-center items-center">
-                <canvas ref={canvasRef} width={800} height={400} className="w-full max-w-full" />
+
+            {/* VISUALIZATION */}
+            <div className="w-full md:w-2/3 bg-black border border-gray-800 rounded-sm relative order-1 md:order-2">
+                <div className="absolute top-4 left-4 z-10 pointer-events-none">
+                    <span className="text-[10px] text-gray-600 font-mono block">OSCILLOSCOPE VIEW</span>
+                    <span className="text-[10px] text-gray-600 font-mono block">RES: {resonance.toFixed(1)}%</span>
+                </div>
+                <canvas 
+                    ref={canvasRef} 
+                    width={800} 
+                    height={500} 
+                    className="w-full h-full object-cover" 
+                />
             </div>
         </main>
     </div>
