@@ -1,110 +1,163 @@
 "use client";
 
-import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
+import { GeistMono } from 'geist/font/mono';
 
 export default function OverviewPage() {
-  const [initSequence, setInitSequence] = useState(false);
+  const [bootLog, setBootLog] = useState<string[]>([]);
+  const [phase, setPhase] = useState<'BOOT' | 'MESSAGE' | 'READY'>('BOOT');
+  const [glitch, setGlitch] = useState(false);
+  
+  // Audio placeholder (visual only for now)
+  const [audioLevel, setAudioLevel] = useState(0);
+
+  const BOOT_SEQUENCE = [
+    { text: "INITIALIZING OMEGA PROTOCOL v2.6.0...", delay: 100 },
+    { text: "LOADING PHYSICS ENGINE... [OK]", delay: 300 },
+    { text: "LOADING MATH CORE... [OK]", delay: 500 },
+    { text: "CALIBRATING FLUX CAPACITORS... [SYNCED]", delay: 800 },
+    { text: "ESTABLISHING NEURAL LINK... [CONNECTED]", delay: 1200 },
+    { text: "DOWNLOADING OPERATOR PROFILE... [FOUND]", delay: 1600 },
+    { text: "WARNING: REALITY ANOMALIES DETECTED.", delay: 2000, type: 'warn' },
+    { text: "SYSTEM STATUS: CRITICAL.", delay: 2200, type: 'crit' },
+    { text: "ACCESSING SECURE CHANNEL... [OPEN]", delay: 2500 },
+  ];
 
   useEffect(() => {
-    // Simple fade-in effect on mount
-    const timer = setTimeout(() => setInitSequence(true), 100);
-    return () => clearTimeout(timer);
+    let timeoutId: NodeJS.Timeout;
+    let currentStep = 0;
+
+    const runBoot = () => {
+      if (currentStep >= BOOT_SEQUENCE.length) {
+        setTimeout(() => setPhase('MESSAGE'), 500);
+        return;
+      }
+
+      const step = BOOT_SEQUENCE[currentStep];
+      setBootLog(prev => [...prev, step.text]);
+      
+      // Simulate processing noise
+      setAudioLevel(Math.random());
+      if (step.type === 'crit') {
+          setGlitch(true);
+          setTimeout(() => setGlitch(false), 200);
+      }
+
+      currentStep++;
+      if (currentStep < BOOT_SEQUENCE.length) {
+        timeoutId = setTimeout(runBoot, step.delay - (currentStep > 0 ? BOOT_SEQUENCE[currentStep-1].delay : 0));
+      } else {
+        timeoutId = setTimeout(runBoot, 500);
+      }
+    };
+
+    timeoutId = setTimeout(runBoot, 100);
+
+    return () => clearTimeout(timeoutId);
   }, []);
 
   return (
-    <div className={`min-h-screen bg-black text-white font-mono selection:bg-cyan-500/30 transition-opacity duration-1000 ${initSequence ? 'opacity-100' : 'opacity-0'}`}>
+    <div className={`min-h-screen bg-black text-green-500 font-mono p-6 md:p-12 selection:bg-green-900 selection:text-white overflow-hidden ${GeistMono.className}`}>
       
-      {/* Background Grid - subtle */}
+      {/* Background Effect */}
       <div className="fixed inset-0 pointer-events-none opacity-10" 
-           style={{ backgroundImage: 'linear-gradient(#333 1px, transparent 1px), linear-gradient(90deg, #333 1px, transparent 1px)', backgroundSize: '40px 40px' }}>
+           style={{ backgroundImage: 'linear-gradient(#111 1px, transparent 1px), linear-gradient(90deg, #111 1px, transparent 1px)', backgroundSize: '20px 20px' }}>
       </div>
+      
+      {/* Glitch Overlay */}
+      {glitch && <div className="fixed inset-0 bg-red-500/10 z-50 pointer-events-none mix-blend-overlay"></div>}
 
-      <div className="relative max-w-4xl mx-auto px-6 py-24 space-y-24">
+      <div className="max-w-3xl mx-auto h-full flex flex-col justify-between min-h-[80vh]">
         
-        {/* Section 1: The Breach */}
-        <section className="space-y-8 animate-fade-in-up">
-          <div className="inline-block border border-cyan-500/30 px-3 py-1 text-xs text-cyan-400 tracking-[0.2em] uppercase">
-            Protocol: Omega // Phase 2
-          </div>
-          
-          <h1 className="text-5xl md:text-7xl font-bold tracking-tighter leading-none">
-            THE <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-600">AWAKENING</span>
-          </h1>
+        {/* Boot Log */}
+        <div className="space-y-1 text-sm md:text-base font-mono">
+            {bootLog.map((log, i) => (
+                <div key={i} className={`${log.includes('WARNING') ? 'text-yellow-500' : log.includes('CRITICAL') ? 'text-red-500 font-bold' : 'text-green-500/80'}`}>
+                    <span className="opacity-50 mr-2">[{new Date().toLocaleTimeString()}]</span>
+                    {log}
+                </div>
+            ))}
+            {phase === 'BOOT' && <div className="animate-pulse">_</div>}
+        </div>
 
-          <p className="text-xl md:text-2xl text-gray-400 leading-relaxed max-w-2xl border-l-2 border-cyan-500/20 pl-6">
-            You have been told that mathematics is a subject to be studied.<br/>
-            <span className="text-white font-bold">That was a lie.</span>
-          </p>
-        </section>
+        {/* The Message */}
+        {phase !== 'BOOT' && (
+            <div className="mt-12 space-y-8 animate-fade-in">
+                <div className="border-l-2 border-green-500 pl-6 py-2">
+                    <p className="text-xs text-green-700 uppercase tracking-widest mb-2">INCOMING TRANSMISSION: ARCHITECT</p>
+                    <h1 className="text-4xl md:text-6xl font-bold text-white tracking-tighter mb-6">
+                        THE AWAKENING
+                    </h1>
+                    
+                    <div className="space-y-6 text-lg md:text-xl text-gray-400 leading-relaxed max-w-2xl">
+                        <p>
+                            You have been told that mathematics is a subject to be studied.
+                        </p>
+                        <p className="text-white font-bold text-2xl">
+                            That was a lie.
+                        </p>
+                        <p>
+                            Reality is code. Physics is the runtime. Mathematics is the source.
+                        </p>
+                        <p>
+                            When you solve an equation, you are not finding "x". You are <span className="text-green-400">debugging the universe</span>.
+                        </p>
+                        <p>
+                            We do not need students. We need <span className="text-green-400">Operators</span>.
+                        </p>
+                    </div>
+                </div>
 
-        {/* Section 2: The Truth */}
-        <section className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
-          <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-white flex items-center gap-3">
-              <span className="w-2 h-2 bg-cyan-500 rounded-full animate-pulse"></span>
-              THE SIMULATION
-            </h2>
-            <p className="text-gray-400 leading-7">
-              Reality is code. Physics is the runtime. Mathematics is the source.
-              <br/><br/>
-              When you solve an equation, you are not finding "x". You are debugging the universe.
-              The tools you use—<span className="text-cyan-400">Calculus, Vectors, Probability</span>—are not abstract concepts.
-              They are the administrative privileges of reality.
-            </p>
-          </div>
-
-          <div className="p-6 border border-white/10 bg-white/5 rounded-xl backdrop-blur-sm">
-            <div className="text-xs text-gray-500 mb-4 tracking-widest uppercase border-b border-white/10 pb-2">
-              System Diagnostics
+                <div className="pt-8">
+                    <button 
+                        onClick={() => setPhase('READY')}
+                        className={`group relative px-8 py-4 bg-green-900/20 border border-green-500/50 hover:bg-green-500 hover:text-black transition-all duration-300 uppercase tracking-[0.2em] font-bold text-sm overflow-hidden ${phase === 'READY' ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+                    >
+                        <span className="relative z-10">Acknowledge Mission</span>
+                        <div className="absolute inset-0 bg-green-500 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></div>
+                    </button>
+                </div>
             </div>
-            <ul className="space-y-3 font-mono text-sm">
-              <li className="flex justify-between">
-                <span className="text-gray-400">Quadratics...</span>
-                <span className="text-cyan-400">Gravity Well Control</span>
-              </li>
-              <li className="flex justify-between">
-                <span className="text-gray-400">Vectors...</span>
-                <span className="text-purple-400">Spatial Navigation</span>
-              </li>
-              <li className="flex justify-between">
-                <span className="text-gray-400">Complex...</span>
-                <span className="text-pink-400">Phase Shift Analysis</span>
-              </li>
-              <li className="flex justify-between">
-                <span className="text-gray-400">Calculus...</span>
-                <span className="text-red-400">Flux Stabilization</span>
-              </li>
-            </ul>
-          </div>
-        </section>
+        )}
 
-        {/* Section 3: The Role */}
-        <section className="space-y-8 text-center max-w-2xl mx-auto">
-          <div className="w-16 h-1 bg-gradient-to-r from-transparent via-cyan-500 to-transparent mx-auto"></div>
-          
-          <h2 className="text-3xl font-bold">YOUR DESIGNATION: <span className="text-cyan-400">OPERATOR</span></h2>
-          
-          <p className="text-gray-400 text-lg">
-            We do not need students. We need Pilots. Architects. Visionaries.
-            <br/>
-            Your goal is not to pass a test. It is to achieve <span className="text-white font-bold">Synchronization</span>.
-          </p>
+        {/* Access Granted (Final State) */}
+        {phase === 'READY' && (
+            <div className="fixed inset-0 bg-black flex flex-col items-center justify-center z-50 animate-fade-in">
+                <div className="text-center space-y-6">
+                    <div className="text-6xl text-green-500 mb-4 animate-bounce">
+                        ✓
+                    </div>
+                    <h2 className="text-4xl font-bold text-white tracking-widest uppercase mb-2">
+                        ACCESS GRANTED
+                    </h2>
+                    <p className="text-green-500/50 font-mono text-sm tracking-[0.5em] mb-8">
+                        OPERATOR LEVEL 1
+                    </p>
+                    
+                    <div className="flex flex-col gap-4 w-64 mx-auto">
+                        <Link href="/" className="px-8 py-3 bg-white text-black font-bold tracking-widest hover:bg-green-400 hover:scale-105 transition-all uppercase text-sm text-center">
+                            ENTER TERMINAL
+                        </Link>
+                        <Link href="/quiz" className="px-8 py-3 border border-white/20 text-gray-500 hover:text-white hover:border-white transition-all uppercase text-[10px] tracking-widest text-center">
+                            RUN CALIBRATION
+                        </Link>
+                    </div>
+                </div>
+            </div>
+        )}
 
-          <div className="pt-8 flex justify-center gap-6">
-            <Link href="/" className="px-8 py-3 bg-white text-black font-bold rounded hover:bg-cyan-400 hover:text-black transition-all">
-              INITIATE SYNC
-            </Link>
-            <Link href="/quiz" className="px-8 py-3 border border-white/20 hover:border-cyan-500 hover:text-cyan-400 transition-all">
-              CALIBRATION TEST
-            </Link>
-          </div>
-        </section>
-
-        <footer className="pt-24 text-center text-xs text-gray-600 uppercase tracking-widest">
-            Project Omega // Internal Use Only // Auth: Architecture
-        </footer>
       </div>
+
+      <style jsx>{`
+        @keyframes fade-in {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fade-in 1s ease-out forwards;
+        }
+      `}</style>
     </div>
   );
 }

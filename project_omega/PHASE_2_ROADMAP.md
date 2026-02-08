@@ -185,7 +185,7 @@ We are moving from a "Tool" to a "Platform".
   - **Narrative Formalized:** Created `NARRATIVE.md` defining "Protocol: Entropy Compressor".
   - **UI Updated:** Integrated "System Logs", Glitch Effects for overload, and Level tracking.
   - **Mechanics:** Level 1 (Witness Growth) -> Level 2 (Compression Lock).
-  - **Goal:** Visually demonstrate the necessity of Logarithmic Scales for infinite data.
+  - **Goal:** Visually demonstrate why Log scales are necessary for infinite growth.
 - **[2026-02-08] Narrative Core: Codex Expansion (Causality Engine & Fabric Weaver)**
   - **Modules Evolved:** Functions (Causality Engine), Matrices (Fabric Weaver).
   - **Narrative Layer:**
@@ -267,3 +267,9 @@ We are moving from a "Tool" to a "Platform".
   - **Mechanics:** User must trigger the "Crash" to unlock the Log Mode (Compression).
   - **Visuals:** Added Glitch effects on failure and "Protocol Complete" modal for File 009.
   - **Goal:** Visually demonstrate why Log scales are necessary for infinite growth.
+
+- **[2026-02-08] Narrative Core: The Awakening (Overview)**
+  - **Status:** Evolved to Terminal Boot Sequence.
+  - **Action:** Replaced static text with a dynamic boot log, glitch effects, and "Access Granted" transition.
+  - **Narrative:** The user now "Initializes" the Omega Protocol rather than just reading about it.
+  - **Goal:** Create a high-stakes, immersive entry point for the Operator.
