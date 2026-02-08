@@ -22,7 +22,7 @@ const LOCAL_CONTENT = {
         levels: {
             1: { name: "BASICS", desc: "Intuition: Speed vs Distance." },
             2: { name: "THEORY", desc: "Limits & Accumulation." },
-            3: { name: "ENGINE", desc: "The Flux Visualization." },
+            3: { name: "VISUALIZATION", desc: "The Flux Visualization." },
             4: { name: "APPLY", desc: "Real-world Dynamics." }
         },
         concepts: {
@@ -76,28 +76,28 @@ const LOCAL_CONTENT = {
         levels: {
             1: { name: "基礎 (Basics)", desc: "直感：速度と距離の関係。" },
             2: { name: "理論 (Theory)", desc: "極限と蓄積。" },
-            3: { name: "エンジン (Engine)", desc: "変化の可視化。" },
+            3: { name: "可視化 (Viz)", desc: "変化の可視化。" },
             4: { name: "応用 (Apply)", desc: "実世界でのダイナミクス。" }
         },
         concepts: {
             title: "概念：変化の学問",
             diff_title: "微分（傾き）",
-            diff_body: "<strong>瞬間の変化</strong>を測定します。車の運転において、スピードメーターはその瞬間の微分（速度）を示しています。",
+            diff_body: "<strong>瞬間の変化率</strong>を捉えます。車のスピードメーターは、その瞬間の「微分」（速度）を示しています。",
             int_title: "積分（面積）",
-            int_body: "<strong>蓄積</strong>を測定します。オドメーターは、時間の経過とともに蓄積された積分（総走行距離）を示しています。"
+            int_body: "<strong>蓄積量</strong>を測定します。オドメーターは、時間の経過と共に蓄積された「積分」（総走行距離）を記録します。"
         },
         theory: {
             title: "理論：無限の精度",
             def_title: "定義",
             derivative_term: "導関数 (Derivative)",
-            derivative_desc: "時間ステップ「h」をゼロに近づけます。割線（2点を通る線）は接線（1点に接する線）となります。",
+            derivative_desc: "時間ステップ「h」を限りなくゼロに近づけることで、2点間の平均変化率が、1点における瞬間の変化率（接線の傾き）となります。",
             integral_term: "積分 (Integral)",
-            integral_desc: "曲線の下にある無限の小さな長方形を足し合わせることで、総面積（蓄積量）を求めます。"
+            integral_desc: "曲線の下にある無限に小さな長方形の面積を足し合わせることで、総量（蓄積された面積）を導き出します。"
         },
         viz: {
             title: "プロトコル：フラックス・エンジン",
-            integrity: "エンジン整合性",
-            target: "目標フラックス",
+            integrity: "FLUX INTEGRITY",
+            target: "TARGET FLUX",
             controls: {
                 function_label: "入力関数 f(x)",
                 time_label: "時間パラメータ (t)",
@@ -109,20 +109,20 @@ const LOCAL_CONTENT = {
                 disable_3d: "2D平面に戻る",
                 rotation_active: "軌道制御アクティブ"
             },
-            viewport_label: "ビューポート描画"
+            viewport_label: "VIEWPORT_RENDER"
         },
         apps: {
             title: "応用：システムダイナミクス",
             physics_title: "物理エンジン",
-            physics_body: "ゲームや工学における運動、力、衝突のシミュレーション。",
+            physics_body: "ゲームや工学シミュレーションにおいて、物体の運動、力、衝突を計算するために必須です。",
             ml_title: "機械学習 (AI)",
-            ml_body: "勾配降下法（Gradient Descent）は、微分を使用してAIモデルの「損失」（エラー）を最小化します。",
+            ml_body: "勾配降下法（Gradient Descent）は、微分を用いてAIモデルの誤差（Loss）を最小化する方向を探ります。",
             econ_title: "経済学",
-            econ_body: "限界費用・限界収益分析を行い、変動する市場での利益を最適化します。"
+            econ_body: "限界費用や限界収益を分析し、変動する市場環境における利益の最大化を行います。"
         },
         completion: {
             synced: "モジュール同期完了",
-            msg: "あなたは「変化の言語」を習得しました。フラックス・エンジンは現在オンラインです。"
+            msg: "「変化の言語」を習得しました。フラックス・エンジン、オンライン。"
         }
     }
 };
@@ -169,6 +169,7 @@ export default function CalculusPage() {
   const { locale, setLocale, t: globalT } = useLanguage();
   const [currentLevel, setCurrentLevel] = useState(1);
   const [showUnlock, setShowUnlock] = useState(false);
+  const [hasInteracted, setHasInteracted] = useState(false);
 
   // Helper for local content
   const t = (key: string) => {
@@ -209,6 +210,10 @@ export default function CalculusPage() {
     setShowUnlock(false);
     // Logic handled by effect
   };
+
+  const handleInteraction = () => {
+      if (!hasInteracted) setHasInteracted(true);
+  }
 
   // --- Math Helpers ---
   const evaluateFunc = (expression: string, x: number) => {
@@ -433,12 +438,12 @@ export default function CalculusPage() {
                         <input 
                             type="text" 
                             value={funcStr} 
-                            onChange={(e) => setFuncStr(e.target.value)}
+                            onChange={(e) => { setFuncStr(e.target.value); handleInteraction(); }}
                             className="w-full bg-black border border-white/20 text-white p-2 text-sm font-mono focus:border-cyan-500 outline-none"
                         />
                          <div className="flex gap-2 mt-2 flex-wrap">
                             {presets.map(p => (
-                                <button key={p.label} onClick={() => setFuncStr(p.val)} className="text-[9px] border border-white/10 px-2 py-1 text-white/60 hover:text-white hover:border-white/40 transition-all">
+                                <button key={p.label} onClick={() => { setFuncStr(p.val); handleInteraction(); }} className="text-[9px] border border-white/10 px-2 py-1 text-white/60 hover:text-white hover:border-white/40 transition-all">
                                     {p.label}
                                 </button>
                             ))}
@@ -453,7 +458,7 @@ export default function CalculusPage() {
                          </div>
                          <input 
                             type="range" min="-4" max="4" step="0.01" 
-                            value={xVal} onChange={(e) => setXVal(parseFloat(e.target.value))}
+                            value={xVal} onChange={(e) => { setXVal(parseFloat(e.target.value)); handleInteraction(); }}
                             className="w-full h-1 bg-white/20 rounded-lg appearance-none cursor-pointer accent-cyan-500"
                         />
                      </div>
@@ -477,7 +482,7 @@ export default function CalculusPage() {
 
                          <div className="pt-4 border-t border-white/10">
                              <button 
-                                onClick={() => setIs3DMode(!is3DMode)}
+                                onClick={() => { setIs3DMode(!is3DMode); handleInteraction(); }}
                                 className={`w-full py-2 text-center border transition-all ${is3DMode ? 'bg-cyan-900/20 border-cyan-500 text-cyan-400' : 'border-white/20 text-white/60 hover:text-white'}`}
                             >
                                 {is3DMode ? t('modules.calculus.viz.controls.disable_3d') : t('modules.calculus.viz.controls.enable_3d')}
@@ -515,7 +520,7 @@ export default function CalculusPage() {
                     )}
                 </div>
             </div>
-             {currentLevel === 3 && (
+             {currentLevel === 3 && hasInteracted && (
                  <button onClick={() => handleLevelComplete(3)} className="mt-4 border border-cyan-500/30 text-cyan-400 px-4 py-2 text-xs hover:bg-cyan-900/20 transition-all uppercase tracking-widest">
                     COMPLETE {globalT('common.level')} 03
                  </button>
