@@ -241,8 +241,15 @@ We are moving from a "Tool" to a "Platform".
   - **Goal:** Ensured the "Fabric Weaver" module is actually playable and synced with the Operator narrative.
 
 - **[2026-02-08] Narrative Core: Codex Upgrade (Decryption Layer)**
-  - **Status:** Deployed (v2.6.0).
+  - **Status:** Deployed.
   - **Action:** Enhanced `app/codex/page.tsx` with "Matrix Rain" background and dynamic text scrambling.
   - **Narrative:** Lore entries now appear as "ENCRYPTED" binary streams until unlocked.
   - **Visuals:** Green/Black terminal aesthetic, animated 0/1 rain, hover effects.
   - **Goal:** Reinforce the feeling that the "Lore" is a hidden secret to be hacked, not just read.
+
+- **[2026-02-08] Refinement: Calculus (Flux Engine Integration)**
+  - **Status:** Deployed.
+  - **Action:** Added "Protocol Complete" Modal with Codex Integration (File 007).
+  - **Narrative:** Fully gamified completion state ("Timeline Secured") aligned with Void aesthetic.
+  - **Visuals:** Blue/Black terminal modal with pulsing "System Log" feedback.
+  - **Goal:** Ensure the Calculus module provides a definitive narrative reward.

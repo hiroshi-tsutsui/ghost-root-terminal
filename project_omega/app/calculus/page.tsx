@@ -59,6 +59,7 @@ export default function CalculusPage() {
   const [senseiMode, setSenseiMode] = useState(false);
   const [lessonStep, setLessonStep] = useState(0);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [showComplete, setShowComplete] = useState(false);
   
   // 3D Toggle
   const [is3DMode, setIs3DMode] = useState(false);
@@ -123,7 +124,11 @@ export default function CalculusPage() {
         if (is3DMode) {
             setShowConfetti(true);
             completeLevel('calculus', 3); // Level 3 Complete
-            setTimeout(() => { setShowConfetti(false); setLessonStep(6); }, 2000);
+            setTimeout(() => { 
+                setShowConfetti(false); 
+                setLessonStep(6); 
+                setShowComplete(true); // Trigger Success Modal
+            }, 1000);
         }
     }
 
@@ -317,6 +322,46 @@ export default function CalculusPage() {
   return (
     <div className="flex flex-col md:flex-row h-screen bg-[#050505] text-[#e0e0e0] font-mono overflow-hidden">
       
+      <AnimatePresence>
+        {showComplete && (
+            <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm flex items-center justify-center p-6"
+            >
+                <div className="max-w-md w-full border border-[#0071e3]/50 bg-black p-8 relative overflow-hidden shadow-[0_0_100px_rgba(0,113,227,0.2)]">
+                    <div className="absolute top-0 left-0 w-full h-1 bg-[#0071e3] animate-pulse"></div>
+                    
+                    <h2 className="text-2xl font-bold text-[#0071e3] mb-2 tracking-widest uppercase">PROTOCOL COMPLETE</h2>
+                    <p className="text-xs text-gray-500 mb-6 font-mono">FLUX ENGINE STABILIZED. TIMELINE SECURED.</p>
+                    
+                    <div className="space-y-4 mb-8 border-l-2 border-[#0071e3]/20 pl-4">
+                        <div className="flex justify-between text-sm">
+                            <span className="text-gray-400">STATUS</span>
+                            <span className="text-[#0071e3]">ONLINE</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                            <span className="text-gray-400">SYNC RATE</span>
+                            <span className="text-[#0071e3]">100.0%</span>
+                        </div>
+                         <div className="flex justify-between text-sm">
+                            <span className="text-gray-400">SYSTEM LOG</span>
+                            <span className="text-white animate-pulse">FILE_007 DECRYPTED</span>
+                        </div>
+                    </div>
+
+                    <Link href="/codex" className="block w-full text-center py-3 bg-[#0071e3] text-white font-bold tracking-[0.2em] hover:bg-white hover:text-black transition-colors uppercase text-xs">
+                        ACCESS CODEX
+                    </Link>
+                     <Link href="/" className="block w-full text-center py-3 mt-2 border border-white/10 text-gray-500 hover:text-white transition-colors uppercase text-[10px] tracking-widest">
+                        RETURN TO TERMINAL
+                    </Link>
+                </div>
+            </motion.div>
+        )}
+      </AnimatePresence>
+
        {/* Sidebar */}
        <div className="w-full md:w-[400px] flex flex-col border-r border-[#333] bg-[#0a0a0a]/90 backdrop-blur-xl z-10 h-1/2 md:h-full overflow-y-auto shadow-[4px_0_24px_rgba(0,113,227,0.1)]">
         <header className="p-6 pb-4 border-b border-[#333] sticky top-0 bg-[#0a0a0a]/90 backdrop-blur-md z-20">
