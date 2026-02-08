@@ -105,54 +105,54 @@
     "calculus": {
         "title": "FLUX_ENGINE (微分・積分)",
         "levels": {
-            "1": { "name": "CHANGERATE (変化率)", "desc": "瞬間の速度を解析せよ。傾き(Slope) > 1.0 を達成せよ。", "log_start": "フラックス・エンジン起動...", "log_guide": "パラメータ(t)を操作し、臨界速度を超過してください。" },
-            "2": { "name": "EQUILIBRIUM (均衡点)", "desc": "変化が「ゼロ」になる特異点を特定せよ。傾き(Slope) ≈ 0 を発見せよ。", "log_start": "均衡点をスキャン中...", "log_guide": "システムを安定化させてください。変化が停止するポイントを特定せよ。" },
-            "3": { "name": "ACCUMULATION (累積)", "desc": "総量を計算し、領域を展開せよ。面積(Area) > 5.0 を達成せよ。", "log_start": "フラックス積分中...", "log_guide": "エネルギーを蓄積してください。曲線下の面積を最大化せよ。" },
-            "4": { "name": "OPTIMIZATION (最適化)", "desc": "勾配を現実世界に応用せよ。", "log_start": "システム最適化中...", "log_guide": "外部変数への応用を開始します。" }
+            "1": { "name": "FLUX DETECTOR (変化の検出)", "desc": "世界の「動き」を捉えよ。パラメータ(t)を操作し、傾き(Slope) > 1.0 を観測せよ。", "log_start": "フラックス・ディテクター起動...", "log_guide": "システムが静止しています。パラメータ(t)を動かし、臨界速度を超過してください。" },
+            "2": { "name": "ZERO POINT (均衡点)", "desc": "変化が停止する「一瞬」を見極めよ。傾き(Slope) ≈ 0 を特定せよ。", "log_start": "ゼロ・ポイント・スキャン中...", "log_guide": "システムの均衡を探索中。変化が止まるポイント(極値)を特定せよ。" },
+            "3": { "name": "INTEGRAL FIELD (領域展開)", "desc": "微小な力を集積し、総量(Area) > 5.0 を達成せよ。", "log_start": "積分フィールド展開中...", "log_guide": "エネルギーを蓄積してください。曲線下の面積を最大化せよ。" },
+            "4": { "name": "REALITY HACK (応用)", "desc": "勾配降下法、物理演算、経済予測。この力はシミュレーション外でも有効だ。", "log_start": "システム最適化中...", "log_guide": "外部変数への応用プロトコルを開始します。" }
         },
         "concepts": {
-            "title": "01. 基本概念 (CONCEPTS)",
-            "diff_title": "微分 (瞬間の勢い)",
-            "diff_body": "世界は静止していない。<span class='text-cyan-400'>「今、この瞬間」</span>にどう変化しているか。それが微分だ。位置の微分は速度となり、速度の微分は加速度となる。",
-            "int_title": "積分 (積み重ねた結果)",
-            "int_body": "過去からの<span class='text-cyan-400'>「積み重ね」</span>。無限に薄いスライスを足し合わせることで、移動距離や体積、エネルギー総量を算出する。"
+            "title": "01. 基礎概念 (BASIC CONCEPTS)",
+            "diff_title": "微分 (Differentiation): 瞬間の解析",
+            "diff_body": "世界は静止していない。<span class='text-cyan-400'>「今、この瞬間」</span>にどう変化しているか。それが微分だ。車のスピードメーターは、位置情報の「微分」をリアルタイムで表示している。",
+            "int_title": "積分 (Integration): 結果の集積",
+            "int_body": "過去からの<span class='text-cyan-400'>「積み重ね」</span>。無限に薄いスライスを足し合わせることで、移動距離や体積、エネルギー総量を算出する。CTスキャンは、断面の「積分」で立体を再構成している。"
         },
         "theory": {
             "title": "02. 理論体系 (THEORY)",
             "def_title": "DEFINITION //",
-            "def_term": "導関数と積分 (Derivative & Integral)",
-            "derivative_desc": "<strong>導関数:</strong> ある一点における接線の傾き。極限（limit）を用いて、瞬間の変化率を捉える。<br/><br/><strong>積分:</strong> グラフとX軸の間に挟まれた「面積」。微小な変化を累積した総量を示す。"
+            "def_term": "Flux Dynamics (流動の方程式)",
+            "derivative_desc": "<strong>導関数 f'(x):</strong> ある一点における接線の傾き。極限（limit h→0）を用いて、瞬間の変化率を捉える。<br/><br/><strong>定積分 ∫ f(x)dx:</strong> グラフとX軸の間に挟まれた「面積」。微小な変化を累積した総量を示す。これが「未来の予測」と「過去の解析」を可能にする。"
         },
         "viz": {
-            "title": "03. フラックス・エンジン // 可視化",
+            "title": "03. フラックス・エンジン (FLUX ENGINE)",
             "controls": {
-                "function_label": "関数入力 f(x)",
-                "time_label": "時間パラメータ (t)",
-                "telemetry": "ライブ・テレメトリ",
-                "value": "値 f(t)",
-                "slope": "傾き f'(t)",
-                "area": "面積 ∫f(x)dx",
-                "enable_3d": "3Dモード起動",
-                "disable_3d": "2Dモードへ戻る",
+                "function_label": "INPUT FUNCTION f(x)",
+                "time_label": "PARAMETER (t)",
+                "telemetry": "LIVE TELEMETRY",
+                "value": "VALUE f(t)",
+                "slope": "SLOPE f'(t)",
+                "area": "AREA ∫f(x)dx",
+                "enable_3d": "3Dモード起動 (VORTEX)",
+                "disable_3d": "2Dモードへ戻る (FLAT)",
                 "rotation_active": "回転ロック: 解除"
             },
-            "viewport_label": "ビューポート: "
+            "viewport_label": "VIEWPORT: "
         },
         "apps": {
             "title": "04. 応用分野 (APPLICATIONS)",
             "physics_title": "物理学 (Kinematics)",
-            "physics_body": "運動の予測。リンゴの落下からロケットの軌道計算まで、全ての動きは微分方程式で記述される。",
+            "physics_body": "運動の予測。リンゴの落下からロケットの軌道計算まで、全ての動きは微分方程式で記述される。神は微分で世界を書いた。",
             "ml_title": "機械学習 (Machine Learning)",
-            "ml_body": "勾配降下法。AIは誤差の「坂」を下る（微分する）ことで、正解への最短ルートを学習する。",
+            "ml_body": "勾配降下法 (Gradient Descent)。AIは「誤差」という山の斜面を「下る（微分する）」ことで、最も賢い状態（極小値）を学習する。",
             "econ_title": "経済学 (Economics)",
-            "econ_body": "限界分析。「あと1つ生産したら利益はどうなるか？」限界費用・限界効用の計算に不可欠。"
+            "econ_body": "限界分析 (Marginal Analysis)。「あと1つ生産したら利益はどうなるか？」を計算し、企業の利益最大化ポイント（傾き=0）を特定する。"
         },
         "completion": {
-            "synced": "同期完了",
-            "msg": "フラックス・エンジンのパラメータが最適化されました。時間の流れは今、数値化されています。"
+            "synced": "同期完了 (SYNCED)",
+            "msg": "フラックス・エンジンのパラメータが最適化されました。時間の流れは今、あなたの制御下にあります。"
         },
         "actions": {
-            "sync": "モジュール同期"
+            "sync": "モジュール同期 (SYNC)"
         }
     }
   }

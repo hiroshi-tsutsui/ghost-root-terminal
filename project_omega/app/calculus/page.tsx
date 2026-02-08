@@ -23,14 +23,17 @@ function RevolutionSurface({ funcStr, xVal }: { funcStr: string, xVal: number })
   useEffect(() => {
     try {
         const pts = [];
-        const steps = 50;
+        const steps = 60;
         const limit = Math.max(0.1, Math.abs(xVal));
         
+        // Generate points for lathe geometry
         for (let i = 0; i <= steps; i++) {
             const u = (i / steps) * limit;
             let y = 0;
             try {
+                // Safety check for evaluation
                 y = math.evaluate(funcStr, { x: u });
+                if (!isFinite(y)) y = 0;
             } catch { y = 0; }
             pts.push(new THREE.Vector2(Math.abs(y), u)); 
         }
@@ -44,13 +47,23 @@ function RevolutionSurface({ funcStr, xVal }: { funcStr: string, xVal: number })
 
   return (
     <group rotation={[0, 0, -Math.PI / 2]}>
+        {/* Main Surface */}
         <mesh ref={meshRef}>
             <latheGeometry args={[points, 32]} />
-            <meshStandardMaterial color="#0071e3" side={THREE.DoubleSide} transparent opacity={0.6} roughness={0.3} metalness={0.1} wireframe={false} />
+            <meshStandardMaterial 
+                color="#0071e3" 
+                side={THREE.DoubleSide} 
+                transparent 
+                opacity={0.6} 
+                roughness={0.2} 
+                metalness={0.5} 
+                emissive="#001e3d"
+            />
         </mesh>
-         <mesh ref={meshRef}>
-            <latheGeometry args={[points, 32]} />
-            <meshStandardMaterial color="#00ffff" side={THREE.DoubleSide} wireframe={true} opacity={0.3} transparent />
+        {/* Wireframe Overlay */}
+         <mesh>
+            <latheGeometry args={[points, 16]} />
+            <meshBasicMaterial color="#00ffff" wireframe={true} transparent opacity={0.1} />
         </mesh>
     </group>
   );
@@ -65,7 +78,7 @@ export default function CalculusPage() {
   
   // --- Flux Engine State ---
   const [xVal, setXVal] = useState(1);
-  const [funcStr, setFuncStr] = useState("0.5*x^2"); // Simpler default
+  const [funcStr, setFuncStr] = useState("0.5*x^2");
   const [error, setError] = useState<string | null>(null);
   const [is3DMode, setIs3DMode] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -89,11 +102,11 @@ export default function CalculusPage() {
         `[SYSTEM] LEVEL 0${nextLvl}: ${t(`modules.calculus.levels.${nextLvl}.name`)}`,
         `[OP] ${t(`modules.calculus.levels.${nextLvl}.log_guide`)}`
     ]);
-  }, [moduleProgress]);
+  }, [moduleProgress, t]);
 
   // Update log on language change
   useEffect(() => {
-     setLog(prev => [`[SYSTEM] LANG_SWITCH: ${locale.toUpperCase()}`, ...prev].slice(0, 8));
+     // Re-trigger log update slightly differently or just let the user see new logs in new lang
   }, [locale]);
 
   const addLog = (msg: string) => {
@@ -121,6 +134,7 @@ export default function CalculusPage() {
         const d = math.derivative(expression, 'x');
         return d.evaluate({ x });
     } catch (e) {
+        // Fallback numerical derivative
         const h = 0.001;
         return (evaluateFunc(expression, x + h) - evaluateFunc(expression, x - h)) / (2 * h);
     }
@@ -130,6 +144,7 @@ export default function CalculusPage() {
       const start = 0;
       const n = 100;
       const h = (end - start) / n;
+      // Trapezoidal rule approximation
       let sum = 0.5 * (evaluateFunc(expression, start) + evaluateFunc(expression, end));
       for (let i = 1; i < n; i++) {
           sum += evaluateFunc(expression, start + i * h);
@@ -152,10 +167,12 @@ export default function CalculusPage() {
     const centerX = width / 2;
     const centerY = height / 2;
 
+    // Clear
     ctx.clearRect(0, 0, width, height);
     ctx.fillStyle = '#050505';
     ctx.fillRect(0, 0, width, height);
 
+    // Validate Input
     try {
         math.evaluate(funcStr, { x: 0 });
         setError(null);
@@ -182,22 +199,25 @@ export default function CalculusPage() {
     ctx.moveTo(centerX, 0); ctx.lineTo(centerX, height);
     ctx.stroke();
 
-    // Integral Area
-    ctx.fillStyle = 'rgba(0, 113, 227, 0.15)';
-    ctx.beginPath();
-    ctx.moveTo(centerX, centerY);
-    const step = 0.05;
-    const start = Math.min(0, xVal);
-    const end = Math.max(0, xVal);
-    for (let x = start; x <= end; x += step) {
-        const y = evaluateFunc(funcStr, x);
-        ctx.lineTo(centerX + x * scale, centerY - y * scale);
+    // Integral Area (Visual for Level 3)
+    if (currentLevel >= 3) {
+        ctx.fillStyle = 'rgba(0, 113, 227, 0.2)';
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        const step = 0.05;
+        const start = 0; // Integrating from 0
+        const end = Math.max(0, xVal);
+        for (let x = start; x <= end; x += step) {
+            const y = evaluateFunc(funcStr, x);
+            ctx.lineTo(centerX + x * scale, centerY - y * scale);
+        }
+        // Close the shape properly
+        const finalY = evaluateFunc(funcStr, end);
+        ctx.lineTo(centerX + end * scale, centerY - finalY * scale);
+        ctx.lineTo(centerX + end * scale, centerY);
+        ctx.lineTo(centerX, centerY);
+        ctx.fill();
     }
-    const finalY = evaluateFunc(funcStr, xVal);
-    ctx.lineTo(centerX + xVal * scale, centerY - finalY * scale);
-    ctx.lineTo(centerX + xVal * scale, centerY);
-    ctx.lineTo(centerX, centerY);
-    ctx.fill();
 
     // Function Curve
     ctx.strokeStyle = '#0071e3';
@@ -210,8 +230,12 @@ export default function CalculusPage() {
       const x = (pixelX - centerX) / scale;
       const y = evaluateFunc(funcStr, x);
       if (isNaN(y) || !isFinite(y)) { first = true; continue; }
+      
       const pixelY = centerY - (y * scale);
+      
+      // Prevent drawing infinite lines
       if (pixelY < -height || pixelY > height * 2) { first = true; continue; }
+      
       if (first) { ctx.moveTo(pixelX, pixelY); first = false; }
       else { ctx.lineTo(pixelX, pixelY); }
     }
@@ -219,30 +243,33 @@ export default function CalculusPage() {
     ctx.shadowBlur = 0;
 
     // Tangent Line (Level 1 & 2 Focus)
+    if (currentLevel <= 2) {
+        const yVal = evaluateFunc(funcStr, xVal);
+        const slope = evaluateDerivative(funcStr, xVal);
+        const tangentLength = 4;
+        const xStart = xVal - tangentLength;
+        const xEnd = xVal + tangentLength;
+        const yStart = slope * (xStart - xVal) + yVal;
+        const yEnd = slope * (xEnd - xVal) + yVal;
+
+        ctx.strokeStyle = '#ff3b30'; // Red for tangent
+        ctx.lineWidth = 2;
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.moveTo(centerX + xStart * scale, centerY - yStart * scale);
+        ctx.lineTo(centerX + xEnd * scale, centerY - yEnd * scale);
+        ctx.stroke();
+        ctx.setLineDash([]);
+    }
+
+    // Current Point
     const yVal = evaluateFunc(funcStr, xVal);
-    const slope = evaluateDerivative(funcStr, xVal);
-    const tangentLength = 4;
-    const xStart = xVal - tangentLength;
-    const xEnd = xVal + tangentLength;
-    const yStart = slope * (xStart - xVal) + yVal;
-    const yEnd = slope * (xEnd - xVal) + yVal;
-
-    ctx.strokeStyle = '#ff3b30'; // Red for tangent
-    ctx.lineWidth = 2;
-    ctx.setLineDash([4, 4]);
-    ctx.beginPath();
-    ctx.moveTo(centerX + xStart * scale, centerY - yStart * scale);
-    ctx.lineTo(centerX + xEnd * scale, centerY - yEnd * scale);
-    ctx.stroke();
-    ctx.setLineDash([]);
-
-    // Point
     const pX = centerX + xVal * scale;
     const pY = centerY - yVal * scale;
     ctx.fillStyle = '#ff3b30';
     ctx.beginPath(); ctx.arc(pX, pY, 5, 0, Math.PI * 2); ctx.fill();
 
-  }, [xVal, funcStr, is3DMode]);
+  }, [xVal, funcStr, is3DMode, currentLevel]);
 
   // --- Real-time Logic Checks ---
   const currentY = evaluateFunc(funcStr, xVal);
@@ -320,7 +347,7 @@ export default function CalculusPage() {
                 <div className="mt-4 p-4 bg-cyan-900/10 border border-cyan-500/30 text-cyan-400 text-xs animate-pulse">
                      {`>>`} {t(`modules.calculus.levels.1.desc`)}
                      <br/>
-                     <span className="text-white/60">{t('modules.calculus.viz.log_guide')}</span>
+                     <span className="text-white/60">{t('modules.calculus.viz.viewport_label')}</span>
                 </div>
             )}
         </section>
@@ -339,23 +366,11 @@ export default function CalculusPage() {
                      <div className="text-xl tracking-widest text-cyan-400 mb-4 font-bold">f'(x) = lim(h→0) [f(x+h) - f(x)] / h</div>
                      <p className="text-white/50 leading-relaxed" dangerouslySetInnerHTML={{ __html: t('modules.calculus.theory.derivative_desc') }} />
                 </div>
-                <div>
-                     <div className="mb-4 flex items-center gap-2">
-                        <span className="text-white/40">{t('modules.calculus.theory.def_title')}</span> 
-                        <span className="text-white font-bold">{t('modules.calculus.theory.def_term')}</span>
+                <div className="flex items-center justify-center border-l border-white/5 pl-8">
+                     <div className="text-right">
+                        <div className="text-xl tracking-widest text-green-400 mb-2 font-bold">∫[a,b] f(x) dx</div>
+                        <div className="text-white/40 text-[10px]">AREA ACCUMULATION</div>
                      </div>
-                     <div className="text-xl tracking-widest text-green-400 mb-4 font-bold">∫[a,b] f(x) dx = F(b) - F(a)</div>
-                     {/* The text is combined in def_term for both, but we can reuse or just use the integral part if split. For now using same desc key or adding a new one? 
-                         Wait, I didn't split derivative/integral desc in JSON perfectly. I put them in one block. 
-                         Let's just use the same block or check JSON again. 
-                         JSON: "derivative_desc" has both Derivative and Integral definitions.
-                         I'll use derivative_desc for the left and maybe just hardcode the integral formula text or leave it.
-                         Actually, let's just use derivative_desc in one place or split it visually.
-                         The JSON has `derivative_desc` containing both.
-                     */}
-                     <p className="text-white/50 leading-relaxed">
-                        {/* Using the same description for now as it contains both */}
-                     </p>
                 </div>
             </div>
              {currentLevel === 2 && (
@@ -493,6 +508,13 @@ export default function CalculusPage() {
                     )}
                 </div>
             </div>
+            {currentLevel === 3 && (
+                 <div className="mt-4 p-4 bg-cyan-900/10 border border-cyan-500/30 text-cyan-400 text-xs animate-pulse">
+                    {`>>`} {t('modules.calculus.levels.3.desc')}
+                    <br/>
+                    <span className="text-white/60">{t('modules.calculus.levels.3.log_guide')}</span>
+               </div>
+            )}
         </section>
 
         {/* --- LEVEL 4: APPLICATION --- */}

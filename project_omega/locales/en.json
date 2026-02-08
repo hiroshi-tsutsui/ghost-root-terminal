@@ -105,26 +105,26 @@
     "calculus": {
         "title": "FLUX_ENGINE (Calculus Protocol)",
         "levels": {
-            "1": { "name": "CHANGERATE", "desc": "Analyze instantaneous velocity. Achieve slope > 1.0.", "log_start": "Initializing Flux Engine...", "log_guide": "Adjust parameter (t) to exceed critical velocity." },
-            "2": { "name": "EQUILIBRIUM", "desc": "Locate points of zero change. Find slope ≈ 0.", "log_start": "Scanning for Equilibrium...", "log_guide": "Stabilize the system. Find the point where change stops." },
-            "3": { "name": "ACCUMULATION", "desc": "Calculate total accumulated value. Area > 5.0.", "log_start": "Integrating Flux...", "log_guide": "Accumulate energy. Maximize the area under the curve." },
-            "4": { "name": "OPTIMIZATION", "desc": "Apply gradients to real-world systems.", "log_start": "Optimizing System...", "log_guide": "Apply knowledge to external variables." }
+            "1": { "name": "FLUX DETECTOR", "desc": "Capture the world's movement. Manipulate parameter (t) and observe Slope > 1.0.", "log_start": "Initializing Flux Detector...", "log_guide": "System is static. Exceed critical velocity." },
+            "2": { "name": "ZERO POINT", "desc": "Identify the moment change stops. Locate Slope ≈ 0.", "log_start": "Scanning for Zero Point...", "log_guide": "Searching for equilibrium. Locate the extremum." },
+            "3": { "name": "INTEGRAL FIELD", "desc": "Accumulate infinitesimal forces. Achieve Area > 5.0.", "log_start": "Deploying Integral Field...", "log_guide": "Accumulate energy. Maximize the area under the curve." },
+            "4": { "name": "REALITY HACK", "desc": "Gradient descent, physics, economics. Apply this power outside the simulation.", "log_start": "Optimizing System...", "log_guide": "Initiating external variable application protocol." }
         },
         "concepts": {
             "title": "01. CORE CONCEPTS",
-            "diff_title": "Differentiation (Change)",
-            "diff_body": "The study of <span class='text-cyan-400'>how things change</span>. If position is a function of time, the derivative is velocity. It captures the 'now'.",
-            "int_title": "Integration (Accumulation)",
-            "int_body": "The study of <span class='text-cyan-400'>how much has happened</span>. Adding up infinite slices to find the whole. Area under the curve."
+            "diff_title": "Differentiation: Instant Analysis",
+            "diff_body": "The world is not static. How is it changing <span class='text-cyan-400'>'right now'</span>? That is differentiation. A speedometer displays the derivative of position in real-time.",
+            "int_title": "Integration: Accumulated Result",
+            "int_body": "The <span class='text-cyan-400'>'accumulation'</span> of the past. Adding up infinite slices to find total distance, volume, or energy. A CT scan reconstructs a 3D object by integrating slices."
         },
         "theory": {
             "title": "02. THEORETICAL FRAMEWORK",
             "def_title": "DEFINITION //",
-            "def_term": "The Derivative & Integral",
-            "derivative_desc": "<strong>Derivative:</strong> The slope of the tangent line at a specific point. Represents instantaneous rate of change.<br/><br/><strong>Integral:</strong> The signed area between the function graph and the x-axis. Represents total accumulation."
+            "def_term": "Flux Dynamics",
+            "derivative_desc": "<strong>Derivative f'(x):</strong> The slope of the tangent at a point. Captures instantaneous rate of change via limits.<br/><br/><strong>Definite Integral ∫ f(x)dx:</strong> The area between the graph and the X-axis. Represents the total accumulation of infinitesimal changes."
         },
         "viz": {
-            "title": "03. FLUX ENGINE // VISUALIZATION",
+            "title": "03. FLUX ENGINE (VISUALIZATION)",
             "controls": {
                 "function_label": "INPUT FUNCTION f(x)",
                 "time_label": "PARAMETER (t)",
@@ -132,24 +132,24 @@
                 "value": "VALUE f(t)",
                 "slope": "SLOPE f'(t)",
                 "area": "AREA ∫f(x)dx",
-                "enable_3d": "ENABLE 3D RENDER",
-                "disable_3d": "DISABLE 3D RENDER",
+                "enable_3d": "3D MODE (VORTEX)",
+                "disable_3d": "2D MODE (FLAT)",
                 "rotation_active": "ROTATION LOCK: OFF"
             },
             "viewport_label": "VIEWPORT: "
         },
         "apps": {
-            "title": "04. APPLIED MATHEMATICS",
-            "physics_title": "Kinematics",
-            "physics_body": "Predicting motion. From apples falling to orbital mechanics, calculus defines the trajectory.",
+            "title": "04. APPLICATIONS",
+            "physics_title": "Physics (Kinematics)",
+            "physics_body": "Motion prediction. From falling apples to orbital mechanics, all motion is described by differential equations. God wrote the world in calculus.",
             "ml_title": "Machine Learning",
-            "ml_body": "Gradient Descent. AI learns by sliding down the 'slope' of error to find the minimum loss.",
+            "ml_body": "Gradient Descent. AI learns by 'sliding down' (differentiating) the slope of error to find the smartest state (local minimum).",
             "econ_title": "Economics",
-            "econ_body": "Marginal Analysis. Determining the cost or profit of producing 'one more unit'."
+            "econ_body": "Marginal Analysis. Calculating 'what happens if we produce one more unit?' to identify the profit maximization point (slope=0)."
         },
         "completion": {
             "synced": "SYNC COMPLETE",
-            "msg": "Flux Engine parameters optimized. The flow of time is now quantifiable."
+            "msg": "Flux Engine parameters optimized. The flow of time is now under your control."
         },
         "actions": {
             "sync": "SYNC MODULE"
