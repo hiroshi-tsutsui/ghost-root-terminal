@@ -75,40 +75,13 @@
         "node_injected": "ノード注入"
       }
     },
-    "functions": {
-      "title": "CAUSALITY_ENGINE (関数理論)",
-      "levels": {
-        "1": { "name": "セクター1: 漂流 (Drift)", "hint": "信号が一様にシフトしている。" },
-        "2": { "name": "セクター2: 歪み (Distortion)", "hint": "振幅が倍増し、わずかなオフセットがある。" },
-        "3": { "name": "セクター3: 急増 (Surge)", "hint": "エネルギーが急速に蓄積している。" },
-        "4": { "name": "セクター4: 反射 (Reflection)", "hint": "負の極性が反転している。" },
-        "5": { "name": "セクター5: 暴走 (Runaway)", "hint": "指数関数的な成長。封じ込めが不可欠。" }
-      },
-      "status": {
-        "idle": "待機中 (IDLE)",
-        "computing": "計算中 (COMPUTING)",
-        "synced": "同期完了 (SYNCED)",
-        "error": "エラー (ERROR)"
-      },
-      "ui": {
-        "input_signal": "入力信号 (x)",
-        "output_signal": "出力信号 (y)",
-        "inject_signal": "信号注入 (INJECT)",
-        "black_box": "ブラックボックス",
-        "system_advisory": "システム警告",
-        "kernel_log": "カーネルログ",
-        "define_logic": "因果論理を定義せよ",
-        "execute_patch": "パッチ適用 (EXECUTE)",
-        "system_stabilized": "システム安定化 (STABILIZED)"
-      }
-    },
     "calculus": {
         "title": "FLUX_ENGINE (微分・積分)",
         "levels": {
             "1": { "name": "FLUX DETECTOR (変化の検出)", "desc": "世界の「動き」を捉えよ。パラメータ(t)を操作し、傾き(Slope) > 1.0 を観測せよ。", "log_start": "フラックス・ディテクター起動...", "log_guide": "システムが静止しています。パラメータ(t)を動かし、臨界速度を超過してください。" },
             "2": { "name": "ZERO POINT (均衡点)", "desc": "変化が停止する「一瞬」を見極めよ。傾き(Slope) ≈ 0 を特定せよ。", "log_start": "ゼロ・ポイント・スキャン中...", "log_guide": "システムの均衡を探索中。変化が止まるポイント(極値)を特定せよ。" },
             "3": { "name": "INTEGRAL FIELD (領域展開)", "desc": "微小な力を集積し、総量(Area) > 5.0 を達成せよ。", "log_start": "積分フィールド展開中...", "log_guide": "エネルギーを蓄積してください。曲線下の面積を最大化せよ。" },
-            "4": { "name": "REALITY HACK (応用)", "desc": "勾配降下法、物理演算、経済予測。この力はシミュレーション外でも有効だ。", "log_start": "システム最適化中...", "log_guide": "外部変数への応用プロトコルを開始します。" }
+            "4": { "name": "REALITY HACK (応用)", "desc": "勾配降下法、物理演算、経済予測。この力はシミュレーション外でも有効だ。" }
         },
         "concepts": {
             "title": "01. 基礎概念 (BASIC CONCEPTS)",
@@ -206,6 +179,33 @@
             "synced": "センサー補正完了",
             "msg": "ヴォイド・スカウト、発進準備完了。あなたは次元を掌握しました。"
         }
+    },
+    "functions": {
+      "title": "CAUSALITY_ENGINE (関数理論)",
+      "levels": {
+        "1": { "name": "セクター1: 漂流 (Drift)", "hint": "信号が一様にシフトしている。" },
+        "2": { "name": "セクター2: 歪み (Distortion)", "hint": "振幅が倍増し、わずかなオフセットがある。" },
+        "3": { "name": "セクター3: 急増 (Surge)", "hint": "エネルギーが急速に蓄積している。" },
+        "4": { "name": "セクター4: 反射 (Reflection)", "hint": "負の極性が反転している。" },
+        "5": { "name": "セクター5: 暴走 (Runaway)", "hint": "指数関数的な成長。封じ込めが不可欠。" }
+      },
+      "status": {
+        "idle": "待機中 (IDLE)",
+        "computing": "計算中 (COMPUTING)",
+        "synced": "同期完了 (SYNCED)",
+        "error": "エラー (ERROR)"
+      },
+      "ui": {
+        "input_signal": "入力信号 (x)",
+        "output_signal": "出力信号 (y)",
+        "inject_signal": "信号注入 (INJECT)",
+        "black_box": "ブラックボックス",
+        "system_advisory": "システム警告",
+        "kernel_log": "カーネルログ",
+        "define_logic": "因果論理を定義せよ",
+        "execute_patch": "パッチ適用 (EXECUTE)",
+        "system_stabilized": "システム安定化 (STABILIZED)"
+      }
     }
   }
 }

@@ -75,33 +75,6 @@
         "node_injected": "Node Injected"
       }
     },
-    "functions": {
-      "title": "CAUSALITY_ENGINE (Functions)",
-      "levels": {
-        "1": { "name": "Sector 1: Drift", "hint": "The signal is shifting uniformly." },
-        "2": { "name": "Sector 2: Distortion", "hint": "Amplitude is doubling, with a slight offset." },
-        "3": { "name": "Sector 3: Surge", "hint": "Power is accumulating rapidly." },
-        "4": { "name": "Sector 4: Reflection", "hint": "Negative polarity is being inverted." },
-        "5": { "name": "Sector 5: Runaway", "hint": "Growth is exponential. Containment critical." }
-      },
-      "status": {
-        "idle": "IDLE",
-        "computing": "COMPUTING",
-        "synced": "SYNCED",
-        "error": "ERROR"
-      },
-      "ui": {
-        "input_signal": "Input Signal (x)",
-        "output_signal": "Output Signal (y)",
-        "inject_signal": "INJECT SIGNAL",
-        "black_box": "BLACK BOX",
-        "system_advisory": "SYSTEM ADVISORY",
-        "kernel_log": "KERNEL LOG",
-        "define_logic": "DEFINE CAUSALITY LOGIC",
-        "execute_patch": "EXECUTE PATCH",
-        "system_stabilized": "SYSTEM STABILIZED"
-      }
-    },
     "calculus": {
         "title": "FLUX_ENGINE (Calculus Protocol)",
         "levels": {
@@ -206,6 +179,33 @@
             "synced": "SENSORS CALIBRATED",
             "msg": "The Void Scout is ready for deep space. You command the dimensions."
         }
+    },
+    "functions": {
+      "title": "CAUSALITY_ENGINE (Functions)",
+      "levels": {
+        "1": { "name": "Sector 1: Drift", "hint": "The signal is shifting uniformly." },
+        "2": { "name": "Sector 2: Distortion", "hint": "Amplitude is doubling, with a slight offset." },
+        "3": { "name": "Sector 3: Surge", "hint": "Power is accumulating rapidly." },
+        "4": { "name": "Sector 4: Reflection", "hint": "Negative polarity is being inverted." },
+        "5": { "name": "Sector 5: Runaway", "hint": "Growth is exponential. Containment critical." }
+      },
+      "status": {
+        "idle": "IDLE",
+        "computing": "COMPUTING",
+        "synced": "SYNCED",
+        "error": "ERROR"
+      },
+      "ui": {
+        "input_signal": "Input Signal (x)",
+        "output_signal": "Output Signal (y)",
+        "inject_signal": "INJECT SIGNAL",
+        "black_box": "BLACK BOX",
+        "system_advisory": "SYSTEM ADVISORY",
+        "kernel_log": "KERNEL LOG",
+        "define_logic": "DEFINE CAUSALITY LOGIC",
+        "execute_patch": "EXECUTE PATCH",
+        "system_stabilized": "SYSTEM STABILIZED"
+      }
     }
   }
 }
