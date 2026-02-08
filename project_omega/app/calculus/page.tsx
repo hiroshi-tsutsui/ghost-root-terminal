@@ -19,11 +19,14 @@ import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Grid } from '@react-three/drei';
 import * as THREE from 'three';
 
+// --- Types ---
+type ProtocolState = 'IDLE' | 'ACTIVE' | 'LOCKED' | 'FAILED';
+
 // --- Constants ---
 const MODULE_ID = 'calculus';
 
 // --- 3D Components ---
-function RevolutionSurface({ funcStr, xVal }: { funcStr: string, xVal: number }) {
+function RevolutionSurface({ funcStr, xVal, state }: { funcStr: string, xVal: number, state: ProtocolState }) {
   const meshRef = useRef<THREE.Mesh>(null);
   const [points, setPoints] = useState<THREE.Vector2[]>([]);
 
@@ -56,18 +59,18 @@ function RevolutionSurface({ funcStr, xVal }: { funcStr: string, xVal: number })
         <mesh ref={meshRef}>
             <latheGeometry args={[points, 32]} />
             <meshStandardMaterial 
-                color="#0071e3" 
+                color={state === 'LOCKED' ? "#00ff9d" : "#0071e3"}
                 side={THREE.DoubleSide} 
                 transparent 
                 opacity={0.6} 
                 roughness={0.2} 
                 metalness={0.5} 
-                emissive="#001e3d"
+                emissive={state === 'LOCKED' ? "#00442a" : "#001e3d"}
             />
         </mesh>
          <mesh>
             <latheGeometry args={[points, 16]} />
-            <meshBasicMaterial color="#00ffff" wireframe={true} transparent opacity={0.1} />
+            <meshBasicMaterial color={state === 'LOCKED' ? "#00ff9d" : "#00ffff"} wireframe={true} transparent opacity={0.1} />
         </mesh>
     </group>
   );
@@ -79,6 +82,7 @@ export default function CalculusPage() {
   const [currentLevel, setCurrentLevel] = useState(1);
   const [showUnlock, setShowUnlock] = useState(false);
   const [log, setLog] = useState<string[]>([]);
+  const [protocolState, setProtocolState] = useState<ProtocolState>('IDLE');
   
   // --- Flux Engine State ---
   const [xVal, setXVal] = useState(1);
@@ -87,12 +91,13 @@ export default function CalculusPage() {
   const [is3DMode, setIs3DMode] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   
-  // Win Conditions
-  const TARGETS = {
-      1: { type: 'slope', val: 1.0, op: '>' },
-      2: { type: 'slope', val: 0.1, op: '<abs' }, // |slope| < 0.1
-      3: { type: 'area', val: 5.0, op: '>' }
-  };
+  // Level Configuration
+  const LEVELS = [
+    { id: 1, type: 'slope', val: 1.0, op: '>' },
+    { id: 2, type: 'slope', val: 0.1, op: '<abs' }, // |slope| < 0.1
+    { id: 3, type: 'area', val: 5.0, op: '>' },
+    { id: 4, type: 'manual', val: 0, op: 'none' }
+  ];
 
   // Initialize Level
   useEffect(() => {
@@ -105,10 +110,8 @@ export default function CalculusPage() {
     initLevel(nextLvl);
   }, [moduleProgress]);
 
-  // Re-initialize log on locale change is tricky, usually just leave old logs
-  // but we can re-init on level change primarily.
-
   const initLevel = (lvl: number) => {
+    setProtocolState('IDLE');
     // Reset state slightly per level if needed
     if (lvl === 1) {
         setFuncStr("0.5*x^2");
@@ -121,7 +124,6 @@ export default function CalculusPage() {
         setXVal(1);
     }
     
-    // We need a timeout to ensure 't' is ready or just to separate render cycle
     setTimeout(() => {
         setLog([
             `[SYSTEM] LEVEL 0${lvl}: ${t(`modules.calculus.levels.${lvl}.name`)}`,
@@ -135,7 +137,8 @@ export default function CalculusPage() {
   };
 
   const handleWin = () => {
-      if (showUnlock) return; 
+      if (protocolState === 'LOCKED') return; 
+      setProtocolState('LOCKED');
       addLog(`[SUCCESS] LEVEL 0${currentLevel} ${t('modules.calculus.completion.synced')}`);
       setTimeout(() => {
           completeLevel(MODULE_ID, currentLevel);
@@ -223,7 +226,7 @@ export default function CalculusPage() {
 
     // Integral Area (Visual for Level 3)
     if (currentLevel >= 3) {
-        ctx.fillStyle = 'rgba(0, 113, 227, 0.2)';
+        ctx.fillStyle = protocolState === 'LOCKED' ? 'rgba(0, 255, 157, 0.2)' : 'rgba(0, 113, 227, 0.2)';
         ctx.beginPath();
         ctx.moveTo(centerX, centerY);
         const step = 0.05;
@@ -241,10 +244,10 @@ export default function CalculusPage() {
     }
 
     // Function Curve
-    ctx.strokeStyle = '#0071e3';
+    ctx.strokeStyle = protocolState === 'LOCKED' ? '#00ff9d' : '#0071e3';
     ctx.lineWidth = 3;
     ctx.shadowBlur = 10;
-    ctx.shadowColor = '#0071e3';
+    ctx.shadowColor = ctx.strokeStyle;
     ctx.beginPath();
     let first = true;
     for (let pixelX = 0; pixelX < width; pixelX++) {
@@ -288,7 +291,7 @@ export default function CalculusPage() {
     ctx.fillStyle = '#ff3b30';
     ctx.beginPath(); ctx.arc(pX, pY, 5, 0, Math.PI * 2); ctx.fill();
 
-  }, [xVal, funcStr, is3DMode, currentLevel]);
+  }, [xVal, funcStr, is3DMode, currentLevel, protocolState]);
 
   // --- Real-time Logic Checks ---
   const currentY = evaluateFunc(funcStr, xVal);
@@ -296,23 +299,22 @@ export default function CalculusPage() {
   const currentIntegral = integrate(funcStr, xVal);
 
   useEffect(() => {
-      if (showUnlock) return;
-      if (currentLevel > 3) return; // Level 4 is manual trigger usually
-
-      const target = TARGETS[currentLevel as 1|2|3];
-      if (!target) return;
+      if (protocolState === 'LOCKED') return;
+      
+      const levelConfig = LEVELS.find(l => l.id === currentLevel);
+      if (!levelConfig || levelConfig.type === 'manual') return;
 
       let passed = false;
-      if (target.type === 'slope') {
-          if (target.op === '>' && currentSlope > target.val) passed = true;
-          if (target.op === '<abs' && Math.abs(currentSlope) < target.val) passed = true;
-      } else if (target.type === 'area') {
-          if (target.op === '>' && currentIntegral > target.val) passed = true;
+      if (levelConfig.type === 'slope') {
+          if (levelConfig.op === '>' && currentSlope > levelConfig.val) passed = true;
+          if (levelConfig.op === '<abs' && Math.abs(currentSlope) < levelConfig.val) passed = true;
+      } else if (levelConfig.type === 'area') {
+          if (levelConfig.op === '>' && currentIntegral > levelConfig.val) passed = true;
       }
 
       if (passed) handleWin();
 
-  }, [currentSlope, currentIntegral, currentLevel, showUnlock]);
+  }, [currentSlope, currentIntegral, currentLevel, protocolState]);
 
 
   const presets = [
@@ -440,13 +442,13 @@ export default function CalculusPage() {
                              </div>
                              <div className="flex justify-between border-b border-white/5 pb-1">
                                  <span className="text-white/40">{t('modules.calculus.viz.controls.slope')}</span>
-                                 <span className={TARGETS[1] && Math.abs(currentSlope) > 0.5 ? 'text-white' : 'text-cyan-400'}>
+                                 <span className={Math.abs(currentSlope) > 0.5 && currentLevel === 1 ? 'text-green-400' : 'text-cyan-400'}>
                                     {isNaN(currentSlope) ? '-' : currentSlope.toFixed(4)}
                                  </span>
                              </div>
                              <div className="flex justify-between pt-1">
                                  <span className="text-white/40">{t('modules.calculus.viz.controls.area')}</span>
-                                 <span className="text-green-400">
+                                 <span className={currentIntegral > 5.0 && currentLevel === 3 ? 'text-green-400' : 'text-cyan-400'}>
                                      {isNaN(currentIntegral) ? '-' : currentIntegral.toFixed(4)}
                                  </span>
                              </div>
@@ -494,7 +496,7 @@ export default function CalculusPage() {
                                 <ambientLight intensity={0.5} />
                                 <directionalLight position={[10, 10, 5]} intensity={1} />
                                 <Grid infiniteGrid fadeDistance={50} sectionColor="#0071e3" cellColor="#333" />
-                                <RevolutionSurface funcStr={funcStr} xVal={xVal} />
+                                <RevolutionSurface funcStr={funcStr} xVal={xVal} state={protocolState} />
                                 <OrbitControls makeDefault />
                             </Canvas>
                         </div>
