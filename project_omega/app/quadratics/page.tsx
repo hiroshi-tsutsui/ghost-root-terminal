@@ -4,6 +4,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useProgress } from '../contexts/ProgressContext';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function QuadraticsPage() {
   const [a, setA] = useState(1);
@@ -16,6 +17,7 @@ export default function QuadraticsPage() {
   const [protocolStep, setProtocolStep] = useState(0);
   const [systemLog, setSystemLog] = useState("Waiting for Operator input...");
   const [taskCompleted, setTaskCompleted] = useState(false);
+  const [showUnlock, setShowUnlock] = useState(false);
 
   const { completeLevel } = useProgress();
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -121,8 +123,9 @@ export default function QuadraticsPage() {
               setProtocolStep(0);
               setA(1); setB(0); setC(0);
           } else {
-              setSystemLog("[SYSTEM]: ALL PHASES COMPLETE. GRAVITY WELL SECURE.\n[LORE UNLOCKED]: \"The Parabola is the shape of consequence. What goes up must come down, unless it escapes velocity. You control the fall.\"\nRETURNING TO IDLE STATE.");
+              setSystemLog("[SYSTEM]: ALL PHASES COMPLETE. GRAVITY WELL SECURE. ACCESSING ARCHIVE...");
               setIsProtocolActive(false);
+              setShowUnlock(true);
           }
       } else {
           setProtocolStep(protocolStep + 1);
@@ -385,6 +388,50 @@ export default function QuadraticsPage() {
         </div>
 
       </main>
+
+      <AnimatePresence>
+        {showUnlock && (
+            <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm flex items-center justify-center p-6"
+            >
+                <div className="max-w-md w-full border border-cyan-500/50 bg-black p-8 relative overflow-hidden shadow-[0_0_100px_rgba(6,182,212,0.2)]">
+                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-500 to-purple-500 animate-pulse"></div>
+                    
+                    <h2 className="text-2xl font-bold text-cyan-500 mb-2 tracking-widest uppercase">PROTOCOL COMPLETE</h2>
+                    <p className="text-xs text-gray-400 mb-6 font-mono">GRAVITY WELL STABILIZED. HORIZON SECURED.</p>
+                    
+                    <div className="space-y-4 mb-8 border-l-2 border-cyan-500/20 pl-4">
+                        <div className="flex justify-between text-sm">
+                            <span className="text-gray-500">STATUS</span>
+                            <span className="text-cyan-400">ONLINE</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                            <span className="text-gray-500">SYNC RATE</span>
+                            <span className="text-cyan-400">100.0%</span>
+                        </div>
+                         <div className="flex justify-between text-sm">
+                            <span className="text-gray-500">SYSTEM LOG</span>
+                            <span className="text-white animate-pulse">FILE_001 DECRYPTED</span>
+                        </div>
+                    </div>
+
+                    <Link href="/codex" className="block w-full text-center py-3 bg-cyan-900/20 border border-cyan-500 text-cyan-400 font-bold tracking-[0.2em] hover:bg-cyan-500 hover:text-black transition-all uppercase text-xs">
+                        ACCESS CODEX
+                    </Link>
+                     <button 
+                        onClick={() => setShowUnlock(false)}
+                        className="block w-full text-center py-3 mt-2 border border-white/10 text-gray-500 hover:text-white transition-colors uppercase text-[10px] tracking-widest"
+                    >
+                        RETURN TO MODULE
+                    </button>
+                </div>
+            </motion.div>
+        )}
+      </AnimatePresence>
+
       
       <style jsx global>{`
         .glow-text {
