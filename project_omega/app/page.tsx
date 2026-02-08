@@ -83,7 +83,7 @@ export default function Home() {
       title: 'PHASE ANALYZER',
       subtitle: 'Protocol: Void_Shift',
       desc: 'Rotate into the imaginary. See the hidden dimension.',
-      status: 'OFFLINE',
+      status: 'ONLINE',
       color: 'text-pink-400',
       border: 'border-pink-500/30',
       bg: 'bg-pink-900/10'
