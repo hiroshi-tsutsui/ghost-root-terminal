@@ -21,7 +21,14 @@ const translations: Record<Locale, Translations> = {
 };
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocale] = useState<Locale>('ja'); // Default to Japanese per pivot
+  const [locale, setLocale] = useState<Locale>('ja');
+
+  // Force Japanese on mount to override any potential persisted state or browser defaults
+  useEffect(() => {
+    if (locale !== 'ja') {
+      setLocale('ja');
+    }
+  }, []);
 
   const t = (path: string): string => {
     const keys = path.split('.');
