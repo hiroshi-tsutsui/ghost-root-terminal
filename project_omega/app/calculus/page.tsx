@@ -1,6 +1,14 @@
 // @ts-nocheck
 "use client";
 
+// --- Project Omega: Calculus Module (Flux Engine) ---
+// Pedagogical Structure:
+// Level 1: Basics (Differential Intuition)
+// Level 2: Theory (Derivative Definition)
+// Level 3: Visualization (Integral/Area & Volume)
+// Level 4: Applications (Physics/ML/Economics)
+// Refactored by Tony (Architect) - V2
+
 import { useState, useEffect, useRef } from 'react';
 import * as math from 'mathjs';
 import Link from 'next/link';
@@ -110,9 +118,11 @@ export default function CalculusPage() {
 
   const handleLevelComplete = (lvl: number) => {
       if (showUnlock) return; 
-      completeLevel(MODULE_ID, lvl);
-      setShowUnlock(true);
       addLog(`[SUCCESS] LEVEL 0${lvl} ${t('modules.calculus.completion.synced')}`);
+      setTimeout(() => {
+          completeLevel(MODULE_ID, lvl);
+          setShowUnlock(true);
+      }, 1000);
   };
 
   const handleNextLevel = () => {
@@ -396,6 +406,7 @@ export default function CalculusPage() {
                             onChange={(e) => { setFuncStr(e.target.value); addLog(`[OP] FUNCTION SET: ${e.target.value}`); }}
                             className="w-full bg-black border border-white/20 text-white p-2 text-sm font-mono focus:border-cyan-500 outline-none transition-colors"
                         />
+                        {error && <div className="text-red-500 text-[9px] mt-1 animate-pulse">{error}</div>}
                          <div className="flex gap-2 mt-2 flex-wrap">
                             {presets.map(p => (
                                 <button key={p.label} onClick={() => { setFuncStr(p.val); addLog(`[OP] PRESET: ${p.label}`); }} className="text-[9px] border border-white/10 px-2 py-1 text-white/60 hover:text-white hover:border-cyan-500/50 hover:bg-cyan-900/20 transition-all">
