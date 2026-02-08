@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import BallsInBins from '../components/BallsInBins';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useProgress } from '../contexts/ProgressContext';
 
 // --- Monty Hall Component (Paradox Resolution Protocol) ---
 function ParadoxResolutionProtocol() {
@@ -146,6 +147,9 @@ export default function EntropyWeaverPage() {
   const [oracleMode, setOracleMode] = useState(false);
   const [lessonStep, setLessonStep] = useState(0);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [showComplete, setShowComplete] = useState(false);
+  
+  const { completeLevel } = useProgress();
   
   // Conditional Prob State
   const [probA, setProbA] = useState(0.5); 
@@ -164,15 +168,24 @@ export default function EntropyWeaverPage() {
     if (lessonStep === 1) {
         if (Math.abs(mean - 2.0) < 0.1) {
              setShowConfetti(true);
+             completeLevel('probability', 1);
              setTimeout(() => { setShowConfetti(false); setLessonStep(2); }, 2000);
         }
     } else if (lessonStep === 2) {
         if (Math.abs(stdDev - 0.5) < 0.1) {
              setShowConfetti(true);
+             completeLevel('probability', 2);
              setTimeout(() => { setShowConfetti(false); setLessonStep(3); }, 2000);
         }
+    } else if (lessonStep === 3) {
+        // Trigger completion after a moment
+         completeLevel('probability', 3);
+         const timer = setTimeout(() => {
+             setShowComplete(true);
+         }, 1500);
+         return () => clearTimeout(timer);
     }
-  }, [mean, stdDev, lessonStep, oracleMode]);
+  }, [mean, stdDev, lessonStep, oracleMode, completeLevel]);
 
   // Normal Dist Canvas
   useEffect(() => {
@@ -270,6 +283,47 @@ export default function EntropyWeaverPage() {
   return (
     <div className="flex flex-col min-h-screen bg-[#050507] text-indigo-50 font-sans selection:bg-indigo-500 selection:text-white overflow-hidden">
        <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-900/20 via-[#050507] to-[#050507] pointer-events-none z-0"></div>
+       
+       <AnimatePresence>
+        {showComplete && (
+            <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm flex items-center justify-center p-6"
+            >
+                <div className="max-w-md w-full border border-indigo-500/50 bg-black p-8 relative overflow-hidden shadow-[0_0_100px_rgba(79,70,229,0.2)]">
+                    <div className="absolute top-0 left-0 w-full h-1 bg-indigo-500 animate-pulse"></div>
+                    
+                    <h2 className="text-2xl font-bold text-indigo-500 mb-2 tracking-widest uppercase font-mono">PROTOCOL COMPLETE</h2>
+                    <p className="text-xs text-gray-500 mb-6 font-mono">ENTROPY STABILIZED. PROBABILITY FIELD LOCKED.</p>
+                    
+                    <div className="space-y-4 mb-8 border-l-2 border-indigo-500/20 pl-4">
+                        <div className="flex justify-between text-sm font-mono">
+                            <span className="text-gray-400">STATUS</span>
+                            <span className="text-indigo-400">ONLINE</span>
+                        </div>
+                        <div className="flex justify-between text-sm font-mono">
+                            <span className="text-gray-400">SYNC RATE</span>
+                            <span className="text-indigo-400">100.0%</span>
+                        </div>
+                         <div className="flex justify-between text-sm font-mono">
+                            <span className="text-gray-400">SYSTEM LOG</span>
+                            <span className="text-white animate-pulse">FILE_006 DECRYPTED</span>
+                        </div>
+                    </div>
+
+                    <Link href="/codex" className="block w-full text-center py-3 bg-indigo-600 text-white font-bold tracking-[0.2em] hover:bg-white hover:text-black transition-colors uppercase text-xs font-mono">
+                        ACCESS CODEX
+                    </Link>
+                     <Link href="/" className="block w-full text-center py-3 mt-2 border border-white/10 text-gray-500 hover:text-white transition-colors uppercase text-[10px] tracking-widest font-mono">
+                        RETURN TO TERMINAL
+                    </Link>
+                </div>
+            </motion.div>
+        )}
+      </AnimatePresence>
+
        <header className="fixed top-0 left-0 right-0 z-[60] bg-[#050507]/80 backdrop-blur-md border-b border-indigo-500/10 h-16 flex items-center px-6 transition-all">
          <div className="max-w-6xl mx-auto w-full flex items-center justify-between gap-4">
              <div className="flex items-center gap-4">

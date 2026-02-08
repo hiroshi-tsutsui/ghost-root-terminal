@@ -280,3 +280,10 @@ We are moving from a "Tool" to a "Platform".
   - **Mechanics:** User must "Initiate Decryption" (Brute Force animation) to reveal text.
   - **Persistence:** Decrypted state saved to `localStorage` (`omega_codex_revealed`).
   - **Goal:** Transform the Codex from a passive list into an active "Hack/Extract" mission.
+
+- **[2026-02-08] Refinement: Probability (Entropy Weaver) - Protocol Completion**
+  - **Status:** Complete.
+  - **Action:** Integrated "Protocol Complete" Modal with Codex Integration (File 006).
+  - **Mechanics:** Connected to Global State (`ProgressContext`). Achieving Oracle Sync now triggers "Protocol Complete" and awards XP.
+  - **Narrative:** "Entropy Weaver" is now a fully gamified Operator Mission.
+  - **Goal:** Provide a satisfying conclusion to the Stochastic Synchronization.
