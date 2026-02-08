@@ -3,7 +3,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Terminal } from '@xterm/xterm';
 import { FitAddon } from '@xterm/addon-fit';
-import { processCommand } from '../lib/Shell';
+import { processCommand, tabCompletion } from '../lib/Shell';
 import '@xterm/xterm/css/xterm.css';
 
 const BOOT_LOGS = [
@@ -31,6 +31,7 @@ const WebTerminal = () => {
   const terminalContainerRef = useRef<HTMLDivElement>(null);
   const termRef = useRef<Terminal | null>(null);
   const cwdRef = useRef('/home/recovery');
+  const promptRef = useRef('\x1b[1;32mghost@root\x1b[0m');
   const inputBufferRef = useRef('');
   const isBootingRef = useRef(true);
 
@@ -58,21 +59,31 @@ const WebTerminal = () => {
 
     const prompt = () => {
         const cwd = cwdRef.current;
-        term.write(`\r\n\x1b[1;32mghost@root\x1b[0m:\x1b[1;34m${cwd}\x1b[0m$ `);
+        const p = promptRef.current;
+        term.write(`\r\n${p}:\x1b[1;34m${cwd}\x1b[0m$ `);
     };
 
-    const handleCommand = () => {
+    const handleCommand = async () => {
         const commandLine = inputBufferRef.current.trim();
         inputBufferRef.current = '';
         term.write('\r\n');
 
         if (commandLine) {
           const result = processCommand(cwdRef.current, commandLine);
+          
+          if (result.action === 'delay') {
+             // Simulate delay
+             await new Promise(r => setTimeout(r, 1000));
+          }
+
           if (result.output) {
             term.writeln(result.output.replace(/\n/g, '\r\n'));
           }
           if (result.newCwd) {
             cwdRef.current = result.newCwd;
+          }
+          if (result.newPrompt) {
+             promptRef.current = `\x1b[1;32m${result.newPrompt}\x1b[0m`;
           }
         }
         
