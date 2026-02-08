@@ -16,6 +16,7 @@
 - [x] Monitor Sub-agent: `omega-tony-vectors`. (Status: COMPLETE - Vectors Module Localized).
 - [x] Monitor Sub-agent: `omega-tony-trig`. (Status: COMPLETE - Trig Module Localized).
 - [x] Monitor Sub-agent: `omega-tony-sequences`. (Status: COMPLETE - Sequences Module Localized).
+- [x] Monitor Sub-agent: `omega-tony-functions`. (Status: COMPLETE - Functions Module Localized).
 - [x] Monitor Sub-agent: `omega-cto-game-architect`. (Status: COMPLETE - Web Port Ready & Deployed).
 - [x] Verify Project Omega Deployment (`https://projectomega-tau.vercel.app`). (Status: LIVE - Japanese Localized).
   - [x] Action: Fix webpack error in `locales/ja.json` (Commit: `edc3b79`).
@@ -31,6 +32,6 @@
   - [x] Action: **SMART SEARCH** Launch Probes (Failed/Skipped).
   - [x] Action: Extract "Danger" Set (518 Videos) for Retraining.
   - [x] Action: Monitor High Precision Job (`fd-infer-high-prec-v1`) - FAILED.
-  - [x] Action: Monitor Pipeline Job (`following-distance-infer-fp-jan19-feb5-v6-20260208-fix`) - SUCCEEDED.
-  - [ ] Action: Launch **True Positive Validation** (`seino_following_distance_true`).
+  - [x] Action: Monitor Pipeline Job (`following-distance-infer-fp-jan19-feb5-v6-20260208-fix`) - SUCCEEDED (74% FP).
+  - [ ] Action: Monitor **True Positive Validation** (`fd-tp-merged-v1`) - RUNNING.
 - [x] Cleanup: Removed `math-viz-japan/experiments` and consolidated repo.
