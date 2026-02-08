@@ -239,3 +239,10 @@ We are moving from a "Tool" to a "Platform".
   - **Narrative Formalized:** Created \`NARRATIVE.md\` defining "Protocol: Fabric Weaver".
   - **Mechanics:** Fully implemented 3-Phase Mission (Orientation Lock, Expansion, Shear Stress).
   - **Goal:** Ensured the "Fabric Weaver" module is actually playable and synced with the Operator narrative.
+
+- **[2026-02-08] Narrative Core: Codex Upgrade (Decryption Layer)**
+  - **Status:** Deployed (v2.6.0).
+  - **Action:** Enhanced `app/codex/page.tsx` with "Matrix Rain" background and dynamic text scrambling.
+  - **Narrative:** Lore entries now appear as "ENCRYPTED" binary streams until unlocked.
+  - **Visuals:** Green/Black terminal aesthetic, animated 0/1 rain, hover effects.
+  - **Goal:** Reinforce the feeling that the "Lore" is a hidden secret to be hacked, not just read.

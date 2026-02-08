@@ -2,9 +2,15 @@
 
 import Link from 'next/link';
 import { useProgress, ModuleId } from '../contexts/ProgressContext';
+import { useState, useEffect } from 'react';
 
 export default function Codex() {
   const { moduleProgress } = useProgress();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const loreEntries = [
     {
@@ -82,8 +88,19 @@ export default function Codex() {
     },
   ];
 
+  if (!mounted) return <div className="min-h-screen bg-black text-green-500 font-mono p-12">INITIALIZING...</div>;
+
   return (
     <div className="min-h-screen bg-black text-green-500 font-mono p-6 md:p-12 selection:bg-green-900 selection:text-white">
+      {/* Background Matrix Rain Effect (Simplified) */}
+      <div className="fixed inset-0 pointer-events-none opacity-10 overflow-hidden font-mono text-[10px] leading-3 whitespace-pre text-green-500/50 -z-10">
+        {Array(50).fill(0).map((_, i) => (
+            <div key={i} style={{ left: `${Math.random() * 100}%`, animationDuration: `${Math.random() * 5 + 2}s` }} className="absolute top-0 animate-rain">
+                {Array(20).fill(0).map(() => Math.random() > 0.5 ? '1' : '0').join('\n')}
+            </div>
+        ))}
+      </div>
+
       <div className="max-w-4xl mx-auto space-y-12">
         
         {/* Header */}
@@ -105,10 +122,10 @@ export default function Codex() {
                 return (
                     <div 
                         key={entry.id} 
-                        className={`relative border p-6 transition-all duration-500 ${
+                        className={`relative border p-6 transition-all duration-500 group ${
                             isUnlocked 
                                 ? 'border-green-800 bg-green-900/10 hover:bg-green-900/20 shadow-[0_0_15px_rgba(0,255,0,0.1)]' 
-                                : 'border-gray-900 bg-black opacity-50 cursor-not-allowed'
+                                : 'border-gray-900 bg-black opacity-60'
                         }`}
                     >
                         <div className="flex justify-between items-start mb-2">
@@ -120,14 +137,20 @@ export default function Codex() {
                             </span>
                         </div>
                         
-                        <div className={`leading-relaxed text-sm ${isUnlocked ? 'text-green-300/80' : 'text-gray-800 blur-sm select-none'}`}>
-                            {entry.content}
+                        <div className={`leading-relaxed text-sm font-mono`}>
+                            {isUnlocked ? (
+                                <span className="text-green-300/80 shadow-green-500/50 drop-shadow-sm">{entry.content}</span>
+                            ) : (
+                                <span className="text-gray-800 select-none break-all blur-[1px]">
+                                    {entry.content.split('').map(() => Math.random() > 0.5 ? '0' : '1').join('')}
+                                </span>
+                            )}
                         </div>
 
                         {!isUnlocked && (
-                            <div className="absolute inset-0 flex items-center justify-center">
-                                <span className="text-red-900 font-bold text-xs tracking-[0.2em] bg-black px-2 border border-red-900/30">
-                                    MISSING PROTOCOL KEY: {entry.moduleId?.toUpperCase()}
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-[1px]">
+                                <span className="text-red-600 font-bold text-xs tracking-[0.2em] bg-black px-3 py-1 border border-red-900/50 shadow-[0_0_10px_rgba(255,0,0,0.2)]">
+                                    [ LOCK: {entry.moduleId?.toUpperCase()} ]
                                 </span>
                             </div>
                         )}
@@ -137,11 +160,26 @@ export default function Codex() {
         </div>
 
         {/* Footer */}
-        <div className="text-center text-[10px] text-green-900 mt-12">
-            OMEGA SYSTEM OS v2.4.0 // END OF LINE
+        <div className="text-center text-[10px] text-green-900 mt-12 flex justify-between uppercase tracking-widest">
+            <span>Omega System OS v2.6.0</span>
+            <span className="animate-pulse">Connection: Secure</span>
         </div>
 
       </div>
+
+      <style jsx>{`
+        @keyframes rain {
+            0% { transform: translateY(-100%); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(100vh); opacity: 0; }
+        }
+        .animate-rain {
+            animation-name: rain;
+            animation-timing-function: linear;
+            animation-iteration-count: infinite;
+        }
+      `}</style>
     </div>
   );
 }
