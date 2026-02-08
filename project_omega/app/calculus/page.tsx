@@ -1,4 +1,3 @@
-// @ts-nocheck
 "use client";
 
 // --- Project Omega: Calculus Module (Flux Engine) ---

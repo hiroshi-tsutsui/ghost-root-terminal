@@ -154,6 +154,58 @@
         "actions": {
             "sync": "SYNC MODULE"
         }
+    },
+    "vectors": {
+        "title": "VOID SCOUT",
+        "levels": {
+            "1": { "name": "BASICS", "desc": "Direction & Magnitude.", "log_guide": "Initialize system. Set Vector A magnitude > 5.0.", "log_start": "Initializing Void Scout..." },
+            "2": { "name": "THEORY", "desc": "Dot & Cross Products.", "log_guide": "Orthogonality check. Make Vector A and B perpendicular (Dot Product ≈ 0)." },
+            "3": { "name": "VISUALIZATION", "desc": "Drone Calibration.", "log_guide": "Alignment check. Make Vector A and B parallel (Angle ≈ 0°)." },
+            "4": { "name": "APPLY", "desc": "Navigation & Forces." }
+        },
+        "concepts": {
+            "title": "01. CONCEPT: THE ARROW OF REALITY",
+            "def_title": "Vectors",
+            "def_body": "A vector is not just a number; it's an instruction. <strong>Go this far, in this direction.</strong> It describes movement, force, and flow.",
+            "comp_title": "Components",
+            "comp_body": "We break vectors down into X, Y, and Z steps. A diagonal flight path is just a combination of forward, right, and up movements."
+        },
+        "theory": {
+            "title": "02. THEORY: SPATIAL LOGIC",
+            "dot_term": "Dot Product (Inner)",
+            "dot_desc": "A · B = |A||B|cos(θ). Measures alignment. If 0, they are perpendicular (Orthogonal). Used for lighting calculations and checking 'facing' direction.",
+            "cross_term": "Cross Product (Outer)",
+            "cross_desc": "A × B. Creates a new vector perpendicular to both. Essential for finding rotation axes, torque, and surface normals."
+        },
+        "viz": {
+            "title": "03. PROTOCOL: VOID SCOUT",
+            "log_start": "VOID SCOUT CALIBRATION...",
+            "log_guide": "ALIGN THRUSTERS. ORTHOGONALITY CHECK REQUIRED.",
+            "controls": {
+                "vec_a": "VECTOR A (Main Thrust)",
+                "vec_b": "VECTOR B (Stabilizer)",
+                "telemetry": "TELEMETRY",
+                "dot": "DOT PROD (Align)",
+                "cross": "CROSS PROD (Torque)",
+                "angle": "ANGLE (Deg)",
+                "show_plane": "VISUALIZE PLANE",
+                "show_comp": "SHOW COMPONENTS"
+            },
+            "viewport": "SIMULATION_VIEWPORT"
+        },
+        "apps": {
+            "title": "04. APPLICATIONS: 3D SPACE",
+            "cg_title": "Computer Graphics",
+            "cg_body": "Every 3D game uses vectors for everything. Lighting (dot product with normals), camera direction, and movement.",
+            "phys_title": "Physics & Forces",
+            "phys_body": "Gravity, wind, and thrust are all vectors. We sum them up (Net Force) to determine where an object will go.",
+            "nav_title": "Navigation",
+            "nav_body": "GPS and flight paths. 'Heading' and 'Speed' combine to form the velocity vector."
+        },
+        "completion": {
+            "synced": "SENSORS CALIBRATED",
+            "msg": "The Void Scout is ready for deep space. You command the dimensions."
+        }
     }
   }
 }
