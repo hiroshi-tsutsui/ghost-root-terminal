@@ -56,8 +56,96 @@ const getNode = (vfsPath: string): VFSNode | undefined => {
 
 export interface CommandResult {
   output: string;
-  newCwd: string;
+  newCwd?: string;
+  newPrompt?: string;
+  action?: 'delay'; // For simulated delays
 }
+
+const COMMANDS = ['ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh'];
+
+export const tabCompletion = (cwd: string, inputBuffer: string): { matches: string[], completed: string } => {
+  const parts = inputBuffer.split(' '); // Keep spaces to know if we are on a new arg
+  // Handle case where split might result in empty string if input ends with space
+  // Actually, we want to complete the *last* token.
+  
+  // If input is empty, return nothing
+  if (!inputBuffer) return { matches: [], completed: inputBuffer };
+
+  const lastTokenIndex = parts.length - 1;
+  const lastToken = parts[lastTokenIndex];
+
+  // Case 1: First token (Command completion)
+  if (lastTokenIndex === 0) {
+    const matches = COMMANDS.filter(cmd => cmd.startsWith(lastToken));
+    if (matches.length === 1) {
+      return { matches, completed: matches[0] + ' ' }; // Add space after command
+    }
+    return { matches, completed: inputBuffer }; // Return original if ambiguous or none
+  }
+
+  // Case 2: Argument (Path completion)
+  // We need to resolve the path relative to cwd
+  // The token might be "do" -> looks for files starting with "do" in cwd
+  // The token might be "dir/" -> looks for files in "dir/" in cwd
+  // The token might be "/var/" -> looks for files in "/var/"
+  
+  // 1. Separate directory part and filename part of the token
+  let dirToSearch = cwd;
+  let partialName = lastToken;
+  
+  if (lastToken.includes('/')) {
+    const lastSlashIndex = lastToken.lastIndexOf('/');
+    const dirPart = lastToken.substring(0, lastSlashIndex + 1); // "dir/"
+    partialName = lastToken.substring(lastSlashIndex + 1);      // "file"
+    
+    // Resolve the directory part
+    if (dirPart.startsWith('/')) {
+        dirToSearch = normalizePath(dirPart);
+    } else {
+        dirToSearch = resolvePath(cwd, dirPart);
+    }
+  }
+
+  // Ensure dirToSearch does not end with slash unless it is root, for VFS lookup
+  // But our VFS keys do not have trailing slash (except root '/').
+  // ResolvePath handles this (slices off trailing slash).
+  
+  const dirNode = getNode(dirToSearch);
+  
+  if (!dirNode || dirNode.type !== 'dir') {
+     return { matches: [], completed: inputBuffer };
+  }
+  
+  const candidates = dirNode.children.filter(child => child.startsWith(partialName));
+  
+  if (candidates.length === 1) {
+      const match = candidates[0];
+      // Reconstruct the new token
+      let newToken = '';
+      if (lastToken.includes('/')) {
+          const lastSlashIndex = lastToken.lastIndexOf('/');
+          newToken = lastToken.substring(0, lastSlashIndex + 1) + match;
+      } else {
+          newToken = match;
+      }
+      
+      // Check if the match is a directory, if so append '/'
+      // We need to check if the FULL path to the match is a directory in VFS
+      const fullPathToMatch = dirToSearch === '/' ? `/${match}` : `${dirToSearch}/${match}`;
+      const matchNode = getNode(fullPathToMatch);
+      if (matchNode && matchNode.type === 'dir') {
+          newToken += '/';
+      } else {
+          newToken += ' '; // Add space if it's a file
+      }
+
+      // Replace the last token in the input buffer
+      parts[lastTokenIndex] = newToken;
+      return { matches: candidates, completed: parts.join(' ') };
+  }
+  
+  return { matches: candidates, completed: inputBuffer };
+};
 
 export const processCommand = (cwd: string, commandLine: string): CommandResult => {
   const parts = commandLine.trim().split(/\s+/);
@@ -115,10 +203,22 @@ export const processCommand = (cwd: string, commandLine: string): CommandResult 
       output = cwd;
       break;
     case 'help':
-      output = 'GHOST_ROOT Recovery Shell v0.1\nAvailable commands: ls, cd, cat, pwd, help, clear, exit';
+      output = 'GHOST_ROOT Recovery Shell v0.1\nAvailable commands: ls, cd, cat, pwd, help, clear, exit, ssh';
       break;
     case 'clear':
       output = '\x1b[2J\x1b[0;0H'; // ANSI clear screen
+      break;
+    case 'ssh':
+      if (args.length < 1) {
+        output = 'usage: ssh user@host';
+      } else {
+        const target = args[0];
+        // Mock connection
+        output = `Connecting to ${target}...\nConnected to ${target}.\nLast login: ${new Date().toUTCString()} from 192.168.1.5`;
+        // Signal to change prompt
+        // We need to return this information. The interface was updated.
+        return { output, newCwd, newPrompt: 'ghost@remote_server$', action: 'delay' };
+      }
       break;
     case 'exit':
         output = 'Logout.';
