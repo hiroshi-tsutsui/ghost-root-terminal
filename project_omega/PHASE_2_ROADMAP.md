@@ -303,3 +303,10 @@ We are moving from a "Tool" to a "Platform".
   - **Action:** Added "The Gauntlet" (Quiz) to the main module grid.
   - **Narrative:** Formalized the "Calibration Protocol" as a repeatable mission.
   - **Goal:** Allow Operators to re-calibrate their sync rate at will.
+
+- **[2026-02-08] Narrative Core: System Configuration (Protocol: Override)**
+  - **Status:** Deployed.
+  - **Action:** Created `app/settings/` and integrated into Dashboard.
+  - **Narrative:** "Cognitive Load Management". Allows Operators to tune Audio/Visuals.
+  - **Mechanics:** Global toggles for Audio/Fidelity, Kernel Version display, and "Memory Purge" (Reset).
+  - **Goal:** Provide the "Operator" with control over their simulation interface.

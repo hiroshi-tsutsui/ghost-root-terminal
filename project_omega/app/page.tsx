@@ -202,6 +202,9 @@ export default function Home() {
                     <Link href="/profile" className="hover:text-purple-400 transition-colors flex items-center gap-1 font-bold animate-pulse">
                         [ DOSSIER ]
                     </Link>
+                    <Link href="/settings" className="hover:text-red-400 transition-colors flex items-center gap-1">
+                        [ CONFIG ]
+                    </Link>
                 </div>
             </div>
           </div>
