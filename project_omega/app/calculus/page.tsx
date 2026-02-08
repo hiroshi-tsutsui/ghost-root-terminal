@@ -15,122 +15,6 @@ import * as THREE from 'three';
 // --- Constants ---
 const MODULE_ID = 'calculus';
 
-// --- Localization Content (Self-Contained) ---
-const LOCAL_CONTENT = {
-    en: {
-        title: "FLUX ENGINE",
-        levels: {
-            1: { name: "BASICS", desc: "Intuition: Speed vs Distance." },
-            2: { name: "THEORY", desc: "Limits & Accumulation." },
-            3: { name: "VISUALIZATION", desc: "The Flux Visualization." },
-            4: { name: "APPLY", desc: "Real-world Dynamics." }
-        },
-        concepts: {
-            title: "Concept: The Study of Change",
-            diff_title: "Differentiation (The Slope)",
-            diff_body: "Measures <strong>instantaneous change</strong>. If you drive a car, the speedometer shows your derivative (velocity) at that exact moment.",
-            int_title: "Integration (The Area)",
-            int_body: "Measures <strong>accumulation</strong>. The odometer shows your integral (total distance) accumulated over time."
-        },
-        theory: {
-            title: "Theory: Infinite Precision",
-            def_title: "DEFINITION",
-            derivative_term: "The Derivative",
-            derivative_desc: "We shrink the time step 'h' to zero. The secant line becomes a tangent line.",
-            integral_term: "The Integral",
-            integral_desc: "We sum up infinite tiny rectangles under the curve to find the total area."
-        },
-        viz: {
-            title: "Protocol: Flux Engine",
-            integrity: "ENGINE INTEGRITY",
-            target: "TARGET FLUX",
-            log_start: "FLUX ENGINE INITIALIZED...",
-            log_guide: "ADJUST PARAMETER (t) TO EXCEED TARGET ACCUMULATION.",
-            controls: {
-                function_label: "INPUT FUNCTION f(x)",
-                time_label: "TIME PARAMETER (t)",
-                telemetry: "TELEMETRY",
-                value: "POSITION f(t)",
-                slope: "VELOCITY f'(t)",
-                area: "ACCUMULATION ∫f(x)dx",
-                enable_3d: "ENABLE 3D MANIFOLD",
-                disable_3d: "RETURN TO 2D PLANE",
-                rotation_active: "ORBITAL CONTROLS ACTIVE"
-            },
-            viewport_label: "VIEWPORT_RENDER"
-        },
-        apps: {
-            title: "Applications: System Dynamics",
-            physics_title: "Physics Engine",
-            physics_body: "Simulating motion, forces, and collisions in video games and engineering.",
-            ml_title: "Machine Learning",
-            ml_body: "Gradient Descent uses derivatives to minimize the 'loss' (error) of AI models.",
-            econ_title: "Economics",
-            econ_body: "Marginal cost/revenue analysis to optimize profit in changing markets."
-        },
-        completion: {
-            synced: "MODULE SYNCED",
-            msg: "You have mastered the language of change. The Flux Engine is now online."
-        }
-    },
-    ja: {
-        title: "フラックス・エンジン (微積分)",
-        levels: {
-            1: { name: "基礎 (Basics)", desc: "直感：変化のスピードと蓄積。" },
-            2: { name: "理論 (Logic)", desc: "極限と無限の和。" },
-            3: { name: "可視化 (Viz)", desc: "フラックス・エンジンの起動。" },
-            4: { name: "応用 (Applications)", desc: "世界を記述する言語。" }
-        },
-        concepts: {
-            title: "概念：変化の学問",
-            diff_title: "微分（瞬間の勢い）",
-            diff_body: "<strong>瞬間の変化率</strong>を捉えます。過去や未来ではなく、「今この瞬間」の勢い（Velocity）を数値化します。",
-            int_title: "積分（積み重なる成果）",
-            int_body: "<strong>蓄積量</strong>を測定します。瞬間の変化が積み重なって、最終的にどれだけの量（Distance/Total）になるかを計算します。"
-        },
-        theory: {
-            title: "理論：無限の精度",
-            def_title: "定義",
-            derivative_term: "導関数 (Derivative)",
-            derivative_desc: "時間ステップ「h」を限りなくゼロ（極限）に近づけることで、平均ではなく「瞬間」の傾きを厳密に定義します。",
-            integral_term: "積分 (Integral)",
-            integral_desc: "無限に細分化された領域（長方形）の面積を足し合わせることで、曲線下の正確な総量を導き出します。"
-        },
-        viz: {
-            title: "プロトコル：フラックス・エンジン",
-            integrity: "FLUX INTEGRITY",
-            target: "TARGET FLUX",
-            log_start: "フラックス・エンジン初期化中...",
-            log_guide: "パラメータ(t)を調整し、目標蓄積量(Area)を超過せよ。",
-            controls: {
-                function_label: "入力関数 f(x)",
-                time_label: "時間パラメータ (t)",
-                telemetry: "テレメトリ",
-                value: "位置 f(t)",
-                slope: "速度 f'(t)",
-                area: "蓄積量 ∫f(x)dx",
-                enable_3d: "3Dマニホールド起動 (回転体)",
-                disable_3d: "2D平面に戻る",
-                rotation_active: "軌道制御アクティブ"
-            },
-            viewport_label: "VIEWPORT_RENDER"
-        },
-        apps: {
-            title: "応用：システムダイナミクス",
-            physics_title: "物理エンジン",
-            physics_body: "ゲームやシミュレーションにおいて、物体の運動、衝突、流体の動きを計算する基盤技術です。",
-            ml_title: "機械学習 (AI)",
-            ml_body: "AIの学習（Backpropagation）は、微分の連鎖律（Chain Rule）そのものです。誤差を最小化するために「下るべき坂の方向」を計算します。",
-            econ_title: "経済・最適化",
-            econ_body: "コストの最小化や利益の最大化。変化する環境の中で「最適なポイント」を見つけるために使われます。"
-        },
-        completion: {
-            synced: "モジュール同期完了",
-            msg: "「変化の言語」を習得しました。フラックス・エンジン、正常稼働中。"
-        }
-    }
-};
-
 // --- 3D Components ---
 function RevolutionSurface({ funcStr, xVal }: { funcStr: string, xVal: number }) {
   const meshRef = useRef<THREE.Mesh>(null);
@@ -170,23 +54,10 @@ function RevolutionSurface({ funcStr, xVal }: { funcStr: string, xVal: number })
 
 export default function CalculusPage() {
   const { moduleProgress, completeLevel } = useProgress();
-  const { locale, setLocale, t: globalT } = useLanguage();
+  const { t, locale, setLocale } = useLanguage();
   const [currentLevel, setCurrentLevel] = useState(1);
   const [showUnlock, setShowUnlock] = useState(false);
   const [log, setLog] = useState<string[]>([]);
-
-  // Helper for local content
-  const t = (key: string) => {
-      const keys = key.split('.');
-      if (keys[0] === 'modules' && keys[1] === 'calculus') {
-          let obj = LOCAL_CONTENT[locale as 'en' | 'ja'];
-          for (let i = 2; i < keys.length; i++) {
-              if (obj) obj = obj[keys[i]];
-          }
-          if (obj) return obj;
-      }
-      return globalT(key);
-  };
 
   // --- Flux Engine State ---
   const [xVal, setXVal] = useState(1);
@@ -377,10 +248,10 @@ export default function CalculusPage() {
        <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 h-14 flex items-center px-6 bg-black/80 backdrop-blur-md justify-between">
          <div className="flex items-center gap-4 text-xs tracking-widest">
             <Link href="/" className="hover:text-cyan-400 transition-colors">
-               {globalT('common.back_root')}
+               {t('common.back_root')}
             </Link>
             <span className="text-white/20">|</span>
-            <span className="text-cyan-500 font-bold">{globalT('common.protocol')}: {t('modules.calculus.title')}</span>
+            <span className="text-cyan-500 font-bold">{t('common.protocol')}: {t('modules.calculus.title')}</span>
          </div>
          <div className="flex items-center gap-4">
             <button onClick={() => setLocale(locale === 'en' ? 'ja' : 'en')} className="text-xs text-white/40 hover:text-white transition-colors uppercase">
@@ -411,7 +282,7 @@ export default function CalculusPage() {
             </div>
             {currentLevel === 1 && (
                  <button onClick={() => handleLevelComplete(1)} className="mt-4 border border-cyan-500/30 text-cyan-400 px-4 py-2 text-xs hover:bg-cyan-900/20 transition-all uppercase tracking-widest">
-                    COMPLETE {globalT('common.level')} 01
+                    COMPLETE {t('common.level')} 01
                  </button>
             )}
         </section>
@@ -435,7 +306,7 @@ export default function CalculusPage() {
             </div>
              {currentLevel === 2 && (
                  <button onClick={() => handleLevelComplete(2)} className="mt-4 border border-cyan-500/30 text-cyan-400 px-4 py-2 text-xs hover:bg-cyan-900/20 transition-all uppercase tracking-widest">
-                    COMPLETE {globalT('common.level')} 02
+                    COMPLETE {t('common.level')} 02
                  </button>
             )}
         </section>
@@ -581,7 +452,7 @@ export default function CalculusPage() {
             </div>
              {currentLevel === 4 && (
                  <button onClick={() => handleLevelComplete(4)} className="mt-4 border border-cyan-500/30 text-cyan-400 px-4 py-2 text-xs hover:bg-cyan-900/20 transition-all uppercase tracking-widest">
-                    COMPLETE {globalT('common.level')} 04
+                    COMPLETE {t('common.level')} 04
                  </button>
             )}
         </section>
@@ -600,16 +471,16 @@ export default function CalculusPage() {
                 <div className="bg-black border border-cyan-500/30 p-8 max-w-md w-full relative overflow-hidden">
                     <div className="absolute top-0 left-0 w-full h-1 bg-cyan-500 shadow-[0_0_10px_#06b6d4]"></div>
                     <h2 className="text-2xl font-bold text-white mb-2 tracking-tighter">{t('modules.calculus.completion.synced')}</h2>
-                    <div className="text-cyan-500 text-sm mb-6">{globalT('common.level')} 0{currentLevel} COMPLETE</div>
+                    <div className="text-cyan-500 text-sm mb-6">{t('common.level')} 0{currentLevel} COMPLETE</div>
                     <p className="text-white/60 text-xs mb-8 leading-relaxed">
                         {t('modules.calculus.completion.msg')}<br/>
-                        {globalT('common.xp_awarded')}: <span className="text-white">+100</span>
+                        {t('common.xp_awarded')}: <span className="text-white">+100</span>
                     </p>
                     <button 
                         onClick={handleNextLevel}
                         className="w-full bg-cyan-900/20 border border-cyan-500/50 text-cyan-400 py-3 text-xs hover:bg-cyan-500 hover:text-black transition-all uppercase tracking-widest"
                     >
-                        {currentLevel < 4 ? globalT('common.next') : globalT('common.root')}
+                        {currentLevel < 4 ? t('common.next') : t('common.root')}
                     </button>
                 </div>
             </motion.div>

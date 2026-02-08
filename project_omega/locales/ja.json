@@ -103,56 +103,60 @@
       }
     },
     "calculus": {
-      "title": "FLUX_ENGINE (微分・積分)",
-      "levels": {
-        "1": { "name": "FLUX DYNAMICS (変化の解析)", "desc": "変化率（微分）と蓄積（積分）の直感的理解。" },
-        "2": { "name": "THEORY (極限と定義)", "desc": "無限小の世界。導関数と積分の数学的定義。" },
-        "3": { "name": "FLUX ENGINE (可視化)", "desc": "関数の挙動をシミュレートし、次元を操作せよ。" },
-        "4": { "name": "APPLICATIONS (応用)", "desc": "物理法則からAIの学習まで。微積分の実世界への適用。" }
-      },
-      "concepts": {
-        "title": "01. 基礎概念 (BASIC CONCEPTS)",
-        "diff_title": "微分 (Differentiation) とは？",
-        "diff_body": "「変化の瞬間」を捉える技術です。ある一瞬における速度、あるいは曲線の接線の傾きを表します。世界は常に流動しており、その瞬間の「勢い」を知ることで、次の瞬間を予測できます。<br/><span class=\"text-cyan-500\">Flux (変化率) = 傾き</span>",
-        "int_title": "積分 (Integration) とは？",
-        "int_body": "「変化の蓄積」を捉える技術です。速度を積み上げれば距離になり、曲線を積み上げれば面積（体積）になります。過去から現在までの総量を計算し、エネルギーや質量の総和を導き出します。<br/><span class=\"text-cyan-500\">Mass (蓄積量) = 面積</span>"
-      },
-      "theory": {
-        "title": "02. 理論モデル (THEORY)",
-        "def_title": "DEFINITION //",
-        "derivative_term": "導関数 (Derivative)",
-        "derivative_desc": "無限小の時間 h における変化の割合。",
-        "integral_term": "定積分 (Definite Integral)",
-        "integral_desc": "微積分の基本定理。微分の逆操作が面積を導く。"
-      },
-      "viz": {
-        "title": "03. FLUX ENGINE (可視化)",
-        "controls": {
-          "function_label": "FUNCTION f(x)",
-          "time_label": "TIME (x)",
-          "telemetry": "TELEMETRY",
-          "value": "VALUE f(x)",
-          "slope": "SLOPE f'(x)",
-          "area": "AREA ∫f(x)",
-          "enable_3d": "ENABLE 3D PROJECTION (3D投影)",
-          "disable_3d": "DISABLE 3D PROJECTION (2Dに戻る)"
+        "title": "フラックス・エンジン (微積分)",
+        "levels": {
+            "1": { "name": "基礎 (Basics)", "desc": "直感：変化のスピードと蓄積。" },
+            "2": { "name": "理論 (Logic)", "desc": "極限と無限の和。" },
+            "3": { "name": "可視化 (Viz)", "desc": "フラックス・エンジンの起動。" },
+            "4": { "name": "応用 (Applications)", "desc": "世界を記述する言語。" }
         },
-        "viewport_label": "VISUALIZER //",
-        "rotation_active": "ROTATION SOLIDS (回転体) ACTIVATED"
-      },
-      "apps": {
-        "title": "04. 応用 (APPLICATIONS)",
-        "physics_title": "物理シミュレーション",
-        "physics_body": "物体の位置を微分すれば速度、速度を微分すれば加速度が得られます。逆に、力を積分することでエネルギーや移動距離を計算し、軌道を予測します。",
-        "ml_title": "機械学習 (Backpropagation)",
-        "ml_body": "ニューラルネットワークの学習は、損失関数の「勾配（微分）」を下ることで行われます。偏微分（多変数の微分）により、パラメータを最適化し、AIを賢くします。",
-        "econ_title": "経済学 (Marginal Utility)",
-        "econ_body": "「限界効用」や「限界費用」は、ある変数を1単位増やしたときの変化率（微分）です。利益を最大化するポイントを見つけるために、微積分が使われます。"
-      },
-      "completion": {
-        "synced": "PROTOCOL SYNCED",
-        "msg": "Fluxダイナミクス安定化。エンジンはあなたの貢献を承認します。"
-      }
+        "concepts": {
+            "title": "概念：変化の学問",
+            "diff_title": "微分（瞬間の勢い）",
+            "diff_body": "<strong>瞬間の変化率</strong>を捉えます。過去や未来ではなく、「今この瞬間」の勢い（Velocity）を数値化します。",
+            "int_title": "積分（積み重なる成果）",
+            "int_body": "<strong>蓄積量</strong>を測定します。瞬間の変化が積み重なって、最終的にどれだけの量（Distance/Total）になるかを計算します。"
+        },
+        "theory": {
+            "title": "理論：無限の精度",
+            "def_title": "定義",
+            "derivative_term": "導関数 (Derivative)",
+            "derivative_desc": "時間ステップ「h」を限りなくゼロ（極限）に近づけることで、平均ではなく「瞬間」の傾きを厳密に定義します。",
+            "integral_term": "積分 (Integral)",
+            "integral_desc": "無限に細分化された領域（長方形）の面積を足し合わせることで、曲線下の正確な総量を導き出します。"
+        },
+        "viz": {
+            "title": "プロトコル：フラックス・エンジン",
+            "integrity": "FLUX INTEGRITY",
+            "target": "TARGET FLUX",
+            "log_start": "フラックス・エンジン初期化中...",
+            "log_guide": "パラメータ(t)を調整し、目標蓄積量(Area)を超過せよ。",
+            "controls": {
+                "function_label": "入力関数 f(x)",
+                "time_label": "時間パラメータ (t)",
+                "telemetry": "テレメトリ",
+                "value": "位置 f(t)",
+                "slope": "速度 f'(t)",
+                "area": "蓄積量 ∫f(x)dx",
+                "enable_3d": "3Dマニホールド起動 (回転体)",
+                "disable_3d": "2D平面に戻る",
+                "rotation_active": "軌道制御アクティブ"
+            },
+            "viewport_label": "VIEWPORT_RENDER"
+        },
+        "apps": {
+            "title": "応用：システムダイナミクス",
+            "physics_title": "物理エンジン",
+            "physics_body": "ゲームやシミュレーションにおいて、物体の運動、衝突、流体の動きを計算する基盤技術です。",
+            "ml_title": "機械学習 (AI)",
+            "ml_body": "AIの学習（Backpropagation）は、微分の連鎖律（Chain Rule）そのものです。誤差を最小化するために「下るべき坂の方向」を計算します。",
+            "econ_title": "経済・最適化",
+            "econ_body": "コストの最小化や利益の最大化。変化する環境の中で「最適なポイント」を見つけるために使われます。"
+        },
+        "completion": {
+            "synced": "モジュール同期完了",
+            "msg": "「変化の言語」を習得しました。フラックス・エンジン、正常稼働中。"
+        }
     }
   }
 }

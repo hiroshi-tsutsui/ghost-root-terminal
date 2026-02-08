@@ -103,56 +103,60 @@
       }
     },
     "calculus": {
-      "title": "FLUX_ENGINE (Calculus)",
-      "levels": {
-        "1": { "name": "FLUX DYNAMICS", "desc": "Intuitive understanding of Rate of Change (Diff) and Accumulation (Int)." },
-        "2": { "name": "THEORY", "desc": "The world of infinitesimals. Mathematical definitions of Derivatives and Integrals." },
-        "3": { "name": "FLUX ENGINE", "desc": "Simulate function behavior and manipulate dimensions." },
-        "4": { "name": "APPLICATIONS", "desc": "From physics to AI. Applying calculus to the real world." }
-      },
-      "concepts": {
-        "title": "01. BASIC CONCEPTS",
-        "diff_title": "What is Differentiation?",
-        "diff_body": "The art of capturing the 'moment of change'. It represents velocity at an instant, or the slope of a curve. The world is in constant flux; knowing the momentum allows prediction of the next moment.<br/><span class=\"text-cyan-500\">Flux (Rate of Change) = Slope</span>",
-        "int_title": "What is Integration?",
-        "int_body": "The art of capturing 'accumulation'. Stacking velocity gives distance; stacking curves gives area (volume). It calculates the sum from past to present to derive total energy or mass.<br/><span class=\"text-cyan-500\">Mass (Accumulation) = Area</span>"
-      },
-      "theory": {
-        "title": "02. THEORY",
-        "def_title": "DEFINITION //",
-        "derivative_term": "Derivative f'(x)",
-        "derivative_desc": "The rate of change at infinitesimal time h.",
-        "integral_term": "Definite Integral",
-        "integral_desc": "The Fundamental Theorem of Calculus. The inverse of differentiation yields area."
-      },
-      "viz": {
-        "title": "03. FLUX ENGINE (VISUALIZATION)",
-        "controls": {
-          "function_label": "FUNCTION f(x)",
-          "time_label": "TIME (x)",
-          "telemetry": "TELEMETRY",
-          "value": "VALUE f(x)",
-          "slope": "SLOPE f'(x)",
-          "area": "AREA ∫f(x)",
-          "enable_3d": "ENABLE 3D PROJECTION",
-          "disable_3d": "DISABLE 3D PROJECTION"
+        "title": "FLUX ENGINE",
+        "levels": {
+            "1": { "name": "BASICS", "desc": "Intuition: Speed vs Distance." },
+            "2": { "name": "THEORY", "desc": "Limits & Accumulation." },
+            "3": { "name": "VISUALIZATION", "desc": "The Flux Visualization." },
+            "4": { "name": "APPLY", "desc": "Real-world Dynamics." }
         },
-        "viewport_label": "VISUALIZER //",
-        "rotation_active": "ROTATION SOLIDS ACTIVATED"
-      },
-      "apps": {
-        "title": "04. APPLICATIONS",
-        "physics_title": "Physics Simulation",
-        "physics_body": "Differentiating position gives velocity; differentiating velocity gives acceleration. Integrating force gives energy and distance, allowing trajectory prediction.",
-        "ml_title": "Machine Learning (Backprop)",
-        "ml_body": "Neural networks learn by descending the 'gradient (derivative)' of the loss function. Partial derivatives optimize parameters to make AI smarter.",
-        "econ_title": "Economics (Marginal Utility)",
-        "econ_body": "'Marginal Utility' is the rate of change (derivative) when increasing a variable by one unit. Calculus is used to find the point of maximum profit."
-      },
-      "completion": {
-        "synced": "PROTOCOL SYNCED",
-        "msg": "Flux dynamics stabilized. The Engine acknowledges your contribution."
-      }
+        "concepts": {
+            "title": "Concept: The Study of Change",
+            "diff_title": "Differentiation (The Slope)",
+            "diff_body": "Measures <strong>instantaneous change</strong>. If you drive a car, the speedometer shows your derivative (velocity) at that exact moment.",
+            "int_title": "Integration (The Area)",
+            "int_body": "Measures <strong>accumulation</strong>. The odometer shows your integral (total distance) accumulated over time."
+        },
+        "theory": {
+            "title": "Theory: Infinite Precision",
+            "def_title": "DEFINITION",
+            "derivative_term": "The Derivative",
+            "derivative_desc": "We shrink the time step 'h' to zero. The secant line becomes a tangent line.",
+            "integral_term": "The Integral",
+            "integral_desc": "We sum up infinite tiny rectangles under the curve to find the total area."
+        },
+        "viz": {
+            "title": "Protocol: Flux Engine",
+            "integrity": "ENGINE INTEGRITY",
+            "target": "TARGET FLUX",
+            "log_start": "FLUX ENGINE INITIALIZED...",
+            "log_guide": "ADJUST PARAMETER (t) TO EXCEED TARGET ACCUMULATION.",
+            "controls": {
+                "function_label": "INPUT FUNCTION f(x)",
+                "time_label": "TIME PARAMETER (t)",
+                "telemetry": "TELEMETRY",
+                "value": "POSITION f(t)",
+                "slope": "VELOCITY f'(t)",
+                "area": "ACCUMULATION ∫f(x)dx",
+                "enable_3d": "ENABLE 3D MANIFOLD",
+                "disable_3d": "RETURN TO 2D PLANE",
+                "rotation_active": "ORBITAL CONTROLS ACTIVE"
+            },
+            "viewport_label": "VIEWPORT_RENDER"
+        },
+        "apps": {
+            "title": "Applications: System Dynamics",
+            "physics_title": "Physics Engine",
+            "physics_body": "Simulating motion, forces, and collisions in video games and engineering.",
+            "ml_title": "Machine Learning",
+            "ml_body": "Gradient Descent uses derivatives to minimize the 'loss' (error) of AI models.",
+            "econ_title": "Economics",
+            "econ_body": "Marginal cost/revenue analysis to optimize profit in changing markets."
+        },
+        "completion": {
+            "synced": "MODULE SYNCED",
+            "msg": "You have mastered the language of change. The Flux Engine is now online."
+        }
     }
   }
 }
