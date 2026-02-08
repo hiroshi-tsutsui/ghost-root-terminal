@@ -9,9 +9,62 @@ import { useProgress } from '../contexts/ProgressContext';
 // --- Matrix Logic ---
 type Matrix2x2 = [[number, number], [number, number]];
 
+const PROTOCOLS = {
+    1: {
+        title: "PHASE 1: ORIENTATION LOCK",
+        steps: [
+            {
+                text: "SYSTEM: FABRIC WEAVER INITIALIZED.\nWARNING: LOCAL GRAVITY SPIN DETECTED.\n\nMISSION: ROTATE THE GRID 90° COUNTER-CLOCKWISE.\n\nHINT: i (1,0) -> (0,1). j (0,1) -> (-1,0).",
+                isBriefing: true
+            },
+            {
+                text: "EXECUTE ROTATION PROTOCOL.\nTARGET: 90° COUNTER-CLOCKWISE.",
+                target: [[0, -1], [1, 0]] as Matrix2x2
+            },
+            {
+                text: "STATUS: ORIENTATION LOCKED.\nPREPARING FOR PHASE 2...",
+                isFinal: true
+            }
+        ]
+    },
+    2: {
+        title: "PHASE 2: EXPANSION PROTOCOL",
+        steps: [
+            {
+                text: "SYSTEM: SPATIAL COMPRESSION DETECTED.\n\nMISSION: EXPAND THE GRID BY A FACTOR OF 2.\n\nHINT: SCALE BOTH AXES UNIFORMLY.",
+                isBriefing: true
+            },
+            {
+                text: "EXECUTE EXPANSION.\nTARGET: 2X SCALE.",
+                target: [[2, 0], [0, 2]] as Matrix2x2
+            },
+            {
+                text: "STATUS: EXPANSION STABLE.\nPREPARING FOR PHASE 3...",
+                isFinal: true
+            }
+        ]
+    },
+    3: {
+        title: "PHASE 3: SHEAR STRESS",
+        steps: [
+            {
+                text: "SYSTEM: DIMENSIONAL SLIP DETECTED.\n\nMISSION: APPLY LATERAL FORCE (SHEAR X).\n\nHINT: KEEP Y STABLE. PUSH X BASED ON Y.",
+                isBriefing: true
+            },
+            {
+                text: "EXECUTE SHEAR.\nTARGET: SHEAR X (FACTOR 1).",
+                target: [[1, 1], [0, 1]] as Matrix2x2
+            },
+            {
+                text: "STATUS: FABRIC WEAVER STABILIZED.\nALL SYSTEMS GREEN.",
+                isFinal: true
+            }
+        ]
+    }
+};
+
 export default function MatricesPage() {
   const [matrix, setMatrix] = useState<Matrix2x2>([[1, 0], [0, 1]]);
-  // Default target is now managed by protocol
   
   // Protocol State
   const [isProtocolActive, setIsProtocolActive] = useState(false);
@@ -25,18 +78,53 @@ export default function MatricesPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { completeLevel } = useProgress();
 
-  // ... (PROTOCOLS definition remains same, skipping for brevity in edit tool if possible? No, need exact match)
-  // I will skip replacing PROTOCOLS since I don't need to change it.
-  
-  // I'll target the advanceProtocol function specifically.
+  // Sync Protocol State
+  useEffect(() => {
+    if (!isProtocolActive) return;
+    
+    const currentLevelData = PROTOCOLS[level as keyof typeof PROTOCOLS];
+    if (!currentLevelData) return;
+    
+    const currentStep = currentLevelData.steps[protocolStep];
+    if (!currentStep) return;
+
+    setSystemLog(currentStep.text);
+    
+    if (currentStep.target) {
+        setTargetMatrix(currentStep.target);
+    }
+  }, [level, protocolStep, isProtocolActive]);
+
+  // Check Goal
+  useEffect(() => {
+    if (!isProtocolActive) return;
+    const currentLevelData = PROTOCOLS[level as keyof typeof PROTOCOLS];
+    const currentStep = currentLevelData?.steps[protocolStep];
+    
+    if (currentStep?.target) {
+        // Compare matrix with target
+        const m = matrix;
+        const t = currentStep.target;
+        const isMatch = m[0][0] === t[0][0] && m[0][1] === t[0][1] &&
+                        m[1][0] === t[1][0] && m[1][1] === t[1][1];
+        
+        if (isMatch && !taskCompleted) {
+            setTaskCompleted(true);
+            setSystemLog((prev) => prev + "\n\n>> TARGET ACQUIRED. SYSTEM SYNCED.");
+        }
+    } else if (currentStep?.isBriefing || currentStep?.isFinal) {
+         if (!taskCompleted) setTaskCompleted(true); // Auto-complete text steps
+    }
+  }, [matrix, level, protocolStep, isProtocolActive, taskCompleted]);
+
 
   const advanceProtocol = () => {
-      const currentLevelData = PROTOCOLS[level];
+      const currentLevelData = PROTOCOLS[level as keyof typeof PROTOCOLS];
       const currentStepData = currentLevelData.steps[protocolStep];
 
       if (currentStepData.isFinal) {
           completeLevel('matrices', level);
-          if (PROTOCOLS[level + 1]) {
+          if (PROTOCOLS[(level + 1) as keyof typeof PROTOCOLS]) {
               setLevel(level + 1);
               setProtocolStep(0);
               // Reset matrix for next level usually, but we keep continuity
@@ -187,7 +275,7 @@ export default function MatricesPage() {
 
   }, [matrix, targetMatrix, isProtocolActive, taskCompleted]);
 
-  const currentStepIsBriefing = PROTOCOLS[level]?.steps[protocolStep]?.isBriefing;
+  const currentStepIsBriefing = PROTOCOLS[level as keyof typeof PROTOCOLS]?.steps[protocolStep]?.isBriefing;
 
   return (
     <div className="min-h-screen bg-black text-white font-mono selection:bg-emerald-900">
@@ -271,7 +359,7 @@ export default function MatricesPage() {
                 <div className={`p-4 bg-black border-l-2 rounded-r-sm shadow-lg animate-fade-in font-mono text-xs leading-relaxed ${currentStepIsBriefing ? 'border-emerald-500 text-emerald-300' : 'border-blue-500 text-blue-300'}`}>
                     <div className="flex justify-between items-start mb-2 border-b border-white/10 pb-2">
                         <span className="uppercase tracking-widest font-bold">
-                           // {PROTOCOLS[level]?.title}
+                           // {PROTOCOLS[level as keyof typeof PROTOCOLS]?.title}
                         </span>
                         {taskCompleted && <span className="text-white bg-emerald-600 px-2 rounded-[2px] animate-pulse">SYNC_LOCKED</span>}
                     </div>

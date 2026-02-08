@@ -233,3 +233,9 @@ We are moving from a "Tool" to a "Platform".
   - **Action:** Integrated "Calibration Rating" into the main Operator Card.
   - **Narrative:** Users who pass "The Gauntlet" now see their Calibration Score on the main dashboard.
   - **Goal:** Unify the "Entrance Exam" (Quiz) with the "Ongoing Mission" (Modules).
+
+- **[2026-02-08] Refinement: Matrices (Fabric Weaver) - Rescue & Narrative Formalization**
+  - **Action:** Fixed broken \`page.tsx\` (missing PROTOCOLS definition).
+  - **Narrative Formalized:** Created \`NARRATIVE.md\` defining "Protocol: Fabric Weaver".
+  - **Mechanics:** Fully implemented 3-Phase Mission (Orientation Lock, Expansion, Shear Stress).
+  - **Goal:** Ensured the "Fabric Weaver" module is actually playable and synced with the Operator narrative.
