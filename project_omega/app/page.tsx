@@ -2,16 +2,18 @@
 
 import Link from 'next/link';
 import { useProgress, ModuleId } from './contexts/ProgressContext';
+import { useLanguage } from './contexts/LanguageContext';
 import { GeistMono } from 'geist/font/mono';
 import SystemMessages from './components/SystemMessages';
 
 export default function Home() {
   const { moduleProgress, calibration } = useProgress();
+  const { t } = useLanguage();
 
   const modules = [
     {
       id: 'quadratics',
-      title: 'GRAVITY WELL',
+      title: t('modules.quadratics.title') || 'GRAVITY WELL',
       subtitle: 'Protocol: Singularity',
       desc: 'Contain the singularity. Master the parabolic arc.',
       status: 'STABLE',
@@ -21,7 +23,7 @@ export default function Home() {
     },
     {
       id: 'trig',
-      title: 'HARMONIC TUNER',
+      title: t('modules.trig.title'),
       subtitle: 'Protocol: Resonance',
       desc: 'Synchronize the carrier wave. Tune the phase.',
       status: 'ACTIVE',
@@ -31,7 +33,7 @@ export default function Home() {
     },
     {
       id: 'data',
-      title: 'SIGNAL ARCHIVE',
+      title: t('modules.data.title'),
       subtitle: 'Protocol: Pattern_Recog',
       desc: 'Filter the noise. Lock the signal vector.',
       status: 'LIVE',
@@ -41,7 +43,7 @@ export default function Home() {
     },
     {
       id: 'vectors',
-      title: 'VOID SCOUT',
+      title: t('modules.vectors.title'),
       subtitle: 'Protocol: Navigation',
       desc: 'Traverse the grid. Escape the origin.',
       status: 'READY',
@@ -51,7 +53,7 @@ export default function Home() {
     },
     {
       id: 'sequences',
-      title: 'CHRONOS PATTERN',
+      title: t('modules.sequences.title'),
       subtitle: 'Protocol: Timeline',
       desc: 'Predict the divergence. Stabilize the loop.',
       status: 'SYNCED',
@@ -61,7 +63,7 @@ export default function Home() {
     },
     {
       id: 'probability',
-      title: 'ENTROPY WEAVER',
+      title: t('modules.probability.title') || 'ENTROPY WEAVER',
       subtitle: 'Protocol: Oracle',
       desc: 'Collapse the waveform. Predict the outcome.',
       status: 'ONLINE',
@@ -71,7 +73,7 @@ export default function Home() {
     },
     {
       id: 'calculus',
-      title: 'FLUX ENGINE',
+      title: t('modules.calculus.title'),
       subtitle: 'Protocol: Stabilizer',
       desc: 'Control the flow. Accumulate the mass.',
       status: 'CRITICAL',
@@ -81,7 +83,7 @@ export default function Home() {
     },
     {
       id: 'complex',
-      title: 'PHASE ANALYZER',
+      title: t('modules.complex.title') || 'PHASE ANALYZER',
       subtitle: 'Protocol: Void_Shift',
       desc: 'Rotate into the imaginary. See the hidden dimension.',
       status: 'ONLINE',
@@ -111,7 +113,7 @@ export default function Home() {
     },
     {
       id: 'functions',
-      title: 'CAUSALITY ENGINE',
+      title: t('modules.functions.title'),
       subtitle: 'Protocol: Black_Box',
       desc: 'Trace the input. Decode the logic.',
       status: 'BETA',
