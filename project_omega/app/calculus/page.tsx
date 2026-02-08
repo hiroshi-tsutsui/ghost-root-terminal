@@ -61,11 +61,15 @@ export default function CalculusPage() {
   
   // --- Flux Engine State ---
   const [xVal, setXVal] = useState(1);
-  const [funcStr, setFuncStr] = useState("0.5*x^3 - 2*x");
+  const [funcStr, setFuncStr] = useState("0.5*x^3 - 2*x"); // Default function
   const [error, setError] = useState<string | null>(null);
   const [is3DMode, setIs3DMode] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [targetAccumulation] = useState(5.0); // Win condition
+  
+  // Win Conditions
+  const targetSlopeL1 = 1.0;
+  const targetSlopeL2 = 0.1; // |slope| < 0.1
+  const targetAreaL3 = 5.0;
 
   // Initialize Level
   useEffect(() => {
@@ -81,13 +85,14 @@ export default function CalculusPage() {
         `[SYSTEM] LEVEL 0${nextLvl}: ${t(`modules.calculus.levels.${nextLvl}.name`)}`,
         `[OP] ${t(`modules.calculus.levels.${nextLvl}.desc`)}`
     ]);
-  }, [moduleProgress, locale]);
+  }, [moduleProgress, locale]); // Re-run on locale change to update logs if needed (optional)
 
   const addLog = (msg: string) => {
       setLog(prev => [msg, ...prev].slice(0, 8));
   };
 
   const handleLevelComplete = (lvl: number) => {
+      if (showUnlock) return; // Prevent double trigger
       completeLevel(MODULE_ID, lvl);
       setShowUnlock(true);
       addLog(`[SUCCESS] LEVEL 0${lvl} ${t('modules.calculus.completion.synced')}`);
@@ -95,7 +100,7 @@ export default function CalculusPage() {
 
   const handleNextLevel = () => {
     setShowUnlock(false);
-    // Progression logic handled by effect on moduleProgress
+    // Progression handled by moduleProgress effect
   };
 
   // --- Math Helpers ---
@@ -205,7 +210,7 @@ export default function CalculusPage() {
     ctx.stroke();
     ctx.shadowBlur = 0;
 
-    // Tangent Line
+    // Tangent Line (Level 1 & 2 Focus)
     const yVal = evaluateFunc(funcStr, xVal);
     const slope = evaluateDerivative(funcStr, xVal);
     const tangentLength = 4;
@@ -214,7 +219,7 @@ export default function CalculusPage() {
     const yStart = slope * (xStart - xVal) + yVal;
     const yEnd = slope * (xEnd - xVal) + yVal;
 
-    ctx.strokeStyle = '#ff3b30';
+    ctx.strokeStyle = '#ff3b30'; // Red for tangent
     ctx.lineWidth = 2;
     ctx.setLineDash([4, 4]);
     ctx.beginPath();
@@ -231,16 +236,32 @@ export default function CalculusPage() {
 
   }, [xVal, funcStr, is3DMode]);
 
+  // --- Real-time Logic Checks ---
   const currentY = evaluateFunc(funcStr, xVal);
   const currentSlope = evaluateDerivative(funcStr, xVal);
   const currentIntegral = integrate(funcStr, xVal);
 
-  // Check Win Condition (Only on Level 3)
   useEffect(() => {
-      if (currentLevel === 3 && Math.abs(currentIntegral) > targetAccumulation) {
-          handleLevelComplete(3);
+      if (showUnlock) return;
+
+      if (currentLevel === 1) {
+          // Task: Find slope > 1.0
+          if (currentSlope > targetSlopeL1) {
+              handleLevelComplete(1);
+          }
+      } else if (currentLevel === 2) {
+          // Task: Find slope approx 0 (|slope| < 0.1)
+          if (Math.abs(currentSlope) < targetSlopeL2) {
+              handleLevelComplete(2);
+          }
+      } else if (currentLevel === 3) {
+          // Task: Accumulate Area > 5.0
+          if (currentIntegral > targetAreaL3) {
+              handleLevelComplete(3);
+          }
       }
-  }, [currentIntegral, currentLevel, targetAccumulation]);
+  }, [currentSlope, currentIntegral, currentLevel, showUnlock]);
+
 
   const presets = [
     { label: "PARABOLA", val: "0.5*x^3 - 2*x" },
@@ -288,12 +309,11 @@ export default function CalculusPage() {
                 </div>
             </div>
             {currentLevel === 1 && (
-                 <button 
-                    onClick={() => handleLevelComplete(1)} 
-                    className="mt-4 border border-cyan-500/30 text-cyan-400 px-6 py-3 text-xs hover:bg-cyan-500 hover:text-black transition-all uppercase tracking-widest bg-cyan-900/10"
-                 >
-                    {t('modules.calculus.actions.init_flux')}
-                 </button>
+                <div className="mt-4 p-4 bg-cyan-900/10 border border-cyan-500/30 text-cyan-400 text-xs animate-pulse">
+                     {`>>`} {t('modules.calculus.levels.1.desc')}
+                     <br/>
+                     <span className="text-white/60">SCROLL DOWN TO FLUX ENGINE & ADJUST T-PARAMETER</span>
+                </div>
             )}
         </section>
 
@@ -321,17 +341,16 @@ export default function CalculusPage() {
                 </div>
             </div>
              {currentLevel === 2 && (
-                 <button 
-                    onClick={() => handleLevelComplete(2)} 
-                    className="mt-4 border border-cyan-500/30 text-cyan-400 px-6 py-3 text-xs hover:bg-cyan-500 hover:text-black transition-all uppercase tracking-widest bg-cyan-900/10"
-                 >
-                    {t('modules.calculus.actions.compile_logic')}
-                 </button>
+                 <div className="mt-4 p-4 bg-cyan-900/10 border border-cyan-500/30 text-cyan-400 text-xs animate-pulse">
+                    {`>>`} {t('modules.calculus.levels.2.desc')}
+                    <br/>
+                    <span className="text-white/60">FIND THE EQUILIBRIUM POINT (SLOPE ≈ 0)</span>
+               </div>
             )}
         </section>
 
         {/* --- LEVEL 3: FLUX ENGINE --- */}
-        <section className="space-y-6">
+        <section className="space-y-6" id="flux-engine">
              <h2 className="text-2xl font-bold text-cyan-500 tracking-tighter border-b border-white/10 pb-2">
                 {t('modules.calculus.viz.title')}
             </h2>
@@ -383,15 +402,19 @@ export default function CalculusPage() {
                              </div>
                              <div className="flex justify-between border-b border-white/5 pb-1">
                                  <span className="text-white/60">{t('modules.calculus.viz.controls.slope')}</span>
-                                 <span className="text-red-400 font-bold">{isNaN(currentSlope) ? '-' : currentSlope.toFixed(4)}</span>
+                                 <span className={`font-bold ${
+                                     (currentLevel === 1 && currentSlope > targetSlopeL1) || (currentLevel === 2 && Math.abs(currentSlope) < targetSlopeL2) ? 'text-green-400 animate-pulse' : 'text-red-400'
+                                 }`}>
+                                    {isNaN(currentSlope) ? '-' : currentSlope.toFixed(4)}
+                                 </span>
                              </div>
                              <div className="flex justify-between items-center pt-1">
                                  <span className="text-white/60">{t('modules.calculus.viz.controls.area')}</span>
                                  <div className="text-right">
-                                    <span className={`block ${Math.abs(currentIntegral) > targetAccumulation ? 'text-green-400 animate-pulse font-bold' : 'text-cyan-400 font-bold'}`}>
+                                    <span className={`block ${currentIntegral > targetAreaL3 ? 'text-green-400 animate-pulse font-bold' : 'text-cyan-400 font-bold'}`}>
                                         {isNaN(currentIntegral) ? '-' : currentIntegral.toFixed(4)}
                                     </span>
-                                    <span className="text-[9px] text-white/20">TARGET: &gt; {targetAccumulation.toFixed(1)}</span>
+                                    {currentLevel === 3 && <span className="text-[9px] text-white/20">TARGET: &gt; {targetAreaL3.toFixed(1)}</span>}
                                  </div>
                              </div>
                          </div>
@@ -452,7 +475,6 @@ export default function CalculusPage() {
                     )}
                 </div>
             </div>
-            {/* Completion is now automatic based on target */}
         </section>
 
         {/* --- LEVEL 4: APPLICATION --- */}
