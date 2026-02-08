@@ -206,3 +206,10 @@ We are moving from a "Tool" to a "Platform".
   - **Mechanics:** 3-Phase Calibration (Gyroscopic Stabilization, Torque Generation, Landing Protocol).
   - **Visuals:** Updated 3D scene with dark grid, neon vectors, and "System Log" HUD.
   - **Goal:** Radical Clarity in spatial navigation.
+- **[2026-02-08] Refinement: Quiz (Protocol: Calibration) - The Gauntlet**
+  - **Status:** Complete.
+  - **Action:** Created `NARRATIVE.md` and evolved `page.tsx`.
+  - **Mechanics:** Introduced "Real-time Stability Decay" (Time Pressure).
+  - **Narrative:** Formalized "The Gauntlet" as a survival test, not just a quiz.
+  - **Visuals:** Added red warning overlays, stability bars, and "Critical Failure" states.
+  - **Goal:** Transform a static quiz into a high-stakes "System Initialization" sequence.
