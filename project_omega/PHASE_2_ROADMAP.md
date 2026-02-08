@@ -213,3 +213,9 @@ We are moving from a "Tool" to a "Platform".
   - **Narrative:** Formalized "The Gauntlet" as a survival test, not just a quiz.
   - **Visuals:** Added red warning overlays, stability bars, and "Critical Failure" states.
   - **Goal:** Transform a static quiz into a high-stakes "System Initialization" sequence.
+
+- **[2026-02-08] Narrative Core: Hub Integration (System v2.6.0)**
+  - **Status:** Deployed.
+  - **Action:** Updated Main Dashboard (`app/page.tsx`) to include direct access to "Mission Briefing" (`/overview`) and "System Logs" (`/codex`).
+  - **Narrative:** The "Operator Card" now serves as the central navigation hub for the user's career.
+  - **Goal:** Ensure every user starts with "The Awakening" manifesto.

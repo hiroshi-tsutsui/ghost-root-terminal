@@ -148,7 +148,7 @@ export default function Home() {
                   OMEGA
                </h1>
                <div className="flex items-center gap-4">
-                  <span className="text-xs px-2 py-0.5 border border-white/20 text-white/50 uppercase tracking-widest">System v2.5.0</span>
+                  <span className="text-xs px-2 py-0.5 border border-white/20 text-white/50 uppercase tracking-widest">System v2.6.0</span>
                   <span className="text-xs text-green-500 animate-pulse">● SERVERS ONLINE</span>
                </div>
             </div>
@@ -174,8 +174,11 @@ export default function Home() {
                 </div>
 
                 <div className="flex justify-between items-center text-[10px] uppercase tracking-widest">
-                    <Link href="/codex" className="hover:text-cyan-400 transition-colors flex items-center gap-2">
-                        [ SYSTEM LOGS ]
+                    <Link href="/overview" className="hover:text-cyan-400 transition-colors flex items-center gap-2">
+                        [ BRIEFING ]
+                    </Link>
+                    <Link href="/codex" className="hover:text-green-400 transition-colors flex items-center gap-2">
+                        [ LOGS ]
                     </Link>
                     <Link href="/quiz" className="hover:text-yellow-400 transition-colors flex items-center gap-2">
                         [ CALIBRATION ]
