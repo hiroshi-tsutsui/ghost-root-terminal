@@ -3,149 +3,203 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { GeistMono } from 'geist/font/mono';
 import { useProgress } from '../contexts/ProgressContext';
+import { useLanguage } from '../contexts/LanguageContext';
+import { motion, AnimatePresence } from 'framer-motion';
+
+// --- Constants ---
+const MODULE_ID = 'sequences';
+
+// --- Localization Content ---
+const LOCAL_CONTENT = {
+    en: {
+        title: "CHRONOS PATTERN",
+        levels: {
+            1: { name: "BASICS", desc: "Steps & Multipliers." },
+            2: { name: "THEORY", desc: "The General Term." },
+            3: { name: "VISUALIZATION", desc: "Timeline Simulation." },
+            4: { name: "APPLY", desc: "Growth & Decay." }
+        },
+        concepts: {
+            title: "Concept: The Flow of Time",
+            arith_title: "Arithmetic (Linear)",
+            arith_body: "Adding the same amount every step. Like walking up stairs. 1, 2, 3, 4... Steady, predictable progress.",
+            geo_title: "Geometric (Exponential)",
+            geo_body: "Multiplying by the same factor. Like cell division or viral spread. 1, 2, 4, 8... Explosive growth or rapid decay."
+        },
+        theory: {
+            title: "Theory: Prediction Algorithms",
+            arith_term: "Arithmetic Sequence",
+            arith_eq: "a_n = a + (n-1)d",
+            arith_desc: "To find the n-th term, we start at 'a' and add the difference 'd', (n-1) times.",
+            geo_term: "Geometric Sequence",
+            geo_eq: "a_n = a * r^(n-1)",
+            geo_desc: "To find the n-th term, we start at 'a' and multiply by the ratio 'r', (n-1) times."
+        },
+        viz: {
+            title: "Protocol: Chronos Pattern",
+            log_start: "TIMELINE SIMULATION INITIALIZED...",
+            log_guide: "ESTABLISH STASIS. TARGET LINEAR VELOCITY (d) = 0 AND DIVERGENCE (r) = 1.0.",
+            controls: {
+                anchor: "ANCHOR POINT (a)",
+                linear: "LINEAR VELOCITY (d)",
+                divergence: "DIVERGENCE FACTOR (r)",
+                depth: "SIMULATION DEPTH (n)",
+                telemetry: "TELEMETRY",
+                status_critical: "CRITICAL: RUNAWAY",
+                status_decay: "WARNING: DECAY",
+                status_stable: "STABLE: LINEAR",
+                status_stasis: "COMPLETE: STASIS LOCK"
+            },
+            viewport: "TIMELINE_RENDER"
+        },
+        apps: {
+            title: "Applications: Future Casting",
+            finance_title: "Compound Interest",
+            finance_body: "Money grows geometrically. A small interest rate, given enough time (n), creates massive wealth.",
+            bio_title: "Population Growth",
+            bio_body: "Populations multiply. One bacteria becomes two, then four. Understanding 'r' helps us predict pandemics.",
+            algo_title: "Algorithms",
+            algo_body: "Binary Search cuts the problem size in half each step (r=0.5). It's a geometric decay of complexity."
+        },
+        completion: {
+            synced: "TIMELINE STABILIZED",
+            msg: "You have mastered the patterns of time. The future is now calculable."
+        }
+    },
+    ja: {
+        title: "クロノス・パターン (数列)",
+        levels: {
+            1: { name: "基礎 (Basics)", desc: "足し算と掛け算の連鎖。" },
+            2: { name: "理論 (Logic)", desc: "一般項の導出。" },
+            3: { name: "可視化 (Viz)", desc: "タイムライン・シミュレーション。" },
+            4: { name: "応用 (Applications)", desc: "増殖と減衰。" }
+        },
+        concepts: {
+            title: "概念：時の流れ",
+            arith_title: "等差数列 (Linear)",
+            arith_body: "一定の数を足し続ける変化。階段を上るようなもの。1, 2, 3, 4... 着実で予測可能な進歩です。",
+            geo_title: "等比数列 (Exponential)",
+            geo_body: "一定の数を掛け続ける変化。細胞分裂やウイルスの拡散。1, 2, 4, 8... 爆発的な成長、あるいは急速な消滅。",
+        },
+        theory: {
+            title: "理論：予測アルゴリズム",
+            arith_term: "等差数列の一般項",
+            arith_eq: "a_n = a + (n-1)d",
+            arith_desc: "n番目の数を知るには、初項 a に、公差 d を (n-1)回 足します。",
+            geo_term: "等比数列の一般項",
+            geo_eq: "a_n = a * r^(n-1)",
+            geo_desc: "n番目の数を知るには、初項 a に、公比 r を (n-1)回 掛けます。"
+        },
+        viz: {
+            title: "プロトコル：クロノス・パターン",
+            log_start: "タイムライン予測機、起動...",
+            log_guide: "「完全な静止」を実現せよ。線形速度(d)を0、発散係数(r)を1.0に固定し、時間を凍結しろ。",
+            controls: {
+                anchor: "起点 (Anchor a)",
+                linear: "線形速度 (Velocity d)",
+                divergence: "発散係数 (Factor r)",
+                depth: "シミュレーション深度 (n)",
+                telemetry: "テレメトリ",
+                status_critical: "危険：指数関数的暴走",
+                status_decay: "警告：シグナル減衰",
+                status_stable: "安定：線形推移",
+                status_stasis: "完了：完全静止 (STASIS)"
+            },
+            viewport: "TIMELINE_RENDER"
+        },
+        apps: {
+            title: "応用：未来予測",
+            finance_title: "複利計算",
+            finance_body: "お金は等比数列で増えます。わずかな金利も、時間(n)さえあれば巨万の富を生み出します。",
+            bio_title: "人口爆発",
+            bio_body: "生物は掛け算で増えます。1匹が2匹、4匹... 「公比 r」を理解することが、パンデミック予測の鍵です。",
+            algo_title: "アルゴリズム",
+            algo_body: "バイナリサーチは、探索範囲を毎回半分にします（r=0.5）。これは複雑性の「幾何学的減衰」を利用した高速化手法です。"
+        },
+        completion: {
+            synced: "時間軸安定化",
+            msg: "時のパターンを解読しました。未来は計算可能です。"
+        }
+    }
+};
 
 export default function SequencesPage() {
-  const [n, setN] = useState(20); // Simulation Depth
-  const [a, setA] = useState(1);  // Anchor Point
-  const [d, setD] = useState(1);  // Linear Velocity
-  const [r, setR] = useState(1.1); // Divergence Factor
+  const { moduleProgress, completeLevel } = useProgress();
+  const { locale, setLocale, t: globalT } = useLanguage();
+  const [currentLevel, setCurrentLevel] = useState(1);
+  const [showUnlock, setShowUnlock] = useState(false);
+  const [log, setLog] = useState<string[]>([]);
+
+  // Chronos State
+  const [n, setN] = useState(20); 
+  const [a, setA] = useState(1);  
+  const [d, setD] = useState(1);  
+  const [r, setR] = useState(1.1);
   
-  // Protocol State
-  const [isProtocolActive, setIsProtocolActive] = useState(false);
-  const [level, setLevel] = useState(1);
-  const [protocolStep, setProtocolStep] = useState(0);
-  const [systemLog, setSystemLog] = useState("System Idle. Awaiting Chronos Protocol initialization...");
-  const [taskCompleted, setTaskCompleted] = useState(false);
-  const [syncStatus, setSyncStatus] = useState("STABLE");
-
+  const [status, setStatus] = useState("STABLE");
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const { completeLevel } = useProgress();
 
-  // --- Chronos Protocols ---
-  const PROTOCOLS = {
-    1: {
-      title: "PHASE 1: LINEAR ANCHOR",
-      steps: [
-        {
-          message: "[SYSTEM]: Temporal drift detected. The timeline is fluctuating unpredictably.\n[MISSION]: Establish a stable linear flow. Set Linear Velocity (Δt) to +2.0 to sync with the Universal Clock.\n[STATUS]: WAITING...",
-          check: () => d === 2 && r === 1, // Ensure r is 1 for pure linear
-          setup: () => { setA(0); setD(1); setR(1); },
-          isBriefing: true
-        },
-        {
-          message: "[ALERT]: Linear Velocity deviation. Adjust 'd' to exactly 2.0. Ensure Divergence 'r' is locked at 1.0 (Stasis).",
-          check: () => d === 2 && r === 1
-        },
-        {
-          message: "[SUCCESS]: Linear flow established. Temporal anchor secured.\n[SYSTEM]: Proceed to Phase 2.",
-          check: () => true,
-          isFinal: true
-        }
-      ]
-    },
-    2: {
-      title: "PHASE 2: ENTROPY DAMPENING",
-      steps: [
-        {
-          message: "[SYSTEM]: CRITICAL ALERT. Exponential runaway detected in Sector 7. The signal is growing uncontrollably.\n[MISSION]: Apply an Entropy Dampener. Set Divergence Factor (φ) to 0.5 to collapse the wave.\n[STATUS]: DANGER",
-          check: () => r === 0.5,
-          setup: () => { setA(100); setD(0); setR(2); }, // Start with runaway
-          isBriefing: true
-        },
-        {
-          message: "[WARNING]: Signal strength critical (200% growth/step). Reduce 'r' immediately to decay range (< 1.0). Target: 0.5x.",
-          check: () => r === 0.5
-        },
-        {
-          message: "[SUCCESS]: Entropy stabilized. Signal decaying within safe limits.\n[SYSTEM]: Proceed to Phase 3.",
-          check: () => true,
-          isFinal: true
-        }
-      ]
-    },
-    3: {
-      title: "PHASE 3: STASIS LOCK",
-      steps: [
-        {
-          message: "[SYSTEM]: The timeline needs to be frozen for inspection. We need absolute zero change.\n[MISSION]: Achieve Total Stasis. Linear Velocity = 0. Divergence = 1.0.\n[STATUS]: PENDING",
-          check: () => d === 0 && r === 1,
-          setup: () => { setA(50); setD(5); setR(0.9); },
-          isBriefing: true
-        },
-        {
-          message: "[GUIDANCE]: Kill the momentum. Set Δt (d) to 0. Lock the multiplier φ (r) to 1.0.",
-          check: () => d === 0 && r === 1
-        },
-        {
-          message: "[SUCCESS]: TIME FREEZE SUCCESSFUL. CHRONOS MODULE SYNCHRONIZED.\n[SYSTEM]: GOOD WORK, OPERATOR.",
-          check: () => true,
-          isFinal: true
-        }
-      ]
-    }
-  };
-
-  // --- Protocol Logic ---
-  useEffect(() => {
-    if (!isProtocolActive) {
-        // Sandbox logic for status
-        if (r > 1.5) setSyncStatus("CRITICAL: EXPONENTIAL RUNAWAY");
-        else if (r < 0.5) setSyncStatus("WARNING: SIGNAL DECAY");
-        else if (r === 1 && d === 0) setSyncStatus("STASIS: ABSOLUTE ZERO");
-        else if (r === 1) setSyncStatus("STASIS: LINEAR LOCK");
-        else setSyncStatus("OPERATIONAL: FLUX WITHIN LIMITS");
-        return;
-    }
-
-    const currentLevelData = PROTOCOLS[level];
-    if (!currentLevelData) return;
-
-    const currentStepData = currentLevelData.steps[protocolStep];
-    if (!currentStepData) return;
-
-    // Run setup if needed
-    if (currentStepData.setup && !taskCompleted) {
-        // Simple check to prevent infinite loop: if we are already "close" to setup, don't run. 
-        // Or better: use a ref or just rely on the user moving sliders away.
-        // For now, we only run setup on the FIRST step of a level.
-        if (protocolStep === 0 && systemLog !== currentStepData.message) {
-             currentStepData.setup();
-        }
-    }
-
-    setSystemLog(currentStepData.message);
-    setSyncStatus(currentLevelData.title);
-
-    if (currentStepData.check()) {
-        if (!taskCompleted) setTaskCompleted(true);
-    } else {
-        setTaskCompleted(false);
-    }
-  }, [n, a, d, r, isProtocolActive, level, protocolStep, taskCompleted]);
-
-  const advanceProtocol = () => {
-      const currentLevelData = PROTOCOLS[level];
-      const currentStepData = currentLevelData.steps[protocolStep];
-
-      if (currentStepData.isFinal) {
-          completeLevel('sequences', level);
-          if (PROTOCOLS[level + 1]) {
-              setLevel(level + 1);
-              setProtocolStep(0);
-          } else {
-              setSystemLog("[SYSTEM]: CHRONOS PROTOCOL COMPLETE. TIMELINE STABILIZED.");
-              setIsProtocolActive(false);
-              setSyncStatus("OPTIMAL");
+  // Helper for local content
+  const t = (key: string) => {
+      const keys = key.split('.');
+      if (keys[0] === 'modules' && keys[1] === 'sequences') {
+          let obj = LOCAL_CONTENT[locale as 'en' | 'ja'];
+          for (let i = 2; i < keys.length; i++) {
+              if (obj) obj = obj[keys[i]];
           }
-      } else {
-          setProtocolStep(protocolStep + 1);
+          if (obj) return obj;
       }
-      setTaskCompleted(false);
+      return globalT(key);
   };
 
-  // --- Drawing ---
   useEffect(() => {
+    const progress = moduleProgress[MODULE_ID]?.completedLevels || [];
+    let nextLvl = 1;
+    if (progress.includes(1)) nextLvl = 2;
+    if (progress.includes(2)) nextLvl = 3;
+    if (progress.includes(3)) nextLvl = 4;
+    setCurrentLevel(nextLvl);
+    
+    if (nextLvl === 3) {
+        setLog([`[SYSTEM] ${t('modules.sequences.viz.log_start')}`, `[OP] ${t('modules.sequences.viz.log_guide')}`]);
+    }
+  }, [moduleProgress, locale]);
+
+  const addLog = (msg: string) => {
+      setLog(prev => [msg, ...prev].slice(0, 8));
+  };
+
+  const handleLevelComplete = (lvl: number) => {
+      completeLevel(MODULE_ID, lvl);
+      setShowUnlock(true);
+  };
+
+  const handleNextLevel = () => {
+    setShowUnlock(false);
+  };
+
+  // Logic & Drawing
+  useEffect(() => {
+    // Status Logic
+    let newStatus = "status_stable";
+    if (r > 1.2) newStatus = "status_critical";
+    else if (r < 0.8) newStatus = "status_decay";
+    else if (Math.abs(d) < 0.1 && Math.abs(r - 1.0) < 0.05) newStatus = "status_stasis";
+    
+    setStatus(newStatus);
+
+    if (currentLevel === 3 && newStatus === "status_stasis") {
+        // Win condition for Viz level
+        // Need to hold it? Or just instant? Let's give it a moment or just instant for now.
+        if (!showUnlock) { // simple check to avoid loop
+            handleLevelComplete(3);
+             addLog(`[SUCCESS] CHRONOS LOCK ESTABLISHED.`);
+        }
+    }
+
+    // Canvas
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -154,21 +208,15 @@ export default function SequencesPage() {
     const width = canvas.width;
     const height = canvas.height;
     
-    // Clear with Void Background
     ctx.fillStyle = '#050505';
     ctx.fillRect(0, 0, width, height);
 
-    // Grid System
+    // Grid
     ctx.strokeStyle = '#1a1a1a';
     ctx.lineWidth = 1;
-    for (let i = 0; i < width; i += 40) {
-        ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, height); ctx.stroke();
-    }
-    for (let i = 0; i < height; i += 40) {
-        ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(width, i); ctx.stroke();
-    }
+    for (let i = 0; i < width; i += 50) { ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, height); ctx.stroke(); }
+    for (let i = 0; i < height; i += 50) { ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(width, i); ctx.stroke(); }
 
-    // Padding & Scaling
     const padding = 60;
     const graphWidth = width - padding * 2;
     const graphHeight = height - padding * 2;
@@ -185,201 +233,245 @@ export default function SequencesPage() {
     const minVal = Math.min(...arithmeticData, ...geometricData, 0);
     const range = maxVal - minVal || 1;
 
-    // Helper: Map coordinates
     const mapX = (i: number) => padding + (i / (n - 1)) * graphWidth;
     const mapY = (val: number) => (height - padding) - ((val - minVal) / range) * graphHeight;
 
-    // Helper: Draw Glowing Line
-    const drawTrace = (data: number[], color: string, glowColor: string, active: boolean) => {
-        if (!active) return;
-        ctx.shadowBlur = 15;
-        ctx.shadowColor = glowColor;
+    const drawTrace = (data: number[], color: string, label: string) => {
         ctx.strokeStyle = color;
         ctx.lineWidth = 3;
-        ctx.lineJoin = 'round';
         ctx.beginPath();
-        
         data.forEach((val, i) => {
             if (i === 0) ctx.moveTo(mapX(i), mapY(val));
             else ctx.lineTo(mapX(i), mapY(val));
         });
         ctx.stroke();
         
-        // Reset Shadow for dots
-        ctx.shadowBlur = 0;
-        ctx.fillStyle = '#fff';
+        ctx.fillStyle = color;
         data.forEach((val, i) => {
-            ctx.beginPath();
-            ctx.arc(mapX(i), mapY(val), 3, 0, Math.PI * 2);
-            ctx.fill();
+            ctx.beginPath(); ctx.arc(mapX(i), mapY(val), 4, 0, Math.PI * 2); ctx.fill();
         });
     };
 
-    // Draw Traces
-    // In Protocol mode, highlighting specific traces could be cool
-    drawTrace(arithmeticData, '#00f2ff', '#00f2ff', true); // Cyan (Linear)
-    drawTrace(geometricData, '#ff0055', '#ff0055', true); // Magenta (Exponential)
+    drawTrace(arithmeticData, '#00f2ff', 'LINEAR');
+    drawTrace(geometricData, '#ff0055', 'EXPONENTIAL');
 
-    // UI Overlay on Canvas
-    ctx.font = '12px "Courier New", monospace';
-    ctx.fillStyle = '#00f2ff';
-    ctx.fillText(`LINEAR_TRACE: +${d}/step`, padding, 30);
-    ctx.fillStyle = '#ff0055';
-    ctx.fillText(`DIVERGENCE_TRACE: x${r}/step`, padding, 50);
-
-  }, [n, a, d, r]);
-
-  const currentStepIsBriefing = PROTOCOLS[level]?.steps[protocolStep]?.isBriefing;
+  }, [n, a, d, r, currentLevel, showUnlock]);
 
   return (
-    <div className="flex flex-col min-h-screen bg-black text-white font-mono selection:bg-cyan-900 selection:text-white">
-        <header className="border-b border-gray-800 h-16 flex items-center justify-between px-6 bg-black/90 backdrop-blur fixed w-full z-20">
-             <div className="flex items-center gap-4">
-                 <Link href="/" className="text-xs text-cyan-500 hover:text-cyan-400 tracking-widest uppercase">
-                    &lt; SYSTEM_ROOT
-                 </Link>
-                 <h1 className="text-lg font-bold tracking-widest text-white">
-                    <span className="text-cyan-500">CHRONOS</span> // PATTERN_RECOGNITION
-                 </h1>
-             </div>
-             <div className="flex items-center gap-4">
-                <button 
-                    onClick={() => {
-                        setIsProtocolActive(!isProtocolActive);
-                        if (!isProtocolActive) {
-                            setLevel(1);
-                            setProtocolStep(0);
-                            setA(0); setD(1); setR(1);
-                        }
-                    }}
-                    className={`px-4 py-1.5 rounded-sm text-xs font-bold tracking-widest border transition-all ${
-                        isProtocolActive 
-                        ? 'bg-cyan-900/30 border-cyan-500 text-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.3)]' 
-                        : 'bg-gray-900 border-gray-700 text-gray-500 hover:border-gray-500'
-                    }`}
-                >
-                    {isProtocolActive ? 'PROTOCOL: ACTIVE' : 'PROTOCOL: STANDBY'}
-                </button>
-                <div className="flex items-center gap-2">
-                    <div className={`w-2 h-2 rounded-full ${syncStatus.includes("CRITICAL") ? "bg-red-500 animate-pulse" : "bg-green-500"}`}></div>
-                    <span className="text-xs text-gray-400 tracking-wider hidden md:block">{syncStatus}</span>
+    <div className={`min-h-screen bg-black text-white font-mono selection:bg-cyan-900 ${GeistMono.className}`}>
+       
+       <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 h-14 flex items-center px-6 bg-black/80 backdrop-blur-md justify-between">
+         <div className="flex items-center gap-4 text-xs tracking-widest">
+            <Link href="/" className="hover:text-cyan-400 transition-colors">
+               {globalT('common.back_root')}
+            </Link>
+            <span className="text-white/20">|</span>
+            <span className="text-cyan-500 font-bold">{globalT('common.protocol')}: {t('modules.sequences.title')}</span>
+         </div>
+         <div className="flex items-center gap-4">
+            <button onClick={() => setLocale(locale === 'en' ? 'ja' : 'en')} className="text-xs text-white/40 hover:text-white transition-colors uppercase">
+                 [{locale.toUpperCase()}]
+             </button>
+            <div className="text-xs text-white/40">
+                {t('modules.sequences.viz.viewport')} 0{currentLevel} // {t(`modules.sequences.levels.${currentLevel}.name`)}
+            </div>
+         </div>
+      </header>
+
+      <main className="pt-20 px-6 max-w-7xl mx-auto space-y-16 pb-20">
+        
+        {/* --- LEVEL 1: BASICS --- */}
+        <section className="space-y-6">
+            <h2 className="text-2xl font-bold text-cyan-500 tracking-tighter border-b border-white/10 pb-2">
+                {t('modules.sequences.concepts.title')}
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm text-white/70 leading-relaxed">
+                <div>
+                    <h3 className="text-white font-bold mb-2">{t('modules.sequences.concepts.arith_title')}</h3>
+                    <p dangerouslySetInnerHTML={{ __html: t('modules.sequences.concepts.arith_body') }} />
                 </div>
-             </div>
-        </header>
-
-        <main className="pt-24 p-6 max-w-7xl mx-auto w-full flex flex-col lg:flex-row gap-8">
-            
-            {/* Control Panel */}
-            <div className="w-full lg:w-1/3 space-y-6 order-2 lg:order-1">
-                
-                {/* Protocol Log */}
-                {isProtocolActive && (
-                    <div className={`p-4 bg-black border-l-2 rounded-r-sm shadow-lg animate-fade-in font-mono text-xs leading-relaxed ${currentStepIsBriefing ? 'border-cyan-500 text-cyan-300' : 'border-pink-500 text-pink-300'}`}>
-                        <div className="flex justify-between items-start mb-2 border-b border-white/10 pb-2">
-                            <span className="uppercase tracking-widest font-bold">
-                            // {PROTOCOLS[level]?.title}
-                            </span>
-                            {taskCompleted && <span className="text-green-400 animate-pulse">[SYNCED]</span>}
-                        </div>
-                        <div className="whitespace-pre-wrap opacity-90 mb-4">
-                            {systemLog}
-                        </div>
-                        {taskCompleted && (
-                            <button 
-                                onClick={advanceProtocol}
-                                className="w-full py-2 bg-white/10 hover:bg-white/20 text-white font-bold text-xs uppercase tracking-widest border border-white/20 transition-all"
-                            >
-                                {currentStepIsBriefing ? 'EXECUTE SEQUENCE >>' : 'NEXT SEQUENCE >>'}
-                            </button>
-                        )}
-                    </div>
-                )}
-
-                <div className="bg-gray-900/50 border border-gray-800 p-6 rounded-none shadow-2xl relative overflow-hidden group">
-                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-500 to-transparent opacity-50"></div>
-                    <h2 className="text-sm font-bold text-cyan-500 mb-6 tracking-widest uppercase flex items-center gap-2">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
-                        Temporal Parameters
-                    </h2>
-                    
-                    <div className="space-y-6">
-                        {/* Anchor Point */}
-                        <div className="relative">
-                            <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-1">Anchor Point (t=0)</label>
-                            <input 
-                                type="number" 
-                                value={a} 
-                                onChange={(e) => setA(parseFloat(e.target.value))} 
-                                className="w-full bg-black border border-gray-700 text-cyan-400 font-mono p-2 text-sm focus:border-cyan-500 focus:outline-none transition-colors"
-                            />
-                        </div>
-                        
-                        {/* Linear Velocity */}
-                        <div className="relative p-4 border border-cyan-900/30 bg-cyan-900/10">
-                            <label className="block text-[10px] text-cyan-600 uppercase tracking-widest mb-2">Linear Velocity (Arithmetic)</label>
-                            <div className="flex items-center gap-2">
-                                <span className="text-cyan-700 text-xs">Δt:</span>
-                                <input 
-                                    type="number" 
-                                    step="0.5" 
-                                    value={d} 
-                                    onChange={(e) => setD(parseFloat(e.target.value))} 
-                                    className="w-full bg-black border border-gray-700 text-cyan-400 font-mono p-2 text-sm focus:border-cyan-500 focus:outline-none transition-colors"
-                                />
-                            </div>
-                        </div>
-
-                        {/* Divergence Factor */}
-                        <div className="relative p-4 border border-pink-900/30 bg-pink-900/10">
-                            <label className="block text-[10px] text-pink-600 uppercase tracking-widest mb-2">Divergence Factor (Geometric)</label>
-                             <div className="flex items-center gap-2">
-                                <span className="text-pink-700 text-xs">φ:</span>
-                                <input 
-                                    type="range" 
-                                    min="0.1" 
-                                    max="2.5" 
-                                    step="0.1" 
-                                    value={r} 
-                                    onChange={(e) => setR(parseFloat(e.target.value))} 
-                                    className="w-full accent-pink-500 h-1 bg-gray-800 rounded-lg appearance-none cursor-pointer"
-                                />
-                                <span className="text-pink-400 text-xs w-12 text-right">{r.toFixed(1)}x</span>
-                            </div>
-                        </div>
-
-                         {/* Steps */}
-                         <div className="pt-4 border-t border-gray-800">
-                            <label className="block text-[10px] text-gray-500 uppercase tracking-widest mb-1">Simulation Depth (n)</label>
-                            <input 
-                                type="range" 
-                                min="5" 
-                                max="100" 
-                                value={n} 
-                                onChange={(e) => setN(parseInt(e.target.value))} 
-                                className="w-full accent-gray-500 h-1 bg-gray-800 rounded-lg appearance-none cursor-pointer" 
-                            />
-                            <div className="text-right text-[10px] text-gray-500 mt-1">{n} ITERATIONS</div>
-                        </div>
-                    </div>
+                <div>
+                    <h3 className="text-white font-bold mb-2">{t('modules.sequences.concepts.geo_title')}</h3>
+                    <p dangerouslySetInnerHTML={{ __html: t('modules.sequences.concepts.geo_body') }} />
                 </div>
             </div>
-            
-            {/* Visualization */}
-            <div className="w-full lg:w-2/3 order-1 lg:order-2">
-                <div className="bg-black border border-gray-800 rounded-sm shadow-2xl relative aspect-video flex justify-center items-center overflow-hidden">
-                    {/* CRT Scanline Effect Overlay */}
-                    <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 pointer-events-none"></div>
-                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-cyan-500/5 to-transparent pointer-events-none"></div>
-                    
-                    <canvas ref={canvasRef} width={1200} height={700} className="w-full h-full object-contain mix-blend-screen" />
-                    
-                    <div className="absolute bottom-4 right-4 text-[10px] text-gray-600 tracking-widest">
-                        RENDER_ENGINE: CANVAS_2D // VSYNC: ON
-                    </div>
+            {currentLevel === 1 && (
+                 <button onClick={() => handleLevelComplete(1)} className="mt-4 border border-cyan-500/30 text-cyan-400 px-4 py-2 text-xs hover:bg-cyan-900/20 transition-all uppercase tracking-widest">
+                    COMPLETE {globalT('common.level')} 01
+                 </button>
+            )}
+        </section>
+
+        {/* --- LEVEL 2: THEORY --- */}
+        <section className="space-y-6">
+            <h2 className="text-2xl font-bold text-cyan-500 tracking-tighter border-b border-white/10 pb-2">
+                {t('modules.sequences.theory.title')}
+            </h2>
+            <div className="bg-white/5 border border-white/10 p-6 rounded-sm font-mono text-xs grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                     <div className="mb-4"><span className="text-white/40">{t('modules.sequences.theory.arith_term')}</span></div>
+                     <div className="text-xl tracking-widest text-cyan-400 mb-2">{t('modules.sequences.theory.arith_eq')}</div>
+                     <p className="text-white/50">{t('modules.sequences.theory.arith_desc')}</p>
+                </div>
+                <div>
+                     <div className="mb-4"><span className="text-white/40">{t('modules.sequences.theory.geo_term')}</span></div>
+                     <div className="text-xl tracking-widest text-pink-400 mb-2">{t('modules.sequences.theory.geo_eq')}</div>
+                     <p className="text-white/50">{t('modules.sequences.theory.geo_desc')}</p>
                 </div>
             </div>
-        </main>
+             {currentLevel === 2 && (
+                 <button onClick={() => handleLevelComplete(2)} className="mt-4 border border-cyan-500/30 text-cyan-400 px-4 py-2 text-xs hover:bg-cyan-900/20 transition-all uppercase tracking-widest">
+                    COMPLETE {globalT('common.level')} 02
+                 </button>
+            )}
+        </section>
+
+        {/* --- LEVEL 3: CHRONOS VIZ --- */}
+        <section className="space-y-6">
+             <h2 className="text-2xl font-bold text-cyan-500 tracking-tighter border-b border-white/10 pb-2">
+                {t('modules.sequences.viz.title')}
+            </h2>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 h-[600px]">
+                {/* Left Panel (Controls) */}
+                <div className="space-y-6 flex flex-col h-full">
+                    
+                    {/* Controls */}
+                    <div className="bg-white/5 p-4 border border-white/10 space-y-4">
+                        <div>
+                            <div className="flex justify-between text-[10px] text-white/40 mb-1">
+                                <span>{t('modules.sequences.viz.controls.anchor')}</span>
+                                <span>{a}</span>
+                            </div>
+                            <input type="number" value={a} onChange={e => { setA(parseFloat(e.target.value)); addLog(`[OP] ANCHOR SET: ${e.target.value}`); }} className="w-full bg-black border border-white/20 text-white p-1 text-xs text-center focus:border-cyan-500 outline-none" />
+                        </div>
+                        <div>
+                            <div className="flex justify-between text-[10px] text-white/40 mb-1">
+                                <span>{t('modules.sequences.viz.controls.linear')}</span>
+                                <span className="text-cyan-400">+{d}</span>
+                            </div>
+                            <input type="range" min="-5" max="5" step="0.5" value={d} onChange={e => { setD(parseFloat(e.target.value)); }} className="w-full h-1 bg-white/20 rounded-lg appearance-none cursor-pointer accent-cyan-500" />
+                        </div>
+                         <div>
+                            <div className="flex justify-between text-[10px] text-white/40 mb-1">
+                                <span>{t('modules.sequences.viz.controls.divergence')}</span>
+                                <span className="text-pink-400">x{r}</span>
+                            </div>
+                            <input type="range" min="0.1" max="2.0" step="0.1" value={r} onChange={e => { setR(parseFloat(e.target.value)); }} className="w-full h-1 bg-white/20 rounded-lg appearance-none cursor-pointer accent-pink-500" />
+                        </div>
+                        <div>
+                            <div className="flex justify-between text-[10px] text-white/40 mb-1">
+                                <span>{t('modules.sequences.viz.controls.depth')}</span>
+                                <span>{n}</span>
+                            </div>
+                            <input type="range" min="5" max="50" step="1" value={n} onChange={e => setN(parseInt(e.target.value))} className="w-full h-1 bg-white/20 rounded-lg appearance-none cursor-pointer accent-white" />
+                        </div>
+                    </div>
+
+                    {/* Stats & Log */}
+                    <div className="flex-1 bg-black border border-white/10 p-4 font-mono text-xs flex flex-col">
+                         <div className="border-b border-white/10 pb-2 mb-2 text-white/30">{t('modules.sequences.viz.controls.telemetry')}</div>
+                         
+                         <div className="space-y-2 mb-4">
+                             <div className="flex justify-between items-center">
+                                 <span className="text-white/60">STATUS</span>
+                                 <span className={`
+                                     ${status.includes('critical') ? 'text-red-500 animate-pulse' : ''}
+                                     ${status.includes('decay') ? 'text-yellow-500' : ''}
+                                     ${status.includes('stable') ? 'text-cyan-500' : ''}
+                                     ${status.includes('stasis') ? 'text-green-500 font-bold' : ''}
+                                 `}>
+                                     {t(`modules.sequences.viz.controls.${status}`)}
+                                 </span>
+                             </div>
+                         </div>
+
+                         {/* System Log */}
+                         <div className="flex-1 border-t border-white/10 pt-2 overflow-hidden flex flex-col">
+                             <div className="text-[9px] text-white/30 mb-1">SYSTEM_LOG</div>
+                             <div className="flex-1 overflow-y-auto custom-scrollbar space-y-1">
+                                {log.map((entry, i) => (
+                                    <div key={i} className="text-[10px] text-white/60 truncate">
+                                        <span className="text-cyan-900 mr-1">{`>`}</span>
+                                        {entry}
+                                    </div>
+                                ))}
+                             </div>
+                         </div>
+                    </div>
+                </div>
+
+                {/* Right Panel (Canvas) */}
+                <div className="lg:col-span-2 border border-white/10 bg-black relative h-full overflow-hidden group">
+                    <div className="absolute top-2 left-2 text-[10px] text-white/20 z-10 group-hover:text-white/40 transition-colors">
+                        {t('modules.sequences.viz.viewport')}
+                    </div>
+                    
+                    <canvas 
+                        ref={canvasRef}
+                        width={800}
+                        height={600}
+                        className="w-full h-full object-contain"
+                    />
+                </div>
+            </div>
+        </section>
+
+        {/* --- LEVEL 4: APPLICATION --- */}
+        <section className="space-y-6 border-t border-white/10 pt-16">
+            <h2 className="text-2xl font-bold text-cyan-500 tracking-tighter border-b border-white/10 pb-2">
+                {t('modules.sequences.apps.title')}
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs text-white/60">
+                <div className="bg-white/5 p-4 border border-white/10">
+                    <h3 className="text-white font-bold mb-2 text-sm">{t('modules.sequences.apps.finance_title')}</h3>
+                    <p>{t('modules.sequences.apps.finance_body')}</p>
+                </div>
+                <div className="bg-white/5 p-4 border border-white/10">
+                    <h3 className="text-white font-bold mb-2 text-sm">{t('modules.sequences.apps.bio_title')}</h3>
+                    <p>{t('modules.sequences.apps.bio_body')}</p>
+                </div>
+                <div className="bg-white/5 p-4 border border-white/10">
+                    <h3 className="text-white font-bold mb-2 text-sm">{t('modules.sequences.apps.algo_title')}</h3>
+                    <p>{t('modules.sequences.apps.algo_body')}</p>
+                </div>
+            </div>
+             {currentLevel === 4 && (
+                 <button onClick={() => handleLevelComplete(4)} className="mt-4 border border-cyan-500/30 text-cyan-400 px-4 py-2 text-xs hover:bg-cyan-900/20 transition-all uppercase tracking-widest">
+                    COMPLETE {globalT('common.level')} 04
+                 </button>
+            )}
+        </section>
+
+      </main>
+
+      {/* Completion Modal */}
+      <AnimatePresence>
+        {showUnlock && (
+            <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-sm"
+            >
+                <div className="bg-black border border-cyan-500/30 p-8 max-w-md w-full relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-full h-1 bg-cyan-500 shadow-[0_0_10px_#06b6d4]"></div>
+                    <h2 className="text-2xl font-bold text-white mb-2 tracking-tighter">{t('modules.sequences.completion.synced')}</h2>
+                    <div className="text-cyan-500 text-sm mb-6">{globalT('common.level')} 0{currentLevel} COMPLETE</div>
+                    <p className="text-white/60 text-xs mb-8 leading-relaxed">
+                        {t('modules.sequences.completion.msg')}<br/>
+                        {globalT('common.xp_awarded')}: <span className="text-white">+100</span>
+                    </p>
+                    <button 
+                        onClick={handleNextLevel}
+                        className="w-full bg-cyan-900/20 border border-cyan-500/50 text-cyan-400 py-3 text-xs hover:bg-cyan-500 hover:text-black transition-all uppercase tracking-widest"
+                    >
+                        {currentLevel < 4 ? globalT('common.next') : globalT('common.root')}
+                    </button>
+                </div>
+            </motion.div>
+        )}
+      </AnimatePresence>
+
     </div>
   );
 }
-
