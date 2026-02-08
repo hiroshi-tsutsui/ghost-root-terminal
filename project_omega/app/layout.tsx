@@ -3,6 +3,7 @@ import { Inter, Noto_Sans_JP } from "next/font/google";
 import "./main.css";
 import { ProgressProvider } from "./contexts/ProgressContext";
 import { LanguageProvider } from "./contexts/LanguageContext";
+import XPBar from "./components/XPBar";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const notoSansJP = Noto_Sans_JP({ subsets: ["latin"], weight: ["400", "500", "700"], variable: "--font-noto-sans-jp" });
@@ -23,9 +24,10 @@ export default function RootLayout({
         <ProgressProvider>
           <LanguageProvider>
             {/* Global Layout - Minimal. Header handled by individual pages for specific protocols. */}
-            <main className="min-h-screen">
+            <main className="min-h-screen pb-20">
               {children}
             </main>
+            <XPBar />
           </LanguageProvider>
         </ProgressProvider>
       </body>
