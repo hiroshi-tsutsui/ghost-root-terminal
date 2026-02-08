@@ -1,0 +1,158 @@
+{
+  "common": {
+    "back_root": "← OMEGA_ROOT",
+    "protocol": "PROTOCOL",
+    "level": "LEVEL",
+    "system_log": "SYSTEM_LOG //",
+    "live": "● LIVE",
+    "next": "次のフェーズ (NEXT)",
+    "root": "ルートに戻る (ROOT)",
+    "xp_awarded": "XP AWARDED",
+    "success": "SUCCESS",
+    "warning": "WARNING",
+    "op": "OP"
+  },
+  "modules": {
+    "data": {
+      "title": "DATA_ARCHIVE (データ解析)",
+      "levels": {
+        "1": {
+          "name": "SIGNAL INJECTION (信号注入)",
+          "desc": "キャリアウェーブを確立せよ。5つ以上のノードを注入し、相関(r) > 0.90 を達成せよ。",
+          "log_start": "SIGNAL INJECTION を初期化中...",
+          "log_guide": "信号ノードを注入し、キャリアウェーブを形成してください。"
+        },
+        "2": {
+          "name": "NOISE PURGE (ノイズ除去)",
+          "desc": "干渉を排除せよ。異常値(Anomaly)を削除し、信号の整合性を回復せよ。",
+          "log_start": "NOISE PURGE を初期化中...",
+          "log_guide": "信号の破損を検知。異常値(Anomaly)を排除してください。"
+        },
+        "3": {
+          "name": "ARCHIVE LOCK (完全同期)",
+          "desc": "完全な同期を達成せよ。10以上のノードで安定性 > 0.99 を維持せよ。",
+          "log_start": "ARCHIVE LOCK を初期化中...",
+          "log_guide": "信号を安定させてください。ノード密度を上げ(10個以上)、相関を高めてください。"
+        }
+      },
+      "concepts": {
+        "title": "01. 基礎概念 (BASIC CONCEPTS)",
+        "correlation_title": "相関 (Correlation) とは？",
+        "correlation_body": "2つのデータ（変数）の間に、どのような関係があるかを示す指標です。例えば、「気温」が上がると「アイスの売上」も上がる場合、これらは<strong>正の相関</strong>があると言います。逆に、「雨量」が増えると「客数」が減る場合、<strong>負の相関</strong>があると言います。",
+        "importance_title": "なぜ重要なのですか？",
+        "importance_body": "現実世界（シミュレーション外）において、未来を予測するために不可欠だからです。株価の変動、病気の進行、宇宙の膨張率。全てはデータの相関関係からパターンを見つけ出し、次の「フレーム」を予測することで制御可能になります。"
+      },
+      "theory": {
+        "title": "02. 理論モデル (THEORY)",
+        "def_title": "DEFINITION //",
+        "def_term": "相関係数 (Correlation Coefficient, r)",
+        "r_desc": "相関係数 <em>r</em> は、-1 から +1 の範囲の値をとります。<br/>+1 に近いほど強い正の相関、-1 に近いほど強い負の相関、0 は相関なしを表します。"
+      },
+      "viz": {
+        "title": "03. データ可視化 (VISUALIZATION)",
+        "integrity": "整合性 (INTEGRITY r)",
+        "target": "TARGET",
+        "regression": "回帰直線 (Regression)",
+        "data_count": "データ数 (N)",
+        "residuals": "残差表示 (Residuals)",
+        "viewport": "VIEWPORT_01 // CLICK TO ADD/REMOVE NODES"
+      },
+      "apps": {
+        "title": "04. 応用 (APPLICATIONS)",
+        "finance_title": "金融工学 (Finance)",
+        "finance_body": "複数の資産（株など）の相関を分析し、リスクを分散する「ポートフォリオ理論」に使用されます。逆相関の資産を組み合わせることで、暴落時のダメージを軽減します。",
+        "ai_title": "AI・機械学習",
+        "ai_body": "特徴量選択（Feature Selection）において、ターゲット変数と強い相関を持つデータを選び出すために使用されます。無関係なノイズデータを削除することで、モデルの精度を向上させます。",
+        "spurious_title": "擬似相関の罠",
+        "spurious_body": "「アイスの売上」と「水難事故」には強い相関がありますが、因果関係はありません（共通要因は「気温」）。データ分析官（オペレーター）は、相関と因果を混同してはいけません。"
+      },
+      "completion": {
+        "synced": "PROTOCOL SYNCED",
+        "msg": "信号整合性が回復しました。アーカイブはあなたの貢献を承認します。"
+      },
+      "actions": {
+        "node_deleted": "ノード削除",
+        "node_injected": "ノード注入"
+      }
+    },
+    "functions": {
+      "title": "CAUSALITY_ENGINE (関数理論)",
+      "levels": {
+        "1": { "name": "セクター1: 漂流 (Drift)", "hint": "信号が一様にシフトしている。" },
+        "2": { "name": "セクター2: 歪み (Distortion)", "hint": "振幅が倍増し、わずかなオフセットがある。" },
+        "3": { "name": "セクター3: 急増 (Surge)", "hint": "エネルギーが急速に蓄積している。" },
+        "4": { "name": "セクター4: 反射 (Reflection)", "hint": "負の極性が反転している。" },
+        "5": { "name": "セクター5: 暴走 (Runaway)", "hint": "指数関数的な成長。封じ込めが不可欠。" }
+      },
+      "status": {
+        "idle": "待機中 (IDLE)",
+        "computing": "計算中 (COMPUTING)",
+        "synced": "同期完了 (SYNCED)",
+        "error": "エラー (ERROR)"
+      },
+      "ui": {
+        "input_signal": "入力信号 (x)",
+        "output_signal": "出力信号 (y)",
+        "inject_signal": "信号注入 (INJECT)",
+        "black_box": "ブラックボックス",
+        "system_advisory": "システム警告",
+        "kernel_log": "カーネルログ",
+        "define_logic": "因果論理を定義せよ",
+        "execute_patch": "パッチ適用 (EXECUTE)",
+        "system_stabilized": "システム安定化 (STABILIZED)"
+      }
+    },
+    "calculus": {
+      "title": "FLUX_ENGINE (微分・積分)",
+      "levels": {
+        "1": { "name": "FLUX DYNAMICS (変化の解析)", "desc": "変化率（微分）と蓄積（積分）の直感的理解。" },
+        "2": { "name": "THEORY (極限と定義)", "desc": "無限小の世界。導関数と積分の数学的定義。" },
+        "3": { "name": "FLUX ENGINE (可視化)", "desc": "関数の挙動をシミュレートし、次元を操作せよ。" },
+        "4": { "name": "APPLICATIONS (応用)", "desc": "物理法則からAIの学習まで。微積分の実世界への適用。" }
+      },
+      "concepts": {
+        "title": "01. 基礎概念 (BASIC CONCEPTS)",
+        "diff_title": "微分 (Differentiation) とは？",
+        "diff_body": "「変化の瞬間」を捉える技術です。ある一瞬における速度、あるいは曲線の接線の傾きを表します。世界は常に流動しており、その瞬間の「勢い」を知ることで、次の瞬間を予測できます。<br/><span class=\"text-cyan-500\">Flux (変化率) = 傾き</span>",
+        "int_title": "積分 (Integration) とは？",
+        "int_body": "「変化の蓄積」を捉える技術です。速度を積み上げれば距離になり、曲線を積み上げれば面積（体積）になります。過去から現在までの総量を計算し、エネルギーや質量の総和を導き出します。<br/><span class=\"text-cyan-500\">Mass (蓄積量) = 面積</span>"
+      },
+      "theory": {
+        "title": "02. 理論モデル (THEORY)",
+        "def_title": "DEFINITION //",
+        "derivative_term": "導関数 (Derivative)",
+        "derivative_desc": "無限小の時間 h における変化の割合。",
+        "integral_term": "定積分 (Definite Integral)",
+        "integral_desc": "微積分の基本定理。微分の逆操作が面積を導く。"
+      },
+      "viz": {
+        "title": "03. FLUX ENGINE (可視化)",
+        "controls": {
+          "function_label": "FUNCTION f(x)",
+          "time_label": "TIME (x)",
+          "telemetry": "TELEMETRY",
+          "value": "VALUE f(x)",
+          "slope": "SLOPE f'(x)",
+          "area": "AREA ∫f(x)",
+          "enable_3d": "ENABLE 3D PROJECTION (3D投影)",
+          "disable_3d": "DISABLE 3D PROJECTION (2Dに戻る)"
+        },
+        "viewport_label": "VISUALIZER //",
+        "rotation_active": "ROTATION SOLIDS (回転体) ACTIVATED"
+      },
+      "apps": {
+        "title": "04. 応用 (APPLICATIONS)",
+        "physics_title": "物理シミュレーション",
+        "physics_body": "物体の位置を微分すれば速度、速度を微分すれば加速度が得られます。逆に、力を積分することでエネルギーや移動距離を計算し、軌道を予測します。",
+        "ml_title": "機械学習 (Backpropagation)",
+        "ml_body": "ニューラルネットワークの学習は、損失関数の「勾配（微分）」を下ることで行われます。偏微分（多変数の微分）により、パラメータを最適化し、AIを賢くします。",
+        "econ_title": "経済学 (Marginal Utility)",
+        "econ_body": "「限界効用」や「限界費用」は、ある変数を1単位増やしたときの変化率（微分）です。利益を最大化するポイントを見つけるために、微積分が使われます。"
+      },
+      "completion": {
+        "synced": "PROTOCOL SYNCED",
+        "msg": "Fluxダイナミクス安定化。エンジンはあなたの貢献を承認します。"
+      }
+    }
+  }
+}

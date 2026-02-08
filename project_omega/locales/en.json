@@ -1,0 +1,158 @@
+{
+  "common": {
+    "back_root": "← OMEGA_ROOT",
+    "protocol": "PROTOCOL",
+    "level": "LEVEL",
+    "system_log": "SYSTEM_LOG //",
+    "live": "● LIVE",
+    "next": "NEXT",
+    "root": "ROOT",
+    "xp_awarded": "XP AWARDED",
+    "success": "SUCCESS",
+    "warning": "WARNING",
+    "op": "OP"
+  },
+  "modules": {
+    "data": {
+      "title": "DATA_ARCHIVE (Data Analysis)",
+      "levels": {
+        "1": {
+          "name": "SIGNAL INJECTION",
+          "desc": "Establish a carrier wave. Inject 5+ signal nodes and achieve correlation (r) > 0.90.",
+          "log_start": "Initializing Signal Injection...",
+          "log_guide": "Please inject signal nodes to form a carrier wave."
+        },
+        "2": {
+          "name": "NOISE PURGE",
+          "desc": "Eliminate interference. Remove anomalies (outliers) to restore signal integrity.",
+          "log_start": "Initializing Noise Purge...",
+          "log_guide": "Signal corruption detected. Please purge anomalies."
+        },
+        "3": {
+          "name": "ARCHIVE LOCK",
+          "desc": "Achieve full synchronization. Maintain stability > 0.99 with 10+ nodes.",
+          "log_start": "Initializing Archive Lock...",
+          "log_guide": "Stabilize the signal. Increase node density (10+) and coherence."
+        }
+      },
+      "concepts": {
+        "title": "01. BASIC CONCEPTS",
+        "correlation_title": "What is Correlation?",
+        "correlation_body": "A measure of the relationship between two variables. If 'Temperature' rises and 'Ice Cream Sales' rise, this is a **Positive Correlation**. If 'Rain' increases and 'Customers' decrease, this is a **Negative Correlation**.",
+        "importance_title": "Why is it important?",
+        "importance_body": "In the real world (outside the simulation), it is essential for prediction. Stock prices, disease progression, cosmic expansion. All are controllable by finding patterns in data correlations to predict the next 'frame'."
+      },
+      "theory": {
+        "title": "02. THEORY",
+        "def_title": "DEFINITION //",
+        "def_term": "Correlation Coefficient (r)",
+        "r_desc": "The correlation coefficient *r* ranges from -1 to +1. Closer to +1 means strong positive correlation, -1 means strong negative correlation, and 0 means no correlation."
+      },
+      "viz": {
+        "title": "03. VISUALIZATION",
+        "integrity": "INTEGRITY (r)",
+        "target": "TARGET",
+        "regression": "Regression",
+        "data_count": "Count (N)",
+        "residuals": "Residuals",
+        "viewport": "VIEWPORT_01 // CLICK TO ADD/REMOVE NODES"
+      },
+      "apps": {
+        "title": "04. APPLICATIONS",
+        "finance_title": "Finance",
+        "finance_body": "Used in Portfolio Theory to analyze asset correlations and diversify risk. combining negatively correlated assets reduces damage during crashes.",
+        "ai_title": "AI & Machine Learning",
+        "ai_body": "Used in Feature Selection to pick data strongly correlated with target variables. Removing irrelevant noise improves model accuracy.",
+        "spurious_title": "The Trap of Spurious Correlation",
+        "spurious_body": "There is a strong correlation between 'Ice Cream Sales' and 'Drowning Accidents', but no causation (the common factor is 'Temperature'). An Operator must never confuse correlation with causation."
+      },
+      "completion": {
+        "synced": "PROTOCOL SYNCED",
+        "msg": "Signal integrity restored. The Archive acknowledges your contribution."
+      },
+      "actions": {
+        "node_deleted": "Node Deleted",
+        "node_injected": "Node Injected"
+      }
+    },
+    "functions": {
+      "title": "CAUSALITY_ENGINE (Functions)",
+      "levels": {
+        "1": { "name": "Sector 1: Drift", "hint": "The signal is shifting uniformly." },
+        "2": { "name": "Sector 2: Distortion", "hint": "Amplitude is doubling, with a slight offset." },
+        "3": { "name": "Sector 3: Surge", "hint": "Power is accumulating rapidly." },
+        "4": { "name": "Sector 4: Reflection", "hint": "Negative polarity is being inverted." },
+        "5": { "name": "Sector 5: Runaway", "hint": "Growth is exponential. Containment critical." }
+      },
+      "status": {
+        "idle": "IDLE",
+        "computing": "COMPUTING",
+        "synced": "SYNCED",
+        "error": "ERROR"
+      },
+      "ui": {
+        "input_signal": "Input Signal (x)",
+        "output_signal": "Output Signal (y)",
+        "inject_signal": "INJECT SIGNAL",
+        "black_box": "BLACK BOX",
+        "system_advisory": "SYSTEM ADVISORY",
+        "kernel_log": "KERNEL LOG",
+        "define_logic": "DEFINE CAUSALITY LOGIC",
+        "execute_patch": "EXECUTE PATCH",
+        "system_stabilized": "SYSTEM STABILIZED"
+      }
+    },
+    "calculus": {
+      "title": "FLUX_ENGINE (Calculus)",
+      "levels": {
+        "1": { "name": "FLUX DYNAMICS", "desc": "Intuitive understanding of Rate of Change (Diff) and Accumulation (Int)." },
+        "2": { "name": "THEORY", "desc": "The world of infinitesimals. Mathematical definitions of Derivatives and Integrals." },
+        "3": { "name": "FLUX ENGINE", "desc": "Simulate function behavior and manipulate dimensions." },
+        "4": { "name": "APPLICATIONS", "desc": "From physics to AI. Applying calculus to the real world." }
+      },
+      "concepts": {
+        "title": "01. BASIC CONCEPTS",
+        "diff_title": "What is Differentiation?",
+        "diff_body": "The art of capturing the 'moment of change'. It represents velocity at an instant, or the slope of a curve. The world is in constant flux; knowing the momentum allows prediction of the next moment.<br/><span class=\"text-cyan-500\">Flux (Rate of Change) = Slope</span>",
+        "int_title": "What is Integration?",
+        "int_body": "The art of capturing 'accumulation'. Stacking velocity gives distance; stacking curves gives area (volume). It calculates the sum from past to present to derive total energy or mass.<br/><span class=\"text-cyan-500\">Mass (Accumulation) = Area</span>"
+      },
+      "theory": {
+        "title": "02. THEORY",
+        "def_title": "DEFINITION //",
+        "derivative_term": "Derivative f'(x)",
+        "derivative_desc": "The rate of change at infinitesimal time h.",
+        "integral_term": "Definite Integral",
+        "integral_desc": "The Fundamental Theorem of Calculus. The inverse of differentiation yields area."
+      },
+      "viz": {
+        "title": "03. FLUX ENGINE (VISUALIZATION)",
+        "controls": {
+          "function_label": "FUNCTION f(x)",
+          "time_label": "TIME (x)",
+          "telemetry": "TELEMETRY",
+          "value": "VALUE f(x)",
+          "slope": "SLOPE f'(x)",
+          "area": "AREA ∫f(x)",
+          "enable_3d": "ENABLE 3D PROJECTION",
+          "disable_3d": "DISABLE 3D PROJECTION"
+        },
+        "viewport_label": "VISUALIZER //",
+        "rotation_active": "ROTATION SOLIDS ACTIVATED"
+      },
+      "apps": {
+        "title": "04. APPLICATIONS",
+        "physics_title": "Physics Simulation",
+        "physics_body": "Differentiating position gives velocity; differentiating velocity gives acceleration. Integrating force gives energy and distance, allowing trajectory prediction.",
+        "ml_title": "Machine Learning (Backprop)",
+        "ml_body": "Neural networks learn by descending the 'gradient (derivative)' of the loss function. Partial derivatives optimize parameters to make AI smarter.",
+        "econ_title": "Economics (Marginal Utility)",
+        "econ_body": "'Marginal Utility' is the rate of change (derivative) when increasing a variable by one unit. Calculus is used to find the point of maximum profit."
+      },
+      "completion": {
+        "synced": "PROTOCOL SYNCED",
+        "msg": "Flux dynamics stabilized. The Engine acknowledges your contribution."
+      }
+    }
+  }
+}

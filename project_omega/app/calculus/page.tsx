@@ -6,6 +6,7 @@ import * as math from 'mathjs';
 import Link from 'next/link';
 import { GeistMono } from 'geist/font/mono';
 import { useProgress } from '../contexts/ProgressContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Grid } from '@react-three/drei';
@@ -13,12 +14,6 @@ import * as THREE from 'three';
 
 // --- Constants ---
 const MODULE_ID = 'calculus';
-const LEVELS = [
-  { id: 1, name: 'FLUX DYNAMICS (変化の解析)', desc: '変化率（微分）と蓄積（積分）の直感的理解。' },
-  { id: 2, name: 'THEORY (極限と定義)', desc: '無限小の世界。導関数と積分の数学的定義。' },
-  { id: 3, name: 'FLUX ENGINE (可視化)', desc: '関数の挙動をシミュレートし、次元を操作せよ。' },
-  { id: 4, name: 'APPLICATIONS (応用)', desc: '物理法則からAIの学習まで。微積分の実世界への適用。' }
-];
 
 // --- 3D Components ---
 function RevolutionSurface({ funcStr, xVal }: { funcStr: string, xVal: number }) {
@@ -59,6 +54,7 @@ function RevolutionSurface({ funcStr, xVal }: { funcStr: string, xVal: number })
 
 export default function CalculusPage() {
   const { moduleProgress, completeLevel } = useProgress();
+  const { t, locale, setLocale } = useLanguage();
   const [currentLevel, setCurrentLevel] = useState(1);
   const [showUnlock, setShowUnlock] = useState(false);
 
@@ -79,9 +75,14 @@ export default function CalculusPage() {
     setCurrentLevel(nextLvl);
   }, [moduleProgress]);
 
+  const handleLevelComplete = (lvl: number) => {
+      completeLevel(MODULE_ID, lvl);
+      setShowUnlock(true);
+  };
+
   const handleNextLevel = () => {
     setShowUnlock(false);
-    completeLevel(MODULE_ID, currentLevel);
+    // Logic handled by effect
   };
 
   // --- Math Helpers ---
@@ -229,13 +230,18 @@ export default function CalculusPage() {
        <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 h-14 flex items-center px-6 bg-black/80 backdrop-blur-md justify-between">
          <div className="flex items-center gap-4 text-xs tracking-widest">
             <Link href="/" className="hover:text-cyan-400 transition-colors">
-               ← OMEGA_ROOT
+               {t('common.back_root')}
             </Link>
             <span className="text-white/20">|</span>
-            <span className="text-cyan-500 font-bold">PROTOCOL: CALCULUS (微分・積分)</span>
+            <span className="text-cyan-500 font-bold">{t('common.protocol')}: {t('modules.calculus.title')}</span>
          </div>
-         <div className="text-xs text-white/40">
-            LEVEL 0{currentLevel} // {LEVELS[currentLevel-1]?.name || 'COMPLETE'}
+         <div className="flex items-center gap-4">
+            <button onClick={() => setLocale(locale === 'en' ? 'ja' : 'en')} className="text-xs text-white/40 hover:text-white transition-colors uppercase">
+                 [{locale.toUpperCase()}]
+             </button>
+            <div className="text-xs text-white/40">
+                {t('common.level')} 0{currentLevel} // {t(`modules.calculus.levels.${currentLevel}.name`)}
+            </div>
          </div>
       </header>
 
@@ -244,29 +250,21 @@ export default function CalculusPage() {
         {/* --- LEVEL 1: BASICS --- */}
         <section className="space-y-6">
             <h2 className="text-2xl font-bold text-cyan-500 tracking-tighter border-b border-white/10 pb-2">
-                01. 基礎概念 (BASIC CONCEPTS)
+                {t('modules.calculus.concepts.title')}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm text-white/70 leading-relaxed">
                 <div>
-                    <h3 className="text-white font-bold mb-2">微分 (Differentiation) とは？</h3>
-                    <p>
-                        「変化の瞬間」を捉える技術です。ある一瞬における速度、あるいは曲線の接線の傾きを表します。
-                        世界は常に流動しており、その瞬間の「勢い」を知ることで、次の瞬間を予測できます。
-                        <br/><span className="text-cyan-500">Flux (変化率) = 傾き</span>
-                    </p>
+                    <h3 className="text-white font-bold mb-2">{t('modules.calculus.concepts.diff_title')}</h3>
+                    <p dangerouslySetInnerHTML={{ __html: t('modules.calculus.concepts.diff_body') }} />
                 </div>
                 <div>
-                    <h3 className="text-white font-bold mb-2">積分 (Integration) とは？</h3>
-                    <p>
-                        「変化の蓄積」を捉える技術です。速度を積み上げれば距離になり、曲線を積み上げれば面積（体積）になります。
-                        過去から現在までの総量を計算し、エネルギーや質量の総和を導き出します。
-                        <br/><span className="text-cyan-500">Mass (蓄積量) = 面積</span>
-                    </p>
+                    <h3 className="text-white font-bold mb-2">{t('modules.calculus.concepts.int_title')}</h3>
+                    <p dangerouslySetInnerHTML={{ __html: t('modules.calculus.concepts.int_body') }} />
                 </div>
             </div>
             {currentLevel === 1 && (
-                 <button onClick={() => completeLevel(MODULE_ID, 1)} className="mt-4 border border-cyan-500/30 text-cyan-400 px-4 py-2 text-xs hover:bg-cyan-900/20 transition-all">
-                    COMPLETE LEVEL 01
+                 <button onClick={() => handleLevelComplete(1)} className="mt-4 border border-cyan-500/30 text-cyan-400 px-4 py-2 text-xs hover:bg-cyan-900/20 transition-all uppercase tracking-widest">
+                    COMPLETE {t('common.level')} 01
                  </button>
             )}
         </section>
@@ -274,23 +272,23 @@ export default function CalculusPage() {
         {/* --- LEVEL 2: THEORY --- */}
         <section className="space-y-6">
             <h2 className="text-2xl font-bold text-cyan-500 tracking-tighter border-b border-white/10 pb-2">
-                02. 理論モデル (THEORY)
+                {t('modules.calculus.theory.title')}
             </h2>
             <div className="bg-white/5 border border-white/10 p-6 rounded-sm font-mono text-xs grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div>
-                     <div className="mb-4"><span className="text-white/40">DEFINITION //</span> <span className="text-white">導関数 (Derivative)</span></div>
+                     <div className="mb-4"><span className="text-white/40">{t('modules.calculus.theory.def_title')}</span> <span className="text-white">{t('modules.calculus.theory.derivative_term')}</span></div>
                      <div className="text-xl tracking-widest text-cyan-400 mb-2">f'(x) = lim(h→0) [f(x+h) - f(x)] / h</div>
-                     <p className="text-white/50">無限小の時間 h における変化の割合。</p>
+                     <p className="text-white/50">{t('modules.calculus.theory.derivative_desc')}</p>
                 </div>
                 <div>
-                     <div className="mb-4"><span className="text-white/40">DEFINITION //</span> <span className="text-white">定積分 (Definite Integral)</span></div>
+                     <div className="mb-4"><span className="text-white/40">{t('modules.calculus.theory.def_title')}</span> <span className="text-white">{t('modules.calculus.theory.integral_term')}</span></div>
                      <div className="text-xl tracking-widest text-green-400 mb-2">∫[a,b] f(x) dx = F(b) - F(a)</div>
-                     <p className="text-white/50">微積分の基本定理。微分の逆操作が面積を導く。</p>
+                     <p className="text-white/50">{t('modules.calculus.theory.integral_desc')}</p>
                 </div>
             </div>
              {currentLevel === 2 && (
-                 <button onClick={() => completeLevel(MODULE_ID, 2)} className="mt-4 border border-cyan-500/30 text-cyan-400 px-4 py-2 text-xs hover:bg-cyan-900/20 transition-all">
-                    COMPLETE LEVEL 02
+                 <button onClick={() => handleLevelComplete(2)} className="mt-4 border border-cyan-500/30 text-cyan-400 px-4 py-2 text-xs hover:bg-cyan-900/20 transition-all uppercase tracking-widest">
+                    COMPLETE {t('common.level')} 02
                  </button>
             )}
         </section>
@@ -298,7 +296,7 @@ export default function CalculusPage() {
         {/* --- LEVEL 3: FLUX ENGINE --- */}
         <section className="space-y-6">
              <h2 className="text-2xl font-bold text-cyan-500 tracking-tighter border-b border-white/10 pb-2">
-                03. FLUX ENGINE (可視化)
+                {t('modules.calculus.viz.title')}
             </h2>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 h-[600px]">
                 {/* Left Panel (Controls) */}
@@ -306,7 +304,7 @@ export default function CalculusPage() {
                     
                     {/* Input */}
                     <div className="bg-white/5 p-4 border border-white/10">
-                        <label className="text-[10px] text-white/40 block mb-2">FUNCTION f(x)</label>
+                        <label className="text-[10px] text-white/40 block mb-2">{t('modules.calculus.viz.controls.function_label')}</label>
                         <input 
                             type="text" 
                             value={funcStr} 
@@ -325,7 +323,7 @@ export default function CalculusPage() {
                     {/* Slider */}
                      <div className="bg-white/5 p-4 border border-white/10">
                          <div className="flex justify-between text-[10px] text-white/40 mb-2">
-                            <span>TIME (x)</span>
+                            <span>{t('modules.calculus.viz.controls.time_label')}</span>
                             <span className="text-cyan-400 font-bold">{xVal.toFixed(2)}</span>
                          </div>
                          <input 
@@ -337,18 +335,18 @@ export default function CalculusPage() {
 
                     {/* Stats */}
                     <div className="flex-1 bg-black border border-white/10 p-4 font-mono text-xs space-y-4">
-                         <div className="border-b border-white/10 pb-2 mb-2 text-white/30">TELEMETRY</div>
+                         <div className="border-b border-white/10 pb-2 mb-2 text-white/30">{t('modules.calculus.viz.controls.telemetry')}</div>
                          
                          <div className="flex justify-between">
-                             <span className="text-white/60">VALUE f(x)</span>
+                             <span className="text-white/60">{t('modules.calculus.viz.controls.value')}</span>
                              <span>{isNaN(currentY) ? '-' : currentY.toFixed(4)}</span>
                          </div>
                          <div className="flex justify-between">
-                             <span className="text-white/60">SLOPE f'(x)</span>
+                             <span className="text-white/60">{t('modules.calculus.viz.controls.slope')}</span>
                              <span className="text-red-400">{isNaN(currentSlope) ? '-' : currentSlope.toFixed(4)}</span>
                          </div>
                          <div className="flex justify-between">
-                             <span className="text-white/60">AREA ∫f(x)</span>
+                             <span className="text-white/60">{t('modules.calculus.viz.controls.area')}</span>
                              <span className="text-cyan-400">{isNaN(currentIntegral) ? '-' : currentIntegral.toFixed(4)}</span>
                          </div>
 
@@ -357,7 +355,7 @@ export default function CalculusPage() {
                                 onClick={() => setIs3DMode(!is3DMode)}
                                 className={`w-full py-2 text-center border transition-all ${is3DMode ? 'bg-cyan-900/20 border-cyan-500 text-cyan-400' : 'border-white/20 text-white/60 hover:text-white'}`}
                             >
-                                {is3DMode ? 'DISABLE 3D PROJECTION' : 'ENABLE 3D PROJECTION'}
+                                {is3DMode ? t('modules.calculus.viz.controls.disable_3d') : t('modules.calculus.viz.controls.enable_3d')}
                             </button>
                          </div>
                     </div>
@@ -366,7 +364,7 @@ export default function CalculusPage() {
                 {/* Right Panel (Canvas) */}
                 <div className="lg:col-span-2 border border-white/10 bg-black relative h-full overflow-hidden">
                     <div className="absolute top-2 left-2 text-[10px] text-white/20 z-10">
-                        VISUALIZER // {is3DMode ? 'THREE.JS_RENDERER' : 'CANVAS_2D'}
+                        {t('modules.calculus.viz.viewport_label')} {is3DMode ? 'THREE.JS_RENDERER' : 'CANVAS_2D'}
                     </div>
                     
                     {is3DMode ? (
@@ -379,7 +377,7 @@ export default function CalculusPage() {
                                 <OrbitControls makeDefault />
                             </Canvas>
                              <div className="absolute bottom-4 left-4 text-[10px] text-cyan-500 bg-black/80 px-2 py-1 border border-cyan-900">
-                                ROTATION SOLIDS (回転体) ACTIVATED
+                                {t('modules.calculus.viz.rotation_active')}
                             </div>
                         </div>
                     ) : (
@@ -393,8 +391,8 @@ export default function CalculusPage() {
                 </div>
             </div>
              {currentLevel === 3 && (
-                 <button onClick={() => completeLevel(MODULE_ID, 3)} className="mt-4 border border-cyan-500/30 text-cyan-400 px-4 py-2 text-xs hover:bg-cyan-900/20 transition-all">
-                    COMPLETE LEVEL 03
+                 <button onClick={() => handleLevelComplete(3)} className="mt-4 border border-cyan-500/30 text-cyan-400 px-4 py-2 text-xs hover:bg-cyan-900/20 transition-all uppercase tracking-widest">
+                    COMPLETE {t('common.level')} 03
                  </button>
             )}
         </section>
@@ -402,34 +400,25 @@ export default function CalculusPage() {
         {/* --- LEVEL 4: APPLICATION --- */}
         <section className="space-y-6 border-t border-white/10 pt-16">
             <h2 className="text-2xl font-bold text-cyan-500 tracking-tighter border-b border-white/10 pb-2">
-                04. 応用 (APPLICATIONS)
+                {t('modules.calculus.apps.title')}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs text-white/60">
                 <div className="bg-white/5 p-4 border border-white/10">
-                    <h3 className="text-white font-bold mb-2 text-sm">物理シミュレーション</h3>
-                    <p>
-                        物体の位置を微分すれば速度、速度を微分すれば加速度が得られます。
-                        逆に、力を積分することでエネルギーや移動距離を計算し、軌道を予測します。
-                    </p>
+                    <h3 className="text-white font-bold mb-2 text-sm">{t('modules.calculus.apps.physics_title')}</h3>
+                    <p>{t('modules.calculus.apps.physics_body')}</p>
                 </div>
                 <div className="bg-white/5 p-4 border border-white/10">
-                    <h3 className="text-white font-bold mb-2 text-sm">機械学習 (Backpropagation)</h3>
-                    <p>
-                        ニューラルネットワークの学習は、損失関数の「勾配（微分）」を下ることで行われます。
-                        偏微分（多変数の微分）により、パラメータを最適化し、AIを賢くします。
-                    </p>
+                    <h3 className="text-white font-bold mb-2 text-sm">{t('modules.calculus.apps.ml_title')}</h3>
+                    <p>{t('modules.calculus.apps.ml_body')}</p>
                 </div>
                 <div className="bg-white/5 p-4 border border-white/10">
-                    <h3 className="text-white font-bold mb-2 text-sm">経済学 (Marginal Utility)</h3>
-                    <p>
-                        「限界効用」や「限界費用」は、ある変数を1単位増やしたときの変化率（微分）です。
-                        利益を最大化するポイントを見つけるために、微積分が使われます。
-                    </p>
+                    <h3 className="text-white font-bold mb-2 text-sm">{t('modules.calculus.apps.econ_title')}</h3>
+                    <p>{t('modules.calculus.apps.econ_body')}</p>
                 </div>
             </div>
              {currentLevel === 4 && (
-                 <button onClick={() => completeLevel(MODULE_ID, 4)} className="mt-4 border border-cyan-500/30 text-cyan-400 px-4 py-2 text-xs hover:bg-cyan-900/20 transition-all">
-                    COMPLETE LEVEL 04
+                 <button onClick={() => handleLevelComplete(4)} className="mt-4 border border-cyan-500/30 text-cyan-400 px-4 py-2 text-xs hover:bg-cyan-900/20 transition-all uppercase tracking-widest">
+                    COMPLETE {t('common.level')} 04
                  </button>
             )}
         </section>
@@ -445,14 +434,19 @@ export default function CalculusPage() {
                 exit={{ opacity: 0 }}
                 className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-sm"
             >
-                <div className="bg-black border border-cyan-500/30 p-8 max-w-md w-full relative">
-                    <h2 className="text-2xl font-bold text-white mb-2 tracking-tighter">PROTOCOL SYNCED</h2>
-                    <div className="text-cyan-500 text-sm mb-6">LEVEL 0{currentLevel} COMPLETE</div>
+                <div className="bg-black border border-cyan-500/30 p-8 max-w-md w-full relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-full h-1 bg-cyan-500 shadow-[0_0_10px_#06b6d4]"></div>
+                    <h2 className="text-2xl font-bold text-white mb-2 tracking-tighter">{t('modules.calculus.completion.synced')}</h2>
+                    <div className="text-cyan-500 text-sm mb-6">{t('common.level')} 0{currentLevel} COMPLETE</div>
+                    <p className="text-white/60 text-xs mb-8 leading-relaxed">
+                        {t('modules.calculus.completion.msg')}<br/>
+                        {t('common.xp_awarded')}: <span className="text-white">+100</span>
+                    </p>
                     <button 
                         onClick={handleNextLevel}
-                        className="w-full bg-cyan-900/20 border border-cyan-500/50 text-cyan-400 py-3 text-xs hover:bg-cyan-500 hover:text-black transition-all"
+                        className="w-full bg-cyan-900/20 border border-cyan-500/50 text-cyan-400 py-3 text-xs hover:bg-cyan-500 hover:text-black transition-all uppercase tracking-widest"
                     >
-                        NEXT PHASE
+                        {currentLevel < 4 ? t('common.next') : t('common.root')}
                     </button>
                 </div>
             </motion.div>
