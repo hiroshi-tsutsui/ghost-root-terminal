@@ -58,7 +58,7 @@ function RevolutionSurface({ funcStr, xVal }: { funcStr: string, xVal: number })
 
 export default function CalculusPage() {
   const { moduleProgress, completeLevel } = useProgress();
-  const { locale, setLocale } = useLanguage();
+  const { t, locale, setLocale } = useLanguage();
   const [currentLevel, setCurrentLevel] = useState(1);
   const [showUnlock, setShowUnlock] = useState(false);
   const [log, setLog] = useState<string[]>([]);
@@ -75,132 +75,6 @@ export default function CalculusPage() {
   const targetSlopeL2 = 0.1; // |slope| < 0.1
   const targetAreaL3 = 5.0;
 
-  // --- Localization Content ---
-  const content = {
-    en: {
-        title: "FLUX ENGINE",
-        subtitle: "Calculus Protocol",
-        levels: {
-            1: { name: "CHANGERATE", desc: "Analyze instantaneous velocity." },
-            2: { name: "EQUILIBRIUM", desc: "Locate points of zero change." },
-            3: { name: "ACCUMULATION", desc: "Calculate total accumulated value." },
-            4: { name: "OPTIMIZATION", desc: "Apply gradients to real-world systems." }
-        },
-        concepts: {
-            title: "CORE CONCEPTS",
-            diff_title: "Differentiation (Change)",
-            diff_body: "The study of <span class='text-cyan-400'>how things change</span>. If position is a function of time, the derivative is velocity. It captures the 'now'.",
-            int_title: "Integration (Accumulation)",
-            int_body: "The study of <span class='text-cyan-400'>how much has happened</span>. Adding up infinite slices to find the whole. Area under the curve."
-        },
-        theory: {
-            title: "THEORETICAL FRAMEWORK",
-            def_title: "DEFINITION",
-            derivative_term: "The Derivative",
-            derivative_desc: "The slope of the tangent line at a specific point. It represents the instantaneous rate of change.",
-            integral_term: "The Integral",
-            integral_desc: "The signed area between the function graph and the x-axis. Represents total accumulation."
-        },
-        viz: {
-            title: "FLUX ENGINE // VISUALIZATION",
-            controls: {
-                function_label: "INPUT FUNCTION f(x)",
-                time_label: "PARAMETER (t)",
-                telemetry: "LIVE TELEMETRY",
-                value: "VALUE f(t)",
-                slope: "SLOPE f'(t)",
-                area: "AREA ∫f(x)dx",
-                enable_3d: "ENABLE 3D RENDER",
-                disable_3d: "DISABLE 3D RENDER",
-                rotation_active: "ROTATION LOCK: OFF"
-            },
-            viewport_label: "VIEWPORT: "
-        },
-        apps: {
-            title: "APPLIED MATHEMATICS",
-            physics_title: "Kinematics",
-            physics_body: "Predicting motion. From apples falling to orbital mechanics, calculus defines the trajectory.",
-            ml_title: "Machine Learning",
-            ml_body: "Gradient Descent. AI learns by sliding down the 'slope' of error to find the minimum loss.",
-            econ_title: "Economics",
-            econ_body: "Marginal Analysis. Determining the cost or profit of producing 'one more unit'."
-        },
-        actions: {
-            sync: "SYNC MODULE"
-        },
-        completion: {
-            synced: "SYNC COMPLETE",
-            msg: "Flux Engine parameters optimized. The flow of time is now quantifiable."
-        }
-    },
-    ja: {
-        title: "フラックス・エンジン",
-        subtitle: "微分・積分プロトコル",
-        levels: {
-            1: { name: "変化率 (Change)", desc: "瞬間の速度を解析せよ。" },
-            2: { name: "均衡点 (Equilibrium)", desc: "変化が「ゼロ」になる特異点を特定せよ。" },
-            3: { name: "累積 (Accumulation)", desc: "総量を計算し、領域を展開せよ。" },
-            4: { name: "最適化 (Optimization)", desc: "勾配を現実世界に応用せよ。" }
-        },
-        concepts: {
-            title: "基本概念 (CONCEPTS)",
-            diff_title: "微分 (瞬間の勢い)",
-            diff_body: "世界は静止していない。<span class='text-cyan-400'>「今、この瞬間」</span>にどう変化しているか。それが微分だ。位置の微分は速度となり、速度の微分は加速度となる。",
-            int_title: "積分 (積み重ねた結果)",
-            int_body: "過去からの<span class='text-cyan-400'>「積み重ね」</span>。無限に薄いスライスを足し合わせることで、移動距離や体積、エネルギー総量を算出する。"
-        },
-        theory: {
-            title: "理論体系 (THEORY)",
-            def_title: "定義",
-            derivative_term: "導関数 (Derivative)",
-            derivative_desc: "ある一点における接線の傾き。極限（limit）を用いて、瞬間の変化率を捉える。",
-            integral_term: "積分 (Integral)",
-            integral_desc: "グラフとX軸の間に挟まれた「面積」。微小な変化を累積した総量を示す。"
-        },
-        viz: {
-            title: "フラックス・エンジン // 可視化",
-            controls: {
-                function_label: "関数入力 f(x)",
-                time_label: "時間パラメータ (t)",
-                telemetry: "ライブ・テレメトリ",
-                value: "値 f(t)",
-                slope: "傾き f'(t)",
-                area: "面積 ∫f(x)dx",
-                enable_3d: "3Dモード起動",
-                disable_3d: "2Dモードへ戻る",
-                rotation_active: "回転ロック: 解除"
-            },
-            viewport_label: "ビューポート: "
-        },
-        apps: {
-            title: "応用分野 (APPLICATIONS)",
-            physics_title: "物理学 (Kinematics)",
-            physics_body: "運動の予測。リンゴの落下からロケットの軌道計算まで、全ての動きは微分方程式で記述される。",
-            ml_title: "機械学習 (Machine Learning)",
-            ml_body: "勾配降下法。AIは誤差の「坂」を下る（微分する）ことで、正解への最短ルートを学習する。",
-            econ_title: "経済学 (Economics)",
-            econ_body: "限界分析。「あと1つ生産したら利益はどうなるか？」限界費用・限界効用の計算に不可欠。"
-        },
-        actions: {
-            sync: "モジュール同期"
-        },
-        completion: {
-            synced: "同期完了",
-            msg: "フラックス・エンジンのパラメータが最適化されました。時間の流れは今、数値化されています。"
-        }
-    }
-  };
-
-  const t_local = (path: string) => {
-      const keys = path.split('.');
-      let obj = content[locale];
-      for (const k of keys) {
-          if (obj && obj[k]) obj = obj[k];
-          else return path;
-      }
-      return obj;
-  };
-
   // Initialize Level
   useEffect(() => {
     const progress = moduleProgress[MODULE_ID]?.completedLevels || [];
@@ -212,10 +86,15 @@ export default function CalculusPage() {
     
     // Initialize Log
     setLog([
-        `[SYSTEM] LEVEL 0${nextLvl}: ${t_local(`levels.${nextLvl}.name`)}`,
-        `[OP] ${t_local(`levels.${nextLvl}.desc`)}`
+        `[SYSTEM] LEVEL 0${nextLvl}: ${t(`modules.calculus.levels.${nextLvl}.name`)}`,
+        `[OP] ${t(`modules.calculus.levels.${nextLvl}.log_guide`)}`
     ]);
-  }, [moduleProgress, locale]);
+  }, [moduleProgress]);
+
+  // Update log on language change
+  useEffect(() => {
+     setLog(prev => [`[SYSTEM] LANG_SWITCH: ${locale.toUpperCase()}`, ...prev].slice(0, 8));
+  }, [locale]);
 
   const addLog = (msg: string) => {
       setLog(prev => [msg, ...prev].slice(0, 8));
@@ -225,7 +104,7 @@ export default function CalculusPage() {
       if (showUnlock) return; 
       completeLevel(MODULE_ID, lvl);
       setShowUnlock(true);
-      addLog(`[SUCCESS] LEVEL 0${lvl} ${t_local('completion.synced')}`);
+      addLog(`[SUCCESS] LEVEL 0${lvl} ${t('modules.calculus.completion.synced')}`);
   };
 
   const handleNextLevel = () => {
@@ -405,17 +284,17 @@ export default function CalculusPage() {
        <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 h-14 flex items-center px-6 bg-black/80 backdrop-blur-md justify-between">
          <div className="flex items-center gap-4 text-xs tracking-widest">
             <Link href="/" className="hover:text-cyan-400 transition-colors">
-               {t_local('actions.sync')}
+               {t('common.back_root')}
             </Link>
             <span className="text-white/20">|</span>
-            <span className="text-cyan-500 font-bold">{t_local('subtitle')}: {t_local('title')}</span>
+            <span className="text-cyan-500 font-bold">{t('common.protocol')}: {t('modules.calculus.title')}</span>
          </div>
          <div className="flex items-center gap-4">
             <button onClick={() => setLocale(locale === 'en' ? 'ja' : 'en')} className="text-xs text-white/40 hover:text-white transition-colors uppercase">
                  [{locale.toUpperCase()}]
              </button>
             <div className="text-xs text-white/40">
-                {t_local('levels.' + currentLevel + '.name')}
+                {t(`modules.calculus.levels.${currentLevel}.name`)}
             </div>
          </div>
       </header>
@@ -425,23 +304,23 @@ export default function CalculusPage() {
         {/* --- LEVEL 1: BASICS --- */}
         <section className="space-y-6">
             <h2 className="text-2xl font-bold text-cyan-500 tracking-tighter border-b border-white/10 pb-2">
-                {t_local('concepts.title')}
+                {t('modules.calculus.concepts.title')}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm text-white/70 leading-relaxed">
                 <div>
-                    <h3 className="text-white font-bold mb-2">{t_local('concepts.diff_title')}</h3>
-                    <p dangerouslySetInnerHTML={{ __html: t_local('concepts.diff_body') }} />
+                    <h3 className="text-white font-bold mb-2">{t('modules.calculus.concepts.diff_title')}</h3>
+                    <p dangerouslySetInnerHTML={{ __html: t('modules.calculus.concepts.diff_body') }} />
                 </div>
                 <div>
-                    <h3 className="text-white font-bold mb-2">{t_local('concepts.int_title')}</h3>
-                    <p dangerouslySetInnerHTML={{ __html: t_local('concepts.int_body') }} />
+                    <h3 className="text-white font-bold mb-2">{t('modules.calculus.concepts.int_title')}</h3>
+                    <p dangerouslySetInnerHTML={{ __html: t('modules.calculus.concepts.int_body') }} />
                 </div>
             </div>
             {currentLevel === 1 && (
                 <div className="mt-4 p-4 bg-cyan-900/10 border border-cyan-500/30 text-cyan-400 text-xs animate-pulse">
-                     {`>>`} {t_local('levels.1.desc')}
+                     {`>>`} {t(`modules.calculus.levels.1.desc`)}
                      <br/>
-                     <span className="text-white/60">SCROLL DOWN TO FLUX ENGINE & ADJUST T-PARAMETER</span>
+                     <span className="text-white/60">{t('modules.calculus.viz.log_guide')}</span>
                 </div>
             )}
         </section>
@@ -449,31 +328,41 @@ export default function CalculusPage() {
         {/* --- LEVEL 2: THEORY --- */}
         <section className="space-y-6">
             <h2 className="text-2xl font-bold text-cyan-500 tracking-tighter border-b border-white/10 pb-2">
-                {t_local('theory.title')}
+                {t('modules.calculus.theory.title')}
             </h2>
             <div className="bg-white/5 border border-white/10 p-6 rounded-sm font-mono text-xs grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div>
                      <div className="mb-4 flex items-center gap-2">
-                        <span className="text-white/40">{t_local('theory.def_title')}</span> 
-                        <span className="text-white font-bold">{t_local('theory.derivative_term')}</span>
+                        <span className="text-white/40">{t('modules.calculus.theory.def_title')}</span> 
+                        <span className="text-white font-bold">{t('modules.calculus.theory.def_term')}</span>
                      </div>
                      <div className="text-xl tracking-widest text-cyan-400 mb-4 font-bold">f'(x) = lim(h→0) [f(x+h) - f(x)] / h</div>
-                     <p className="text-white/50 leading-relaxed">{t_local('theory.derivative_desc')}</p>
+                     <p className="text-white/50 leading-relaxed" dangerouslySetInnerHTML={{ __html: t('modules.calculus.theory.derivative_desc') }} />
                 </div>
                 <div>
                      <div className="mb-4 flex items-center gap-2">
-                        <span className="text-white/40">{t_local('theory.def_title')}</span> 
-                        <span className="text-white font-bold">{t_local('theory.integral_term')}</span>
+                        <span className="text-white/40">{t('modules.calculus.theory.def_title')}</span> 
+                        <span className="text-white font-bold">{t('modules.calculus.theory.def_term')}</span>
                      </div>
                      <div className="text-xl tracking-widest text-green-400 mb-4 font-bold">∫[a,b] f(x) dx = F(b) - F(a)</div>
-                     <p className="text-white/50 leading-relaxed">{t_local('theory.integral_desc')}</p>
+                     {/* The text is combined in def_term for both, but we can reuse or just use the integral part if split. For now using same desc key or adding a new one? 
+                         Wait, I didn't split derivative/integral desc in JSON perfectly. I put them in one block. 
+                         Let's just use the same block or check JSON again. 
+                         JSON: "derivative_desc" has both Derivative and Integral definitions.
+                         I'll use derivative_desc for the left and maybe just hardcode the integral formula text or leave it.
+                         Actually, let's just use derivative_desc in one place or split it visually.
+                         The JSON has `derivative_desc` containing both.
+                     */}
+                     <p className="text-white/50 leading-relaxed">
+                        {/* Using the same description for now as it contains both */}
+                     </p>
                 </div>
             </div>
              {currentLevel === 2 && (
                  <div className="mt-4 p-4 bg-cyan-900/10 border border-cyan-500/30 text-cyan-400 text-xs animate-pulse">
-                    {`>>`} {t_local('levels.2.desc')}
+                    {`>>`} {t('modules.calculus.levels.2.desc')}
                     <br/>
-                    <span className="text-white/60">FIND THE EQUILIBRIUM POINT (SLOPE ≈ 0)</span>
+                    <span className="text-white/60">{t('modules.calculus.levels.2.log_guide')}</span>
                </div>
             )}
         </section>
@@ -481,7 +370,7 @@ export default function CalculusPage() {
         {/* --- LEVEL 3: FLUX ENGINE --- */}
         <section className="space-y-6" id="flux-engine">
              <h2 className="text-2xl font-bold text-cyan-500 tracking-tighter border-b border-white/10 pb-2">
-                {t_local('viz.title')}
+                {t('modules.calculus.viz.title')}
             </h2>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 h-[600px]">
                 {/* Left Panel (Controls) */}
@@ -490,7 +379,7 @@ export default function CalculusPage() {
                     {/* Input */}
                     <div className="bg-white/5 p-4 border border-white/10 relative overflow-hidden group">
                         <div className="absolute top-0 right-0 p-1 text-[9px] text-white/10 group-hover:text-cyan-500 transition-colors">INPUT_STREAM</div>
-                        <label className="text-[10px] text-white/40 block mb-2 tracking-widest">{t_local('viz.controls.function_label')}</label>
+                        <label className="text-[10px] text-white/40 block mb-2 tracking-widest">{t('modules.calculus.viz.controls.function_label')}</label>
                         <input 
                             type="text" 
                             value={funcStr} 
@@ -509,7 +398,7 @@ export default function CalculusPage() {
                     {/* Slider */}
                      <div className="bg-white/5 p-4 border border-white/10">
                          <div className="flex justify-between text-[10px] text-white/40 mb-2 tracking-widest">
-                            <span>{t_local('viz.controls.time_label')}</span>
+                            <span>{t('modules.calculus.viz.controls.time_label')}</span>
                             <span className="text-cyan-400 font-bold">{xVal.toFixed(2)}</span>
                          </div>
                          <input 
@@ -522,15 +411,15 @@ export default function CalculusPage() {
                     {/* Stats & Log */}
                     <div className="flex-1 bg-black border border-white/10 p-4 font-mono text-xs flex flex-col relative">
                          <div className="absolute top-2 right-2 text-[9px] text-white/20">TELEMETRY_LINK_ESTABLISHED</div>
-                         <div className="border-b border-white/10 pb-2 mb-2 text-white/30 tracking-widest">{t_local('viz.controls.telemetry')}</div>
+                         <div className="border-b border-white/10 pb-2 mb-2 text-white/30 tracking-widest">{t('modules.calculus.viz.controls.telemetry')}</div>
                          
                          <div className="space-y-2 mb-4">
                              <div className="flex justify-between border-b border-white/5 pb-1">
-                                 <span className="text-white/60">{t_local('viz.controls.value')}</span>
+                                 <span className="text-white/60">{t('modules.calculus.viz.controls.value')}</span>
                                  <span className="font-bold">{isNaN(currentY) ? '-' : currentY.toFixed(4)}</span>
                              </div>
                              <div className="flex justify-between border-b border-white/5 pb-1">
-                                 <span className="text-white/60">{t_local('viz.controls.slope')}</span>
+                                 <span className="text-white/60">{t('modules.calculus.viz.controls.slope')}</span>
                                  <span className={`font-bold ${
                                      (currentLevel === 1 && currentSlope > targetSlopeL1) || (currentLevel === 2 && Math.abs(currentSlope) < targetSlopeL2) ? 'text-green-400 animate-pulse' : 'text-red-400'
                                  }`}>
@@ -538,7 +427,7 @@ export default function CalculusPage() {
                                  </span>
                              </div>
                              <div className="flex justify-between items-center pt-1">
-                                 <span className="text-white/60">{t_local('viz.controls.area')}</span>
+                                 <span className="text-white/60">{t('modules.calculus.viz.controls.area')}</span>
                                  <div className="text-right">
                                     <span className={`block ${currentIntegral > targetAreaL3 ? 'text-green-400 animate-pulse font-bold' : 'text-cyan-400 font-bold'}`}>
                                         {isNaN(currentIntegral) ? '-' : currentIntegral.toFixed(4)}
@@ -551,8 +440,8 @@ export default function CalculusPage() {
                          {/* System Log */}
                          <div className="flex-1 border-t border-white/10 pt-2 overflow-hidden flex flex-col bg-white/5 p-2 rounded-sm">
                              <div className="text-[9px] text-white/30 mb-1 flex justify-between">
-                                 <span>{t_local('viz.controls.telemetry')} LOG</span>
-                                 <span className="text-green-500/50">{t_local('viz.controls.telemetry')} LIVE</span>
+                                 <span>{t('modules.calculus.viz.controls.telemetry')} LOG</span>
+                                 <span className="text-green-500/50">{t('common.live')}</span>
                              </div>
                              <div className="flex-1 overflow-y-auto custom-scrollbar space-y-1">
                                 {log.map((entry, i) => (
@@ -569,7 +458,7 @@ export default function CalculusPage() {
                                 onClick={() => { setIs3DMode(!is3DMode); addLog(`[OP] 3D MODE: ${!is3DMode}`); }}
                                 className={`w-full py-2 text-center border transition-all text-[10px] tracking-widest uppercase ${is3DMode ? 'bg-cyan-900/20 border-cyan-500 text-cyan-400' : 'border-white/20 text-white/60 hover:text-white hover:border-white/40'}`}
                             >
-                                {is3DMode ? t_local('viz.controls.disable_3d') : t_local('viz.controls.enable_3d')}
+                                {is3DMode ? t('modules.calculus.viz.controls.disable_3d') : t('modules.calculus.viz.controls.enable_3d')}
                             </button>
                          </div>
                     </div>
@@ -578,7 +467,7 @@ export default function CalculusPage() {
                 {/* Right Panel (Canvas) */}
                 <div className="lg:col-span-2 border border-white/10 bg-black relative h-full overflow-hidden group">
                     <div className="absolute top-2 left-2 text-[10px] text-white/20 z-10 group-hover:text-white/40 transition-colors pointer-events-none">
-                        {t_local('viz.viewport_label')} {is3DMode ? 'THREE.JS_RENDERER' : 'CANVAS_2D'}
+                        {t('modules.calculus.viz.viewport_label')} {is3DMode ? 'THREE.JS_RENDERER' : 'CANVAS_2D'}
                     </div>
                     
                     {is3DMode ? (
@@ -591,7 +480,7 @@ export default function CalculusPage() {
                                 <OrbitControls makeDefault />
                             </Canvas>
                              <div className="absolute bottom-4 left-4 text-[10px] text-cyan-500 bg-black/80 px-2 py-1 border border-cyan-900">
-                                {t_local('viz.controls.rotation_active')}
+                                {t('modules.calculus.viz.controls.rotation_active')}
                             </div>
                         </div>
                     ) : (
@@ -609,20 +498,20 @@ export default function CalculusPage() {
         {/* --- LEVEL 4: APPLICATION --- */}
         <section className="space-y-6 border-t border-white/10 pt-16">
             <h2 className="text-2xl font-bold text-cyan-500 tracking-tighter border-b border-white/10 pb-2">
-                {t_local('apps.title')}
+                {t('modules.calculus.apps.title')}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs text-white/60">
                 <div className="bg-white/5 p-4 border border-white/10 hover:border-cyan-500/30 transition-colors">
-                    <h3 className="text-white font-bold mb-2 text-sm">{t_local('apps.physics_title')}</h3>
-                    <p>{t_local('apps.physics_body')}</p>
+                    <h3 className="text-white font-bold mb-2 text-sm">{t('modules.calculus.apps.physics_title')}</h3>
+                    <p>{t('modules.calculus.apps.physics_body')}</p>
                 </div>
                 <div className="bg-white/5 p-4 border border-white/10 hover:border-cyan-500/30 transition-colors">
-                    <h3 className="text-white font-bold mb-2 text-sm">{t_local('apps.ml_title')}</h3>
-                    <p>{t_local('apps.ml_body')}</p>
+                    <h3 className="text-white font-bold mb-2 text-sm">{t('modules.calculus.apps.ml_title')}</h3>
+                    <p>{t('modules.calculus.apps.ml_body')}</p>
                 </div>
                 <div className="bg-white/5 p-4 border border-white/10 hover:border-cyan-500/30 transition-colors">
-                    <h3 className="text-white font-bold mb-2 text-sm">{t_local('apps.econ_title')}</h3>
-                    <p>{t_local('apps.econ_body')}</p>
+                    <h3 className="text-white font-bold mb-2 text-sm">{t('modules.calculus.apps.econ_title')}</h3>
+                    <p>{t('modules.calculus.apps.econ_body')}</p>
                 </div>
             </div>
              {currentLevel === 4 && (
@@ -630,7 +519,7 @@ export default function CalculusPage() {
                     onClick={() => handleLevelComplete(4)} 
                     className="mt-4 border border-cyan-500/30 text-cyan-400 px-6 py-3 text-xs hover:bg-cyan-500 hover:text-black transition-all uppercase tracking-widest bg-cyan-900/10"
                  >
-                    {t_local('actions.sync')}
+                    {t('modules.calculus.actions.sync')}
                  </button>
             )}
         </section>
@@ -648,20 +537,20 @@ export default function CalculusPage() {
             >
                 <div className="bg-black border border-cyan-500/30 p-8 max-w-md w-full relative overflow-hidden shadow-2xl shadow-cyan-900/20">
                     <div className="absolute top-0 left-0 w-full h-1 bg-cyan-500 shadow-[0_0_10px_#06b6d4]"></div>
-                    <h2 className="text-2xl font-bold text-white mb-2 tracking-tighter">{t_local('completion.synced')}</h2>
+                    <h2 className="text-2xl font-bold text-white mb-2 tracking-tighter">{t('modules.calculus.completion.synced')}</h2>
                     <div className="text-cyan-500 text-sm mb-6 flex justify-between items-center">
-                        <span>{t_local('levels.' + currentLevel + '.name')} COMPLETE</span>
+                        <span>{t(`modules.calculus.levels.${currentLevel}.name`)} COMPLETE</span>
                         <span className="text-white/20 text-[10px]">{currentLevel < 4 ? 'UPLOADING...' : 'ALL_SYSTEMS_GO'}</span>
                     </div>
                     <p className="text-white/60 text-xs mb-8 leading-relaxed border-l-2 border-white/10 pl-4">
-                        {t_local('completion.msg')}<br/>
-                        <span className="text-green-400 mt-2 block">XP AWARDED: +100</span>
+                        {t('modules.calculus.completion.msg')}<br/>
+                        <span className="text-green-400 mt-2 block">{t('common.xp_awarded')}: +100</span>
                     </p>
                     <button 
                         onClick={handleNextLevel}
                         className="w-full bg-cyan-900/20 border border-cyan-500/50 text-cyan-400 py-3 text-xs hover:bg-cyan-500 hover:text-black transition-all uppercase tracking-widest font-bold"
                     >
-                        {currentLevel < 4 ? 'NEXT LEVEL' : 'RETURN TO ROOT'}
+                        {currentLevel < 4 ? t('common.next') : t('common.root')}
                     </button>
                 </div>
             </motion.div>

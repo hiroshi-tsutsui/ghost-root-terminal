@@ -103,64 +103,56 @@
       }
     },
     "calculus": {
-        "title": "FLUX ENGINE",
+        "title": "FLUX_ENGINE (Calculus Protocol)",
         "levels": {
-            "1": { "name": "BASICS", "desc": "Intuition: Speed vs Distance." },
-            "2": { "name": "THEORY", "desc": "Limits & Accumulation." },
-            "3": { "name": "VISUALIZATION", "desc": "The Flux Visualization." },
-            "4": { "name": "APPLY", "desc": "Real-world Dynamics." }
+            "1": { "name": "CHANGERATE", "desc": "Analyze instantaneous velocity. Achieve slope > 1.0.", "log_start": "Initializing Flux Engine...", "log_guide": "Adjust parameter (t) to exceed critical velocity." },
+            "2": { "name": "EQUILIBRIUM", "desc": "Locate points of zero change. Find slope ≈ 0.", "log_start": "Scanning for Equilibrium...", "log_guide": "Stabilize the system. Find the point where change stops." },
+            "3": { "name": "ACCUMULATION", "desc": "Calculate total accumulated value. Area > 5.0.", "log_start": "Integrating Flux...", "log_guide": "Accumulate energy. Maximize the area under the curve." },
+            "4": { "name": "OPTIMIZATION", "desc": "Apply gradients to real-world systems.", "log_start": "Optimizing System...", "log_guide": "Apply knowledge to external variables." }
         },
         "concepts": {
-            "title": "Concept: The Study of Change",
-            "diff_title": "Differentiation (The Slope)",
-            "diff_body": "Measures <strong>instantaneous change</strong>. If you drive a car, the speedometer shows your derivative (velocity) at that exact moment.",
-            "int_title": "Integration (The Area)",
-            "int_body": "Measures <strong>accumulation</strong>. The odometer shows your integral (total distance) accumulated over time."
+            "title": "01. CORE CONCEPTS",
+            "diff_title": "Differentiation (Change)",
+            "diff_body": "The study of <span class='text-cyan-400'>how things change</span>. If position is a function of time, the derivative is velocity. It captures the 'now'.",
+            "int_title": "Integration (Accumulation)",
+            "int_body": "The study of <span class='text-cyan-400'>how much has happened</span>. Adding up infinite slices to find the whole. Area under the curve."
         },
         "theory": {
-            "title": "Theory: Infinite Precision",
-            "def_title": "DEFINITION",
-            "derivative_term": "The Derivative",
-            "derivative_desc": "We shrink the time step 'h' to zero. The secant line becomes a tangent line.",
-            "integral_term": "The Integral",
-            "integral_desc": "We sum up infinite tiny rectangles under the curve to find the total area."
+            "title": "02. THEORETICAL FRAMEWORK",
+            "def_title": "DEFINITION //",
+            "def_term": "The Derivative & Integral",
+            "derivative_desc": "<strong>Derivative:</strong> The slope of the tangent line at a specific point. Represents instantaneous rate of change.<br/><br/><strong>Integral:</strong> The signed area between the function graph and the x-axis. Represents total accumulation."
         },
         "viz": {
-            "title": "Protocol: Flux Engine",
-            "integrity": "ENGINE INTEGRITY",
-            "target": "TARGET FLUX",
-            "log_start": "FLUX ENGINE INITIALIZED...",
-            "log_guide": "ADJUST PARAMETER (t) TO EXCEED TARGET ACCUMULATION.",
+            "title": "03. FLUX ENGINE // VISUALIZATION",
             "controls": {
                 "function_label": "INPUT FUNCTION f(x)",
-                "time_label": "TIME PARAMETER (t)",
-                "telemetry": "TELEMETRY",
-                "value": "POSITION f(t)",
-                "slope": "VELOCITY f'(t)",
-                "area": "ACCUMULATION ∫f(x)dx",
-                "enable_3d": "ENABLE 3D MANIFOLD",
-                "disable_3d": "RETURN TO 2D PLANE",
-                "rotation_active": "ORBITAL CONTROLS ACTIVE"
+                "time_label": "PARAMETER (t)",
+                "telemetry": "LIVE TELEMETRY",
+                "value": "VALUE f(t)",
+                "slope": "SLOPE f'(t)",
+                "area": "AREA ∫f(x)dx",
+                "enable_3d": "ENABLE 3D RENDER",
+                "disable_3d": "DISABLE 3D RENDER",
+                "rotation_active": "ROTATION LOCK: OFF"
             },
-            "viewport_label": "VIEWPORT_RENDER"
+            "viewport_label": "VIEWPORT: "
         },
         "apps": {
-            "title": "Applications: System Dynamics",
-            "physics_title": "Physics Engine",
-            "physics_body": "Simulating motion, forces, and collisions in video games and engineering.",
+            "title": "04. APPLIED MATHEMATICS",
+            "physics_title": "Kinematics",
+            "physics_body": "Predicting motion. From apples falling to orbital mechanics, calculus defines the trajectory.",
             "ml_title": "Machine Learning",
-            "ml_body": "Gradient Descent uses derivatives to minimize the 'loss' (error) of AI models.",
+            "ml_body": "Gradient Descent. AI learns by sliding down the 'slope' of error to find the minimum loss.",
             "econ_title": "Economics",
-            "econ_body": "Marginal cost/revenue analysis to optimize profit in changing markets."
+            "econ_body": "Marginal Analysis. Determining the cost or profit of producing 'one more unit'."
         },
         "completion": {
-            "synced": "MODULE SYNCED",
-            "msg": "You have mastered the language of change. The Flux Engine is now online."
+            "synced": "SYNC COMPLETE",
+            "msg": "Flux Engine parameters optimized. The flow of time is now quantifiable."
         },
         "actions": {
-            "init_flux": "INITIALIZE FLUX ENGINE",
-            "compile_logic": "COMPILE LOGIC",
-            "sync_module": "SYNC MODULE"
+            "sync": "SYNC MODULE"
         }
     }
   }

@@ -103,64 +103,56 @@
       }
     },
     "calculus": {
-        "title": "微分・積分 (Flux Engine)",
+        "title": "FLUX_ENGINE (微分・積分)",
         "levels": {
-            "1": { "name": "基礎 (Basics): 加速", "desc": "直感：変化のスピードを感じ取れ。速度(Slope) > 1.0 を達成せよ。" },
-            "2": { "name": "理論 (Logic): 均衡", "desc": "極限：動きが止まる瞬間を見つけよ。速度(Slope) ≈ 0 を発見せよ。" },
-            "3": { "name": "可視化 (Viz): 蓄積", "desc": "積分：フラックス・エンジンを充填せよ。蓄積量(Area) > 5.0 を達成せよ。" },
-            "4": { "name": "応用 (Apps): 最適化", "desc": "応用：世界を記述する言語を理解せよ。" }
+            "1": { "name": "CHANGERATE (変化率)", "desc": "瞬間の速度を解析せよ。傾き(Slope) > 1.0 を達成せよ。", "log_start": "フラックス・エンジン起動...", "log_guide": "パラメータ(t)を操作し、臨界速度を超過してください。" },
+            "2": { "name": "EQUILIBRIUM (均衡点)", "desc": "変化が「ゼロ」になる特異点を特定せよ。傾き(Slope) ≈ 0 を発見せよ。", "log_start": "均衡点をスキャン中...", "log_guide": "システムを安定化させてください。変化が停止するポイントを特定せよ。" },
+            "3": { "name": "ACCUMULATION (累積)", "desc": "総量を計算し、領域を展開せよ。面積(Area) > 5.0 を達成せよ。", "log_start": "フラックス積分中...", "log_guide": "エネルギーを蓄積してください。曲線下の面積を最大化せよ。" },
+            "4": { "name": "OPTIMIZATION (最適化)", "desc": "勾配を現実世界に応用せよ。", "log_start": "システム最適化中...", "log_guide": "外部変数への応用を開始します。" }
         },
         "concepts": {
-            "title": "概念：変化の学問",
-            "diff_title": "微分（瞬間の勢い）",
-            "diff_body": "<strong>瞬間の変化率</strong>を捉えます。過去や未来ではなく、「今この瞬間」の勢い（Velocity）を数値化します。",
-            "int_title": "積分（積み重なる成果）",
-            "int_body": "<strong>蓄積量</strong>を測定します。瞬間の変化が積み重なって、最終的にどれだけの量（Distance/Total）になるかを計算します。"
+            "title": "01. 基本概念 (CONCEPTS)",
+            "diff_title": "微分 (瞬間の勢い)",
+            "diff_body": "世界は静止していない。<span class='text-cyan-400'>「今、この瞬間」</span>にどう変化しているか。それが微分だ。位置の微分は速度となり、速度の微分は加速度となる。",
+            "int_title": "積分 (積み重ねた結果)",
+            "int_body": "過去からの<span class='text-cyan-400'>「積み重ね」</span>。無限に薄いスライスを足し合わせることで、移動距離や体積、エネルギー総量を算出する。"
         },
         "theory": {
-            "title": "理論：無限の精度",
-            "def_title": "定義",
-            "derivative_term": "導関数 (Derivative)",
-            "derivative_desc": "時間ステップ「h」を限りなくゼロ（極限）に近づけることで、平均ではなく「瞬間」の傾きを厳密に定義します。",
-            "integral_term": "積分 (Integral)",
-            "integral_desc": "無限に細分化された領域（長方形）の面積を足し合わせることで、曲線下の正確な総量を導き出します。"
+            "title": "02. 理論体系 (THEORY)",
+            "def_title": "DEFINITION //",
+            "def_term": "導関数と積分 (Derivative & Integral)",
+            "derivative_desc": "<strong>導関数:</strong> ある一点における接線の傾き。極限（limit）を用いて、瞬間の変化率を捉える。<br/><br/><strong>積分:</strong> グラフとX軸の間に挟まれた「面積」。微小な変化を累積した総量を示す。"
         },
         "viz": {
-            "title": "プロトコル：フラックス・エンジン",
-            "integrity": "FLUX INTEGRITY",
-            "target": "TARGET FLUX",
-            "log_start": "フラックス・エンジン初期化中...",
-            "log_guide": "パラメータ(t)を調整し、目標蓄積量(Area)を超過せよ。",
+            "title": "03. フラックス・エンジン // 可視化",
             "controls": {
-                "function_label": "入力関数 f(x)",
+                "function_label": "関数入力 f(x)",
                 "time_label": "時間パラメータ (t)",
-                "telemetry": "テレメトリ",
-                "value": "位置 f(t)",
-                "slope": "速度 f'(t)",
-                "area": "蓄積量 ∫f(x)dx",
-                "enable_3d": "3Dマニホールド起動 (回転体)",
-                "disable_3d": "2D平面に戻る",
-                "rotation_active": "軌道制御アクティブ"
+                "telemetry": "ライブ・テレメトリ",
+                "value": "値 f(t)",
+                "slope": "傾き f'(t)",
+                "area": "面積 ∫f(x)dx",
+                "enable_3d": "3Dモード起動",
+                "disable_3d": "2Dモードへ戻る",
+                "rotation_active": "回転ロック: 解除"
             },
-            "viewport_label": "VIEWPORT_RENDER"
+            "viewport_label": "ビューポート: "
         },
         "apps": {
-            "title": "応用：システムダイナミクス",
-            "physics_title": "物理エンジン",
-            "physics_body": "ゲームやシミュレーションにおいて、物体の運動、衝突、流体の動きを計算する基盤技術です。",
-            "ml_title": "機械学習 (AI)",
-            "ml_body": "AIの学習（Backpropagation）は、微分の連鎖律（Chain Rule）そのものです。誤差を最小化するために「下るべき坂の方向」を計算します。",
-            "econ_title": "経済・最適化",
-            "econ_body": "コストの最小化や利益の最大化。変化する環境の中で「最適なポイント」を見つけるために使われます。"
+            "title": "04. 応用分野 (APPLICATIONS)",
+            "physics_title": "物理学 (Kinematics)",
+            "physics_body": "運動の予測。リンゴの落下からロケットの軌道計算まで、全ての動きは微分方程式で記述される。",
+            "ml_title": "機械学習 (Machine Learning)",
+            "ml_body": "勾配降下法。AIは誤差の「坂」を下る（微分する）ことで、正解への最短ルートを学習する。",
+            "econ_title": "経済学 (Economics)",
+            "econ_body": "限界分析。「あと1つ生産したら利益はどうなるか？」限界費用・限界効用の計算に不可欠。"
         },
         "completion": {
-            "synced": "モジュール同期完了",
-            "msg": "「変化の言語」を習得しました。フラックス・エンジン、正常稼働中。"
+            "synced": "同期完了",
+            "msg": "フラックス・エンジンのパラメータが最適化されました。時間の流れは今、数値化されています。"
         },
         "actions": {
-            "init_flux": "フラックス・エンジン初期化 (INITIALIZE)",
-            "compile_logic": "論理コンパイル (COMPILE)",
-            "sync_module": "モジュール同期 (SYNC)"
+            "sync": "モジュール同期"
         }
     }
   }
