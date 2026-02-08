@@ -292,7 +292,7 @@ export default function CalculusPage() {
                     onClick={() => handleLevelComplete(1)} 
                     className="mt-4 border border-cyan-500/30 text-cyan-400 px-6 py-3 text-xs hover:bg-cyan-500 hover:text-black transition-all uppercase tracking-widest bg-cyan-900/10"
                  >
-                    {t('modules.calculus.viz.log_start')} (INITIALIZE)
+                    {t('modules.calculus.actions.init_flux')}
                  </button>
             )}
         </section>
@@ -325,7 +325,7 @@ export default function CalculusPage() {
                     onClick={() => handleLevelComplete(2)} 
                     className="mt-4 border border-cyan-500/30 text-cyan-400 px-6 py-3 text-xs hover:bg-cyan-500 hover:text-black transition-all uppercase tracking-widest bg-cyan-900/10"
                  >
-                    COMPILE LOGIC (COMPLETE LEVEL 02)
+                    {t('modules.calculus.actions.compile_logic')}
                  </button>
             )}
         </section>
@@ -479,7 +479,7 @@ export default function CalculusPage() {
                     onClick={() => handleLevelComplete(4)} 
                     className="mt-4 border border-cyan-500/30 text-cyan-400 px-6 py-3 text-xs hover:bg-cyan-500 hover:text-black transition-all uppercase tracking-widest bg-cyan-900/10"
                  >
-                    {t('common.success')} (SYNC MODULE)
+                    {t('modules.calculus.actions.sync_module')}
                  </button>
             )}
         </section>

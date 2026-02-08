@@ -156,6 +156,11 @@
         "completion": {
             "synced": "MODULE SYNCED",
             "msg": "You have mastered the language of change. The Flux Engine is now online."
+        },
+        "actions": {
+            "init_flux": "INITIALIZE FLUX ENGINE",
+            "compile_logic": "COMPILE LOGIC",
+            "sync_module": "SYNC MODULE"
         }
     }
   }

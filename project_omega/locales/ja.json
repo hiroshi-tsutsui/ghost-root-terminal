@@ -156,6 +156,11 @@
         "completion": {
             "synced": "モジュール同期完了",
             "msg": "「変化の言語」を習得しました。フラックス・エンジン、正常稼働中。"
+        },
+        "actions": {
+            "init_flux": "フラックス・エンジン初期化 (INITIALIZE)",
+            "compile_logic": "論理コンパイル (COMPILE)",
+            "sync_module": "モジュール同期 (SYNC)"
         }
     }
   }
