@@ -1,0 +1,144 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #F5F5F7;
+  --card-bg: #FFFFFF;
+  --foreground: #1D1D1F;
+  --apple-blue: #0071e3;
+  --apple-blue-hover: #0077ED;
+  --apple-gray-text: #86868b;
+  --font-inter: 'Inter', sans-serif;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: var(--font-inter), var(--font-noto-sans-jp), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom Scrollbar for Webkit */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #d1d1d6;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #b0b0b5;
+}
+
+
+/* Apple-style Components */
+
+/* Glass Panel */
+.glass-panel {
+  @apply bg-white/70 backdrop-blur-xl border border-white/40 shadow-sm supports-[backdrop-filter]:bg-white/60;
+}
+
+.glass-header {
+  @apply sticky top-0 z-50 w-full border-b border-gray-200/50 bg-white/80 backdrop-blur-md transition-all supports-[backdrop-filter]:bg-white/60;
+}
+
+/* Cards */
+.apple-card {
+  @apply bg-white rounded-3xl shadow-[0_4px_24px_rgba(0,0,0,0.04)] border border-black/[0.02] transition-all duration-300 hover:shadow-[0_8px_32px_rgba(0,0,0,0.08)] hover:-translate-y-1 overflow-hidden;
+}
+
+/* Buttons */
+.btn-apple {
+  @apply inline-flex items-center justify-center rounded-full bg-[#0071e3] px-6 py-2.5 text-sm font-medium text-white shadow-sm transition-all duration-200 hover:bg-[#0077ED] focus:outline-none focus:ring-4 focus:ring-[#0071e3]/20 active:scale-[0.98];
+}
+
+.btn-secondary {
+  @apply inline-flex items-center justify-center rounded-full bg-[#e8e8ed] px-6 py-2.5 text-sm font-medium text-[#1d1d1f] transition-all duration-200 hover:bg-[#d2d2d7] focus:outline-none focus:ring-4 focus:ring-gray-200 active:scale-[0.98];
+}
+
+/* Inputs */
+.input-apple {
+  @apply w-full rounded-xl border-none bg-[#F5F5F7] px-4 py-3 text-[15px] font-medium text-[#1d1d1f] placeholder-[#86868b] shadow-inner transition-all focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0071e3]/50;
+}
+
+/* Apple-style Slider */
+input[type=range] {
+  -webkit-appearance: none; /* Hides the slider so that custom slider can be made */
+  width: 100%; /* Specific width is required for Firefox. */
+  background: transparent; /* Otherwise white in Chrome */
+}
+
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 28px;
+  width: 28px;
+  border-radius: 50%;
+  background: #ffffff;
+  cursor: pointer;
+  margin-top: -12px; /* You need to specify a margin in Chrome, but in Firefox and IE it is automatic */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15), 0 0 1px rgba(0,0,0,0.1);
+  border: 0.5px solid rgba(0,0,0,0.04);
+  transition: transform 0.1s ease;
+}
+
+input[type=range]::-webkit-slider-thumb:hover {
+    transform: scale(1.05);
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 6px;
+  cursor: pointer;
+  background: #e5e5e5;
+  border-radius: 999px;
+  border: none;
+}
+
+input[type=range]:focus {
+  outline: none;
+}
+
+input[type=range]:focus::-webkit-slider-runnable-track {
+  background: #e5e5e5;
+}
+
+/* Typography Helpers */
+.text-apple-header {
+  @apply font-semibold tracking-tight text-[#1d1d1f];
+}
+
+.text-apple-body {
+  @apply font-normal text-[#1d1d1f] leading-relaxed;
+}
+
+.text-apple-subtext {
+  @apply text-[#86868b] font-medium;
+}
+
+/* Animations */
+.fade-in-up {
+  animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }

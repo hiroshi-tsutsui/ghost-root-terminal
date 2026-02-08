@@ -44,12 +44,31 @@ export default function SystemMessages() {
   useEffect(() => {
     // Load from localStorage or seed
     const stored = localStorage.getItem('omega_system_messages');
+    let currentMessages = [];
+    
     if (stored) {
-      setMessages(JSON.parse(stored));
+      currentMessages = JSON.parse(stored);
     } else {
-      setMessages(INITIAL_MESSAGES);
-      localStorage.setItem('omega_system_messages', JSON.stringify(INITIAL_MESSAGES));
+      currentMessages = INITIAL_MESSAGES;
     }
+
+    // Check for Syllabus Update Message (Inject if missing)
+    const SYLLABUS_MSG_ID = 'msg-004-syllabus-pivot';
+    const hasSyllabusMsg = currentMessages.some((m: Message) => m.id === SYLLABUS_MSG_ID);
+
+    if (!hasSyllabusMsg) {
+      const newMsg: Message = {
+        id: SYLLABUS_MSG_ID,
+        sender: 'ARCHITECT',
+        text: "PROTOCOL UPDATE: The Syllabus is not a list. It is a path. Real numbers were the tutorial. The Complex Plane is the exit. Proceed to Sector: COMPLEX.",
+        timestamp: Date.now(),
+        read: false
+      };
+      currentMessages = [newMsg, ...currentMessages];
+      localStorage.setItem('omega_system_messages', JSON.stringify(currentMessages));
+    }
+
+    setMessages(currentMessages);
   }, []);
 
   useEffect(() => {

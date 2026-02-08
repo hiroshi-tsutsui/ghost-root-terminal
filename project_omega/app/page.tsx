@@ -131,6 +131,34 @@ export default function Home() {
     }
   ];
 
+  const tiers = [
+    {
+      name: "PROTOCOL: CALIBRATION",
+      desc: "System Initialization Required.",
+      ids: ['quiz']
+    },
+    {
+      name: "TIER 1: THE SANDBOX",
+      desc: "Master the visible world.",
+      ids: ['data', 'functions', 'vectors']
+    },
+    {
+      name: "TIER 2: THE MOTION",
+      desc: "Master the flow of reality.",
+      ids: ['sequences', 'calculus', 'quadratics', 'logs']
+    },
+    {
+      name: "TIER 3: THE VOID",
+      desc: "Step outside the simulation.",
+      ids: ['complex', 'matrices']
+    },
+    {
+      name: "TIER 4: THE SOURCE",
+      desc: "See the code.",
+      ids: ['probability', 'trig']
+    }
+  ];
+
   // Operator Logic
   const totalModules = modules.length;
   const masteredCount = modules.filter(m => moduleProgress[m.id as ModuleId]?.isMastered).length;
@@ -213,37 +241,54 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Module Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-             {modules.map((m) => {
-                 const isMastered = moduleProgress[m.id as ModuleId]?.isMastered;
-                 return (
-                    <Link key={m.id} href={`/${m.id}`} className={`group relative p-6 border transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(255,255,255,0.05)] ${isMastered ? 'border-white/40 bg-white/5' : 'border-white/10 bg-black hover:border-white/30'}`}>
-                        {/* Status Light */}
-                        <div className="absolute top-4 right-4 flex items-center gap-2">
-                            {isMastered && <span className="text-[10px] text-yellow-400 font-bold tracking-widest">SYNCED</span>}
-                            <div className={`w-1.5 h-1.5 rounded-full ${isMastered ? 'bg-yellow-400' : 'bg-white/20 group-hover:bg-white/50'}`}></div>
-                        </div>
+          {/* Module Grid by Tier */}
+          <div className="space-y-16">
+            {tiers.map((tier) => (
+              <section key={tier.name}>
+                 <div className="flex items-end gap-4 mb-6 border-b border-white/10 pb-2">
+                    <h3 className="text-xl font-bold text-white tracking-widest uppercase">
+                        {tier.name}
+                    </h3>
+                    <span className="text-gray-500 text-xs font-mono mb-1">{tier.desc}</span>
+                 </div>
+                 
+                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {tier.ids.map(id => {
+                       const m = modules.find(mod => mod.id === id);
+                       if (!m) return null;
+                       
+                       const isMastered = moduleProgress[m.id as ModuleId]?.isMastered;
+                       
+                       return (
+                          <Link key={m.id} href={`/${m.id}`} className={`group relative p-6 border transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(255,255,255,0.05)] ${isMastered ? 'border-white/40 bg-white/5' : 'border-white/10 bg-black hover:border-white/30'}`}>
+                              {/* Status Light */}
+                              <div className="absolute top-4 right-4 flex items-center gap-2">
+                                  {isMastered && <span className="text-[10px] text-yellow-400 font-bold tracking-widest">SYNCED</span>}
+                                  <div className={`w-1.5 h-1.5 rounded-full ${isMastered ? 'bg-yellow-400' : 'bg-white/20 group-hover:bg-white/50'}`}></div>
+                              </div>
 
-                        <div className={`text-[10px] font-bold tracking-[0.2em] mb-2 uppercase ${m.color} opacity-70 group-hover:opacity-100 transition-opacity`}>
-                            {m.subtitle}
-                        </div>
-                        
-                        <h2 className="text-2xl font-bold text-white mb-2 tracking-tight group-hover:text-white transition-colors">
-                            {m.title}
-                        </h2>
-                        
-                        <p className="text-sm text-gray-500 font-mono leading-relaxed mb-6 group-hover:text-gray-400 transition-colors">
-                            {m.desc}
-                        </p>
+                              <div className={`text-[10px] font-bold tracking-[0.2em] mb-2 uppercase ${m.color} opacity-70 group-hover:opacity-100 transition-opacity`}>
+                                  {m.subtitle}
+                              </div>
+                              
+                              <h2 className="text-2xl font-bold text-white mb-2 tracking-tight group-hover:text-white transition-colors">
+                                  {m.title}
+                              </h2>
+                              
+                              <p className="text-sm text-gray-500 font-mono leading-relaxed mb-6 group-hover:text-gray-400 transition-colors">
+                                  {m.desc}
+                              </p>
 
-                        <div className="flex items-center text-[10px] uppercase tracking-widest text-white/30 group-hover:text-white transition-colors">
-                            <span className="mr-2">Initiate Protocol</span>
-                            <span className="transform group-hover:translate-x-1 transition-transform">→</span>
-                        </div>
-                    </Link>
-                 );
-             })}
+                              <div className="flex items-center text-[10px] uppercase tracking-widest text-white/30 group-hover:text-white transition-colors">
+                                  <span className="mr-2">Initiate Protocol</span>
+                                  <span className="transform group-hover:translate-x-1 transition-transform">→</span>
+                              </div>
+                          </Link>
+                       );
+                    })}
+                 </div>
+              </section>
+            ))}
           </div>
 
           <footer className="pt-12 border-t border-white/10 text-center text-[10px] text-white/20 uppercase tracking-[0.3em]">
