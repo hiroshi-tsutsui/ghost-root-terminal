@@ -2,62 +2,96 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useProgress } from '../contexts/ProgressContext';
 
+// --- Protocol Definition ---
+const PROTOCOLS = {
+    1: {
+        title: "PHASE 1: LINEAR OBSERVATION",
+        mission: "Observe the growth curve in standard linear space.",
+        target: "Reach Intensity 12.",
+        trigger: (val: number, mode: boolean) => !mode && val >= 12 && val < 16
+    },
+    2: {
+        title: "PHASE 2: BOUNDARY FAILURE",
+        mission: "Push the signal beyond system limits. Witness the overflow.",
+        target: "Reach Intensity 16 (CRITICAL).",
+        trigger: (val: number, mode: boolean) => !mode && val >= 16
+    },
+    3: {
+        title: "PHASE 3: LOGARITHMIC CONTAINMENT",
+        mission: "Activate Compression. Stabilize the infinite signal.",
+        target: "Enable Log Mode. Reach Intensity 50.",
+        trigger: (val: number, mode: boolean) => mode && val >= 50
+    }
+};
+
 export default function LogsPage() {
-  const [signalIntensity, setSignalIntensity] = useState(10); // X Range (1-50)
-  const [compressionActive, setCompressionActive] = useState(false); // Log Scale
+  const { completeLevel } = useProgress();
+  
+  // State
+  const [signalIntensity, setSignalIntensity] = useState(5); // Start low
+  const [compressionActive, setCompressionActive] = useState(false);
   const [systemLoad, setSystemLoad] = useState(0);
   const [isStabilized, setIsStabilized] = useState(true);
   const [glitchActive, setGlitchActive] = useState(false);
   
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const { addXp, completeLevel } = useProgress();
+  // Protocol State
+  const [level, setLevel] = useState(1); // 1, 2, 3
+  const [showComplete, setShowComplete] = useState(false);
+  const [systemLogs, setSystemLogs] = useState<string[]>([]);
 
-  // Narrative Logic
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  const addLog = (msg: string) => setSystemLogs(prev => [msg, ...prev].slice(0, 5));
+
+  // --- Game Loop ---
   useEffect(() => {
-    // Calculate "Load" based on max value of 2^x (approximate for visualization)
-    // 2^10 = 1024
-    // 2^20 = 1,048,576
-    // 2^30 = 1,073,741,824
-    // 2^50 = 1,125,899,906,842,624 (1 Quadrillion)
+    // 1. Calculate Load
+    let currentLoad = 0;
     
     if (compressionActive) {
-      // Log scale compresses the load: log10(2^50) ~= 15.
-      // Load is manageable (linear growth on log scale).
-      setSystemLoad(signalIntensity * 2); 
+      // Log Scale: 2^50 is handled easily.
+      // 50 input -> 100% load visually for feedback
+      currentLoad = (signalIntensity / 50) * 80; 
       setIsStabilized(true);
       setGlitchActive(false);
-
-      // Level 2 Completion: Handling massive scale safely
-      if (signalIntensity >= 40) {
-        completeLevel('logs', 2); 
-        addXp(50);
-      }
     } else {
-      // Linear scale explodes rapidly
-      // Visual threshold for screen/graph "breakage" is around x=15 (32,768 vs screen height 500)
-      if (signalIntensity > 15) {
-        setSystemLoad(100 + (signalIntensity - 15) * 50); // Fake explosion > 100%
+      // Linear Scale: Explodes at 16
+      if (signalIntensity >= 16) {
+        currentLoad = 120; // Critical
         setIsStabilized(false);
         setGlitchActive(true);
       } else {
-        // Normalized load for low values (0-15 range)
-        // 2^15 = 32768. Let's say max safe load is 100% at x=15.
-        // Actually, let's map it so 100% is reached at x=12 visually for drama.
-        setSystemLoad((Math.pow(2, signalIntensity) / Math.pow(2, 12)) * 100);
+        // 0-15 maps to 0-100%
+        currentLoad = (signalIntensity / 15) * 100;
         setIsStabilized(true);
         setGlitchActive(false);
-
-        // Level 1 Completion: Witnessing the initial growth safely
-        if (signalIntensity >= 10 && signalIntensity <= 15) {
-             completeLevel('logs', 1);
-             addXp(25);
-        }
       }
     }
-  }, [signalIntensity, compressionActive]);
+    setSystemLoad(currentLoad);
 
+    // 2. Check Protocol Triggers
+    const currentProtocol = PROTOCOLS[level as keyof typeof PROTOCOLS];
+    if (currentProtocol && currentProtocol.trigger(signalIntensity, compressionActive)) {
+        if (level === 1) {
+            setLevel(2);
+            completeLevel('logs', 1);
+            addLog("PHASE 1 COMPLETE. LINEAR LIMIT REACHED.");
+        } else if (level === 2) {
+            setLevel(3);
+            addLog("SYSTEM FAILURE CONFIRMED. UNLOCKING COMPRESSION PROTOCOL.");
+        } else if (level === 3) {
+            completeLevel('logs', 3);
+            addLog("PHASE 3 COMPLETE. INFINITY STABILIZED.");
+            setShowComplete(true);
+        }
+    }
+
+  }, [signalIntensity, compressionActive, level, completeLevel]);
+
+  // --- Rendering ---
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -68,271 +102,224 @@ export default function LogsPage() {
     const height = canvas.height;
     ctx.clearRect(0, 0, width, height);
 
-    // Aesthetics
-    const bgColor = isStabilized ? '#050505' : '#1a0000'; // Darker red for overload
+    // Background
+    const bgColor = isStabilized ? '#050505' : '#1a0000';
     ctx.fillStyle = bgColor;
     ctx.fillRect(0, 0, width, height);
 
-    // Grid (Faint)
+    // Grid
     ctx.strokeStyle = isStabilized ? '#1c1c1e' : '#3a0a0a';
     ctx.lineWidth = 1;
-    for (let i = 0; i < width; i += 40) {
-      ctx.beginPath();
-      ctx.moveTo(i, 0);
-      ctx.lineTo(i, height);
-      ctx.stroke();
+    const gridSize = 40;
+    for (let i = 0; i < width; i += gridSize) {
+      ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, height); ctx.stroke();
     }
-    for (let i = 0; i < height; i += 40) {
-      ctx.beginPath();
-      ctx.moveTo(0, i);
-      ctx.lineTo(width, i);
-      ctx.stroke();
+    for (let i = 0; i < height; i += gridSize) {
+      ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(width, i); ctx.stroke();
     }
 
     const padding = 60;
     const graphWidth = width - padding * 2;
     const graphHeight = height - padding * 2;
 
-    // Functions to plot
-    const fLinear = (x: number) => x;           
-    const fQuad = (x: number) => x * x;         
+    // Functions
     const fExp = (x: number) => Math.pow(2, x); 
 
-    // Determine max Y for scaling
-    let effectiveMaxY: number;
-    let rawMaxY = fExp(signalIntensity);
-
+    // Scaling Logic
+    let maxValY = 0;
     if (compressionActive) {
-       // In Log Mode, the Y axis represents powers of 10.
-       // Max Y needs to accommodate log10(2^50) ~= 15.05.
-       // Let's set a fixed max Y for stability or dynamic based on input.
-       // Dynamic feels better: scale to current max Log value.
-       effectiveMaxY = Math.log10(rawMaxY); 
-       if (effectiveMaxY < 1) effectiveMaxY = 1; 
+        // Log Mode: Max Y is log10(2^50) ≈ 15.05
+        maxValY = 16; 
     } else {
-       // In Linear Mode, the Y axis represents raw values.
-       // We want to show the explosion. If we always scale to fit, the curve looks the same!
-       // So we must fix the scale to a "reasonable" max (e.g., screen height) and let it clip.
-       // Or, we scale to fit but show the numbers becoming absurd.
-       // Narrative choice: The system *tries* to scale, but numbers get too big.
-       // Let's scale to fit current max, but visual "Glitch" indicates instability.
-       effectiveMaxY = rawMaxY;
+        // Linear Mode: Max Y is fixed to screen height relative to 2^15
+        maxValY = 32768; 
     }
 
-    // Coordinate Mapping
-    const mapX = (x: number) => padding + (x / signalIntensity) * graphWidth;
-    const mapY = (y: number) => {
-        let val = y;
-        if (compressionActive) {
-            val = y <= 0 ? 0 : Math.log10(y);
-        }
-        // Avoid division by zero
-        const max = effectiveMaxY || 1; 
-        return (height - padding) - (val / max) * graphHeight;
-    };
-
-    // Plotting Helper
-    const plot = (fn: (x: number) => number, color: string, label: string) => {
+    // Plotter
+    const plot = (fn: (x: number) => number, color: string) => {
         ctx.strokeStyle = color;
         ctx.lineWidth = 3;
         ctx.lineJoin = 'round';
-        ctx.lineCap = 'round';
         ctx.beginPath();
         
+        const steps = 100;
         let first = true;
-        // Resolution: calculate enough points for smooth curve
-        const steps = 200;
-        
+
         for (let i = 0; i <= steps; i++) {
             const x = (i / steps) * signalIntensity;
-            const y = fn(x);
-            
-            const plotX = padding + (i / steps) * graphWidth;
-            const plotY = mapY(y);
-            
-            // Clip visual bounds (simple)
-            if (plotY < padding) {
-                // If point goes above graph area
-                if (!first) ctx.lineTo(plotX, padding);
-                break; 
+            let y = fn(x);
+
+            // Apply Log if active
+            if (compressionActive) {
+                y = y <= 0 ? 0 : Math.log10(y);
             }
+
+            const px = padding + (x / signalIntensity) * graphWidth; // X scales to fit width always
             
-            if (first) {
-                ctx.moveTo(plotX, plotY);
-                first = false;
-            } else {
-                ctx.lineTo(plotX, plotY);
+            // Y Scaling
+            // In Linear Mode, if y > maxValY, it goes off screen.
+            const py = (height - padding) - (y / maxValY) * graphHeight;
+
+            if (py < padding) {
+                if (!first) ctx.lineTo(px, padding);
+                break;
             }
+
+            if (first) { ctx.moveTo(px, py); first = false; }
+            else { ctx.lineTo(px, py); }
         }
         ctx.stroke();
     };
 
-    // Plot Functions
-    // Only plot Linear/Quad if meaningful compared to Exp?
-    // Actually, comparing them shows how insane Exp is.
-    plot(fLinear, '#30d158', 'Linear'); // Green
-    plot(fQuad, '#0a84ff', 'Quadratic'); // Blue
-    plot(fExp, isStabilized ? '#ff9f0a' : '#ff453a', 'Exponential'); // Orange/Red
-
-    // Axes
-    ctx.strokeStyle = '#86868b';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(padding, padding);
-    ctx.lineTo(padding, height - padding);
-    ctx.lineTo(width - padding, height - padding);
-    ctx.stroke();
+    plot(fExp, isStabilized ? '#f59e0b' : '#ef4444'); // Amber or Red
 
     // Labels
-    ctx.fillStyle = '#86868b';
-    ctx.font = '12px "JetBrains Mono", monospace';
-    ctx.fillText('0', padding - 20, height - padding + 20);
-    ctx.fillText(`INTENSITY (x): ${signalIntensity}`, width - padding - 120, height - padding + 20);
-    
-    // Y-Axis Label
-    const topLabel = compressionActive 
-        ? `10^${effectiveMaxY.toFixed(1)} (Compressed)` 
-        : `${Number(rawMaxY).toExponential(1)} (Raw)`;
-    ctx.fillText(topLabel, padding - 40, padding - 10);
-    
-    // Legend
-    const legendY = padding + 20;
-    ctx.fillStyle = '#30d158'; ctx.fillText('Linear (x)', width - 120, legendY);
-    ctx.fillStyle = '#0a84ff'; ctx.fillText('Quadratic (x²)', width - 120, legendY + 20);
-    ctx.fillStyle = isStabilized ? '#ff9f0a' : '#ff453a'; ctx.fillText('Exponential (2^x)', width - 120, legendY + 40);
+    ctx.fillStyle = '#666';
+    ctx.font = '10px monospace';
+    ctx.fillText("0", padding - 10, height - padding + 15);
+    ctx.fillText(`x=${signalIntensity}`, width - padding - 20, height - padding + 15);
+
+    // Y Axis Label
+    const yLabel = compressionActive ? "10^16 (LOG)" : "3.2e4 (LIN)";
+    ctx.fillText(yLabel, padding - 40, padding - 10);
 
   }, [signalIntensity, compressionActive, isStabilized]);
 
+
   return (
-    <div className={`flex flex-col min-h-screen transition-colors duration-500 overflow-hidden ${isStabilized ? 'bg-[#000000]' : 'bg-[#1a0505]'}`}>
+    <div className={`min-h-screen font-mono transition-colors duration-500 selection:bg-rose-900 ${isStabilized ? 'bg-black text-white' : 'bg-[#1a0000] text-red-100'}`}>
         
-        {/* HUD Header */}
-        <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 h-16 flex items-center px-6 bg-black/80 backdrop-blur-md">
-             <div className="max-w-7xl mx-auto w-full flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                    <Link href="/" className="text-xs font-bold text-gray-500 hover:text-white uppercase tracking-widest transition-colors">
-                        ← System Root
+        {/* Completion Modal */}
+        <AnimatePresence>
+        {showComplete && (
+            <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm flex items-center justify-center p-6"
+            >
+                <div className="max-w-md w-full border border-rose-500/50 bg-black p-8 relative overflow-hidden shadow-[0_0_100px_rgba(244,63,94,0.2)]">
+                    <div className="absolute top-0 left-0 w-full h-1 bg-rose-500 animate-pulse"></div>
+                    
+                    <h2 className="text-2xl font-bold text-rose-500 mb-2 tracking-widest uppercase">PROTOCOL COMPLETE</h2>
+                    <p className="text-xs text-gray-500 mb-6 font-mono">ENTROPY COMPRESSOR ONLINE. SCALE STABILIZED.</p>
+                    
+                    <div className="space-y-4 mb-8 border-l-2 border-rose-500/20 pl-4">
+                        <div className="flex justify-between text-sm">
+                            <span className="text-gray-400">STATUS</span>
+                            <span className="text-rose-400">OPTIMAL</span>
+                        </div>
+                         <div className="flex justify-between text-sm">
+                            <span className="text-gray-400">SYSTEM LOG</span>
+                            <span className="text-white animate-pulse">FILE_009 DECRYPTED</span>
+                        </div>
+                    </div>
+
+                    <Link href="/codex" className="block w-full text-center py-3 bg-rose-600 text-black font-bold tracking-[0.2em] hover:bg-white transition-colors uppercase text-xs">
+                        ACCESS CODEX
                     </Link>
-                    <div className="h-4 w-px bg-white/20"></div>
-                    <h1 className="text-sm font-bold tracking-widest text-white uppercase">
-                        PROTOCOL: ENTROPY_COMPRESSOR
-                    </h1>
+                     <Link href="/" className="block w-full text-center py-3 mt-2 border border-white/10 text-gray-500 hover:text-white transition-colors uppercase text-[10px] tracking-widest">
+                        RETURN TO TERMINAL
+                    </Link>
                 </div>
-                <div className={`text-xs font-mono px-3 py-1 rounded border ${isStabilized ? 'border-cyan-900 text-cyan-500 bg-cyan-900/10' : 'border-red-900 text-red-500 bg-red-900/10 animate-pulse'}`}>
-                    STATUS: {isStabilized ? 'NOMINAL' : 'CRITICAL OVERLOAD'}
+            </motion.div>
+        )}
+        </AnimatePresence>
+
+        {/* Header */}
+        <header className="fixed top-0 w-full border-b border-white/10 bg-black/80 backdrop-blur-md z-50 h-16 flex items-center px-6 justify-between">
+            <div className="flex items-center gap-4">
+                <Link href="/" className="text-xs text-gray-500 hover:text-white uppercase tracking-widest transition-colors">
+                    ← SYSTEM ROOT
+                </Link>
+                <div className="h-4 w-px bg-white/20"></div>
+                <h1 className="text-sm font-bold tracking-widest text-rose-500 uppercase">
+                    PROTOCOL: ENTROPY_COMPRESSOR
+                </h1>
+            </div>
+            <div className="flex gap-4 text-xs font-bold">
+                <div className="px-3 py-1 bg-white/5 border border-white/10 rounded">PHASE {level}/3</div>
+                <div className={`px-3 py-1 border rounded transition-colors ${isStabilized ? 'bg-green-500/20 border-green-500 text-green-400' : 'bg-red-500/20 border-red-500 text-red-400 animate-pulse'}`}>
+                    {isStabilized ? 'STABLE' : 'CRITICAL'}
                 </div>
-             </div>
+            </div>
         </header>
 
-        <main className="pt-24 p-6 max-w-7xl mx-auto w-full flex flex-col lg:flex-row gap-8">
+        <main className="pt-24 p-6 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 h-[calc(100vh-6rem)]">
             
-            {/* Control Panel */}
-            <div className="w-full lg:w-1/3 space-y-6">
-                <div className={`bg-[#111] p-6 rounded border ${isStabilized ? 'border-white/10' : 'border-red-500/50'} space-y-6 relative overflow-hidden transition-all duration-300`}>
-                    {/* Scanlines */}
-                    <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] z-0 pointer-events-none bg-[length:100%_4px,3px_100%]"></div>
-                    
-                    <div className="relative z-10">
-                        <h2 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-6">Input Parameters</h2>
-                        
-                        {/* Intensity Slider */}
-                        <div className="space-y-2 mb-8">
-                             <div className="flex justify-between text-xs font-mono text-gray-400">
-                                <span>SIGNAL INTENSITY (x)</span>
-                                <span className={signalIntensity > 15 && !compressionActive ? 'text-red-500 animate-pulse' : 'text-cyan-500'}>
-                                    {signalIntensity} {signalIntensity > 15 && !compressionActive && '⚠️'}
-                                </span>
-                             </div>
-                             <input 
-                                type="range" min="1" max="50" step="1" 
-                                value={signalIntensity} 
-                                onChange={(e) => setSignalIntensity(parseInt(e.target.value))}
-                                className={`w-full h-1 rounded-lg appearance-none cursor-pointer hover:opacity-100 opacity-80 transition-opacity ${isStabilized ? 'bg-gray-800 accent-cyan-500' : 'bg-red-900/50 accent-red-500'}`}
-                            />
-                        </div>
-
-                        {/* Compression Toggle */}
-                        <div className={`flex items-center justify-between p-4 rounded border transition-colors duration-300 ${compressionActive ? 'bg-cyan-900/20 border-cyan-500/30' : 'bg-[#0a0a0a] border-white/5'}`}>
-                             <div className="space-y-1">
-                                <span className={`block text-xs font-bold ${compressionActive ? 'text-cyan-400' : 'text-gray-300'}`}>
-                                    LOGARITHMIC COMPRESSION
-                                </span>
-                                <span className="block text-[10px] text-gray-500">Scale: log₁₀(x)</span>
-                             </div>
-                             <button 
-                                onClick={() => setCompressionActive(!compressionActive)}
-                                className={`w-12 h-6 rounded-full p-1 transition-colors duration-300 ease-in-out ${compressionActive ? 'bg-cyan-600' : 'bg-gray-800'}`}
-                             >
-                                <div className={`w-4 h-4 rounded-full bg-white shadow-md transform transition-transform duration-300 ease-in-out ${compressionActive ? 'translate-x-6' : 'translate-x-0'}`}></div>
-                             </button>
-                        </div>
-                    </div>
-
-                    {/* Metrics */}
-                    <div className="relative z-10 pt-6 border-t border-white/5 space-y-3">
-                        <div className="flex justify-between items-center text-xs font-mono">
-                            <span className="text-gray-500">ENTROPY LOAD</span>
-                            <span className={isStabilized ? 'text-green-500' : 'text-red-500 animate-pulse'}>
-                                {Math.min(systemLoad, 100).toFixed(1)}%
-                            </span>
-                        </div>
-                        <div className="h-1 w-full bg-gray-900 rounded-full overflow-hidden">
-                            <div 
-                                className={`h-full transition-all duration-300 ${isStabilized ? 'bg-cyan-500' : 'bg-red-500'}`}
-                                style={{ width: `${Math.min(systemLoad, 100)}%` }}
-                            ></div>
-                        </div>
-                        <div className="text-[10px] text-gray-600 font-mono mt-2">
-                             MAGNITUDE: 2^{signalIntensity} ≈ 10^{ (signalIntensity * 0.301).toFixed(2) }
-                        </div>
+            {/* Sidebar Controls */}
+            <div className="space-y-6">
+                
+                {/* Mission Card */}
+                <div className={`p-4 border-l-2 rounded-r bg-[#0a0a0a] ${isStabilized ? 'border-rose-500' : 'border-red-500 animate-pulse'}`}>
+                    <div className="text-[10px] text-gray-500 uppercase tracking-widest mb-1">Current Objective</div>
+                    <div className="text-sm font-bold text-white mb-2">{PROTOCOLS[level as keyof typeof PROTOCOLS]?.title}</div>
+                    <div className="text-xs text-gray-400 font-mono mb-4">{PROTOCOLS[level as keyof typeof PROTOCOLS]?.mission}</div>
+                    <div className="text-[10px] px-2 py-1 bg-white/10 inline-block rounded text-rose-400">
+                        TARGET: {PROTOCOLS[level as keyof typeof PROTOCOLS]?.target}
                     </div>
                 </div>
 
-                {/* System Log / Lore */}
-                <div className="bg-[#111] p-6 rounded border border-white/10 text-xs text-gray-400 leading-relaxed font-mono h-48 overflow-y-auto custom-scrollbar">
-                    <p className="mb-4 text-gray-500 border-b border-white/5 pb-2">SYSTEM LOG // {new Date().toLocaleDateString()}</p>
+                {/* Controls */}
+                <div className="p-6 border border-white/10 bg-[#111] rounded space-y-8">
                     
-                    {!compressionActive && signalIntensity <= 15 && (
-                        <p>
-                            <span className="text-green-500">[NOMINAL]</span> Signal intensity within linear tolerance limits. Exponential growth is observable but contained.
-                        </p>
-                    )}
-                    
-                    {!compressionActive && signalIntensity > 15 && (
-                        <div className="space-y-2">
-                            <p className="text-red-500 animate-pulse">[CRITICAL] ENTROPY RUNAWAY DETECTED.</p>
-                            <p>Linear visualization failing. Magnitude exceeding screen buffer (2^{signalIntensity}).</p>
-                            <p>RECOMMENDATION: Engage Logarithmic Compression immediately.</p>
+                    {/* Slider */}
+                    <div className="space-y-2">
+                        <div className="flex justify-between text-xs font-mono text-gray-400">
+                            <span>INPUT INTENSITY</span>
+                            <span className={!isStabilized ? 'text-red-500 font-bold' : 'text-rose-400'}>{signalIntensity}</span>
                         </div>
-                    )}
+                        <input 
+                            type="range" min="1" max={compressionActive ? "60" : "20"} step="1"
+                            value={signalIntensity}
+                            onChange={(e) => setSignalIntensity(Number(e.target.value))}
+                            className={`w-full h-1 appearance-none cursor-pointer rounded ${isStabilized ? 'bg-gray-800 accent-rose-500' : 'bg-red-900 accent-red-600'}`}
+                        />
+                        <div className="flex justify-between text-[10px] text-gray-600">
+                            <span>1</span>
+                            <span>{compressionActive ? 'INF' : 'FAIL_POINT'}</span>
+                        </div>
+                    </div>
 
-                    {compressionActive && (
-                        <div className="space-y-2">
-                            <p className="text-cyan-500">[ACTIVE] LOGARITHMIC SCALE ENGAGED.</p>
-                            <p>Explosion contained. Exponential curve ($2^x$) mapped to linear trajectory ($y = x \cdot \log 2$).</p>
-                            <p>System stability restored. Massive magnitudes ($10^{15}$) now renderable.</p>
+                    {/* Toggle */}
+                    <div className={`flex items-center justify-between p-4 rounded border transition-all ${level < 3 ? 'opacity-50 cursor-not-allowed' : 'opacity-100'} ${compressionActive ? 'bg-rose-900/20 border-rose-500/50' : 'bg-black border-white/10'}`}>
+                        <div className="space-y-1">
+                            <span className="block text-xs font-bold text-gray-300">LOG MODE</span>
+                            <span className="block text-[10px] text-gray-600">COMPRESSION ALGORITHM</span>
                         </div>
-                    )}
-                </div>
-            </div>
-            
-            {/* Viewport */}
-            <div className={`w-full lg:w-2/3 bg-[#050505] rounded border transition-colors duration-300 ${isStabilized ? 'border-white/10' : 'border-red-500/50 shadow-[0_0_50px_rgba(255,0,0,0.2)]'} p-1 flex justify-center items-center overflow-hidden relative min-h-[500px]`}>
-                
-                <canvas ref={canvasRef} width={800} height={500} className="w-full h-auto max-w-full z-10" />
-                
-                {/* Glitch Overlay */}
-                {glitchActive && (
-                    <>
-                        <div className="absolute inset-0 bg-red-900/10 mix-blend-overlay pointer-events-none z-20"></div>
-                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-30">
-                            <div className="bg-black/80 border border-red-500 text-red-500 px-8 py-4 font-bold tracking-[0.2em] text-xl animate-pulse shadow-2xl">
-                                SIGNAL LOST
+                        <button 
+                            onClick={() => level >= 3 && setCompressionActive(!compressionActive)}
+                            disabled={level < 3}
+                            className={`w-10 h-5 rounded-full p-1 transition-colors ${compressionActive ? 'bg-rose-500' : 'bg-gray-800'}`}
+                        >
+                            <div className={`w-3 h-3 rounded-full bg-white transition-transform ${compressionActive ? 'translate-x-5' : 'translate-x-0'}`}></div>
+                        </button>
+                    </div>
+
+                    {/* System Log */}
+                    <div className="h-32 overflow-hidden border-t border-white/10 pt-4 flex flex-col-reverse text-[10px] font-mono text-gray-500 gap-1">
+                        {systemLogs.map((log, i) => (
+                            <div key={i} className="text-rose-500/70">
+                                <span className="text-gray-700 mr-2">[{new Date().toLocaleTimeString()}]</span>
+                                {log}
                             </div>
-                        </div>
-                    </>
-                )}
+                        ))}
+                    </div>
+
+                </div>
             </div>
+
+            {/* Visualizer */}
+            <div className="lg:col-span-2 border border-white/10 bg-black relative shadow-[0_0_50px_rgba(244,63,94,0.05)]">
+                <div className="absolute top-2 left-2 text-[10px] text-white/20">VIEWPORT_01 // ENTROPY_VISUALIZER</div>
+                {glitchActive && (
+                    <div className="absolute inset-0 z-20 flex items-center justify-center bg-red-900/20 backdrop-blur-[2px]">
+                        <div className="text-4xl font-black text-red-500 tracking-[0.5em] animate-pulse">SYSTEM OVERLOAD</div>
+                    </div>
+                )}
+                <canvas ref={canvasRef} width={800} height={600} className="w-full h-full object-contain" />
+            </div>
+
         </main>
     </div>
   );

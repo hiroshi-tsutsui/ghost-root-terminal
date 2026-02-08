@@ -260,3 +260,10 @@ We are moving from a "Tool" to a "Platform".
   - **Dashboard:** Updated status from OFFLINE to ONLINE.
   - **Narrative:** Completed the user journey from "The Pivot" -> "The Spiral" -> "The Mirror" -> "Codex Decryption".
   - **Goal:** Ensure the "Void Phase" protocol feels like a complete Operator mission.
+
+- **[2026-02-08] Refinement: Logs (Entropy Compressor) - 3-Phase Protocol Implemented**
+  - **Action:** Evolved `page.tsx` to include `PROTOCOLS` state machine.
+  - **Narrative:** Implemented "Linear Observation" -> "Boundary Failure" -> "Logarithmic Containment".
+  - **Mechanics:** User must trigger the "Crash" to unlock the Log Mode (Compression).
+  - **Visuals:** Added Glitch effects on failure and "Protocol Complete" modal for File 009.
+  - **Goal:** Visually demonstrate why Log scales are necessary for infinite growth.
