@@ -384,7 +384,7 @@ export default function VectorsPage() {
                     onClick={() => handleLevelComplete(4)} 
                     className="mt-4 border border-cyan-500/30 text-cyan-400 px-6 py-3 text-xs hover:bg-cyan-500 hover:text-black transition-all uppercase tracking-widest bg-cyan-900/10"
                  >
-                    {t('modules.data.completion.synced') || "SYNC COMPLETE"}
+                    {t('modules.vectors.completion.synced') || "SYNC COMPLETE"}
                  </button>
             )}
         </section>
