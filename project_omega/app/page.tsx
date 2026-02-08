@@ -185,11 +185,11 @@ export default function Home() {
           {/* Header Section */}
           <div className="flex flex-col md:flex-row justify-between items-end border-b border-white/10 pb-8 gap-8">
             <div className="space-y-4">
-               <h1 className="text-6xl md:text-8xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-500">
-                  OMEGA
+               <h1 className="text-4xl md:text-6xl lg:text-8xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-500 whitespace-nowrap">
+                  {t('common.app_title')}
                </h1>
                <div className="flex items-center gap-4">
-                  <span className="text-xs px-2 py-0.5 border border-white/20 text-white/50 uppercase tracking-widest">System v2.6.0</span>
+                  <span className="text-xs px-2 py-0.5 border border-white/20 text-white/50 uppercase tracking-widest">System v2.7.0</span>
                   <span className="text-xs text-green-500 animate-pulse">● SERVERS ONLINE</span>
                </div>
             </div>
@@ -294,7 +294,7 @@ export default function Home() {
           </div>
 
           <footer className="pt-12 border-t border-white/10 text-center text-[10px] text-white/20 uppercase tracking-[0.3em]">
-              Project Omega // The Simulation // End of Line
+              {t('common.app_title')} // {t('common.app_subtitle')} // End of Line
           </footer>
 
       </div>

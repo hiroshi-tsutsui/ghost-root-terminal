@@ -1,5 +1,7 @@
 {
   "common": {
+    "app_title": "プロジェクト・オメガ",
+    "app_subtitle": "シミュレーション",
     "back_root": "← OMEGA_ROOT",
     "protocol": "PROTOCOL",
     "level": "LEVEL",
@@ -162,7 +164,12 @@
                 "cross": "外積 (回転軸)",
                 "angle": "角度 (Deg)",
                 "show_plane": "平面を可視化",
-                "show_comp": "成分を表示"
+                "show_comp": "成分を表示",
+                "main_thruster": "メインスラスター",
+                "stabilizer": "スタビライザー",
+                "sensor_active": "センサーアレイ作動中",
+                "system_log_label": "システムログ",
+                "viewport_hint": "ビューポート_01 // ドラッグして回転"
             },
             "viewport": "SIMULATION_VIEWPORT"
         },

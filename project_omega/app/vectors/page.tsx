@@ -264,7 +264,7 @@ export default function VectorsPage() {
                     
                     {/* Inputs */}
                     <div className="bg-white/5 p-4 border border-white/10 relative group">
-                        <div className="absolute top-0 right-0 p-1 text-[9px] text-white/10 group-hover:text-cyan-500 transition-colors">MAIN_THRUSTER</div>
+                        <div className="absolute top-0 right-0 p-1 text-[9px] text-white/10 group-hover:text-cyan-500 transition-colors">{t('modules.vectors.viz.controls.main_thruster')}</div>
                         <label className="text-[10px] text-white/40 block mb-2 tracking-widest">{t('modules.vectors.viz.controls.vec_a')}</label>
                         <div className="grid grid-cols-3 gap-2">
                             {['x', 'y', 'z'].map((axis, i) => (
@@ -275,7 +275,7 @@ export default function VectorsPage() {
                     </div>
                     
                     <div className="bg-white/5 p-4 border border-white/10 relative group">
-                        <div className="absolute top-0 right-0 p-1 text-[9px] text-white/10 group-hover:text-red-500 transition-colors">STABILIZER</div>
+                        <div className="absolute top-0 right-0 p-1 text-[9px] text-white/10 group-hover:text-red-500 transition-colors">{t('modules.vectors.viz.controls.stabilizer')}</div>
                         <label className="text-[10px] text-white/40 block mb-2 tracking-widest">{t('modules.vectors.viz.controls.vec_b')}</label>
                         <div className="grid grid-cols-3 gap-2">
                             {['x', 'y', 'z'].map((axis, i) => (
@@ -287,7 +287,7 @@ export default function VectorsPage() {
 
                     {/* Stats & Log */}
                     <div className="flex-1 bg-black border border-white/10 p-4 font-mono text-xs flex flex-col relative">
-                         <div className="absolute top-2 right-2 text-[9px] text-white/20">SENSOR_ARRAY_ACTIVE</div>
+                         <div className="absolute top-2 right-2 text-[9px] text-white/20">{t('modules.vectors.viz.controls.sensor_active')}</div>
                          <div className="border-b border-white/10 pb-2 mb-2 text-white/30 tracking-widest">{t('modules.vectors.viz.controls.telemetry')}</div>
                          
                          <div className="space-y-2 mb-4">
@@ -314,7 +314,7 @@ export default function VectorsPage() {
                          {/* System Log */}
                          <div className="flex-1 border-t border-white/10 pt-2 overflow-hidden flex flex-col bg-white/5 p-2 rounded-sm">
                              <div className="text-[9px] text-white/30 mb-1 flex justify-between">
-                                 <span>SYSTEM_LOG</span>
+                                 <span>{t('modules.vectors.viz.controls.system_log_label')}</span>
                                  <span className="text-green-500/50">{t('common.live')}</span>
                              </div>
                              <div className="flex-1 overflow-y-auto custom-scrollbar space-y-1">

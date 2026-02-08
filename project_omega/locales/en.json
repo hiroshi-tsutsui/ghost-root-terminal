@@ -1,5 +1,7 @@
 {
   "common": {
+    "app_title": "PROJECT OMEGA",
+    "app_subtitle": "THE SIMULATION",
     "back_root": "← OMEGA_ROOT",
     "protocol": "PROTOCOL",
     "level": "LEVEL",
@@ -162,7 +164,12 @@
                 "cross": "CROSS PROD (Torque)",
                 "angle": "ANGLE (Deg)",
                 "show_plane": "VISUALIZE PLANE",
-                "show_comp": "SHOW COMPONENTS"
+                "show_comp": "SHOW COMPONENTS",
+                "main_thruster": "MAIN_THRUSTER",
+                "stabilizer": "STABILIZER",
+                "sensor_active": "SENSOR_ARRAY_ACTIVE",
+                "system_log_label": "SYSTEM_LOG",
+                "viewport_hint": "VIEWPORT_01 // DRAG TO ROTATE"
             },
             "viewport": "SIMULATION_VIEWPORT"
         },

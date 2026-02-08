@@ -9,8 +9,8 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const notoSansJP = Noto_Sans_JP({ subsets: ["latin"], weight: ["400", "500", "700"], variable: "--font-noto-sans-jp" });
 
 export const metadata: Metadata = {
-  title: "Project Omega | The Simulation",
-  description: "Synchronize with the source code of reality. Welcome to the Omega Protocol.",
+  title: "プロジェクト・オメガ | シミュレーション",
+  description: "現実のソースコードと同期せよ。オメガ・プロトコルへようこそ。",
 };
 
 export default function RootLayout({
