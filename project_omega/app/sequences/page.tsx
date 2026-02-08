@@ -31,7 +31,7 @@ export default function SequencesPage() {
   const [d, setD] = useState(1);  
   const [r, setR] = useState(1.1);
   
-  const [status, setStatus] = useState("STABLE");
+  const [status, setStatus] = useState("status_stable");
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {

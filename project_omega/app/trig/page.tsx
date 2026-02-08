@@ -305,7 +305,7 @@ export default function TrigPage() {
                                  <div className="text-right">
                                      <span className={`block text-xl font-bold ${resonance > 90 ? 'text-green-400 animate-pulse' : 'text-red-500'}`}>{resonance.toFixed(0)}%</span>
                                      <span className="text-[9px] text-white/30">
-                                         {resonance > 90 ? t('modules.trig.viz.status_locked') : t('modules.trig.viz.status_searching')}
+                                         {resonance > 90 ? t('modules.trig.viz.controls.status_locked') : t('modules.trig.viz.controls.status_searching')}
                                      </span>
                                  </div>
                              </div>
