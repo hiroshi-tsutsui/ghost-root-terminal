@@ -108,11 +108,11 @@ export default function CalculusPage() {
     // We use a timeout to let translations load if switching quickly
     setTimeout(() => {
         setLog([
-            `[SYSTEM] LEVEL 0${nextLvl}: ${t(`modules.calculus.levels.${nextLvl}.name`)}`,
+            `[SYSTEM] LEVEL 0${nextLvl}: ${t(`modules.calculus.levels.${nextLvl}.name`)} // ${t(`modules.calculus.levels.${nextLvl}.log_start`)}`,
             `[OP] ${t(`modules.calculus.levels.${nextLvl}.log_guide`)}`
         ]);
     }, 100);
-  }, [moduleProgress, t]); // Removed t from dependency to avoid loop if t changes? No, t is stable.
+  }, [moduleProgress, t]);
 
   const addLog = (msg: string) => {
       setLog(prev => [msg, ...prev].slice(0, 8));
