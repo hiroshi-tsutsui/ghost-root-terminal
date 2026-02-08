@@ -72,27 +72,27 @@ const LOCAL_CONTENT = {
         }
     },
     ja: {
-        title: "フラックス・エンジン",
+        title: "フラックス・エンジン (微積分)",
         levels: {
-            1: { name: "基礎 (Basics)", desc: "直感：速度と距離の関係。" },
-            2: { name: "理論 (Theory)", desc: "極限と蓄積。" },
-            3: { name: "可視化 (Viz)", desc: "変化の可視化。" },
-            4: { name: "応用 (Apply)", desc: "実世界でのダイナミクス。" }
+            1: { name: "基礎 (Basics)", desc: "直感：変化のスピードと蓄積。" },
+            2: { name: "理論 (Logic)", desc: "極限と無限の和。" },
+            3: { name: "可視化 (Viz)", desc: "フラックス・エンジンの起動。" },
+            4: { name: "応用 (Applications)", desc: "世界を記述する言語。" }
         },
         concepts: {
             title: "概念：変化の学問",
-            diff_title: "微分（傾き）",
-            diff_body: "<strong>瞬間の変化率</strong>を捉えます。車のスピードメーターは、その瞬間の「微分」（速度）を示しています。",
-            int_title: "積分（面積）",
-            int_body: "<strong>蓄積量</strong>を測定します。オドメーターは、時間の経過と共に蓄積された「積分」（総走行距離）を記録します。"
+            diff_title: "微分（瞬間の勢い）",
+            diff_body: "<strong>瞬間の変化率</strong>を捉えます。過去や未来ではなく、「今この瞬間」の勢い（Velocity）を数値化します。",
+            int_title: "積分（積み重なる成果）",
+            int_body: "<strong>蓄積量</strong>を測定します。瞬間の変化が積み重なって、最終的にどれだけの量（Distance/Total）になるかを計算します。"
         },
         theory: {
             title: "理論：無限の精度",
             def_title: "定義",
             derivative_term: "導関数 (Derivative)",
-            derivative_desc: "時間ステップ「h」を限りなくゼロに近づけることで、2点間の平均変化率が、1点における瞬間の変化率（接線の傾き）となります。",
+            derivative_desc: "時間ステップ「h」を限りなくゼロ（極限）に近づけることで、平均ではなく「瞬間」の傾きを厳密に定義します。",
             integral_term: "積分 (Integral)",
-            integral_desc: "曲線の下にある無限に小さな長方形の面積を足し合わせることで、総量（蓄積された面積）を導き出します。"
+            integral_desc: "無限に細分化された領域（長方形）の面積を足し合わせることで、曲線下の正確な総量を導き出します。"
         },
         viz: {
             title: "プロトコル：フラックス・エンジン",
@@ -105,7 +105,7 @@ const LOCAL_CONTENT = {
                 value: "位置 f(t)",
                 slope: "速度 f'(t)",
                 area: "距離 ∫f(x)dx",
-                enable_3d: "3Dマニホールド起動",
+                enable_3d: "3Dマニホールド起動 (回転体)",
                 disable_3d: "2D平面に戻る",
                 rotation_active: "軌道制御アクティブ"
             },
@@ -114,15 +114,15 @@ const LOCAL_CONTENT = {
         apps: {
             title: "応用：システムダイナミクス",
             physics_title: "物理エンジン",
-            physics_body: "ゲームや工学シミュレーションにおいて、物体の運動、力、衝突を計算するために必須です。",
+            physics_body: "ゲームやシミュレーションにおいて、物体の運動、衝突、流体の動きを計算する基盤技術です。",
             ml_title: "機械学習 (AI)",
-            ml_body: "勾配降下法（Gradient Descent）は、微分を用いてAIモデルの誤差（Loss）を最小化する方向を探ります。",
-            econ_title: "経済学",
-            econ_body: "限界費用や限界収益を分析し、変動する市場環境における利益の最大化を行います。"
+            ml_body: "AIの学習（Backpropagation）は、微分の連鎖律（Chain Rule）そのものです。誤差を最小化するために「下るべき坂の方向」を計算します。",
+            econ_title: "経済・最適化",
+            econ_body: "コストの最小化や利益の最大化。変化する環境の中で「最適なポイント」を見つけるために使われます。"
         },
         completion: {
             synced: "モジュール同期完了",
-            msg: "「変化の言語」を習得しました。フラックス・エンジン、オンライン。"
+            msg: "「変化の言語」を習得しました。フラックス・エンジン、正常稼働中。"
         }
     }
 };
