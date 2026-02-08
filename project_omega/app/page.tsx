@@ -169,6 +169,15 @@ export default function Home() {
                     </div>
                 </div>
 
+                {calibration?.status === 'COMPLETED' && (
+                    <div className="flex justify-between items-center mb-4 pb-4 border-b border-white/5">
+                        <span className="text-[10px] text-gray-500 uppercase tracking-widest">Calibration Rating</span>
+                        <span className={`font-mono font-bold ${calibration.rate >= 90 ? 'text-cyan-400' : 'text-white'}`}>
+                            {calibration.rate.toFixed(1)}%
+                        </span>
+                    </div>
+                )}
+
                 <div className="w-full h-1 bg-white/10 overflow-hidden mb-4">
                     <div className="h-full bg-white transition-all duration-1000" style={{ width: `${syncRate}%` }}></div>
                 </div>

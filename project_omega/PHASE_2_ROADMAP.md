@@ -227,3 +227,9 @@ We are moving from a "Tool" to a "Platform".
   - **Action:** Updated Main Dashboard (`app/page.tsx`) to include direct access to "Mission Briefing" (`/overview`) and "System Logs" (`/codex`).
   - **Narrative:** The "Operator Card" now serves as the central navigation hub for the user's career.
   - **Goal:** Ensure every user starts with "The Awakening" manifesto.
+
+- **[2026-02-08] Refinement: Hub (Operator Card)**
+  - **Status:** Deployed.
+  - **Action:** Integrated "Calibration Rating" into the main Operator Card.
+  - **Narrative:** Users who pass "The Gauntlet" now see their Calibration Score on the main dashboard.
+  - **Goal:** Unify the "Entrance Exam" (Quiz) with the "Ongoing Mission" (Modules).
