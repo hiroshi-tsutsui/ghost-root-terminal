@@ -104,11 +104,6 @@ export default function CalculusPage() {
     ]);
   }, [moduleProgress, t]);
 
-  // Update log on language change
-  useEffect(() => {
-     // Re-trigger log update slightly differently or just let the user see new logs in new lang
-  }, [locale]);
-
   const addLog = (msg: string) => {
       setLog(prev => [msg, ...prev].slice(0, 8));
   };
@@ -321,7 +316,7 @@ export default function CalculusPage() {
                  [{locale.toUpperCase()}]
              </button>
             <div className="text-xs text-white/40">
-                {t(`modules.calculus.levels.${currentLevel}.name`)}
+                {t('common.level')} 0{currentLevel} // {t(`modules.calculus.levels.${currentLevel}.name`)}
             </div>
          </div>
       </header>
@@ -347,7 +342,7 @@ export default function CalculusPage() {
                 <div className="mt-4 p-4 bg-cyan-900/10 border border-cyan-500/30 text-cyan-400 text-xs animate-pulse">
                      {`>>`} {t(`modules.calculus.levels.1.desc`)}
                      <br/>
-                     <span className="text-white/60">{t('modules.calculus.viz.viewport_label')}</span>
+                     <span className="text-white/60">{t('modules.calculus.levels.1.log_guide')}</span>
                 </div>
             )}
         </section>
