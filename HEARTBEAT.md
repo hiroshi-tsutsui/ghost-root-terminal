@@ -6,9 +6,31 @@
 - [x] Download V11 Results (`~/Downloads/yolo-gcp/eagle/infer/output/v11_depth_fusion_experiment/`). (Status: DONE).
 - [x] Monitor Batch Job V12 Resume (`v12-depth-only-experiment-resume-001`). (Status: SUCCEEDED - 701 Videos Generated).
 - [x] Download V12 Results (`~/Downloads/yolo-gcp/eagle/infer/output/v12_depth_only_experiment/`). (Status: DONE).
-- [ ] Monitor Batch Job V13 Lite (`v13-depth-real-lite-test`). (Status: RUNNING - 292 Videos Generated).
+- [x] Monitor Batch Job V13 Lite (`v13-depth-real-lite-test`). (Status: KILLED - 292 Videos).
 - [x] Download V13 Lite Samples (`~/Downloads/yolo-gcp/eagle/infer/output/v13_depth_real_lite/`). (Status: DONE).
-- [x] Monitor Sub-agent: `omega-wanda-mobile-polish`. (Status: COMPLETED).
-- [ ] Monitor Sub-agent: `omega-director`. (Status: ACTIVE - Building 'Logs' Module).
-- [x] Verify Project Omega Deployment (`https://projectomega-tau.vercel.app`). (Status: LIVE - FIXED).
-- [x] Pivot Project Omega to Full Syllabus (Vectors, Calculus, Probability). (Status: DONE).
+- [x] Monitor Batch Job V14 Lite (`v14-depth-real-lite`). (Status: KILLED - Wrong Model).
+- [x] Monitor Batch Job V15 Lite (`v15-depth-real-lite`). (Status: KILLED - 52 Videos - Calibration Issue).
+- [x] Monitor Batch Job V16 Viz (`job-v16-real-viz-001`). (Status: SUCCEEDED - 10 Tasks Complete - Cloud Batch).
+- [x] Monitor Sub-agent: `omega-tony-pedagogy-2`. (Status: COMPLETE - Data Module Localized).
+- [x] Monitor Sub-agent: `omega-tony-calculus`. (Status: COMPLETE - Calculus Module Localized).
+- [x] Monitor Sub-agent: `omega-tony-vectors`. (Status: COMPLETE - Vectors Module Localized).
+- [x] Monitor Sub-agent: `omega-tony-trig`. (Status: COMPLETE - Trig Module Localized).
+- [x] Monitor Sub-agent: `omega-tony-sequences`. (Status: COMPLETE - Sequences Module Localized).
+- [x] Monitor Sub-agent: `omega-cto-game-architect`. (Status: COMPLETE - Web Port Ready & Deployed).
+- [x] Verify Project Omega Deployment (`https://projectomega-tau.vercel.app`). (Status: LIVE - Japanese Localized).
+  - [x] Action: Fix webpack error in `locales/ja.json` (Commit: `edc3b79`).
+- [x] Pivot Project Omega to Japanese/Pedagogy (Manual Override - Data/Calculus/Vectors/Trig/Sequences Live).
+- [x] Notify User: V16 Download Complete (`~/Downloads/yolo-gcp/eagle/infer/output/v16_depth_viz/`).
+- [ ] Execute Option C: Retrain Main YOLO (Hard Negative Mining).
+  - [x] Action: Cleaned up extraction files.
+  - [x] Action: Reverted `job_following_distance_infer.json`.
+  - [x] Action: Re-running `script.sh` (Build/Push/Submit).
+  - [x] Action: Monitor New Job (ID: `following-distance-infer-fp-jan19-feb5-v5-20260208-150922`) - SUCCEEDED (Wrong Input).
+  - [x] Action: **CORRECTED** Input Path (`gs://yolo-gcp/eagle/infer/input/labeled/following_distance_fp_Jan19_Feb5/`).
+  - [x] Action: Monitor Corrected Job (ID: `following-distance-infer-fp-jan19-feb5-v6-20260208`) - SUCCEEDED.
+  - [x] Action: **SMART SEARCH** Launch Probes (Failed/Skipped).
+  - [x] Action: Extract "Danger" Set (518 Videos) for Retraining.
+  - [x] Action: Monitor High Precision Job (`fd-infer-high-prec-v1`) - FAILED.
+  - [x] Action: Monitor Pipeline Job (`following-distance-infer-fp-jan19-feb5-v6-20260208-fix`) - SUCCEEDED.
+  - [ ] Action: Launch **True Positive Validation** (`seino_following_distance_true`).
+- [x] Cleanup: Removed `math-viz-japan/experiments` and consolidated repo.
