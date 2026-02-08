@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { useProgress } from '../contexts/ProgressContext'; // Adjust path if needed
+import { useProgress } from '../contexts/ProgressContext';
+import { SoundEngine } from '../utils/SoundEngine';
 
 export default function TrigPage() {
   const { completeLevel, moduleProgress } = useProgress();
@@ -12,6 +13,10 @@ export default function TrigPage() {
   const [level, setLevel] = useState(1); // 1, 2, 3
   const [levelComplete, setLevelComplete] = useState(false);
   const [missionComplete, setMissionComplete] = useState(false);
+
+  // --- AUDIO STATE ---
+  const soundRef = useRef<SoundEngine | null>(null);
+  const [isMuted, setIsMuted] = useState(true);
 
   // --- WAVE PARAMETERS ---
   const [angle, setAngle] = useState(0); 
@@ -32,6 +37,9 @@ export default function TrigPage() {
 
   // --- INITIALIZATION ---
   useEffect(() => {
+    // Sound Init
+    soundRef.current = new SoundEngine();
+    
     // Determine start level based on progress
     const completed = progress?.completedLevels || [];
     if (completed.includes(1) && completed.includes(2)) setLevel(3);
@@ -39,7 +47,19 @@ export default function TrigPage() {
     else setLevel(1);
     
     startLevel(completed.includes(1) ? (completed.includes(2) ? 3 : 2) : 1);
+
+    return () => {
+        if (soundRef.current) soundRef.current.stop();
+    };
   }, []);
+
+  const toggleMute = () => {
+      if (soundRef.current) {
+          const muted = soundRef.current.toggleMute();
+          setIsMuted(muted);
+          if (!muted) soundRef.current.start();
+      }
+  };
 
   const startLevel = (lvl: number) => {
     setLevel(lvl);
@@ -116,6 +136,15 @@ export default function TrigPage() {
       } else if (!levelComplete) {
           if (score > 70) setLogMessage("APPROACHING HARMONIC SYNC... [Keep Tuning]");
           else setLogMessage("SIGNAL DISSONANCE DETECTED. REALITY WAVE UNSTABLE.");
+      }
+
+      // Update Audio Engine
+      if (soundRef.current && !levelComplete) {
+          soundRef.current.update({
+              targetFreq, playerFreq: frequency,
+              targetAmp, playerAmp: amplitude,
+              resonance: score
+          });
       }
 
       draw(t);
@@ -234,6 +263,12 @@ export default function TrigPage() {
                  <h1 className="text-xl font-bold tracking-widest text-white">PROTOCOL: HARMONIC_SYNC</h1>
              </div>
              <div className="flex items-center gap-4">
+                 <button 
+                     onClick={toggleMute}
+                     className={`px-3 py-1 text-xs font-mono border rounded transition-colors ${!isMuted ? 'text-green-400 border-green-500 hover:bg-green-900/30 animate-pulse' : 'text-gray-500 border-gray-700 hover:text-gray-300'}`}
+                 >
+                     {isMuted ? 'AUDIO: OFF' : 'AUDIO: ON'}
+                 </button>
                  <div className="hidden md:flex gap-1">
                     {[1,2,3].map(l => (
                         <div key={l} className={`h-2 w-8 rounded-full ${level >= l ? (levelComplete && level === l ? 'bg-green-400' : 'bg-green-600') : 'bg-gray-800'}`}></div>
