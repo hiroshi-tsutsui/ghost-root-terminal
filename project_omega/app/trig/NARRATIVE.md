@@ -1,36 +1,43 @@
-# NARRATIVE: HARMONIC RESONANCE TUNER (TRIGONOMETRY)
+# PROTOCOL: HARMONIC RESONANCE TUNER (Trigonometry)
 
-## Identity
-- **Module Name:** Harmonic Resonance Tuner
-- **Operator Role:** Waveform Synchronizer
-- **Core Concept:** "The universe vibrates. To understand the frequency is to control the reality."
+## MISSION BRIEFING
+**CLEARANCE LEVEL:** 3 (OPERATOR)
+**OBJECTIVE:** STABILIZE THE REALITY WAVEFORM.
+**TARGET:** ELIMINATE DISSONANCE via HARMONIC ALIGNMENT.
 
-## The Lore
-All matter in the Omega Simulation is composed of interfering waves. The **Harmonic Resonance Tuner** allows the Operator to manipulate the fundamental properties of these waves (Amplitude, Frequency, Phase) to stabilize reality distortions.
+## THE LORE
+The Omega Simulation relies on a carrier wave to maintain coherence. Fluctuations in the "Void" cause this wave to drift, creating "Reality Static" (glitches, time skips).
+As an Operator, you must use the **Harmonic Resonance Tuner** to match the drift and cancel it out via destructive interference (or constructive alignment, depending on the phase).
 
-A "Signal Dissonance" occurs when the local reality wave is out of phase with the Universal Carrier Wave. The Operator must tune the local wave to match the Carrier Wave to restore stability.
+---
 
-## Operator Objectives
-1.  **Match the Amplitude (Energy):**
-    - *Task:* Adjust the height of the wave.
-    - *Meaning:* modulate the intensity of the reality projection.
+## MISSION PHASES (Levels)
 
-2.  **Tune the Frequency (Time):**
-    - *Task:* Adjust the speed of oscillation.
-    - *Meaning:* Synchronize with the temporal flow of the simulation.
+### PHASE 1: ENERGY SYNCHRONIZATION (Amplitude)
+**"The signal is faint. Boost the gain."**
+- **Intel:** The wave's height represents its Energy State.
+- **Task:** Match the Target Amplitude ($A$).
+- **Constraint:** Frequency and Phase are locked.
+- **Operator Note:** "Too weak, and we lose signal. Too strong, and we overload the buffer."
 
-3.  **Align the Phase (Shift):**
-    - *Task:* Shift the wave left or right.
-    - *Meaning:* Align the causality of events (Cause matches Effect).
+### PHASE 2: TEMPORAL HARMONICS (Frequency)
+**"The timeline is drifting. Recalibrate the clock."**
+- **Intel:** The wave's speed (cycles) represents Time Flow.
+- **Task:** Match the Target Frequency ($B$).
+- **Constraint:** Phase is locked. Amplitude is variable.
+- **Operator Note:** "High frequency means time accelerates. Low frequency means stagnation."
 
-## Unlockable Fragments
-> "A circle is just a wave viewed from the front. A wave is just a circle viewed from the side. Perspective defines existence."
-> — *The Architect's Journal, Entry 314*
+### PHASE 3: REALITY DISPLACEMENT (Phase Shift)
+**"We are out of sync with the present. Shift the phase."**
+- **Intel:** The wave's horizontal position represents Reality Alignment.
+- **Task:** Match the Target Phase Shift ($C$).
+- **Constraint:** All parameters unlocked. Full manual control.
+- **Operator Note:** "A 180-degree shift cancels the noise. A 360-degree shift is a full loop."
 
-> "When the phase is aligned, the noise vanishes. That is the moment of clarity. That is Omega."
-> — *Operator 7*
+---
 
-## UI/UX Flavor
-- **Success:** "RESONANCE LOCKED. HARMONY RESTORED."
-- **Failure:** "SIGNAL DISSONANCE CRITICAL."
-- **Hint:** "Consulting Carrier Wave Schematics..."
+## VICTORY CONDITION
+**"RESONANCE LOCKED [100%]"**
+- The waveform stabilizes (turns Green/Gold).
+- The "System Log" confirms "Reality Coherence Restored".
+- **Reward:** Protocol Mastery + "Harmonic Tuner" Badge.
