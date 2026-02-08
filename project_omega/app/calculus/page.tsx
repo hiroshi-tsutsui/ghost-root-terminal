@@ -58,7 +58,7 @@ export default function CalculusPage() {
   const [currentLevel, setCurrentLevel] = useState(1);
   const [showUnlock, setShowUnlock] = useState(false);
   const [log, setLog] = useState<string[]>([]);
-
+  
   // --- Flux Engine State ---
   const [xVal, setXVal] = useState(1);
   const [funcStr, setFuncStr] = useState("0.5*x^3 - 2*x");
@@ -77,9 +77,10 @@ export default function CalculusPage() {
     setCurrentLevel(nextLvl);
     
     // Initialize Log
-    if (nextLvl === 3) {
-        setLog([`[SYSTEM] ${t('modules.calculus.viz.log_start')}`, `[OP] ${t('modules.calculus.viz.log_guide')}`]);
-    }
+    setLog([
+        `[SYSTEM] LEVEL 0${nextLvl}: ${t(`modules.calculus.levels.${nextLvl}.name`)}`,
+        `[OP] ${t(`modules.calculus.levels.${nextLvl}.desc`)}`
+    ]);
   }, [moduleProgress, locale]);
 
   const addLog = (msg: string) => {
@@ -89,11 +90,12 @@ export default function CalculusPage() {
   const handleLevelComplete = (lvl: number) => {
       completeLevel(MODULE_ID, lvl);
       setShowUnlock(true);
+      addLog(`[SUCCESS] LEVEL 0${lvl} COMPLETE`);
   };
 
   const handleNextLevel = () => {
     setShowUnlock(false);
-    // Logic handled by effect
+    // Progression logic handled by effect on moduleProgress
   };
 
   // --- Math Helpers ---
@@ -138,6 +140,8 @@ export default function CalculusPage() {
     const centerY = height / 2;
 
     ctx.clearRect(0, 0, width, height);
+    ctx.fillStyle = '#050505';
+    ctx.fillRect(0, 0, width, height);
 
     try {
         math.evaluate(funcStr, { x: 0 });
@@ -185,6 +189,8 @@ export default function CalculusPage() {
     // Function Curve
     ctx.strokeStyle = '#0071e3';
     ctx.lineWidth = 3;
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = '#0071e3';
     ctx.beginPath();
     let first = true;
     for (let pixelX = 0; pixelX < width; pixelX++) {
@@ -197,6 +203,7 @@ export default function CalculusPage() {
       else { ctx.lineTo(pixelX, pixelY); }
     }
     ctx.stroke();
+    ctx.shadowBlur = 0;
 
     // Tangent Line
     const yVal = evaluateFunc(funcStr, xVal);
@@ -228,7 +235,7 @@ export default function CalculusPage() {
   const currentSlope = evaluateDerivative(funcStr, xVal);
   const currentIntegral = integrate(funcStr, xVal);
 
-  // Check Win Condition
+  // Check Win Condition (Only on Level 3)
   useEffect(() => {
       if (currentLevel === 3 && Math.abs(currentIntegral) > targetAccumulation) {
           handleLevelComplete(3);
@@ -237,9 +244,9 @@ export default function CalculusPage() {
 
   const presets = [
     { label: "PARABOLA", val: "0.5*x^3 - 2*x" },
-    { label: "SINE WAVE", val: "sin(x)" },
-    { label: "EXPONENTIAL", val: "exp(x)" },
-    { label: "LOGARITHM", val: "log(x)" }
+    { label: "SINE", val: "sin(x)" },
+    { label: "EXP", val: "exp(x)" },
+    { label: "LOG", val: "log(x)" }
   ];
 
   return (
@@ -258,7 +265,7 @@ export default function CalculusPage() {
                  [{locale.toUpperCase()}]
              </button>
             <div className="text-xs text-white/40">
-                {t('modules.calculus.viz.target')} 0{currentLevel} // {t(`modules.calculus.levels.${currentLevel}.name`)}
+                {t('common.level')} 0{currentLevel} // {t(`modules.calculus.levels.${currentLevel}.name`)}
             </div>
          </div>
       </header>
@@ -281,8 +288,11 @@ export default function CalculusPage() {
                 </div>
             </div>
             {currentLevel === 1 && (
-                 <button onClick={() => handleLevelComplete(1)} className="mt-4 border border-cyan-500/30 text-cyan-400 px-4 py-2 text-xs hover:bg-cyan-900/20 transition-all uppercase tracking-widest">
-                    COMPLETE {t('common.level')} 01
+                 <button 
+                    onClick={() => handleLevelComplete(1)} 
+                    className="mt-4 border border-cyan-500/30 text-cyan-400 px-6 py-3 text-xs hover:bg-cyan-500 hover:text-black transition-all uppercase tracking-widest bg-cyan-900/10"
+                 >
+                    {t('modules.calculus.viz.log_start')} (INITIALIZE)
                  </button>
             )}
         </section>
@@ -294,19 +304,28 @@ export default function CalculusPage() {
             </h2>
             <div className="bg-white/5 border border-white/10 p-6 rounded-sm font-mono text-xs grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div>
-                     <div className="mb-4"><span className="text-white/40">{t('modules.calculus.theory.def_title')}</span> <span className="text-white">{t('modules.calculus.theory.derivative_term')}</span></div>
-                     <div className="text-xl tracking-widest text-cyan-400 mb-2">f'(x) = lim(h→0) [f(x+h) - f(x)] / h</div>
-                     <p className="text-white/50">{t('modules.calculus.theory.derivative_desc')}</p>
+                     <div className="mb-4 flex items-center gap-2">
+                        <span className="text-white/40">{t('modules.calculus.theory.def_title')}</span> 
+                        <span className="text-white font-bold">{t('modules.calculus.theory.derivative_term')}</span>
+                     </div>
+                     <div className="text-xl tracking-widest text-cyan-400 mb-4 font-bold">f'(x) = lim(h→0) [f(x+h) - f(x)] / h</div>
+                     <p className="text-white/50 leading-relaxed">{t('modules.calculus.theory.derivative_desc')}</p>
                 </div>
                 <div>
-                     <div className="mb-4"><span className="text-white/40">{t('modules.calculus.theory.def_title')}</span> <span className="text-white">{t('modules.calculus.theory.integral_term')}</span></div>
-                     <div className="text-xl tracking-widest text-green-400 mb-2">∫[a,b] f(x) dx = F(b) - F(a)</div>
-                     <p className="text-white/50">{t('modules.calculus.theory.integral_desc')}</p>
+                     <div className="mb-4 flex items-center gap-2">
+                        <span className="text-white/40">{t('modules.calculus.theory.def_title')}</span> 
+                        <span className="text-white font-bold">{t('modules.calculus.theory.integral_term')}</span>
+                     </div>
+                     <div className="text-xl tracking-widest text-green-400 mb-4 font-bold">∫[a,b] f(x) dx = F(b) - F(a)</div>
+                     <p className="text-white/50 leading-relaxed">{t('modules.calculus.theory.integral_desc')}</p>
                 </div>
             </div>
              {currentLevel === 2 && (
-                 <button onClick={() => handleLevelComplete(2)} className="mt-4 border border-cyan-500/30 text-cyan-400 px-4 py-2 text-xs hover:bg-cyan-900/20 transition-all uppercase tracking-widest">
-                    COMPLETE {t('common.level')} 02
+                 <button 
+                    onClick={() => handleLevelComplete(2)} 
+                    className="mt-4 border border-cyan-500/30 text-cyan-400 px-6 py-3 text-xs hover:bg-cyan-500 hover:text-black transition-all uppercase tracking-widest bg-cyan-900/10"
+                 >
+                    COMPILE LOGIC (COMPLETE LEVEL 02)
                  </button>
             )}
         </section>
@@ -321,17 +340,18 @@ export default function CalculusPage() {
                 <div className="space-y-6 flex flex-col h-full">
                     
                     {/* Input */}
-                    <div className="bg-white/5 p-4 border border-white/10">
-                        <label className="text-[10px] text-white/40 block mb-2">{t('modules.calculus.viz.controls.function_label')}</label>
+                    <div className="bg-white/5 p-4 border border-white/10 relative overflow-hidden group">
+                        <div className="absolute top-0 right-0 p-1 text-[9px] text-white/10 group-hover:text-cyan-500 transition-colors">INPUT_STREAM</div>
+                        <label className="text-[10px] text-white/40 block mb-2 tracking-widest">{t('modules.calculus.viz.controls.function_label')}</label>
                         <input 
                             type="text" 
                             value={funcStr} 
                             onChange={(e) => { setFuncStr(e.target.value); addLog(`[OP] FUNCTION SET: ${e.target.value}`); }}
-                            className="w-full bg-black border border-white/20 text-white p-2 text-sm font-mono focus:border-cyan-500 outline-none"
+                            className="w-full bg-black border border-white/20 text-white p-2 text-sm font-mono focus:border-cyan-500 outline-none transition-colors"
                         />
                          <div className="flex gap-2 mt-2 flex-wrap">
                             {presets.map(p => (
-                                <button key={p.label} onClick={() => { setFuncStr(p.val); addLog(`[OP] PRESET: ${p.label}`); }} className="text-[9px] border border-white/10 px-2 py-1 text-white/60 hover:text-white hover:border-white/40 transition-all">
+                                <button key={p.label} onClick={() => { setFuncStr(p.val); addLog(`[OP] PRESET: ${p.label}`); }} className="text-[9px] border border-white/10 px-2 py-1 text-white/60 hover:text-white hover:border-cyan-500/50 hover:bg-cyan-900/20 transition-all">
                                     {p.label}
                                 </button>
                             ))}
@@ -340,34 +360,35 @@ export default function CalculusPage() {
 
                     {/* Slider */}
                      <div className="bg-white/5 p-4 border border-white/10">
-                         <div className="flex justify-between text-[10px] text-white/40 mb-2">
+                         <div className="flex justify-between text-[10px] text-white/40 mb-2 tracking-widest">
                             <span>{t('modules.calculus.viz.controls.time_label')}</span>
                             <span className="text-cyan-400 font-bold">{xVal.toFixed(2)}</span>
                          </div>
                          <input 
                             type="range" min="-4" max="4" step="0.01" 
                             value={xVal} onChange={(e) => { setXVal(parseFloat(e.target.value)); }}
-                            className="w-full h-1 bg-white/20 rounded-lg appearance-none cursor-pointer accent-cyan-500"
+                            className="w-full h-1 bg-white/20 rounded-lg appearance-none cursor-pointer accent-cyan-500 hover:accent-cyan-400"
                         />
                      </div>
 
                     {/* Stats & Log */}
-                    <div className="flex-1 bg-black border border-white/10 p-4 font-mono text-xs flex flex-col">
-                         <div className="border-b border-white/10 pb-2 mb-2 text-white/30">{t('modules.calculus.viz.controls.telemetry')}</div>
+                    <div className="flex-1 bg-black border border-white/10 p-4 font-mono text-xs flex flex-col relative">
+                         <div className="absolute top-2 right-2 text-[9px] text-white/20">TELEMETRY_LINK_ESTABLISHED</div>
+                         <div className="border-b border-white/10 pb-2 mb-2 text-white/30 tracking-widest">{t('modules.calculus.viz.controls.telemetry')}</div>
                          
                          <div className="space-y-2 mb-4">
-                             <div className="flex justify-between">
+                             <div className="flex justify-between border-b border-white/5 pb-1">
                                  <span className="text-white/60">{t('modules.calculus.viz.controls.value')}</span>
-                                 <span>{isNaN(currentY) ? '-' : currentY.toFixed(4)}</span>
+                                 <span className="font-bold">{isNaN(currentY) ? '-' : currentY.toFixed(4)}</span>
                              </div>
-                             <div className="flex justify-between">
+                             <div className="flex justify-between border-b border-white/5 pb-1">
                                  <span className="text-white/60">{t('modules.calculus.viz.controls.slope')}</span>
-                                 <span className="text-red-400">{isNaN(currentSlope) ? '-' : currentSlope.toFixed(4)}</span>
+                                 <span className="text-red-400 font-bold">{isNaN(currentSlope) ? '-' : currentSlope.toFixed(4)}</span>
                              </div>
-                             <div className="flex justify-between items-center">
+                             <div className="flex justify-between items-center pt-1">
                                  <span className="text-white/60">{t('modules.calculus.viz.controls.area')}</span>
                                  <div className="text-right">
-                                    <span className={`block ${Math.abs(currentIntegral) > targetAccumulation ? 'text-green-400 animate-pulse font-bold' : 'text-cyan-400'}`}>
+                                    <span className={`block ${Math.abs(currentIntegral) > targetAccumulation ? 'text-green-400 animate-pulse font-bold' : 'text-cyan-400 font-bold'}`}>
                                         {isNaN(currentIntegral) ? '-' : currentIntegral.toFixed(4)}
                                     </span>
                                     <span className="text-[9px] text-white/20">TARGET: &gt; {targetAccumulation.toFixed(1)}</span>
@@ -376,12 +397,15 @@ export default function CalculusPage() {
                          </div>
 
                          {/* System Log */}
-                         <div className="flex-1 border-t border-white/10 pt-2 overflow-hidden flex flex-col">
-                             <div className="text-[9px] text-white/30 mb-1">SYSTEM_LOG</div>
+                         <div className="flex-1 border-t border-white/10 pt-2 overflow-hidden flex flex-col bg-white/5 p-2 rounded-sm">
+                             <div className="text-[9px] text-white/30 mb-1 flex justify-between">
+                                 <span>{t('common.system_log')}</span>
+                                 <span className="text-green-500/50">{t('common.live')}</span>
+                             </div>
                              <div className="flex-1 overflow-y-auto custom-scrollbar space-y-1">
                                 {log.map((entry, i) => (
-                                    <div key={i} className="text-[10px] text-white/60 truncate">
-                                        <span className="text-cyan-900 mr-1">{`>`}</span>
+                                    <div key={i} className="text-[10px] text-white/60 truncate hover:text-white transition-colors">
+                                        <span className="text-cyan-500 mr-1">{`>`}</span>
                                         {entry}
                                     </div>
                                 ))}
@@ -391,7 +415,7 @@ export default function CalculusPage() {
                          <div className="pt-4 border-t border-white/10">
                              <button 
                                 onClick={() => { setIs3DMode(!is3DMode); addLog(`[OP] 3D MODE: ${!is3DMode}`); }}
-                                className={`w-full py-2 text-center border transition-all ${is3DMode ? 'bg-cyan-900/20 border-cyan-500 text-cyan-400' : 'border-white/20 text-white/60 hover:text-white'}`}
+                                className={`w-full py-2 text-center border transition-all text-[10px] tracking-widest uppercase ${is3DMode ? 'bg-cyan-900/20 border-cyan-500 text-cyan-400' : 'border-white/20 text-white/60 hover:text-white hover:border-white/40'}`}
                             >
                                 {is3DMode ? t('modules.calculus.viz.controls.disable_3d') : t('modules.calculus.viz.controls.enable_3d')}
                             </button>
@@ -401,7 +425,7 @@ export default function CalculusPage() {
 
                 {/* Right Panel (Canvas) */}
                 <div className="lg:col-span-2 border border-white/10 bg-black relative h-full overflow-hidden group">
-                    <div className="absolute top-2 left-2 text-[10px] text-white/20 z-10 group-hover:text-white/40 transition-colors">
+                    <div className="absolute top-2 left-2 text-[10px] text-white/20 z-10 group-hover:text-white/40 transition-colors pointer-events-none">
                         {t('modules.calculus.viz.viewport_label')} {is3DMode ? 'THREE.JS_RENDERER' : 'CANVAS_2D'}
                     </div>
                     
@@ -437,22 +461,25 @@ export default function CalculusPage() {
                 {t('modules.calculus.apps.title')}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs text-white/60">
-                <div className="bg-white/5 p-4 border border-white/10">
+                <div className="bg-white/5 p-4 border border-white/10 hover:border-cyan-500/30 transition-colors">
                     <h3 className="text-white font-bold mb-2 text-sm">{t('modules.calculus.apps.physics_title')}</h3>
                     <p>{t('modules.calculus.apps.physics_body')}</p>
                 </div>
-                <div className="bg-white/5 p-4 border border-white/10">
+                <div className="bg-white/5 p-4 border border-white/10 hover:border-cyan-500/30 transition-colors">
                     <h3 className="text-white font-bold mb-2 text-sm">{t('modules.calculus.apps.ml_title')}</h3>
                     <p>{t('modules.calculus.apps.ml_body')}</p>
                 </div>
-                <div className="bg-white/5 p-4 border border-white/10">
+                <div className="bg-white/5 p-4 border border-white/10 hover:border-cyan-500/30 transition-colors">
                     <h3 className="text-white font-bold mb-2 text-sm">{t('modules.calculus.apps.econ_title')}</h3>
                     <p>{t('modules.calculus.apps.econ_body')}</p>
                 </div>
             </div>
              {currentLevel === 4 && (
-                 <button onClick={() => handleLevelComplete(4)} className="mt-4 border border-cyan-500/30 text-cyan-400 px-4 py-2 text-xs hover:bg-cyan-900/20 transition-all uppercase tracking-widest">
-                    COMPLETE {t('common.level')} 04
+                 <button 
+                    onClick={() => handleLevelComplete(4)} 
+                    className="mt-4 border border-cyan-500/30 text-cyan-400 px-6 py-3 text-xs hover:bg-cyan-500 hover:text-black transition-all uppercase tracking-widest bg-cyan-900/10"
+                 >
+                    {t('common.success')} (SYNC MODULE)
                  </button>
             )}
         </section>
@@ -468,17 +495,20 @@ export default function CalculusPage() {
                 exit={{ opacity: 0 }}
                 className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-sm"
             >
-                <div className="bg-black border border-cyan-500/30 p-8 max-w-md w-full relative overflow-hidden">
+                <div className="bg-black border border-cyan-500/30 p-8 max-w-md w-full relative overflow-hidden shadow-2xl shadow-cyan-900/20">
                     <div className="absolute top-0 left-0 w-full h-1 bg-cyan-500 shadow-[0_0_10px_#06b6d4]"></div>
                     <h2 className="text-2xl font-bold text-white mb-2 tracking-tighter">{t('modules.calculus.completion.synced')}</h2>
-                    <div className="text-cyan-500 text-sm mb-6">{t('common.level')} 0{currentLevel} COMPLETE</div>
-                    <p className="text-white/60 text-xs mb-8 leading-relaxed">
+                    <div className="text-cyan-500 text-sm mb-6 flex justify-between items-center">
+                        <span>{t('common.level')} 0{currentLevel} COMPLETE</span>
+                        <span className="text-white/20 text-[10px]">{currentLevel < 4 ? 'UPLOADING...' : 'ALL_SYSTEMS_GO'}</span>
+                    </div>
+                    <p className="text-white/60 text-xs mb-8 leading-relaxed border-l-2 border-white/10 pl-4">
                         {t('modules.calculus.completion.msg')}<br/>
-                        {t('common.xp_awarded')}: <span className="text-white">+100</span>
+                        <span className="text-green-400 mt-2 block">{t('common.xp_awarded')}: +100</span>
                     </p>
                     <button 
                         onClick={handleNextLevel}
-                        className="w-full bg-cyan-900/20 border border-cyan-500/50 text-cyan-400 py-3 text-xs hover:bg-cyan-500 hover:text-black transition-all uppercase tracking-widest"
+                        className="w-full bg-cyan-900/20 border border-cyan-500/50 text-cyan-400 py-3 text-xs hover:bg-cyan-500 hover:text-black transition-all uppercase tracking-widest font-bold"
                     >
                         {currentLevel < 4 ? t('common.next') : t('common.root')}
                     </button>
