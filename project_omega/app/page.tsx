@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useProgress, ModuleId } from './contexts/ProgressContext';
 import { GeistMono } from 'geist/font/mono';
+import SystemMessages from './components/SystemMessages';
 
 export default function Home() {
   const { moduleProgress, calibration } = useProgress();
@@ -202,6 +203,9 @@ export default function Home() {
                     <Link href="/profile" className="hover:text-purple-400 transition-colors flex items-center gap-1 font-bold animate-pulse">
                         [ DOSSIER ]
                     </Link>
+                    <Link href="/manual" className="hover:text-yellow-400 transition-colors flex items-center gap-1">
+                        [ MANUAL ]
+                    </Link>
                     <Link href="/settings" className="hover:text-red-400 transition-colors flex items-center gap-1">
                         [ CONFIG ]
                     </Link>
@@ -247,6 +251,7 @@ export default function Home() {
           </footer>
 
       </div>
+      <SystemMessages />
     </div>
   );
 }

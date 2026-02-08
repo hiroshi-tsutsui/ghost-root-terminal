@@ -550,7 +550,7 @@ export default function CalculusPage() {
         {showConfetti && (
              <div className="absolute inset-0 pointer-events-none z-50 flex items-center justify-center">
                  <div className="text-xs font-mono text-[#0071e3] border border-[#0071e3] p-4 bg-[#000]/80">
-                    >> STABILIZATION CONFIRMED
+                    &gt;&gt; STABILIZATION CONFIRMED
                  </div>
              </div>
         )}

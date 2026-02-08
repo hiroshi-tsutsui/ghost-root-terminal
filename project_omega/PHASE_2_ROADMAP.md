@@ -310,3 +310,16 @@ We are moving from a "Tool" to a "Platform".
   - **Narrative:** "Cognitive Load Management". Allows Operators to tune Audio/Visuals.
   - **Mechanics:** Global toggles for Audio/Fidelity, Kernel Version display, and "Memory Purge" (Reset).
   - **Goal:** Provide the "Operator" with control over their simulation interface.
+
+- **[2026-02-08] Narrative Core: Live Event (The Void Bleed)**
+  - **Status:** Active.
+  - **Action:** Injected System Message from "ARCHITECT".
+  - **Narrative:** "The Void is growing. Imaginary numbers are bleeding into the real."
+  - **Mechanics:** Pushed a new message to all Operators via the `SystemMessages` component.
+  - **Goal:** Direct user attention to the "Complex" module (Void Phase Analyzer).
+
+  - **Status:** Deployed.
+  - **Action:** Created `app/manual/page.tsx` and linked from the Dashboard Operator Card.
+  - **Narrative:** "The Field Manual" (Ref: OMEGA-MAN-001).
+  - **Content:** Defines HUD elements, Protocol Types (Stabilization, Navigation, Resonance, Decryption), System Keywords, and Clearance Levels.
+  - **Goal:** Provide radical clarity on the simulation mechanics and rank structure.
