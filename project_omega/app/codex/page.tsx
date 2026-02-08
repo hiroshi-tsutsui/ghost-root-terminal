@@ -7,10 +7,27 @@ import { useState, useEffect } from 'react';
 export default function Codex() {
   const { moduleProgress } = useProgress();
   const [mounted, setMounted] = useState(false);
+  const [decrypting, setDecrypting] = useState<string | null>(null);
+  const [revealed, setRevealed] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     setMounted(true);
+    // Load revealed state from localStorage
+    const stored = localStorage.getItem('omega_codex_revealed');
+    if (stored) setRevealed(JSON.parse(stored));
   }, []);
+
+  const handleDecrypt = (id: string) => {
+    setDecrypting(id);
+    setTimeout(() => {
+        setDecrypting(null);
+        setRevealed(prev => {
+            const next = { ...prev, [id]: true };
+            localStorage.setItem('omega_codex_revealed', JSON.stringify(next));
+            return next;
+        });
+    }, 1500); // 1.5s decryption time
+  };
 
   const loreEntries = [
     {
@@ -66,7 +83,7 @@ export default function Codex() {
       id: 'complex',
       title: 'FILE_008: VOID PHASE',
       moduleId: 'complex',
-      content: "There are dimensions orthogonal to reality. The Imaginary Unit 'i' is the key to the door. You have rotated your perception 90 degrees and seen the hidden side of the universe.",
+      content: "There are dimensions orthogonal to reality. The Imaginary Unit 'i' is the key to the door. You have rotated your perception 90 degrees and seen the hidden dimension.",
     },
     {
       id: 'logs',
@@ -101,7 +118,7 @@ export default function Codex() {
         ))}
       </div>
 
-      <div className="max-w-4xl mx-auto space-y-12">
+      <div className="max-w-4xl mx-auto space-y-12 pb-24">
         
         {/* Header */}
         <div className="flex justify-between items-end border-b border-green-900 pb-4">
@@ -117,43 +134,66 @@ export default function Codex() {
         {/* Entries Grid */}
         <div className="grid grid-cols-1 gap-4">
             {loreEntries.map((entry) => {
-                const isUnlocked = entry.moduleId === null || (moduleProgress[entry.moduleId as ModuleId]?.isMastered);
+                const isMastered = entry.moduleId === null || (moduleProgress[entry.moduleId as ModuleId]?.isMastered);
+                const isRevealed = revealed[entry.id];
+                const isDecrypting = decrypting === entry.id;
                 
                 return (
                     <div 
                         key={entry.id} 
-                        className={`relative border p-6 transition-all duration-500 group ${
-                            isUnlocked 
+                        className={`relative border p-6 transition-all duration-500 group overflow-hidden ${
+                            isRevealed 
                                 ? 'border-green-800 bg-green-900/10 hover:bg-green-900/20 shadow-[0_0_15px_rgba(0,255,0,0.1)]' 
-                                : 'border-gray-900 bg-black opacity-60'
+                                : 'border-gray-900 bg-black'
                         }`}
                     >
-                        <div className="flex justify-between items-start mb-2">
-                            <h2 className={`text-lg font-bold tracking-widest ${isUnlocked ? 'text-green-400' : 'text-gray-700'}`}>
+                        {/* Background Scanline for Decrypting */}
+                        {isDecrypting && (
+                            <div className="absolute inset-0 bg-green-500/20 animate-pulse z-0"></div>
+                        )}
+
+                        <div className="flex justify-between items-start mb-2 relative z-10">
+                            <h2 className={`text-lg font-bold tracking-widest ${isRevealed ? 'text-green-400' : 'text-gray-600'}`}>
                                 {entry.title}
                             </h2>
-                            <span className={`text-[10px] px-2 py-0.5 border ${isUnlocked ? 'border-green-700 text-green-700' : 'border-red-900 text-red-900'}`}>
-                                {isUnlocked ? 'DECRYPTED' : 'ENCRYPTED'}
+                            <span className={`text-[10px] px-2 py-0.5 border ${
+                                isRevealed ? 'border-green-700 text-green-700' : 
+                                isDecrypting ? 'border-yellow-600 text-yellow-600 animate-pulse' :
+                                'border-red-900 text-red-900'
+                            }`}>
+                                {isRevealed ? 'DECRYPTED' : isDecrypting ? 'BRUTE FORCING...' : 'ENCRYPTED'}
                             </span>
                         </div>
                         
-                        <div className={`leading-relaxed text-sm font-mono`}>
-                            {isUnlocked ? (
-                                <span className="text-green-300/80 shadow-green-500/50 drop-shadow-sm">{entry.content}</span>
+                        <div className={`leading-relaxed text-sm font-mono relative z-10`}>
+                            {isRevealed ? (
+                                <span className="text-green-300/80 shadow-green-500/50 drop-shadow-sm animate-fade-in">{entry.content}</span>
                             ) : (
-                                <span className="text-gray-800 select-none break-all blur-[1px]">
-                                    {entry.content.split('').map(() => Math.random() > 0.5 ? '0' : '1').join('')}
-                                </span>
+                                <div className="relative">
+                                    <span className="text-gray-800 select-none break-all blur-[2px] block h-12 overflow-hidden">
+                                        {entry.content.split('').map(() => Math.random() > 0.5 ? '0' : '1').join('')}
+                                    </span>
+                                    
+                                    {/* Action Layer */}
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                        {isMastered ? (
+                                            !isDecrypting && (
+                                                <button 
+                                                    onClick={() => handleDecrypt(entry.id)}
+                                                    className="bg-green-900/20 hover:bg-green-500 hover:text-black border border-green-700 text-green-500 px-4 py-2 text-xs font-bold tracking-[0.2em] transition-all uppercase"
+                                                >
+                                                    [ INITIATE DECRYPTION ]
+                                                </button>
+                                            )
+                                        ) : (
+                                            <span className="text-red-600 font-bold text-xs tracking-[0.2em] bg-black px-3 py-1 border border-red-900/50 shadow-[0_0_10px_rgba(255,0,0,0.2)]">
+                                                [ LOCK: {entry.moduleId?.toUpperCase()} REQUIRED ]
+                                            </span>
+                                        )}
+                                    </div>
+                                </div>
                             )}
                         </div>
-
-                        {!isUnlocked && (
-                            <div className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-[1px]">
-                                <span className="text-red-600 font-bold text-xs tracking-[0.2em] bg-black px-3 py-1 border border-red-900/50 shadow-[0_0_10px_rgba(255,0,0,0.2)]">
-                                    [ LOCK: {entry.moduleId?.toUpperCase()} ]
-                                </span>
-                            </div>
-                        )}
                     </div>
                 );
             })}
@@ -178,6 +218,13 @@ export default function Codex() {
             animation-name: rain;
             animation-timing-function: linear;
             animation-iteration-count: infinite;
+        }
+        @keyframes fade-in {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .animate-fade-in {
+            animation: fade-in 0.5s ease-out forwards;
         }
       `}</style>
     </div>

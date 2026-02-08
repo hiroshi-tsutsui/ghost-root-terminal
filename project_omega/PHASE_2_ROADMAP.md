@@ -273,3 +273,10 @@ We are moving from a "Tool" to a "Platform".
   - **Action:** Replaced static text with a dynamic boot log, glitch effects, and "Access Granted" transition.
   - **Narrative:** The user now "Initializes" the Omega Protocol rather than just reading about it.
   - **Goal:** Create a high-stakes, immersive entry point for the Operator.
+
+- **[2026-02-08] Narrative Core: Codex (Decryption Protocol)**
+  - **Status:** Deployed.
+  - **Action:** Created `NARRATIVE.md` and evolved `page.tsx` with interactive decryption UI.
+  - **Mechanics:** User must "Initiate Decryption" (Brute Force animation) to reveal text.
+  - **Persistence:** Decrypted state saved to `localStorage` (`omega_codex_revealed`).
+  - **Goal:** Transform the Codex from a passive list into an active "Hack/Extract" mission.
