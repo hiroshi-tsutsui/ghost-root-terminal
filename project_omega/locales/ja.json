@@ -261,6 +261,61 @@
         "execute_patch": "パッチ適用 (EXECUTE)",
         "system_stabilized": "システム安定化 (STABILIZED)"
       }
+    },
+    "sequences": {
+        "title": "CHRONOS PATTERN (数列)",
+        "levels": {
+            "1": { "name": "基礎 (Basics)", "desc": "足し算と掛け算の連鎖。" },
+            "2": { "name": "理論 (Logic)", "desc": "一般項の導出。" },
+            "3": { "name": "可視化 (Viz)", "desc": "タイムライン・シミュレーション。" },
+            "4": { "name": "応用 (Applications)", "desc": "増殖と減衰。" }
+        },
+        "concepts": {
+            "title": "01. 概念：時の流れ",
+            "arith_title": "等差数列 (Linear)",
+            "arith_body": "一定の数を足し続ける変化。階段を上るようなもの。1, 2, 3, 4... 着実で予測可能な進歩です。",
+            "geo_title": "等比数列 (Exponential)",
+            "geo_body": "一定の数を掛け続ける変化。細胞分裂やウイルスの拡散。1, 2, 4, 8... 爆発的な成長、あるいは急速な消滅。"
+        },
+        "theory": {
+            "title": "02. 理論：予測アルゴリズム",
+            "arith_term": "等差数列の一般項",
+            "arith_eq": "a_n = a + (n-1)d",
+            "arith_desc": "n番目の数を知るには、初項 a に、公差 d を (n-1)回 足します。",
+            "geo_term": "等比数列の一般項",
+            "geo_eq": "a_n = a * r^(n-1)",
+            "geo_desc": "n番目の数を知るには、初項 a に、公比 r を (n-1)回 掛けます。"
+        },
+        "viz": {
+            "title": "03. プロトコル：クロノス・パターン",
+            "log_start": "タイムライン予測機、起動...",
+            "log_guide": "「完全な静止」を実現せよ。線形速度(d)を0、発散係数(r)を1.0に固定し、時間を凍結しろ。",
+            "controls": {
+                "anchor": "起点 (Anchor a)",
+                "linear": "線形速度 (Velocity d)",
+                "divergence": "発散係数 (Factor r)",
+                "depth": "シミュレーション深度 (n)",
+                "telemetry": "テレメトリ",
+                "status_critical": "危険：指数関数的暴走",
+                "status_decay": "警告：シグナル減衰",
+                "status_stable": "安定：線形推移",
+                "status_stasis": "完了：完全静止 (STASIS)"
+            },
+            "viewport": "TIMELINE_RENDER"
+        },
+        "apps": {
+            "title": "04. 応用：未来予測",
+            "finance_title": "複利計算",
+            "finance_body": "お金は等比数列で増えます。わずかな金利も、時間(n)さえあれば巨万の富を生み出します。",
+            "bio_title": "人口爆発",
+            "bio_body": "生物は掛け算で増えます。1匹が2匹、4匹... 「公比 r」を理解することが、パンデミック予測の鍵です。",
+            "algo_title": "アルゴリズム",
+            "algo_body": "バイナリサーチは、探索範囲を毎回半分にします（r=0.5）。これは複雑性の「幾何学的減衰」を利用した高速化手法です。"
+        },
+        "completion": {
+            "synced": "時間軸安定化",
+            "msg": "時のパターンを解読しました。未来は計算可能です。"
+        }
     }
   }
 }

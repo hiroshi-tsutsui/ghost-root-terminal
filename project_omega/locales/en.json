@@ -261,6 +261,61 @@
         "execute_patch": "EXECUTE PATCH",
         "system_stabilized": "SYSTEM STABILIZED"
       }
+    },
+    "sequences": {
+        "title": "CHRONOS PATTERN",
+        "levels": {
+            "1": { "name": "BASICS", "desc": "Steps & Multipliers." },
+            "2": { "name": "THEORY", "desc": "The General Term." },
+            "3": { "name": "VISUALIZATION", "desc": "Timeline Simulation." },
+            "4": { "name": "APPLY", "desc": "Growth & Decay." }
+        },
+        "concepts": {
+            "title": "01. CONCEPT: The Flow of Time",
+            "arith_title": "Arithmetic (Linear)",
+            "arith_body": "Adding the same amount every step. Like walking up stairs. 1, 2, 3, 4... Steady, predictable progress.",
+            "geo_title": "Geometric (Exponential)",
+            "geo_body": "Multiplying by the same factor. Like cell division or viral spread. 1, 2, 4, 8... Explosive growth or rapid decay."
+        },
+        "theory": {
+            "title": "02. THEORY: Prediction Algorithms",
+            "arith_term": "Arithmetic Sequence",
+            "arith_eq": "a_n = a + (n-1)d",
+            "arith_desc": "To find the n-th term, we start at 'a' and add the difference 'd', (n-1) times.",
+            "geo_term": "Geometric Sequence",
+            "geo_eq": "a_n = a * r^(n-1)",
+            "geo_desc": "To find the n-th term, we start at 'a' and multiply by the ratio 'r', (n-1) times."
+        },
+        "viz": {
+            "title": "03. PROTOCOL: CHRONOS PATTERN",
+            "log_start": "TIMELINE SIMULATION INITIALIZED...",
+            "log_guide": "ESTABLISH STASIS. TARGET LINEAR VELOCITY (d) = 0 AND DIVERGENCE (r) = 1.0.",
+            "controls": {
+                "anchor": "ANCHOR POINT (a)",
+                "linear": "LINEAR VELOCITY (d)",
+                "divergence": "DIVERGENCE FACTOR (r)",
+                "depth": "SIMULATION DEPTH (n)",
+                "telemetry": "TELEMETRY",
+                "status_critical": "CRITICAL: RUNAWAY",
+                "status_decay": "WARNING: DECAY",
+                "status_stable": "STABLE: LINEAR",
+                "status_stasis": "COMPLETE: STASIS LOCK"
+            },
+            "viewport": "TIMELINE_RENDER"
+        },
+        "apps": {
+            "title": "04. APPLICATIONS: Future Casting",
+            "finance_title": "Compound Interest",
+            "finance_body": "Money grows geometrically. A small interest rate, given enough time (n), creates massive wealth.",
+            "bio_title": "Population Growth",
+            "bio_body": "Populations multiply. One bacteria becomes two, then four. Understanding 'r' helps us predict pandemics.",
+            "algo_title": "Algorithms",
+            "algo_body": "Binary Search cuts the problem size in half each step (r=0.5). It's a geometric decay of complexity."
+        },
+        "completion": {
+            "synced": "TIMELINE STABILIZED",
+            "msg": "You have mastered the patterns of time. The future is now calculable."
+        }
     }
   }
 }
