@@ -287,3 +287,11 @@ We are moving from a "Tool" to a "Platform".
   - **Mechanics:** Connected to Global State (`ProgressContext`). Achieving Oracle Sync now triggers "Protocol Complete" and awards XP.
   - **Narrative:** "Entropy Weaver" is now a fully gamified Operator Mission.
   - **Goal:** Provide a satisfying conclusion to the Stochastic Synchronization.
+
+- **[2026-02-08] Narrative Core: Operator Profile (The Shadow)**
+  - **Status:** Deployed.
+  - **Action:** Created `/profile` page (Operator Dossier) and updated Dashboard HUD to link to it.
+  - **Narrative:** "The Operator's Shadow" - a visual representation of their sync rate across all sectors.
+  - **Visuals:** ID Card with Rank Badge (Ghost -> Tesseract), Sector Stability Bars.
+  - **Mechanics:** Tracks XP, Level, and Mastered Modules. Calculates global Sync Rate.
+  - **Goal:** Provide a centralized "Character Sheet" for the Operator to track their evolution.

@@ -182,15 +182,15 @@ export default function Home() {
                     <div className="h-full bg-white transition-all duration-1000" style={{ width: `${syncRate}%` }}></div>
                 </div>
 
-                <div className="flex justify-between items-center text-[10px] uppercase tracking-widest">
-                    <Link href="/overview" className="hover:text-cyan-400 transition-colors flex items-center gap-2">
+                <div className="flex justify-between items-center text-[10px] uppercase tracking-widest gap-2 flex-wrap">
+                    <Link href="/overview" className="hover:text-cyan-400 transition-colors flex items-center gap-1">
                         [ BRIEFING ]
                     </Link>
-                    <Link href="/codex" className="hover:text-green-400 transition-colors flex items-center gap-2">
+                    <Link href="/codex" className="hover:text-green-400 transition-colors flex items-center gap-1">
                         [ LOGS ]
                     </Link>
-                    <Link href="/quiz" className="hover:text-yellow-400 transition-colors flex items-center gap-2">
-                        [ CALIBRATION ]
+                    <Link href="/profile" className="hover:text-purple-400 transition-colors flex items-center gap-1 font-bold animate-pulse">
+                        [ DOSSIER ]
                     </Link>
                 </div>
             </div>
