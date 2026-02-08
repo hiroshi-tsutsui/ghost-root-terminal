@@ -44,13 +44,15 @@ const LOCAL_CONTENT = {
             title: "Protocol: Flux Engine",
             integrity: "ENGINE INTEGRITY",
             target: "TARGET FLUX",
+            log_start: "FLUX ENGINE INITIALIZED...",
+            log_guide: "ADJUST PARAMETER (t) TO EXCEED TARGET ACCUMULATION.",
             controls: {
                 function_label: "INPUT FUNCTION f(x)",
                 time_label: "TIME PARAMETER (t)",
                 telemetry: "TELEMETRY",
                 value: "POSITION f(t)",
                 slope: "VELOCITY f'(t)",
-                area: "DISTANCE ∫f(x)dx",
+                area: "ACCUMULATION ∫f(x)dx",
                 enable_3d: "ENABLE 3D MANIFOLD",
                 disable_3d: "RETURN TO 2D PLANE",
                 rotation_active: "ORBITAL CONTROLS ACTIVE"
@@ -98,13 +100,15 @@ const LOCAL_CONTENT = {
             title: "プロトコル：フラックス・エンジン",
             integrity: "FLUX INTEGRITY",
             target: "TARGET FLUX",
+            log_start: "フラックス・エンジン初期化中...",
+            log_guide: "パラメータ(t)を調整し、目標蓄積量(Area)を超過せよ。",
             controls: {
                 function_label: "入力関数 f(x)",
                 time_label: "時間パラメータ (t)",
                 telemetry: "テレメトリ",
                 value: "位置 f(t)",
                 slope: "速度 f'(t)",
-                area: "距離 ∫f(x)dx",
+                area: "蓄積量 ∫f(x)dx",
                 enable_3d: "3Dマニホールド起動 (回転体)",
                 disable_3d: "2D平面に戻る",
                 rotation_active: "軌道制御アクティブ"
@@ -169,7 +173,7 @@ export default function CalculusPage() {
   const { locale, setLocale, t: globalT } = useLanguage();
   const [currentLevel, setCurrentLevel] = useState(1);
   const [showUnlock, setShowUnlock] = useState(false);
-  const [hasInteracted, setHasInteracted] = useState(false);
+  const [log, setLog] = useState<string[]>([]);
 
   // Helper for local content
   const t = (key: string) => {
@@ -190,6 +194,7 @@ export default function CalculusPage() {
   const [error, setError] = useState<string | null>(null);
   const [is3DMode, setIs3DMode] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [targetAccumulation] = useState(5.0); // Win condition
 
   // Initialize Level
   useEffect(() => {
@@ -199,7 +204,16 @@ export default function CalculusPage() {
     if (progress.includes(2)) nextLvl = 3;
     if (progress.includes(3)) nextLvl = 4;
     setCurrentLevel(nextLvl);
-  }, [moduleProgress]);
+    
+    // Initialize Log
+    if (nextLvl === 3) {
+        setLog([`[SYSTEM] ${t('modules.calculus.viz.log_start')}`, `[OP] ${t('modules.calculus.viz.log_guide')}`]);
+    }
+  }, [moduleProgress, locale]);
+
+  const addLog = (msg: string) => {
+      setLog(prev => [msg, ...prev].slice(0, 8));
+  };
 
   const handleLevelComplete = (lvl: number) => {
       completeLevel(MODULE_ID, lvl);
@@ -210,10 +224,6 @@ export default function CalculusPage() {
     setShowUnlock(false);
     // Logic handled by effect
   };
-
-  const handleInteraction = () => {
-      if (!hasInteracted) setHasInteracted(true);
-  }
 
   // --- Math Helpers ---
   const evaluateFunc = (expression: string, x: number) => {
@@ -347,6 +357,13 @@ export default function CalculusPage() {
   const currentSlope = evaluateDerivative(funcStr, xVal);
   const currentIntegral = integrate(funcStr, xVal);
 
+  // Check Win Condition
+  useEffect(() => {
+      if (currentLevel === 3 && Math.abs(currentIntegral) > targetAccumulation) {
+          handleLevelComplete(3);
+      }
+  }, [currentIntegral, currentLevel, targetAccumulation]);
+
   const presets = [
     { label: "PARABOLA", val: "0.5*x^3 - 2*x" },
     { label: "SINE WAVE", val: "sin(x)" },
@@ -438,12 +455,12 @@ export default function CalculusPage() {
                         <input 
                             type="text" 
                             value={funcStr} 
-                            onChange={(e) => { setFuncStr(e.target.value); handleInteraction(); }}
+                            onChange={(e) => { setFuncStr(e.target.value); addLog(`[OP] FUNCTION SET: ${e.target.value}`); }}
                             className="w-full bg-black border border-white/20 text-white p-2 text-sm font-mono focus:border-cyan-500 outline-none"
                         />
                          <div className="flex gap-2 mt-2 flex-wrap">
                             {presets.map(p => (
-                                <button key={p.label} onClick={() => { setFuncStr(p.val); handleInteraction(); }} className="text-[9px] border border-white/10 px-2 py-1 text-white/60 hover:text-white hover:border-white/40 transition-all">
+                                <button key={p.label} onClick={() => { setFuncStr(p.val); addLog(`[OP] PRESET: ${p.label}`); }} className="text-[9px] border border-white/10 px-2 py-1 text-white/60 hover:text-white hover:border-white/40 transition-all">
                                     {p.label}
                                 </button>
                             ))}
@@ -458,31 +475,51 @@ export default function CalculusPage() {
                          </div>
                          <input 
                             type="range" min="-4" max="4" step="0.01" 
-                            value={xVal} onChange={(e) => { setXVal(parseFloat(e.target.value)); handleInteraction(); }}
+                            value={xVal} onChange={(e) => { setXVal(parseFloat(e.target.value)); }}
                             className="w-full h-1 bg-white/20 rounded-lg appearance-none cursor-pointer accent-cyan-500"
                         />
                      </div>
 
-                    {/* Stats */}
-                    <div className="flex-1 bg-black border border-white/10 p-4 font-mono text-xs space-y-4">
+                    {/* Stats & Log */}
+                    <div className="flex-1 bg-black border border-white/10 p-4 font-mono text-xs flex flex-col">
                          <div className="border-b border-white/10 pb-2 mb-2 text-white/30">{t('modules.calculus.viz.controls.telemetry')}</div>
                          
-                         <div className="flex justify-between">
-                             <span className="text-white/60">{t('modules.calculus.viz.controls.value')}</span>
-                             <span>{isNaN(currentY) ? '-' : currentY.toFixed(4)}</span>
+                         <div className="space-y-2 mb-4">
+                             <div className="flex justify-between">
+                                 <span className="text-white/60">{t('modules.calculus.viz.controls.value')}</span>
+                                 <span>{isNaN(currentY) ? '-' : currentY.toFixed(4)}</span>
+                             </div>
+                             <div className="flex justify-between">
+                                 <span className="text-white/60">{t('modules.calculus.viz.controls.slope')}</span>
+                                 <span className="text-red-400">{isNaN(currentSlope) ? '-' : currentSlope.toFixed(4)}</span>
+                             </div>
+                             <div className="flex justify-between items-center">
+                                 <span className="text-white/60">{t('modules.calculus.viz.controls.area')}</span>
+                                 <div className="text-right">
+                                    <span className={`block ${Math.abs(currentIntegral) > targetAccumulation ? 'text-green-400 animate-pulse font-bold' : 'text-cyan-400'}`}>
+                                        {isNaN(currentIntegral) ? '-' : currentIntegral.toFixed(4)}
+                                    </span>
+                                    <span className="text-[9px] text-white/20">TARGET: &gt; {targetAccumulation.toFixed(1)}</span>
+                                 </div>
+                             </div>
                          </div>
-                         <div className="flex justify-between">
-                             <span className="text-white/60">{t('modules.calculus.viz.controls.slope')}</span>
-                             <span className="text-red-400">{isNaN(currentSlope) ? '-' : currentSlope.toFixed(4)}</span>
-                         </div>
-                         <div className="flex justify-between">
-                             <span className="text-white/60">{t('modules.calculus.viz.controls.area')}</span>
-                             <span className="text-cyan-400">{isNaN(currentIntegral) ? '-' : currentIntegral.toFixed(4)}</span>
+
+                         {/* System Log */}
+                         <div className="flex-1 border-t border-white/10 pt-2 overflow-hidden flex flex-col">
+                             <div className="text-[9px] text-white/30 mb-1">SYSTEM_LOG</div>
+                             <div className="flex-1 overflow-y-auto custom-scrollbar space-y-1">
+                                {log.map((entry, i) => (
+                                    <div key={i} className="text-[10px] text-white/60 truncate">
+                                        <span className="text-cyan-900 mr-1">{`>`}</span>
+                                        {entry}
+                                    </div>
+                                ))}
+                             </div>
                          </div>
 
                          <div className="pt-4 border-t border-white/10">
                              <button 
-                                onClick={() => { setIs3DMode(!is3DMode); handleInteraction(); }}
+                                onClick={() => { setIs3DMode(!is3DMode); addLog(`[OP] 3D MODE: ${!is3DMode}`); }}
                                 className={`w-full py-2 text-center border transition-all ${is3DMode ? 'bg-cyan-900/20 border-cyan-500 text-cyan-400' : 'border-white/20 text-white/60 hover:text-white'}`}
                             >
                                 {is3DMode ? t('modules.calculus.viz.controls.disable_3d') : t('modules.calculus.viz.controls.enable_3d')}
@@ -492,8 +529,8 @@ export default function CalculusPage() {
                 </div>
 
                 {/* Right Panel (Canvas) */}
-                <div className="lg:col-span-2 border border-white/10 bg-black relative h-full overflow-hidden">
-                    <div className="absolute top-2 left-2 text-[10px] text-white/20 z-10">
+                <div className="lg:col-span-2 border border-white/10 bg-black relative h-full overflow-hidden group">
+                    <div className="absolute top-2 left-2 text-[10px] text-white/20 z-10 group-hover:text-white/40 transition-colors">
                         {t('modules.calculus.viz.viewport_label')} {is3DMode ? 'THREE.JS_RENDERER' : 'CANVAS_2D'}
                     </div>
                     
@@ -520,11 +557,7 @@ export default function CalculusPage() {
                     )}
                 </div>
             </div>
-             {currentLevel === 3 && hasInteracted && (
-                 <button onClick={() => handleLevelComplete(3)} className="mt-4 border border-cyan-500/30 text-cyan-400 px-4 py-2 text-xs hover:bg-cyan-900/20 transition-all uppercase tracking-widest">
-                    COMPLETE {globalT('common.level')} 03
-                 </button>
-            )}
+            {/* Completion is now automatic based on target */}
         </section>
 
         {/* --- LEVEL 4: APPLICATION --- */}
