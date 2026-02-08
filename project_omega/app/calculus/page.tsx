@@ -90,7 +90,7 @@ export default function CalculusPage() {
   const handleLevelComplete = (lvl: number) => {
       completeLevel(MODULE_ID, lvl);
       setShowUnlock(true);
-      addLog(`[SUCCESS] LEVEL 0${lvl} COMPLETE`);
+      addLog(`[SUCCESS] LEVEL 0${lvl} ${t('modules.calculus.completion.synced')}`);
   };
 
   const handleNextLevel = () => {
