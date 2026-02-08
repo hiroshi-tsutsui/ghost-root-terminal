@@ -180,6 +180,61 @@
             "msg": "ヴォイド・スカウト、発進準備完了。あなたは次元を掌握しました。"
         }
     },
+    "trig": {
+        "title": "HARMONIC TUNER (三角関数)",
+        "levels": {
+            "1": { "name": "基礎 (Basics)", "desc": "円運動と波動。", "log_start": "オシレーターバンク起動...", "log_guide": "システム初期化。円運動を観測せよ。" },
+            "2": { "name": "理論 (Logic)", "desc": "波動の方程式。", "log_start": "方程式解析中...", "log_guide": "y = A sin(B(x - C)) + D を理解せよ。" },
+            "3": { "name": "可視化 (Viz)", "desc": "共鳴同調プロトコル。", "log_start": "共鳴スキャン開始...", "log_guide": "ターゲット波形と同期せよ。振幅、周波数、位相を調整して共鳴させろ。" },
+            "4": { "name": "応用 (Applications)", "desc": "信号処理の世界。" }
+        },
+        "concepts": {
+            "title": "01. 概念：円と波",
+            "circle_title": "単位円 (Unit Circle)",
+            "circle_body": "三角関数は三角形だけのものではなく、<strong>「周期（サイクル）」</strong>の学問です。円周上を回る点の「高さ」を時間軸に並べると、サイン波が生まれます。",
+            "periodic_title": "周期性",
+            "periodic_body": "自然界はループを好みます。季節、心拍、音波。繰り返される現象はすべて三角関数で記述できます。"
+        },
+        "theory": {
+            "title": "02. 理論：波のメカニズム",
+            "eq_title": "マスター方程式",
+            "eq_term": "y = A sin(B(x - C)) + D",
+            "eq_desc": "このたった一つの式が、宇宙のあらゆる「振動」を記述します。",
+            "params_title": "パラメータ",
+            "params_list_1": "<strong>A (振幅 - Amplitude):</strong> 音量、エネルギー、波の高さ。",
+            "params_list_2": "<strong>B (周波数 - Frequency):</strong> 音程、スピード、繰り返しの速さ。",
+            "params_list_3": "<strong>C (位相 - Phase):</strong> タイミング、ズレ、開始位置。"
+        },
+        "viz": {
+            "title": "03. プロトコル：ハーモニック・チューナー",
+            "log_start": "オシレーターバンク起動...",
+            "log_guide": "ターゲット波形と同期せよ。振幅、周波数、位相を調整して共鳴させろ。",
+            "controls": {
+                "amp": "振幅 (Amplitude)",
+                "freq": "周波数 (Frequency)",
+                "phase": "位相 (Phase)",
+                "telemetry": "テレメトリ",
+                "resonance": "共鳴率 (SYNC)",
+                "status_locked": "同調完了 (LOCKED)",
+                "status_searching": "探索中 (SEARCHING)",
+                "toggle_audio": "オーディオエンジン"
+            },
+            "viewport": "OSCILLOSCOPE_VIEW"
+        },
+        "apps": {
+            "title": "04. 応用：信号処理",
+            "audio_title": "音響合成 (シンセサイザー)",
+            "audio_body": "音楽は「聴こえる数学」です。単純なサイン波を足し合わせることで、あらゆる楽器の音色を作ることができます。",
+            "ac_title": "交流電流 (AC)",
+            "ac_body": "コンセントの電気は1秒間に50回または60回振動しています（Hz）。これも電圧のサイン波です。",
+            "fourier_title": "フーリエ変換",
+            "fourier_body": "現代文明を支える最強のアルゴリズム（JPG, MP3, WiFi）。「どんな複雑な波も、単純な波の足し合わせで表現できる」という魔法です。"
+        },
+        "completion": {
+            "synced": "共鳴確立",
+            "msg": "宇宙のリズムと同調しました。シグナルはクリアです。"
+        }
+    },
     "functions": {
       "title": "CAUSALITY_ENGINE (関数理論)",
       "levels": {

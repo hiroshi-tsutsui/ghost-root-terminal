@@ -1,4 +1,3 @@
-// @ts-nocheck
 "use client";
 
 import { useState, useEffect, useRef } from 'react';
@@ -12,127 +11,9 @@ import { SoundEngine } from '../utils/SoundEngine';
 // --- Constants ---
 const MODULE_ID = 'trig';
 
-// --- Localization Content ---
-const LOCAL_CONTENT = {
-    en: {
-        title: "HARMONIC TUNER",
-        levels: {
-            1: { name: "BASICS", desc: "Circles & Waves." },
-            2: { name: "THEORY", desc: "The Wave Equation." },
-            3: { name: "VISUALIZATION", desc: "Resonance Alignment." },
-            4: { name: "APPLY", desc: "Signal Processing." }
-        },
-        concepts: {
-            title: "Concept: Circular Motion",
-            circle_title: "The Unit Circle",
-            circle_body: "Trigonometry isn't just about triangles; it's about <strong>cycles</strong>. As you move around a circle, your height creates a Sine wave.",
-            periodic_title: "Periodicity",
-            periodic_body: "Nature loves loops. Days, seasons, heartbeats, and sound waves all repeat. Trig functions are the math of repetition."
-        },
-        theory: {
-            title: "Theory: Wave Mechanics",
-            eq_title: "The Master Equation",
-            eq_term: "y = A sin(B(x - C)) + D",
-            eq_desc: "This one formula describes almost every vibration in the universe.",
-            params_title: "Parameters",
-            params_list: [
-                "<strong>A (Amplitude):</strong> Loudness / Energy / Height.",
-                "<strong>B (Frequency):</strong> Pitch / Speed / How fast it cycles.",
-                "<strong>C (Phase Shift):</strong> Timing / Offset / When it starts."
-            ]
-        },
-        viz: {
-            title: "Protocol: Harmonic Tuner",
-            log_start: "OSCILLATOR BANK INITIALIZED...",
-            log_guide: "MATCH THE TARGET WAVEFORM. TUNE AMPLITUDE, FREQUENCY, AND PHASE.",
-            controls: {
-                amp: "AMPLITUDE (Energy)",
-                freq: "FREQUENCY (Pitch)",
-                phase: "PHASE (Offset)",
-                telemetry: "TELEMETRY",
-                resonance: "RESONANCE SYNC",
-                status_locked: "LOCKED",
-                status_searching: "SEARCHING",
-                toggle_audio: "AUDIO ENGINE"
-            },
-            viewport: "OSCILLOSCOPE_VIEW"
-        },
-        apps: {
-            title: "Applications: Signals",
-            audio_title: "Audio Synthesis",
-            audio_body: "Music is just math we can hear. Synthesizers add sine waves together to create instruments.",
-            ac_title: "Electricity (AC)",
-            ac_body: "The power in your wall socket oscillates 50/60 times a second (Hz). It's a sine wave of voltage.",
-            fourier_title: "Fourier Transform",
-            fourier_body: "The algorithm that runs the world (JPG, MP3, WiFi). It proves that *any* signal can be broken down into simple sine waves."
-        },
-        completion: {
-            synced: "HARMONY RESTORED",
-            msg: "You have attuned to the rhythm of the cosmos. The signal is clear."
-        }
-    },
-    ja: {
-        title: "ハーモニック・チューナー (三角関数)",
-        levels: {
-            1: { name: "基礎 (Basics)", desc: "円運動と波動。" },
-            2: { name: "理論 (Logic)", desc: "波動の方程式。" },
-            3: { name: "可視化 (Viz)", desc: "共鳴同調プロトコル。" },
-            4: { name: "応用 (Applications)", desc: "信号処理の世界。" }
-        },
-        concepts: {
-            title: "概念：円と波",
-            circle_title: "単位円 (Unit Circle)",
-            circle_body: "三角関数は三角形だけのものではなく、<strong>「周期（サイクル）」</strong>の学問です。円周上を回る点の「高さ」を時間軸に並べると、サイン波が生まれます。",
-            periodic_title: "周期性",
-            periodic_body: "自然界はループを好みます。季節、心拍、音波。繰り返される現象はすべて三角関数で記述できます。"
-        },
-        theory: {
-            title: "理論：波のメカニズム",
-            eq_title: "マスター方程式",
-            eq_term: "y = A sin(B(x - C)) + D",
-            eq_desc: "このたった一つの式が、宇宙のあらゆる「振動」を記述します。",
-            params_title: "パラメータ",
-            params_list: [
-                "<strong>A (振幅 - Amplitude):</strong> 音量、エネルギー、波の高さ。",
-                "<strong>B (周波数 - Frequency):</strong> 音程、スピード、繰り返しの速さ。",
-                "<strong>C (位相 - Phase):</strong> タイミング、ズレ、開始位置。"
-            ]
-        },
-        viz: {
-            title: "プロトコル：ハーモニック・チューナー",
-            log_start: "オシレーターバンク起動...",
-            log_guide: "ターゲット波形と同期せよ。振幅、周波数、位相を調整して共鳴させろ。",
-            controls: {
-                amp: "振幅 (Amplitude)",
-                freq: "周波数 (Frequency)",
-                phase: "位相 (Phase)",
-                telemetry: "テレメトリ",
-                resonance: "共鳴率 (SYNC)",
-                status_locked: "同調完了",
-                status_searching: "探索中...",
-                toggle_audio: "オーディオエンジン"
-            },
-            viewport: "OSCILLOSCOPE_VIEW"
-        },
-        apps: {
-            title: "応用：信号処理",
-            audio_title: "音響合成 (シンセサイザー)",
-            audio_body: "音楽は「聴こえる数学」です。単純なサイン波を足し合わせることで、あらゆる楽器の音色を作ることができます。",
-            ac_title: "交流電流 (AC)",
-            ac_body: "コンセントの電気は1秒間に50回または60回振動しています（Hz）。これも電圧のサイン波です。",
-            fourier_title: "フーリエ変換",
-            fourier_body: "現代文明を支える最強のアルゴリズム（JPG, MP3, WiFi）。「どんな複雑な波も、単純な波の足し合わせで表現できる」という魔法です。"
-        },
-        completion: {
-            synced: "共鳴確立",
-            msg: "宇宙のリズムと同調しました。シグナルはクリアです。"
-        }
-    }
-};
-
 export default function TrigPage() {
   const { moduleProgress, completeLevel } = useProgress();
-  const { locale, setLocale, t: globalT } = useLanguage();
+  const { t, locale, setLocale } = useLanguage();
   const [currentLevel, setCurrentLevel] = useState(1);
   const [showUnlock, setShowUnlock] = useState(false);
   const [log, setLog] = useState<string[]>([]);
@@ -155,19 +36,6 @@ export default function TrigPage() {
   const [resonance, setResonance] = useState(0);
   const [isLocked, setIsLocked] = useState(false);
 
-  // Helper for local content
-  const t = (key: string) => {
-      const keys = key.split('.');
-      if (keys[0] === 'modules' && keys[1] === 'trig') {
-          let obj = LOCAL_CONTENT[locale as 'en' | 'ja'];
-          for (let i = 2; i < keys.length; i++) {
-              if (obj) obj = obj[keys[i]];
-          }
-          if (obj) return obj;
-      }
-      return globalT(key);
-  };
-
   // Init
   useEffect(() => {
     // Sound Init (Dynamic import or check if class exists to avoid SSR issues if any)
@@ -185,15 +53,20 @@ export default function TrigPage() {
     if (progress.includes(3)) nextLvl = 4;
     setCurrentLevel(nextLvl);
     
-    if (nextLvl === 3) {
-        setLog([`[SYSTEM] ${t('modules.trig.viz.log_start')}`, `[OP] ${t('modules.trig.viz.log_guide')}`]);
-        initGameParams();
-    }
+    // Initial Log
+    setTimeout(() => {
+        if (nextLvl === 3) {
+            setLog([`[SYSTEM] ${t('modules.trig.viz.log_start')}`, `[OP] ${t('modules.trig.viz.log_guide')}`]);
+            initGameParams();
+        } else {
+            setLog([`[SYSTEM] LEVEL 0${nextLvl}: ${t(`modules.trig.levels.${nextLvl}.name`)}`]);
+        }
+    }, 100);
 
     return () => {
         if (soundRef.current) soundRef.current.stop();
     };
-  }, [moduleProgress, locale]);
+  }, [moduleProgress]); // Removed locale dependency to prevent reset on switch
 
   const initGameParams = () => {
        setTargetAmp(0.5 + Math.random() * 2.0);
@@ -285,9 +158,8 @@ export default function TrigPage() {
               ctx.setLineDash([4, 4]);
               ctx.beginPath();
               for (let x = 0; x < width; x++) {
-                  const rad = (x / unit) * 0.5 + time * 0.1; // Static wave or moving? Let's make it static for easy tuning
-                  // Actually, to visualize phase properly, it should probably be static or move at same rate
-                  // Let's make it static in space, but phase shift applies
+                  const rad = (x / unit) * 0.5 + time * 0.1; 
+                  // Static in space, but phase shift applies
                   const tRad = (x / unit) * 0.5;
                   const y = cy - (targetAmp * unit) * Math.sin((targetFreq * tRad) + (targetPhase * Math.PI / 180));
                   if (x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
@@ -315,7 +187,7 @@ export default function TrigPage() {
     };
     animationFrameId = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(animationFrameId);
-  }, [amplitude, frequency, phase, targetAmp, targetFreq, targetPhase, currentLevel, isLocked, isMuted]);
+  }, [amplitude, frequency, phase, targetAmp, targetFreq, targetPhase, currentLevel, isLocked, isMuted, t]);
 
 
   return (
@@ -324,10 +196,10 @@ export default function TrigPage() {
        <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 h-14 flex items-center px-6 bg-black/80 backdrop-blur-md justify-between">
          <div className="flex items-center gap-4 text-xs tracking-widest">
             <Link href="/" className="hover:text-cyan-400 transition-colors">
-               {globalT('common.back_root')}
+               {t('common.back_root')}
             </Link>
             <span className="text-white/20">|</span>
-            <span className="text-cyan-500 font-bold">{globalT('common.protocol')}: {t('modules.trig.title')}</span>
+            <span className="text-cyan-500 font-bold">{t('common.protocol')}: {t('modules.trig.title')}</span>
          </div>
          <div className="flex items-center gap-4">
             <button onClick={() => setLocale(locale === 'en' ? 'ja' : 'en')} className="text-xs text-white/40 hover:text-white transition-colors uppercase">
@@ -358,7 +230,7 @@ export default function TrigPage() {
             </div>
             {currentLevel === 1 && (
                  <button onClick={() => handleLevelComplete(1)} className="mt-4 border border-cyan-500/30 text-cyan-400 px-4 py-2 text-xs hover:bg-cyan-900/20 transition-all uppercase tracking-widest">
-                    COMPLETE {globalT('common.level')} 01
+                    COMPLETE {t('common.level')} 01
                  </button>
             )}
         </section>
@@ -377,14 +249,14 @@ export default function TrigPage() {
                     <p className="text-white/50">{t('modules.trig.theory.eq_desc')}</p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-t border-white/10 pt-4">
-                     {(t('modules.trig.theory.params_list') as string[]).map((item, i) => (
-                         <div key={i} dangerouslySetInnerHTML={{ __html: item }} className="text-white/60" />
+                     {['1', '2', '3'].map((key) => (
+                         <div key={key} dangerouslySetInnerHTML={{ __html: t(`modules.trig.theory.params_list_${key}`) }} className="text-white/60" />
                      ))}
                 </div>
             </div>
              {currentLevel === 2 && (
                  <button onClick={() => handleLevelComplete(2)} className="mt-4 border border-cyan-500/30 text-cyan-400 px-4 py-2 text-xs hover:bg-cyan-900/20 transition-all uppercase tracking-widest">
-                    COMPLETE {globalT('common.level')} 02
+                    COMPLETE {t('common.level')} 02
                  </button>
             )}
         </section>
@@ -433,7 +305,7 @@ export default function TrigPage() {
                                  <div className="text-right">
                                      <span className={`block text-xl font-bold ${resonance > 90 ? 'text-green-400 animate-pulse' : 'text-red-500'}`}>{resonance.toFixed(0)}%</span>
                                      <span className="text-[9px] text-white/30">
-                                         {resonance > 90 ? t('modules.trig.viz.controls.status_locked') : t('modules.trig.viz.controls.status_searching')}
+                                         {resonance > 90 ? t('modules.trig.viz.status_locked') : t('modules.trig.viz.status_searching')}
                                      </span>
                                  </div>
                              </div>
@@ -441,7 +313,7 @@ export default function TrigPage() {
 
                          {/* System Log */}
                          <div className="flex-1 border-t border-white/10 pt-2 overflow-hidden flex flex-col">
-                             <div className="text-[9px] text-white/30 mb-1">SYSTEM_LOG</div>
+                             <div className="text-[9px] text-white/30 mb-1">{t('common.system_log')}</div>
                              <div className="flex-1 overflow-y-auto custom-scrollbar space-y-1">
                                 {log.map((entry, i) => (
                                     <div key={i} className="text-[10px] text-white/60 truncate">
@@ -479,7 +351,7 @@ export default function TrigPage() {
             </div>
              {currentLevel === 3 && isLocked && (
                  <button onClick={() => handleLevelComplete(3)} className="mt-4 border border-cyan-500/30 text-cyan-400 px-4 py-2 text-xs hover:bg-cyan-900/20 transition-all uppercase tracking-widest">
-                    COMPLETE {globalT('common.level')} 03
+                    COMPLETE {t('common.level')} 03
                  </button>
             )}
         </section>
@@ -505,7 +377,7 @@ export default function TrigPage() {
             </div>
              {currentLevel === 4 && (
                  <button onClick={() => handleLevelComplete(4)} className="mt-4 border border-cyan-500/30 text-cyan-400 px-4 py-2 text-xs hover:bg-cyan-900/20 transition-all uppercase tracking-widest">
-                    COMPLETE {globalT('common.level')} 04
+                    COMPLETE {t('common.level')} 04
                  </button>
             )}
         </section>
@@ -524,16 +396,16 @@ export default function TrigPage() {
                 <div className="bg-black border border-cyan-500/30 p-8 max-w-md w-full relative overflow-hidden">
                     <div className="absolute top-0 left-0 w-full h-1 bg-cyan-500 shadow-[0_0_10px_#06b6d4]"></div>
                     <h2 className="text-2xl font-bold text-white mb-2 tracking-tighter">{t('modules.trig.completion.synced')}</h2>
-                    <div className="text-cyan-500 text-sm mb-6">{globalT('common.level')} 0{currentLevel} COMPLETE</div>
+                    <div className="text-cyan-500 text-sm mb-6">{t('common.level')} 0{currentLevel} COMPLETE</div>
                     <p className="text-white/60 text-xs mb-8 leading-relaxed">
                         {t('modules.trig.completion.msg')}<br/>
-                        {globalT('common.xp_awarded')}: <span className="text-white">+100</span>
+                        {t('common.xp_awarded')}: <span className="text-white">+100</span>
                     </p>
                     <button 
                         onClick={handleNextLevel}
                         className="w-full bg-cyan-900/20 border border-cyan-500/50 text-cyan-400 py-3 text-xs hover:bg-cyan-500 hover:text-black transition-all uppercase tracking-widest"
                     >
-                        {currentLevel < 4 ? globalT('common.next') : globalT('common.root')}
+                        {currentLevel < 4 ? t('common.next') : t('common.root')}
                     </button>
                 </div>
             </motion.div>

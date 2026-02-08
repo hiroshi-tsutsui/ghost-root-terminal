@@ -180,6 +180,61 @@
             "msg": "The Void Scout is ready for deep space. You command the dimensions."
         }
     },
+    "trig": {
+        "title": "HARMONIC TUNER",
+        "levels": {
+            "1": { "name": "BASICS", "desc": "Circles & Waves.", "log_start": "Initializing Oscillator Bank...", "log_guide": "Observe circular motion." },
+            "2": { "name": "THEORY", "desc": "The Wave Equation.", "log_start": "Analyzing Equation...", "log_guide": "Understand y = A sin(B(x - C)) + D." },
+            "3": { "name": "VISUALIZATION", "desc": "Resonance Alignment.", "log_start": "Scanning for Resonance...", "log_guide": "Match the target waveform. Tune Amplitude, Frequency, and Phase." },
+            "4": { "name": "APPLY", "desc": "Signal Processing." }
+        },
+        "concepts": {
+            "title": "01. CONCEPTS: Circles & Waves",
+            "circle_title": "The Unit Circle",
+            "circle_body": "Trigonometry isn't just about triangles; it's about <strong>cycles</strong>. As you move around a circle, your height creates a Sine wave.",
+            "periodic_title": "Periodicity",
+            "periodic_body": "Nature loves loops. Days, seasons, heartbeats, and sound waves all repeat. Trig functions are the math of repetition."
+        },
+        "theory": {
+            "title": "02. THEORY: Wave Mechanics",
+            "eq_title": "The Master Equation",
+            "eq_term": "y = A sin(B(x - C)) + D",
+            "eq_desc": "This one formula describes almost every vibration in the universe.",
+            "params_title": "Parameters",
+            "params_list_1": "<strong>A (Amplitude):</strong> Loudness / Energy / Height.",
+            "params_list_2": "<strong>B (Frequency):</strong> Pitch / Speed / How fast it cycles.",
+            "params_list_3": "<strong>C (Phase Shift):</strong> Timing / Offset / When it starts."
+        },
+        "viz": {
+            "title": "03. PROTOCOL: HARMONIC TUNER",
+            "log_start": "OSCILLATOR BANK INITIALIZED...",
+            "log_guide": "MATCH THE TARGET WAVEFORM. TUNE AMPLITUDE, FREQUENCY, AND PHASE.",
+            "controls": {
+                "amp": "AMPLITUDE (Energy)",
+                "freq": "FREQUENCY (Pitch)",
+                "phase": "PHASE (Offset)",
+                "telemetry": "TELEMETRY",
+                "resonance": "RESONANCE SYNC",
+                "status_locked": "LOCKED",
+                "status_searching": "SEARCHING",
+                "toggle_audio": "AUDIO ENGINE"
+            },
+            "viewport": "OSCILLOSCOPE_VIEW"
+        },
+        "apps": {
+            "title": "04. APPLICATIONS: Signals",
+            "audio_title": "Audio Synthesis",
+            "audio_body": "Music is just math we can hear. Synthesizers add sine waves together to create instruments.",
+            "ac_title": "Electricity (AC)",
+            "ac_body": "The power in your wall socket oscillates 50/60 times a second (Hz). It's a sine wave of voltage.",
+            "fourier_title": "Fourier Transform",
+            "fourier_body": "The algorithm that runs the world (JPG, MP3, WiFi). It proves that *any* signal can be broken down into simple sine waves."
+        },
+        "completion": {
+            "synced": "HARMONY RESTORED",
+            "msg": "You have attuned to the rhythm of the cosmos. The signal is clear."
+        }
+    },
     "functions": {
       "title": "CAUSALITY_ENGINE (Functions)",
       "levels": {
