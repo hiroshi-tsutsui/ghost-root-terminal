@@ -1,12 +1,128 @@
 // @ts-nocheck
 "use client";
 
-import { useState, useEffect } from 'react';
-import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Grid, Text, Line } from '@react-three/drei';
+import { useState, useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import Link from 'next/link';
+import { GeistMono } from 'geist/font/mono';
+import { useProgress } from '../contexts/ProgressContext';
+import { useLanguage } from '../contexts/LanguageContext';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Canvas } from '@react-three/fiber';
+import { OrbitControls, Grid, Text, Line } from '@react-three/drei';
 
+// --- Constants ---
+const MODULE_ID = 'vectors';
+
+// --- Localization Content ---
+const LOCAL_CONTENT = {
+    en: {
+        title: "VOID SCOUT",
+        levels: {
+            1: { name: "BASICS", desc: "Direction & Magnitude." },
+            2: { name: "THEORY", desc: "Dot & Cross Products." },
+            3: { name: "VISUALIZATION", desc: "Drone Calibration." },
+            4: { name: "APPLY", desc: "Navigation & Forces." }
+        },
+        concepts: {
+            title: "Concept: The Arrow of Reality",
+            def_title: "Vectors",
+            def_body: "A vector is not just a number; it's an instruction. <strong>Go this far, in this direction.</strong> It describes movement, force, and flow.",
+            comp_title: "Components",
+            comp_body: "We break vectors down into X, Y, and Z steps. A diagonal flight path is just a combination of forward, right, and up movements."
+        },
+        theory: {
+            title: "Theory: Spatial Logic",
+            dot_term: "Dot Product (Inner)",
+            dot_desc: "A · B = |A||B|cos(θ). Measures alignment. If 0, they are perpendicular (Orthogonal). Used for lighting calculations and checking 'facing' direction.",
+            cross_term: "Cross Product (Outer)",
+            cross_desc: "A × B. Creates a new vector perpendicular to both. Essential for finding rotation axes, torque, and surface normals."
+        },
+        viz: {
+            title: "Protocol: Void Scout",
+            log_start: "VOID SCOUT CALIBRATION...",
+            log_guide: "ALIGN THRUSTERS. ORTHOGONALITY CHECK REQUIRED.",
+            controls: {
+                vec_a: "VECTOR A (Main Thrust)",
+                vec_b: "VECTOR B (Stabilizer)",
+                telemetry: "TELEMETRY",
+                dot: "DOT PROD (Align)",
+                cross: "CROSS PROD (Torque)",
+                angle: "ANGLE (Deg)",
+                show_plane: "VISUALIZE PLANE",
+                show_comp: "SHOW COMPONENTS"
+            },
+            viewport: "SIMULATION_VIEWPORT"
+        },
+        apps: {
+            title: "Applications: 3D Space",
+            cg_title: "Computer Graphics",
+            cg_body: "Every 3D game uses vectors for everything. Lighting (dot product with normals), camera direction, and movement.",
+            phys_title: "Physics & Forces",
+            phys_body: "Gravity, wind, and thrust are all vectors. We sum them up (Net Force) to determine where an object will go.",
+            nav_title: "Navigation",
+            nav_body: "GPS and flight paths. 'Heading' and 'Speed' combine to form the velocity vector."
+        },
+        completion: {
+            synced: "SENSORS CALIBRATED",
+            msg: "The Void Scout is ready for deep space. You command the dimensions."
+        }
+    },
+    ja: {
+        title: "ヴォイド・スカウト (ベクトル)",
+        levels: {
+            1: { name: "基礎 (Basics)", desc: "「向き」と「大きさ」。" },
+            2: { name: "理論 (Logic)", desc: "内積と外積の幾何学。" },
+            3: { name: "可視化 (Viz)", desc: "ドローン姿勢制御プロトコル。" },
+            4: { name: "応用 (Applications)", desc: "3D空間の支配。" }
+        },
+        concepts: {
+            title: "概念：現実を射抜く矢",
+            def_title: "ベクトルとは",
+            def_body: "単なる数字ではなく、<strong>「あちらへ、これだけ進め」</strong>という命令です。力、速度、流れなど、世界を動かす要素はすべてベクトルで記述されます。",
+            comp_title: "成分分解",
+            comp_body: "斜めへの複雑な動きも、X（横）、Y（縦）、Z（高さ）という単純な動きの組み合わせに分解できます。これを「成分」と呼びます。"
+        },
+        theory: {
+            title: "理論：空間のロジック",
+            dot_term: "内積 (Dot Product)",
+            dot_desc: "A・B。二つの矢印が「どれだけ同じ方向を向いているか」を表します。値が0なら直角（直交）。CGのライティング（光の当たり方）計算の基礎です。",
+            cross_term: "外積 (Cross Product)",
+            cross_desc: "A×B。二つの矢印の両方に直角な、新しい矢印を生み出します。回転軸（トルク）や、面の向き（法線）を見つけるために不可欠です。"
+        },
+        viz: {
+            title: "プロトコル：ヴォイド・スカウト",
+            log_start: "姿勢制御システム起動...",
+            log_guide: "スラスターベクトルを調整し、空間把握を開始せよ。",
+            controls: {
+                vec_a: "ベクトル A (主推進)",
+                vec_b: "ベクトル B (姿勢制御)",
+                telemetry: "テレメトリ",
+                dot: "内積 (直交性)",
+                cross: "外積 (回転軸)",
+                angle: "角度 (Deg)",
+                show_plane: "平面を可視化",
+                show_comp: "成分を表示"
+            },
+            viewport: "SIMULATION_VIEWPORT"
+        },
+        apps: {
+            title: "応用：3D空間",
+            cg_title: "コンピュータグラフィックス",
+            cg_body: "3Dゲームの映像はベクトルの塊です。ポリゴンの向き（法線）と光の向きの内積で、その面が明るいか暗いかが決まります。",
+            phys_title: "物理演算",
+            phys_body: "重力、風、エンジンの推力。これら全てのベクトルを足し合わせた「合力」が、物体の次の瞬間の動きを決定します。",
+            nav_title: "ナビゲーション",
+            nav_body: "GPSや航空機の運航。「進路（Heading）」と「速さ（Speed）」を合わせたものが速度ベクトルです。"
+        },
+        completion: {
+            synced: "センサー補正完了",
+            msg: "ヴォイド・スカウト、発進準備完了。あなたは次元を掌握しました。"
+        }
+    }
+};
+
+// --- 3D Components (Preserved & Adapted) ---
 function VectorArrow({ start = [0, 0, 0], end, color = 'orange', label = '' }: { start?: [number, number, number], end: [number, number, number], color?: string, label?: string }) {
   const startVec = new THREE.Vector3(...start);
   const endVec = new THREE.Vector3(...end);
@@ -67,7 +183,7 @@ function PlaneVisualizer({ normal, constant }: { normal: [number, number, number
     );
 }
 
-function Scene({ v1, v2, planeNormal, planeConstant, showPlane, showComponents }: { v1: [number, number, number], v2: [number, number, number], planeNormal: [number, number, number], planeConstant: number, showPlane: boolean, showComponents: boolean }) {
+function Scene({ v1, v2, showComponents }: { v1: [number, number, number], v2: [number, number, number], showComponents: boolean }) {
   const vec1 = new THREE.Vector3(...v1);
   const vec2 = new THREE.Vector3(...v2);
   const crossProd = new THREE.Vector3().crossVectors(vec1, vec2);
@@ -80,12 +196,11 @@ function Scene({ v1, v2, planeNormal, planeConstant, showPlane, showComponents }
       
       <Grid infiniteGrid fadeDistance={40} fadeStrength={5} sectionColor="#333" cellColor="#111" />
       
-      {/* Axis Lines */}
       <Line points={[[-10, 0, 0], [10, 0, 0]]} color="#333" lineWidth={1} />
       <Line points={[[0, -10, 0], [0, 10, 0]]} color="#333" lineWidth={1} />
       <Line points={[[0, 0, -10], [0, 0, 10]]} color="#333" lineWidth={1} />
 
-      <VectorArrow end={v1} color="#0071e3" label="a" />
+      <VectorArrow end={v1} color="#0071e3" label="A" />
       {showComponents && (
         <group>
           <Line points={[[v1[0], 0, 0], [v1[0], v1[1], 0], [v1[0], v1[1], v1[2]]]} color="#0071e3" lineWidth={1} dashed dashScale={0.5} opacity={0.3} transparent />
@@ -93,7 +208,7 @@ function Scene({ v1, v2, planeNormal, planeConstant, showPlane, showComponents }
         </group>
       )}
 
-      <VectorArrow end={v2} color="#ff3b30" label="b" />
+      <VectorArrow end={v2} color="#ff3b30" label="B" />
        {showComponents && (
         <group>
           <Line points={[[v2[0], 0, 0], [v2[0], v2[1], 0], [v2[0], v2[1], v2[2]]]} color="#ff3b30" lineWidth={1} dashed dashScale={0.5} opacity={0.3} transparent />
@@ -101,440 +216,295 @@ function Scene({ v1, v2, planeNormal, planeConstant, showPlane, showComponents }
         </group>
       )}
 
-      <VectorArrow end={[crossProd.x, crossProd.y, crossProd.z]} color="#af52de" label="a×b" />
+      <VectorArrow end={[crossProd.x, crossProd.y, crossProd.z]} color="#af52de" label="A×B" />
       
-      {showPlane && <PlaneVisualizer normal={planeNormal} constant={planeConstant} />}
-
       <OrbitControls makeDefault minPolarAngle={0} maxPolarAngle={Math.PI / 1.8} />
     </>
   );
 }
 
 export default function VectorsPage() {
+  const { moduleProgress, completeLevel } = useProgress();
+  const { locale, setLocale, t: globalT } = useLanguage();
+  const [currentLevel, setCurrentLevel] = useState(1);
+  const [showUnlock, setShowUnlock] = useState(false);
+  const [log, setLog] = useState<string[]>([]);
+
+  // Vector State
   const [v1, setV1] = useState<[number, number, number]>([2, 1, 0]);
   const [v2, setV2] = useState<[number, number, number]>([0, 2, 1]);
-  
-  const [showPlane, setShowPlane] = useState(false);
   const [showComponents, setShowComponents] = useState(false);
-  const [planeNormal, setPlaneNormal] = useState<[number, number, number]>([0, 1, 0]); 
-  const [planeConstant, setPlaneConstant] = useState(0);
-  const [inputMode, setInputMode] = useState<'xyz' | 'polar'>('xyz');
-
-  // Sensei Mode State
-  const [isSenseiMode, setIsSenseiMode] = useState(false);
-  const [level, setLevel] = useState(1);
-  const [lessonStep, setLessonStep] = useState(0);
-  const [senseiMessage, setSenseiMessage] = useState("");
-  const [taskCompleted, setTaskCompleted] = useState(false);
-
-
+  
   const vec1 = new THREE.Vector3(...v1);
   const vec2 = new THREE.Vector3(...v2);
   const dotProduct = vec1.dot(vec2);
   const crossProd = new THREE.Vector3().crossVectors(vec1, vec2);
-  const angleDeg = (vec1.angleTo(vec2) * 180 / Math.PI).toFixed(1);
+  const angleDeg = (vec1.angleTo(vec2) * 180 / Math.PI);
 
-  // --- Sensei Logic (NARRATIVE LAYER: VECTOR_SYNC) ---
-  const LEVELS = {
-      1: {
-          title: "PHASE 1: Gyroscopic Stabilization (Dot Product)",
-          steps: [
-              {
-                  message: "【PROTOCOL: INITIATE_CALIBRATION】\nWelcome, Operator. The Void Scout drones require stabilization. You must align the thrusters to be independent of cross-winds.\n\nPress 'EXECUTE' to begin calibration.",
-                  check: () => true,
-                  isBriefing: true
-              },
-              {
-                  message: "Calibrating orthogonal thrusters (Dot Product). When the product is 0, the vectors are orthogonal (90°). Set Vector A to `(2, 0, 0)` and Vector B to `(0, 2, 0)`.",
-                  check: () => v1[0] === 2 && v1[1] === 0 && v1[2] === 0 && v2[0] === 0 && v2[1] === 2 && v2[2] === 0
-              },
-              {
-                  message: "Orthogonality achieved. Thrusters are isolated. Now, induce a drift by setting Vector B's Z-component to `2`.",
-                  check: () => v2[2] >= 2
-              },
-              {
-                  message: "Drift detected. Dot product non-zero. Stabilization complete. Proceed to Phase 2.",
-                  check: () => true,
-                  isFinal: true
-              }
-          ]
-      },
-      2: {
-          title: "PHASE 2: Torque Generation (Cross Product)",
-          steps: [
-              {
-                  message: "【PROTOCOL: ROTATIONAL_DYNAMICS】\nThe drone needs to rotate. Calculate the torque vector using the Cross Product. The resulting vector defines the axis of rotation.\n\nPress 'EXECUTE' to simulate torque.",
-                  check: () => true,
-                  isBriefing: true
-              },
-              {
-                  message: "Generate torque (Vector A × Vector B). The purple vector represents the axis of rotation. Set A=`(1, 0, 0)` and B=`(0, 1, 0)`.",
-                  check: () => v1[0] === 1 && v1[1] === 0 && v2[0] === 0 && v2[1] === 1
-              },
-              {
-                  message: "Torque vector established (Positive Z). The drone rotates counter-clockwise. Now reverse the inputs: A=`(0, 1, 0)`, B=`(1, 0, 0)`.",
-                  check: () => v1[0] === 0 && v1[1] === 1 && v2[0] === 1 && v2[1] === 0
-              },
-              {
-                  message: "Torque vector inverted (Negative Z). The drone rotates clockwise. The order of operations dictates the direction. Phase 2 Complete.",
-                  check: () => true,
-                  isFinal: true
-              }
-          ]
-      },
-      3: {
-          title: "PHASE 3: Landing Protocol (Normal Vectors)",
-          steps: [
-             {
-                 message: "【PROTOCOL: SURFACE_ALIGNMENT】\nFinal Sequence. Align the landing gear with the docking platform surface using the Normal Vector.\n\nPress 'EXECUTE' to engage landing gear.",
-                 check: () => true,
-                 isBriefing: true
-             },
-             {
-                 message: "Activate the surface grid. Toggle 'Show Plane'.",
-                 check: () => showPlane === true
-             },
-             {
-                 message: "The platform is currently undefined. Set the Normal Vector `n` to `(0, 0, 1)` to align it with the ground.",
-                 check: () => planeNormal[0] === 0 && planeNormal[1] === 0 && planeNormal[2] === 1
-             },
-             {
-                 message: "Platform alignment confirmed. Landing gear engaged. Navigation Systems: OPTIMAL. Excellent work, Operator.",
-                 check: () => true,
-                 isFinal: true
-             }
-          ]
+  // Helper for local content
+  const t = (key: string) => {
+      const keys = key.split('.');
+      if (keys[0] === 'modules' && keys[1] === 'vectors') {
+          let obj = LOCAL_CONTENT[locale as 'en' | 'ja'];
+          for (let i = 2; i < keys.length; i++) {
+              if (obj) obj = obj[keys[i]];
+          }
+          if (obj) return obj;
       }
+      return globalT(key);
   };
 
   useEffect(() => {
-    if (!isSenseiMode) return;
-    const currentLevelData = LEVELS[level];
-    if (!currentLevelData) return;
-    const currentStepData = currentLevelData.steps[lessonStep];
-    if (!currentStepData) return;
-
-    setSenseiMessage(currentStepData.message);
-
-    if (currentStepData.check()) {
-        if (!taskCompleted) setTaskCompleted(true);
-    } else {
-        setTaskCompleted(false);
+    const progress = moduleProgress[MODULE_ID]?.completedLevels || [];
+    let nextLvl = 1;
+    if (progress.includes(1)) nextLvl = 2;
+    if (progress.includes(2)) nextLvl = 3;
+    if (progress.includes(3)) nextLvl = 4;
+    setCurrentLevel(nextLvl);
+    
+    if (nextLvl === 3) {
+        setLog([`[SYSTEM] ${t('modules.vectors.viz.log_start')}`, `[OP] ${t('modules.vectors.viz.log_guide')}`]);
     }
-  }, [v1, v2, showPlane, planeNormal, isSenseiMode, level, lessonStep]);
+  }, [moduleProgress, locale]);
 
-  const advanceLesson = () => {
-      const currentLevelData = LEVELS[level];
-      const currentStepData = currentLevelData.steps[lessonStep];
+  const addLog = (msg: string) => {
+      setLog(prev => [msg, ...prev].slice(0, 8));
+  };
 
-      if (currentStepData.isFinal) {
-          if (LEVELS[level + 1]) {
-              setLevel(level + 1);
-              setLessonStep(0);
-              // Reset specific values for new level if needed
-          } else {
-              setSenseiMessage("CALIBRATION COMPLETE. SYSTEM ONLINE.");
-              setIsSenseiMode(false);
-          }
-      } else {
-          setLessonStep(lessonStep + 1);
-      }
-      setTaskCompleted(false);
+  const handleLevelComplete = (lvl: number) => {
+      completeLevel(MODULE_ID, lvl);
+      setShowUnlock(true);
+  };
+
+  const handleNextLevel = () => {
+    setShowUnlock(false);
   };
 
   const updateVec = (setter: any, current: any, idx: number, val: number) => {
     const newVec = [...current] as [number, number, number];
     newVec[idx] = isNaN(val) ? 0 : val;
     setter(newVec);
+    addLog(`[OP] VECTOR UPDATE: [${newVec[0]}, ${newVec[1]}, ${newVec[2]}]`);
   };
-
-  const toPolar = (vec: [number, number, number]) => {
-      const v = new THREE.Vector3(...vec);
-      const r = v.length();
-      const phi = Math.acos(v.y / (r || 1)) * 180 / Math.PI;
-      const thetaRad = Math.atan2(v.z, v.x); 
-      let thetaDeg = thetaRad * 180 / Math.PI;
-      return { r, theta: thetaDeg, phi };
-  };
-
-  const updateFromPolar = (setter: any, r: number, theta: number, phi: number) => {
-      const thetaRad = theta * Math.PI / 180;
-      const phiRad = phi * Math.PI / 180;
-      const y = r * Math.cos(phiRad);
-      const h = r * Math.sin(phiRad);
-      const x = h * Math.cos(thetaRad);
-      const z = h * Math.sin(thetaRad);
-      setter([x, y, z]);
-  };
-
-  const currentStepIsBriefing = LEVELS[level]?.steps[lessonStep]?.isBriefing;
 
   return (
-    <div className="flex flex-col md:flex-row h-screen bg-[#050505] text-[#e5e5e5] font-mono overflow-hidden selection:bg-blue-500/30">
-      {/* Sidebar Control Panel */}
-      <div className="w-full md:w-[400px] flex flex-col border-r border-white/10 bg-[#0a0a0a] z-10 h-1/2 md:h-full overflow-y-auto">
-        <header className="p-6 pb-4 border-b border-white/10 sticky top-0 bg-[#0a0a0a]/90 backdrop-blur-md z-20">
-            <div className="flex justify-between items-start mb-3">
-                <Link href="/" className="group flex items-center text-xs text-gray-500 hover:text-white transition-colors uppercase tracking-widest">
-                <span className="inline-block transition-transform group-hover:-translate-x-1 mr-2">←</span> SYSTEM ROOT
-                </Link>
-                 <button 
-                    onClick={() => {
-                        setIsSenseiMode(!isSenseiMode);
-                        if (!isSenseiMode) {
-                            setV1([2, 1, 0]); setV2([0, 2, 1]); // Reset
-                            setLevel(1);
-                            setLessonStep(0);
-                            setShowPlane(false);
-                        }
-                    }}
-                    className={`px-3 py-1 text-[10px] font-bold tracking-widest uppercase border transition-all ${
-                        isSenseiMode 
-                        ? 'bg-blue-900/20 border-blue-500 text-blue-400 animate-pulse' 
-                        : 'bg-white/5 border-white/10 text-gray-500 hover:text-white hover:border-white/30'
-                    }`}
-                >
-                    {isSenseiMode ? 'SYNC: ACTIVE' : 'SYNC: OFFLINE'}
-                </button>
+    <div className={`min-h-screen bg-black text-white font-mono selection:bg-cyan-900 ${GeistMono.className}`}>
+       
+       <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 h-14 flex items-center px-6 bg-black/80 backdrop-blur-md justify-between">
+         <div className="flex items-center gap-4 text-xs tracking-widest">
+            <Link href="/" className="hover:text-cyan-400 transition-colors">
+               {globalT('common.back_root')}
+            </Link>
+            <span className="text-white/20">|</span>
+            <span className="text-cyan-500 font-bold">{globalT('common.protocol')}: {t('modules.vectors.title')}</span>
+         </div>
+         <div className="flex items-center gap-4">
+            <button onClick={() => setLocale(locale === 'en' ? 'ja' : 'en')} className="text-xs text-white/40 hover:text-white transition-colors uppercase">
+                 [{locale.toUpperCase()}]
+             </button>
+            <div className="text-xs text-white/40">
+                {t('modules.vectors.viz.viewport')} 0{currentLevel} // {t(`modules.vectors.levels.${currentLevel}.name`)}
             </div>
-            <h1 className="text-xl font-bold tracking-[0.2em] text-blue-500 mb-1">PROTOCOL: VECTORS</h1>
-            <p className="text-gray-600 text-[10px] font-mono uppercase tracking-widest">VOID NAVIGATION SYSTEM</p>
-        </header>
+         </div>
+      </header>
 
-        <div className="flex-1 overflow-y-auto p-6 space-y-8 pb-32 custom-scrollbar">
-          
-          {/* Sensei Message Box */}
-          {isSenseiMode && (
-                <div className={`p-4 border border-l-4 rounded-sm animate-fade-in ${currentStepIsBriefing ? 'bg-blue-900/10 border-blue-500/50 border-l-blue-500' : 'bg-gray-900/50 border-gray-700 border-l-white'}`}>
-                    <div className="flex items-start gap-3">
-                        <div className="text-xl">{currentStepIsBriefing ? '📡' : 'SYSTEM:'}</div>
-                        <div className="flex-1">
-                            <h3 className={`font-bold text-[10px] uppercase mb-2 tracking-widest ${currentStepIsBriefing ? 'text-blue-400' : 'text-gray-400'}`}>
-                                {LEVELS[level]?.title}
-                            </h3>
-                            <p className="text-gray-300 text-xs font-mono leading-relaxed whitespace-pre-wrap mb-4">
-                                {senseiMessage}
-                            </p>
-                            {taskCompleted && (
-                                <button 
-                                    onClick={advanceLesson}
-                                    className={`w-full py-2 text-xs font-bold tracking-widest uppercase border transition-all ${
-                                        currentStepIsBriefing 
-                                        ? 'bg-blue-500 text-black border-blue-500 hover:bg-white' 
-                                        : 'bg-green-500 text-black border-green-500 hover:bg-white'
-                                    }`}
-                                >
-                                    {currentStepIsBriefing ? 'ACKNOWLEDGE' : 'PROCEED'}
-                                </button>
-                            )}
-                        </div>
-                    </div>
+      <main className="pt-20 px-6 max-w-7xl mx-auto space-y-16 pb-20">
+        
+        {/* --- LEVEL 1: BASICS --- */}
+        <section className="space-y-6">
+            <h2 className="text-2xl font-bold text-cyan-500 tracking-tighter border-b border-white/10 pb-2">
+                {t('modules.vectors.concepts.title')}
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm text-white/70 leading-relaxed">
+                <div>
+                    <h3 className="text-white font-bold mb-2">{t('modules.vectors.concepts.def_title')}</h3>
+                    <p dangerouslySetInnerHTML={{ __html: t('modules.vectors.concepts.def_body') }} />
                 </div>
+                <div>
+                    <h3 className="text-white font-bold mb-2">{t('modules.vectors.concepts.comp_title')}</h3>
+                    <p dangerouslySetInnerHTML={{ __html: t('modules.vectors.concepts.comp_body') }} />
+                </div>
+            </div>
+            {currentLevel === 1 && (
+                 <button onClick={() => handleLevelComplete(1)} className="mt-4 border border-cyan-500/30 text-cyan-400 px-4 py-2 text-xs hover:bg-cyan-900/20 transition-all uppercase tracking-widest">
+                    COMPLETE {globalT('common.level')} 01
+                 </button>
             )}
+        </section>
 
-          {/* Segmented Control */}
-          <div className="flex border-b border-white/10">
-             <button 
-                onClick={() => setInputMode('xyz')} 
-                className={`flex-1 text-[10px] py-2 font-bold uppercase tracking-widest transition-colors ${inputMode === 'xyz' ? 'text-blue-400 border-b-2 border-blue-400' : 'text-gray-600 hover:text-gray-400'}`}
-             >
-                CARTESIAN (XYZ)
-             </button>
-             <button 
-                onClick={() => setInputMode('polar')} 
-                className={`flex-1 text-[10px] py-2 font-bold uppercase tracking-widest transition-colors ${inputMode === 'polar' ? 'text-blue-400 border-b-2 border-blue-400' : 'text-gray-600 hover:text-gray-400'}`}
-             >
-                SPHERICAL (r,θ,φ)
-             </button>
-          </div>
-
-          {/* Vector A Control */}
-          <div className={`p-4 border border-white/5 bg-white/5 transition-all hover:border-blue-500/30 ${isSenseiMode && level <= 2 && 'border-blue-500/50 bg-blue-900/5'}`}>
-            <h3 className="text-xs font-bold text-gray-400 flex items-center mb-4 uppercase tracking-widest">
-                <span className="w-2 h-2 rounded-full bg-[#0071e3] mr-2 shadow-[0_0_10px_#0071e3]"></span>
-                THRUSTER A
-            </h3>
-            {inputMode === 'xyz' ? (
-                <div className="grid grid-cols-3 gap-3">
-                {['x', 'y', 'z'].map((axis, i) => (
-                    <div key={axis}>
-                        <label className="block text-[10px] font-bold text-gray-600 mb-1 uppercase text-center">{axis}</label>
-                        <input 
-                            type="number" 
-                            value={v1[i].toFixed(2)} 
-                            onChange={(e) => updateVec(setV1, v1, i, parseFloat(e.target.value))} 
-                            className="w-full bg-black border border-white/10 text-white text-center text-xs py-1 focus:border-blue-500 focus:outline-none" 
-                        />
-                    </div>
-                ))}
+        {/* --- LEVEL 2: THEORY --- */}
+        <section className="space-y-6">
+            <h2 className="text-2xl font-bold text-cyan-500 tracking-tighter border-b border-white/10 pb-2">
+                {t('modules.vectors.theory.title')}
+            </h2>
+            <div className="bg-white/5 border border-white/10 p-6 rounded-sm font-mono text-xs grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                     <div className="mb-4"><span className="text-white/40">OPERATION:</span> <span className="text-white">{t('modules.vectors.theory.dot_term')}</span></div>
+                     <div className="text-xl tracking-widest text-cyan-400 mb-2">A · B = |A||B|cos(θ)</div>
+                     <p className="text-white/50">{t('modules.vectors.theory.dot_desc')}</p>
                 </div>
-            ) : (
-                <div className="space-y-4">
-                    {(() => {
-                        const { r, theta, phi } = toPolar(v1);
-                        return (
-                            <>
-                                <div className="space-y-1">
-                                    <div className="flex justify-between text-[10px] font-bold text-gray-500 uppercase">
-                                        <span>MAGNITUDE (r)</span>
-                                        <span className="text-blue-400">{r.toFixed(2)}</span>
-                                    </div>
-                                    <input type="range" min="0" max="10" step="0.1" value={r} onChange={(e) => updateFromPolar(setV1, parseFloat(e.target.value), theta, phi)} 
-                                        className="w-full h-1 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-blue-500"/>
-                                </div>
-                                <div className="space-y-1">
-                                    <div className="flex justify-between text-[10px] font-bold text-gray-500 uppercase">
-                                        <span>AZIMUTH (θ)</span>
-                                        <span className="text-blue-400">{theta.toFixed(0)}°</span>
-                                    </div>
-                                    <input type="range" min="-180" max="180" value={theta} onChange={(e) => updateFromPolar(setV1, r, parseFloat(e.target.value), phi)} 
-                                        className="w-full h-1 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-blue-500"/>
-                                </div>
-                                <div className="space-y-1">
-                                    <div className="flex justify-between text-[10px] font-bold text-gray-500 uppercase">
-                                        <span>ZENITH (φ)</span>
-                                        <span className="text-blue-400">{phi.toFixed(0)}°</span>
-                                    </div>
-                                    <input type="range" min="0" max="180" value={phi} onChange={(e) => updateFromPolar(setV1, r, theta, parseFloat(e.target.value))} 
-                                        className="w-full h-1 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-blue-500"/>
-                                </div>
-                            </>
-                        );
-                    })()}
+                <div>
+                     <div className="mb-4"><span className="text-white/40">OPERATION:</span> <span className="text-white">{t('modules.vectors.theory.cross_term')}</span></div>
+                     <div className="text-xl tracking-widest text-purple-400 mb-2">A × B = |A||B|sin(θ)n</div>
+                     <p className="text-white/50">{t('modules.vectors.theory.cross_desc')}</p>
                 </div>
+            </div>
+             {currentLevel === 2 && (
+                 <button onClick={() => handleLevelComplete(2)} className="mt-4 border border-cyan-500/30 text-cyan-400 px-4 py-2 text-xs hover:bg-cyan-900/20 transition-all uppercase tracking-widest">
+                    COMPLETE {globalT('common.level')} 02
+                 </button>
             )}
-          </div>
+        </section>
 
-          {/* Vector B Control */}
-          <div className={`p-4 border border-white/5 bg-white/5 transition-all hover:border-red-500/30 ${isSenseiMode && level <= 2 && 'border-red-500/50 bg-red-900/5'}`}>
-            <h3 className="text-xs font-bold text-gray-400 flex items-center mb-4 uppercase tracking-widest">
-                <span className="w-2 h-2 rounded-full bg-[#ff3b30] mr-2 shadow-[0_0_10px_#ff3b30]"></span>
-                THRUSTER B
-            </h3>
-            {inputMode === 'xyz' ? (
-                <div className="grid grid-cols-3 gap-3">
-                {['x', 'y', 'z'].map((axis, i) => (
-                    <div key={axis}>
-                        <label className="block text-[10px] font-bold text-gray-600 mb-1 uppercase text-center">{axis}</label>
-                        <input 
-                            type="number" 
-                            value={v2[i].toFixed(2)} 
-                            onChange={(e) => updateVec(setV2, v2, i, parseFloat(e.target.value))} 
-                            className="w-full bg-black border border-white/10 text-white text-center text-xs py-1 focus:border-red-500 focus:outline-none" 
-                        />
-                    </div>
-                ))}
-                </div>
-            ) : (
-                <div className="space-y-4">
-                    {(() => {
-                        const { r, theta, phi } = toPolar(v2);
-                        return (
-                            <>
-                                <div className="space-y-1">
-                                    <div className="flex justify-between text-[10px] font-bold text-gray-500 uppercase">
-                                        <span>MAGNITUDE (r)</span>
-                                        <span className="text-red-400">{r.toFixed(2)}</span>
-                                    </div>
-                                    <input type="range" min="0" max="10" step="0.1" value={r} onChange={(e) => updateFromPolar(setV2, parseFloat(e.target.value), theta, phi)} 
-                                        className="w-full h-1 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-red-500"/>
-                                </div>
-                                <div className="space-y-1">
-                                    <div className="flex justify-between text-[10px] font-bold text-gray-500 uppercase">
-                                        <span>AZIMUTH (θ)</span>
-                                        <span className="text-red-400">{theta.toFixed(0)}°</span>
-                                    </div>
-                                    <input type="range" min="-180" max="180" value={theta} onChange={(e) => updateFromPolar(setV2, r, parseFloat(e.target.value), phi)} 
-                                        className="w-full h-1 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-red-500"/>
-                                </div>
-                                <div className="space-y-1">
-                                    <div className="flex justify-between text-[10px] font-bold text-gray-500 uppercase">
-                                        <span>ZENITH (φ)</span>
-                                        <span className="text-red-400">{phi.toFixed(0)}°</span>
-                                    </div>
-                                    <input type="range" min="0" max="180" value={phi} onChange={(e) => updateFromPolar(setV2, r, theta, parseFloat(e.target.value))} 
-                                        className="w-full h-1 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-red-500"/>
-                                </div>
-                            </>
-                        );
-                    })()}
-                </div>
-            )}
-          </div>
-          
-          <div className="pt-2 space-y-4">
-             <div className={`flex justify-between items-center px-2 py-2 border border-white/5 rounded-sm transition-all ${isSenseiMode && level === 3 && 'bg-green-900/20 border-green-500/50'}`}>
-                <h3 className="text-xs font-bold text-gray-400 flex items-center uppercase tracking-wider">
-                    <span className="w-2 h-2 rounded-full bg-[#af52de] mr-2"></span>
-                    TARGET LANDING PAD
-                </h3>
-                <label className="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" checked={showPlane} onChange={(e) => setShowPlane(e.target.checked)} className="sr-only peer" />
-                    <div className="w-8 h-4 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-green-600"></div>
-                </label>
-             </div>
-
-             <div className="flex justify-between items-center px-2 py-2 border border-white/5 rounded-sm">
-                <h3 className="text-xs font-bold text-gray-400 flex items-center uppercase tracking-wider">
-                    <span className="w-2 h-2 rounded-full bg-gray-600 mr-2"></span>
-                    PROJECT COMPONENTS
-                </h3>
-                <label className="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" checked={showComponents} onChange={(e) => setShowComponents(e.target.checked)} className="sr-only peer" />
-                    <div className="w-8 h-4 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-blue-600"></div>
-                </label>
-             </div>
-             
-             {showPlane && (
-                 <div className="p-4 border border-white/10 bg-black/50 space-y-4">
-                    <p className="text-[10px] font-mono text-blue-400 text-center border border-blue-900/30 bg-blue-900/10 p-2">EQ: nx + ny + nz = d</p>
-                    <div>
-                        <label className="text-[10px] font-bold text-gray-500 mb-2 block uppercase tracking-wide">NORMAL VECTOR (n)</label>
+        {/* --- LEVEL 3: VOID SCOUT VIZ --- */}
+        <section className="space-y-6">
+             <h2 className="text-2xl font-bold text-cyan-500 tracking-tighter border-b border-white/10 pb-2">
+                {t('modules.vectors.viz.title')}
+            </h2>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 h-[600px]">
+                {/* Left Panel (Controls) */}
+                <div className="space-y-6 flex flex-col h-full">
+                    
+                    {/* Inputs */}
+                    <div className="bg-white/5 p-4 border border-white/10">
+                        <label className="text-[10px] text-white/40 block mb-2">{t('modules.vectors.viz.controls.vec_a')}</label>
                         <div className="grid grid-cols-3 gap-2">
                             {['x', 'y', 'z'].map((axis, i) => (
-                                <input key={axis} type="number" placeholder={axis} value={planeNormal[i]} onChange={(e) => updateVec(setPlaneNormal, planeNormal, i, parseFloat(e.target.value))} className="w-full bg-black border border-white/10 text-white text-center text-xs py-1 focus:border-blue-500 focus:outline-none" />
+                                <input key={`v1-${axis}`} type="number" value={v1[i]} onChange={(e) => updateVec(setV1, v1, i, parseFloat(e.target.value))} 
+                                    className="w-full bg-black border border-white/20 text-white p-1 text-xs text-center focus:border-cyan-500 outline-none" placeholder={axis} />
                             ))}
                         </div>
                     </div>
-                    <div>
-                        <label className="text-[10px] font-bold text-gray-500 mb-2 block uppercase tracking-wide">ALTITUDE OFFSET (d)</label>
-                        <input type="number" value={planeConstant} onChange={(e) => setPlaneConstant(parseFloat(e.target.value))} className="w-full bg-black border border-white/10 text-white text-center text-xs py-1 focus:border-blue-500 focus:outline-none" />
+                    
+                    <div className="bg-white/5 p-4 border border-white/10">
+                        <label className="text-[10px] text-white/40 block mb-2">{t('modules.vectors.viz.controls.vec_b')}</label>
+                        <div className="grid grid-cols-3 gap-2">
+                            {['x', 'y', 'z'].map((axis, i) => (
+                                <input key={`v2-${axis}`} type="number" value={v2[i]} onChange={(e) => updateVec(setV2, v2, i, parseFloat(e.target.value))} 
+                                    className="w-full bg-black border border-white/20 text-white p-1 text-xs text-center focus:border-red-500 outline-none" placeholder={axis} />
+                            ))}
+                        </div>
                     </div>
-                 </div>
-             )}
-          </div>
 
-          <div className="p-4 border border-white/10 bg-white/5 space-y-3">
-            <h3 className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] border-b border-white/5 pb-2">TELEMETRY DATA</h3>
-            <div className="flex justify-between items-center">
-                <span className="text-xs text-gray-400 uppercase">DOT PRODUCT</span>
-                <span className="font-mono text-xs text-white">{dotProduct.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between items-center">
-                <span className="text-xs text-gray-400 uppercase">CROSS PRODUCT</span>
-                <span className="font-mono text-xs text-purple-400">({crossProd.x.toFixed(1)}, {crossProd.y.toFixed(1)}, {crossProd.z.toFixed(1)})</span>
-            </div>
-            <div className="flex justify-between items-center">
-                <span className="text-xs text-gray-400 uppercase">INCIDENCE ANGLE</span>
-                <span className="font-mono text-xs text-white">{angleDeg}°</span>
-            </div>
-          </div>
+                    {/* Stats & Log */}
+                    <div className="flex-1 bg-black border border-white/10 p-4 font-mono text-xs flex flex-col">
+                         <div className="border-b border-white/10 pb-2 mb-2 text-white/30">{t('modules.vectors.viz.controls.telemetry')}</div>
+                         
+                         <div className="space-y-2 mb-4">
+                             <div className="flex justify-between">
+                                 <span className="text-white/60">{t('modules.vectors.viz.controls.dot')}</span>
+                                 <span className="text-cyan-400">{dotProduct.toFixed(2)}</span>
+                             </div>
+                             <div className="flex justify-between">
+                                 <span className="text-white/60">{t('modules.vectors.viz.controls.cross')}</span>
+                                 <span className="text-purple-400">({crossProd.x.toFixed(1)}, {crossProd.y.toFixed(1)}, {crossProd.z.toFixed(1)})</span>
+                             </div>
+                             <div className="flex justify-between">
+                                 <span className="text-white/60">{t('modules.vectors.viz.controls.angle')}</span>
+                                 <span>{isNaN(angleDeg) ? '-' : angleDeg.toFixed(1)}°</span>
+                             </div>
+                         </div>
 
-        </div>
-      </div>
+                         {/* System Log */}
+                         <div className="flex-1 border-t border-white/10 pt-2 overflow-hidden flex flex-col">
+                             <div className="text-[9px] text-white/30 mb-1">SYSTEM_LOG</div>
+                             <div className="flex-1 overflow-y-auto custom-scrollbar space-y-1">
+                                {log.map((entry, i) => (
+                                    <div key={i} className="text-[10px] text-white/60 truncate">
+                                        <span className="text-cyan-900 mr-1">{`>`}</span>
+                                        {entry}
+                                    </div>
+                                ))}
+                             </div>
+                         </div>
+                         
+                          <div className="pt-4 border-t border-white/10">
+                             <button 
+                                onClick={() => setShowComponents(!showComponents)}
+                                className={`w-full py-2 text-center border transition-all text-xs ${showComponents ? 'bg-cyan-900/20 border-cyan-500 text-cyan-400' : 'border-white/20 text-white/60 hover:text-white'}`}
+                            >
+                                {t('modules.vectors.viz.controls.show_comp')}
+                            </button>
+                         </div>
+                    </div>
+                </div>
 
-      <div className="flex-1 relative bg-[#050505]">
-        <Canvas camera={{ position: [6, 4, 8], fov: 45 }}>
-          <Scene v1={v1} v2={v2} planeNormal={planeNormal} planeConstant={planeConstant} showPlane={showPlane} showComponents={showComponents} />
-        </Canvas>
-        
-        {/* Floating Label */}
-        <div className="absolute bottom-8 left-8 flex gap-4 text-[10px] font-bold bg-black/80 backdrop-blur-md px-4 py-2 border border-white/10 uppercase tracking-widest text-gray-400">
-           <span className="flex items-center"><span className="w-1.5 h-1.5 rounded-full bg-[#ff3b30] mr-2 shadow-[0_0_5px_#ff3b30]"></span>X-AXIS</span>
-           <span className="flex items-center"><span className="w-1.5 h-1.5 rounded-full bg-[#34c759] mr-2 shadow-[0_0_5px_#34c759]"></span>Y-AXIS</span>
-           <span className="flex items-center"><span className="w-1.5 h-1.5 rounded-full bg-[#0071e3] mr-2 shadow-[0_0_5px_#0071e3]"></span>Z-AXIS</span>
-        </div>
-      </div>
+                {/* Right Panel (Canvas) */}
+                <div className="lg:col-span-2 border border-white/10 bg-black relative h-full overflow-hidden group">
+                    <div className="absolute top-2 left-2 text-[10px] text-white/20 z-10 group-hover:text-white/40 transition-colors">
+                        {t('modules.vectors.viz.viewport')}
+                    </div>
+                    
+                    <div className="w-full h-full cursor-move">
+                        <Canvas camera={{ position: [6, 4, 8], fov: 45 }}>
+                            <Scene v1={v1} v2={v2} showComponents={showComponents} />
+                        </Canvas>
+                    </div>
+                </div>
+            </div>
+             {currentLevel === 3 && (
+                 <button onClick={() => handleLevelComplete(3)} className="mt-4 border border-cyan-500/30 text-cyan-400 px-4 py-2 text-xs hover:bg-cyan-900/20 transition-all uppercase tracking-widest">
+                    COMPLETE {globalT('common.level')} 03
+                 </button>
+            )}
+        </section>
+
+        {/* --- LEVEL 4: APPLICATION --- */}
+        <section className="space-y-6 border-t border-white/10 pt-16">
+            <h2 className="text-2xl font-bold text-cyan-500 tracking-tighter border-b border-white/10 pb-2">
+                {t('modules.vectors.apps.title')}
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs text-white/60">
+                <div className="bg-white/5 p-4 border border-white/10">
+                    <h3 className="text-white font-bold mb-2 text-sm">{t('modules.vectors.apps.cg_title')}</h3>
+                    <p>{t('modules.vectors.apps.cg_body')}</p>
+                </div>
+                <div className="bg-white/5 p-4 border border-white/10">
+                    <h3 className="text-white font-bold mb-2 text-sm">{t('modules.vectors.apps.phys_title')}</h3>
+                    <p>{t('modules.vectors.apps.phys_body')}</p>
+                </div>
+                <div className="bg-white/5 p-4 border border-white/10">
+                    <h3 className="text-white font-bold mb-2 text-sm">{t('modules.vectors.apps.nav_title')}</h3>
+                    <p>{t('modules.vectors.apps.nav_body')}</p>
+                </div>
+            </div>
+             {currentLevel === 4 && (
+                 <button onClick={() => handleLevelComplete(4)} className="mt-4 border border-cyan-500/30 text-cyan-400 px-4 py-2 text-xs hover:bg-cyan-900/20 transition-all uppercase tracking-widest">
+                    COMPLETE {globalT('common.level')} 04
+                 </button>
+            )}
+        </section>
+
+      </main>
+
+      {/* Completion Modal */}
+      <AnimatePresence>
+        {showUnlock && (
+            <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-sm"
+            >
+                <div className="bg-black border border-cyan-500/30 p-8 max-w-md w-full relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-full h-1 bg-cyan-500 shadow-[0_0_10px_#06b6d4]"></div>
+                    <h2 className="text-2xl font-bold text-white mb-2 tracking-tighter">{t('modules.vectors.completion.synced')}</h2>
+                    <div className="text-cyan-500 text-sm mb-6">{globalT('common.level')} 0{currentLevel} COMPLETE</div>
+                    <p className="text-white/60 text-xs mb-8 leading-relaxed">
+                        {t('modules.vectors.completion.msg')}<br/>
+                        {globalT('common.xp_awarded')}: <span className="text-white">+100</span>
+                    </p>
+                    <button 
+                        onClick={handleNextLevel}
+                        className="w-full bg-cyan-900/20 border border-cyan-500/50 text-cyan-400 py-3 text-xs hover:bg-cyan-500 hover:text-black transition-all uppercase tracking-widest"
+                    >
+                        {currentLevel < 4 ? globalT('common.next') : globalT('common.root')}
+                    </button>
+                </div>
+            </motion.div>
+        )}
+      </AnimatePresence>
+
     </div>
   );
 }
