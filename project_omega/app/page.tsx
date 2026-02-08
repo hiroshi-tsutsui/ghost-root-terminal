@@ -117,6 +117,16 @@ export default function Home() {
       color: 'text-amber-400',
       border: 'border-amber-500/30',
       bg: 'bg-amber-900/10'
+    },
+    {
+      id: 'quiz',
+      title: 'THE GAUNTLET',
+      subtitle: 'Protocol: Calibration',
+      desc: 'Test system stability. Establish baseline sync rate.',
+      status: 'CRITICAL',
+      color: 'text-red-500',
+      border: 'border-red-500/30',
+      bg: 'bg-red-900/10'
     }
   ];
 

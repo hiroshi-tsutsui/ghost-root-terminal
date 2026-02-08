@@ -295,3 +295,9 @@ We are moving from a "Tool" to a "Platform".
   - **Visuals:** ID Card with Rank Badge (Ghost -> Tesseract), Sector Stability Bars.
   - **Mechanics:** Tracks XP, Level, and Mastered Modules. Calculates global Sync Rate.
   - **Goal:** Provide a centralized "Character Sheet" for the Operator to track their evolution.
+
+- **[2026-02-08] Refinement: Hub (The Gauntlet Integration)**
+  - **Status:** Deployed.
+  - **Action:** Added "The Gauntlet" (Quiz) to the main module grid.
+  - **Narrative:** Formalized the "Calibration Protocol" as a repeatable mission.
+  - **Goal:** Allow Operators to re-calibrate their sync rate at will.
