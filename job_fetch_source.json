@@ -1,0 +1,54 @@
+{
+  "taskGroups": [
+    {
+      "taskSpec": {
+        "runnables": [
+          {
+            "container": {
+              "imageUri": "us-central1-docker.pkg.dev/dev-dotsfty/yolo/yolo:latest",
+              "entrypoint": "bash",
+              "commands": [
+                "-c",
+                "python3 -c \"import services.following_distance_detection.detector as m; import inspect; print(inspect.getsource(m))\" > /mnt/disks/output/detector.py"
+              ],
+              "volumes": [
+                "/mnt/disks/output:/mnt/disks/output:rw"
+              ]
+            }
+          }
+        ],
+        "computeResource": {
+          "cpuMilli": "2000",
+          "memoryMib": "2048"
+        },
+        "maxRunDuration": "600s",
+        "volumes": [
+          {
+            "gcs": {
+              "remotePath": "yolo-gcp/eagle/source_dump/"
+            },
+            "mountPath": "/mnt/disks/output"
+          }
+        ]
+      },
+      "taskCount": 1,
+      "parallelism": 1
+    }
+  ],
+  "allocationPolicy": {
+    "instances": [
+      {
+        "policy": {
+          "machineType": "e2-standard-2",
+          "bootDisk": {
+            "type": "pd-balanced",
+            "sizeGb": 30
+          }
+        }
+      }
+    ]
+  },
+  "logsPolicy": {
+    "destination": "CLOUD_LOGGING"
+  }
+}

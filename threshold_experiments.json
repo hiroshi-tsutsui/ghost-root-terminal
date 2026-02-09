@@ -1,0 +1,218 @@
+[
+  {
+    "id": "exp_v01",
+    "params": {
+      "DIST_DANGER_M": 13.0,
+      "DANGER_PERSISTENCE_SEC": 0.6,
+      "EMA_ALPHA": 0.3,
+      "DIST_WARN_M": 30.0
+    }
+  },
+  {
+    "id": "exp_v02",
+    "params": {
+      "DIST_DANGER_M": 13.0,
+      "DANGER_PERSISTENCE_SEC": 0.6,
+      "EMA_ALPHA": 0.5,
+      "DIST_WARN_M": 30.0
+    }
+  },
+  {
+    "id": "exp_v03",
+    "params": {
+      "DIST_DANGER_M": 13.0,
+      "DANGER_PERSISTENCE_SEC": 0.7,
+      "EMA_ALPHA": 0.3,
+      "DIST_WARN_M": 30.0
+    }
+  },
+  {
+    "id": "exp_v04",
+    "params": {
+      "DIST_DANGER_M": 13.0,
+      "DANGER_PERSISTENCE_SEC": 0.7,
+      "EMA_ALPHA": 0.5,
+      "DIST_WARN_M": 30.0
+    }
+  },
+  {
+    "id": "exp_v05",
+    "params": {
+      "DIST_DANGER_M": 13.0,
+      "DANGER_PERSISTENCE_SEC": 0.8,
+      "EMA_ALPHA": 0.3,
+      "DIST_WARN_M": 30.0
+    }
+  },
+  {
+    "id": "exp_v06",
+    "params": {
+      "DIST_DANGER_M": 13.0,
+      "DANGER_PERSISTENCE_SEC": 0.8,
+      "EMA_ALPHA": 0.5,
+      "DIST_WARN_M": 30.0
+    }
+  },
+  {
+    "id": "exp_v07",
+    "params": {
+      "DIST_DANGER_M": 13.5,
+      "DANGER_PERSISTENCE_SEC": 0.6,
+      "EMA_ALPHA": 0.3,
+      "DIST_WARN_M": 30.0
+    }
+  },
+  {
+    "id": "exp_v08",
+    "params": {
+      "DIST_DANGER_M": 13.5,
+      "DANGER_PERSISTENCE_SEC": 0.6,
+      "EMA_ALPHA": 0.5,
+      "DIST_WARN_M": 30.0
+    }
+  },
+  {
+    "id": "exp_v09",
+    "params": {
+      "DIST_DANGER_M": 13.5,
+      "DANGER_PERSISTENCE_SEC": 0.7,
+      "EMA_ALPHA": 0.3,
+      "DIST_WARN_M": 30.0
+    }
+  },
+  {
+    "id": "exp_v10",
+    "params": {
+      "DIST_DANGER_M": 13.5,
+      "DANGER_PERSISTENCE_SEC": 0.7,
+      "EMA_ALPHA": 0.5,
+      "DIST_WARN_M": 30.0
+    }
+  },
+  {
+    "id": "exp_v11",
+    "params": {
+      "DIST_DANGER_M": 13.5,
+      "DANGER_PERSISTENCE_SEC": 0.8,
+      "EMA_ALPHA": 0.3,
+      "DIST_WARN_M": 30.0
+    }
+  },
+  {
+    "id": "exp_v12",
+    "params": {
+      "DIST_DANGER_M": 13.5,
+      "DANGER_PERSISTENCE_SEC": 0.8,
+      "EMA_ALPHA": 0.5,
+      "DIST_WARN_M": 30.0
+    }
+  },
+  {
+    "id": "exp_v13",
+    "params": {
+      "DIST_DANGER_M": 14.0,
+      "DANGER_PERSISTENCE_SEC": 0.6,
+      "EMA_ALPHA": 0.3,
+      "DIST_WARN_M": 30.0
+    }
+  },
+  {
+    "id": "exp_v14",
+    "params": {
+      "DIST_DANGER_M": 14.0,
+      "DANGER_PERSISTENCE_SEC": 0.6,
+      "EMA_ALPHA": 0.5,
+      "DIST_WARN_M": 30.0
+    }
+  },
+  {
+    "id": "exp_v15",
+    "params": {
+      "DIST_DANGER_M": 14.0,
+      "DANGER_PERSISTENCE_SEC": 0.7,
+      "EMA_ALPHA": 0.3,
+      "DIST_WARN_M": 30.0
+    }
+  },
+  {
+    "id": "exp_v16",
+    "params": {
+      "DIST_DANGER_M": 14.0,
+      "DANGER_PERSISTENCE_SEC": 0.7,
+      "EMA_ALPHA": 0.5,
+      "DIST_WARN_M": 30.0
+    }
+  },
+  {
+    "id": "exp_v17",
+    "params": {
+      "DIST_DANGER_M": 14.0,
+      "DANGER_PERSISTENCE_SEC": 0.8,
+      "EMA_ALPHA": 0.3,
+      "DIST_WARN_M": 30.0
+    }
+  },
+  {
+    "id": "exp_v18",
+    "params": {
+      "DIST_DANGER_M": 14.0,
+      "DANGER_PERSISTENCE_SEC": 0.8,
+      "EMA_ALPHA": 0.5,
+      "DIST_WARN_M": 30.0
+    }
+  },
+  {
+    "id": "exp_v19",
+    "params": {
+      "DIST_DANGER_M": 14.5,
+      "DANGER_PERSISTENCE_SEC": 0.6,
+      "EMA_ALPHA": 0.3,
+      "DIST_WARN_M": 30.0
+    }
+  },
+  {
+    "id": "exp_v20",
+    "params": {
+      "DIST_DANGER_M": 14.5,
+      "DANGER_PERSISTENCE_SEC": 0.6,
+      "EMA_ALPHA": 0.5,
+      "DIST_WARN_M": 30.0
+    }
+  },
+  {
+    "id": "exp_v21",
+    "params": {
+      "DIST_DANGER_M": 14.5,
+      "DANGER_PERSISTENCE_SEC": 0.7,
+      "EMA_ALPHA": 0.3,
+      "DIST_WARN_M": 30.0
+    }
+  },
+  {
+    "id": "exp_v22",
+    "params": {
+      "DIST_DANGER_M": 14.5,
+      "DANGER_PERSISTENCE_SEC": 0.7,
+      "EMA_ALPHA": 0.5,
+      "DIST_WARN_M": 30.0
+    }
+  },
+  {
+    "id": "exp_v23",
+    "params": {
+      "DIST_DANGER_M": 14.5,
+      "DANGER_PERSISTENCE_SEC": 0.8,
+      "EMA_ALPHA": 0.3,
+      "DIST_WARN_M": 30.0
+    }
+  },
+  {
+    "id": "exp_v24",
+    "params": {
+      "DIST_DANGER_M": 14.5,
+      "DANGER_PERSISTENCE_SEC": 0.8,
+      "EMA_ALPHA": 0.5,
+      "DIST_WARN_M": 30.0
+    }
+  }
+]

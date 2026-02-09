@@ -1,0 +1,68 @@
+{
+  "taskGroups": [
+    {
+      "taskSpec": {
+        "runnables": [
+          {
+            "container": {
+              "imageUri": "us-central1-docker.pkg.dev/dev-dotsfty/yolo/yolo:latest",
+              "entrypoint": "bash",
+              "commands": [
+                "-c",
+                "mkdir -p tmp && python3.11 -m services.following_distance_detection.test_following_distance --input_file /mnt/disks/input/following_distance_true_positives.csv --output_dir /mnt/disks/output --annotate"
+              ],
+              "volumes": [
+                "/mnt/disks/input:/mnt/disks/input:rw",
+                "/mnt/disks/output:/mnt/disks/output:rw"
+              ]
+            }
+          }
+        ],
+        "computeResource": {
+          "cpuMilli": "2000",
+          "memoryMib": "10000"
+        },
+        "maxRunDuration": "7200s",
+        "volumes": [
+          {
+            "gcs": {
+              "remotePath": "yolo-gcp/eagle/infer/input/labeled/"
+            },
+            "mountPath": "/mnt/disks/input"
+          },
+          {
+            "gcs": {
+              "remotePath": "yolo-gcp/eagle/infer/output/labeled/following_distance_true_positives_validation/"
+            },
+            "mountPath": "/mnt/disks/output"
+          }
+        ]
+      },
+      "taskCount": 1,
+      "parallelism": 1
+    }
+  ],
+  "allocationPolicy": {
+    "instances": [
+      {
+        "policy": {
+          "machineType": "n1-standard-4",
+          "accelerators": [
+            {
+              "type": "nvidia-tesla-t4",
+              "count": 1
+            }
+          ],
+          "bootDisk": {
+            "type": "pd-balanced",
+            "sizeGb": 100
+          }
+        },
+        "installGpuDrivers": true
+      }
+    ]
+  },
+  "logsPolicy": {
+    "destination": "CLOUD_LOGGING"
+  }
+}

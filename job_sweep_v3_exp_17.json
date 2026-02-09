@@ -1,0 +1,87 @@
+{
+  "taskGroups": [
+    {
+      "taskSpec": {
+        "runnables": [
+          {
+            "container": {
+              "imageUri": "us-central1-docker.pkg.dev/dev-dotsfty/yolo/yolo:latest",
+              "entrypoint": "bash",
+              "commands": [
+                "-c",
+                "python3.11 /mnt/disks/scripts/detector_sweep_wrapper.py"
+              ],
+              "volumes": [
+                "/mnt/disks/input:/mnt/disks/input:ro",
+                "/mnt/disks/output:/mnt/disks/output:rw",
+                "/mnt/disks/scripts:/mnt/disks/scripts:ro",
+                "/mnt/disks/model:/mnt/disks/model:ro"
+              ]
+            },
+            "environment": {
+              "variables": {
+                "SWEEP_CONFIG": "{\"W_REAL\": 1.8, \"H_CAM\": 2.8, \"H_TARGET_REF\": 0.6, \"HFOV_DEG\": 85, \"EMA_ALPHA\": 0.3, \"EMA_ALPHA_V\": 0.1, \"DIST_WARN_M\": 40.0, \"DIST_DANGER_M\": 16.0, \"DANGER_PERSISTENCE_SEC\": 1.2, \"RECOVERY_THRESHOLD_M\": 5.0, \"LANE_BOTTOM_W\": 0.4, \"LANE_TOP_W\": 0.1, \"LANE_START_Y\": 0.55, \"LANE_OFFSET_X\": 0.02, \"WIDTH_CONTAINMENT_RATIO\": 0.9, \"FRAME_SKIP\": 2}"
+              }
+            }
+          }
+        ],
+        "computeResource": {
+          "cpuMilli": "4000",
+          "memoryMib": "16000"
+        },
+        "maxRunDuration": "3600s",
+        "volumes": [
+          {
+            "gcs": {
+              "remotePath": "yolo-gcp/eagle/infer/input/labeled/following_distance_fp_Jan19_Feb5/"
+            },
+            "mountPath": "/mnt/disks/input"
+          },
+          {
+            "gcs": {
+              "remotePath": "yolo-gcp/scripts/"
+            },
+            "mountPath": "/mnt/disks/scripts"
+          },
+          {
+            "gcs": {
+              "remotePath": "dot-sfty-private/models/yolo/eagle/"
+            },
+            "mountPath": "/mnt/disks/model"
+          },
+          {
+            "gcs": {
+              "remotePath": "yolo-gcp/eagle/infer/output/sweep_v3/sweep_v3_exp_17/"
+            },
+            "mountPath": "/mnt/disks/output"
+          }
+        ]
+      },
+      "taskCount": 1,
+      "parallelism": 1
+    }
+  ],
+  "allocationPolicy": {
+    "instances": [
+      {
+        "policy": {
+          "machineType": "n1-standard-4",
+          "accelerators": [
+            {
+              "type": "nvidia-tesla-t4",
+              "count": 1
+            }
+          ],
+          "bootDisk": {
+            "type": "pd-balanced",
+            "sizeGb": 100
+          }
+        },
+        "installGpuDrivers": true
+      }
+    ]
+  },
+  "logsPolicy": {
+    "destination": "CLOUD_LOGGING"
+  }
+}

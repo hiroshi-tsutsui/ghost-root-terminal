@@ -1,0 +1,43 @@
+Copying False Positives (Hard Negatives)...
+Copying gs://yolo-gcp/eagle/infer/input/labeled/following_distance_fp_Jan19_Feb5/video_0018b8b8-d7a2-4fae-a9c9-d83969d1589b_outward_002.mp4 [Content-Type=video/mp4]...
+/ [0 files][    0.0 B/  2.9 MiB]                                                -- [1 files][  2.9 MiB/  2.9 MiB]                                                
+Operation completed over 1 objects/2.9 MiB.                                      
+Copying gs://yolo-gcp/eagle/infer/input/labeled/following_distance_fp_Jan19_Feb5/video_00745e62-e00d-46d1-8126-103eff0a6965_outward_001.mp4 [Content-Type=video/mp4]...
+/ [0 files][    0.0 B/  3.4 MiB]                                                / [1 files][  3.4 MiB/  3.4 MiB]                                                
+Operation completed over 1 objects/3.4 MiB.                                      
+Copying gs://yolo-gcp/eagle/infer/input/labeled/following_distance_fp_Jan19_Feb5/video_00b01c56-d1fc-4154-8bbc-4d59c7343c0b_outward_001.mp4 [Content-Type=video/mp4]...
+/ [0 files][    0.0 B/  3.2 MiB]                                                / [1 files][  3.2 MiB/  3.2 MiB]                                                
+Operation completed over 1 objects/3.2 MiB.                                      
+Copying gs://yolo-gcp/eagle/infer/input/labeled/following_distance_fp_Jan19_Feb5/video_010c463a-d845-4650-9d7d-aabe9c806665_outward_001.mp4 [Content-Type=video/mp4]...
+/ [0 files][    0.0 B/  4.7 MiB]                                                / [1 files][  4.7 MiB/  4.7 MiB]                                                
+Operation completed over 1 objects/4.7 MiB.                                      
+Copying gs://yolo-gcp/eagle/infer/input/labeled/following_distance_fp_Jan19_Feb5/video_015662e0-59c6-43e7-b908-a70e73d9f330_outward_001.mp4 [Content-Type=video/mp4]...
+/ [0 files][    0.0 B/  1.8 MiB]                                                / [1 files][  1.8 MiB/  1.8 MiB]                                                
+Operation completed over 1 objects/1.8 MiB.                                      
+Copying gs://yolo-gcp/eagle/infer/input/labeled/following_distance_fp_Jan19_Feb5/video_020a1d05-c7ad-49a4-ad62-5e1a96436bef_outward_002.mp4 [Content-Type=video/mp4]...
+/ [0 files][    0.0 B/  4.8 MiB]                                                / [1 files][  4.8 MiB/  4.8 MiB]                                                
+Operation completed over 1 objects/4.8 MiB.                                      
+Copying gs://yolo-gcp/eagle/infer/input/labeled/following_distance_fp_Jan19_Feb5/video_0233811d-7d92-4632-b718-26af4aed7ce9_outward_001.mp4 [Content-Type=video/mp4]...
+/ [0 files][    0.0 B/  4.8 MiB]                                                / [1 files][  4.8 MiB/  4.8 MiB]                                                
+Operation completed over 1 objects/4.8 MiB.                                      
+Copying gs://yolo-gcp/eagle/infer/input/labeled/following_distance_fp_Jan19_Feb5/video_02a55f0f-3304-408b-bdf6-81fbdd8bc415_outward_001.mp4 [Content-Type=video/mp4]...
+/ [0 files][    0.0 B/  4.5 MiB]                                                / [1 files][  4.5 MiB/  4.5 MiB]                                                
+Operation completed over 1 objects/4.5 MiB.                                      
+Copying gs://yolo-gcp/eagle/infer/input/labeled/following_distance_fp_Jan19_Feb5/video_02e64fe2-4827-4b99-9f82-57ca4adff699_outward_001.mp4 [Content-Type=video/mp4]...
+/ [0 files][    0.0 B/  4.1 MiB]                                                -- [1 files][  4.1 MiB/  4.1 MiB]                                                
+Operation completed over 1 objects/4.1 MiB.                                      
+Copying gs://yolo-gcp/eagle/infer/input/labeled/following_distance_fp_Jan19_Feb5/video_03dcffd2-6851-49d8-b5b1-da6ad8696ba7_outward_001.mp4 [Content-Type=video/mp4]...
+/ [0 files][    0.0 B/  2.5 MiB]                                                / [1 files][  2.5 MiB/  2.5 MiB]                                                
+Operation completed over 1 objects/2.5 MiB.                                      
+Copying gs://yolo-gcp/eagle/infer/input/labeled/following_distance_fp_Jan19_Feb5/video_047d79c8-9219-43d4-8aa3-2fa7e3450439_outward_001.mp4 [Content-Type=video/mp4]...
+/ [0 files][    0.0 B/  2.6 MiB]                                                / [1 files][  2.6 MiB/  2.6 MiB]                                                
+Operation completed over 1 objects/2.6 MiB.                                      
+Copying gs://yolo-gcp/eagle/infer/input/labeled/following_distance_fp_Jan19_Feb5/video_048ae296-cf86-4fee-87eb-ea7b5df54399_outward_001.mp4 [Content-Type=video/mp4]...
+/ [0 files][    0.0 B/  4.8 MiB]                                                / [1 files][  4.8 MiB/  4.8 MiB]                                                
+Operation completed over 1 objects/4.8 MiB.                                      
+Copying gs://yolo-gcp/eagle/infer/input/labeled/following_distance_fp_Jan19_Feb5/video_056314e9-cbbb-4e66-90a8-7000097b4c01_outward_002.mp4 [Content-Type=video/mp4]...
+/ [0 files][    0.0 B/  3.3 MiB]                                                / [1 files][  3.3 MiB/  3.3 MiB]                                                
+Operation completed over 1 objects/3.3 MiB.                                      
+Copying gs://yolo-gcp/eagle/infer/input/labeled/following_distance_fp_Jan19_Feb5/video_0611e16a-8b49-4c09-8e4e-3d27f61f6613_outward_001.mp4 [Content-Type=video/mp4]...
+/ [0 files][    0.0 B/  2.7 MiB]                                                / [1 files][  2.7 MiB/  2.7 MiB]                                                
+Operation completed over 1 objects/2.7 MiB.                                      

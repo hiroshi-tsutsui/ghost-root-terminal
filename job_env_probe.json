@@ -1,0 +1,44 @@
+{
+  "taskGroups": [
+    {
+      "taskSpec": {
+        "runnables": [
+          {
+            "container": {
+              "imageUri": "us-central1-docker.pkg.dev/dev-dotsfty/yolo/yolo:latest",
+              "entrypoint": "bash",
+              "commands": [
+                "-c",
+                "echo '--- Python Versions ---' && which python3 && which python3.11 && echo '--- PIP Check ---' && python3.11 -m pip list | grep -E 'ultralytics|torch' && echo '--- Internet Check ---' && curl -I https://pypi.org || echo 'No Internet'"
+              ],
+              "volumes": []
+            }
+          }
+        ],
+        "computeResource": {
+          "cpuMilli": "2000",
+          "memoryMib": "4096"
+        },
+        "maxRunDuration": "600s"
+      },
+      "taskCount": 1,
+      "parallelism": 1
+    }
+  ],
+  "allocationPolicy": {
+    "instances": [
+      {
+        "policy": {
+          "machineType": "e2-standard-2",
+          "bootDisk": {
+            "type": "pd-balanced",
+            "sizeGb": 30
+          }
+        }
+      }
+    ]
+  },
+  "logsPolicy": {
+    "destination": "CLOUD_LOGGING"
+  }
+}

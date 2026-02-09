@@ -193,11 +193,51 @@ const WebTerminal = () => {
           }
 
           if (result.action === 'crack_sim' && result.data) {
-             const { target, user, success, password, mode } = result.data;
-             const duration = mode === 'hydra' ? 6000 : 3000;
+             const { target, user, success, password, mode, hash } = result.data;
+             const duration = (mode === 'hydra' || mode === 'hashcat') ? 6000 : 3000;
              const startTime = Date.now();
              
-             if (mode === 'hydra') {
+             if (mode === 'hashcat') {
+                 isTopModeRef.current = true;
+                 term.clear();
+                 term.write('\x1b[?25l'); // Hide cursor
+                 
+                 const speed = (Math.random() * 5000 + 2000).toFixed(1);
+                 
+                 while (isTopModeRef.current && Date.now() - startTime < duration) {
+                     const elapsed = (Date.now() - startTime) / 1000;
+                     const progress = ((Date.now() - startTime) / duration * 100).toFixed(2);
+                     
+                     term.write('\x1b[H');
+                     term.writeln(`hashcat (v6.1.1) starting...`);
+                     term.writeln('');
+                     term.writeln(`Session..........: hashcat`);
+                     term.writeln(`Status...........: Running`);
+                     term.writeln(`Hash.Name........: SHA256`);
+                     term.writeln(`Hash.Target......: ${hash.substring(0, 32)}...`);
+                     term.writeln(`Time.Estimated...: 0 mins, ${Math.max(0, 6 - Math.floor(elapsed))} secs`);
+                     term.writeln(`Guess.Queue......: 1/1 (100.00%)`);
+                     term.writeln(`Speed.#1.........: ${speed} kH/s`);
+                     term.writeln(`Recovered........: 0/1 (0.00%) Digests`);
+                     term.writeln(`Progress.........: ${Math.floor(Number(speed)*elapsed*1000)}/14344324 (${progress}%)`);
+                     term.writeln(`Candidates.#1....: ${Math.floor(Math.random()*999999)} -> ${['password','123456','admin'][Math.floor(Math.random()*3)]}`);
+                     
+                     await new Promise(r => setTimeout(r, 100));
+                 }
+                 
+                 isTopModeRef.current = false;
+                 term.write('\x1b[?25h'); // Show cursor
+                 term.clear();
+                 term.writeln(`\x1b[1;32m${hash}:red_ledger\x1b[0m`);
+                 
+                 const fPath = '/home/ghost/hashcat.potfile';
+                 if (!VFS[fPath]) VFS[fPath] = { type: 'file', content: `${hash}:red_ledger` };
+                 const home = VFS['/home/ghost'];
+                 if (home && home.type === 'dir' && !home.children.includes('hashcat.potfile')) {
+                     home.children.push('hashcat.potfile');
+                 }
+
+             } else if (mode === 'hydra') {
                  term.writeln(`\x1b[1;36m[DATA] max 16 tasks per 1 server, overall 16 tasks, 1435 login tries (l:1/p:1435), ~897 tries per task\x1b[0m`);
                  term.writeln(`\x1b[1;36m[DATA] attacking ssh://${target}:22/\x1b[0m`);
                  term.writeln('');
@@ -545,9 +585,49 @@ const WebTerminal = () => {
                       if (dlDir.type === 'dir' && !dlDir.children.includes(`${target}.txt`)) {
                           dlDir.children.push(`${target}.txt`);
                       }
+                  } else if (target === 'LOG_V2.txt') {
+                      term.clear();
+                      const content = `[LOG START]
+[14:00] Initializing uplink...
+[14:01] Auth failure (Sector 7)
+[14:02] Redirecting to backup node...
+[14:05] User 'Spectre' accessed file 'KEYS.enc'
+[LOG END]`;
+                      term.writeln(content);
+                      
+                      const fPath = `/home/ghost/downloads/${target}`;
+                      if (!VFS['/home/ghost/downloads']) VFS['/home/ghost/downloads'] = { type: 'dir', children: [] };
+                      VFS[fPath] = { type: 'file', content };
+                      const dlDir = VFS['/home/ghost/downloads'];
+                      if (dlDir.type === 'dir' && !dlDir.children.includes(target)) {
+                          dlDir.children.push(target);
+                      }
+                  } else if (target === 'KEYS.enc') {
+                      term.clear();
+                      const content = `[ENCRYPTED] Use 'decrypt KEYS.enc [password]'`;
+                      term.writeln(content);
+                      
+                      const fPath = `/home/ghost/downloads/${target}`;
+                      if (!VFS['/home/ghost/downloads']) VFS['/home/ghost/downloads'] = { type: 'dir', children: [] };
+                      // Hint: Password is 'Spectre' based on log? Or something else.
+                      // Let's use base64 encoded content that decrypts to a flag.
+                      // Flag: GHOST_ROOT{SATELLITE_HACK_COMPLETE}
+                      VFS[fPath] = { type: 'file', content: btoa('GHOST_ROOT{SATELLITE_HACK_COMPLETE}') }; 
+                      const dlDir = VFS['/home/ghost/downloads'];
+                      if (dlDir.type === 'dir' && !dlDir.children.includes(target)) {
+                          dlDir.children.push(target);
+                      }
                   } else {
                       term.clear();
                       term.writeln(`Download complete. File saved to /home/ghost/downloads/${target}`);
+                      // Save generic file
+                      const fPath = `/home/ghost/downloads/${target}`;
+                      if (!VFS['/home/ghost/downloads']) VFS['/home/ghost/downloads'] = { type: 'dir', children: [] };
+                      VFS[fPath] = { type: 'file', content: `[Downloaded Content for ${target}]` };
+                      const dlDir = VFS['/home/ghost/downloads'];
+                      if (dlDir.type === 'dir' && !dlDir.children.includes(target)) {
+                          dlDir.children.push(target);
+                      }
                   }
              }
 
@@ -743,6 +823,293 @@ const WebTerminal = () => {
               term.write(`\x1b[${term.rows};0H`); // Move to last row
               term.write(`\x1b[7m"${filePath}" [Read Only] ${lines.length}L, ${(content || '').length}C\x1b[0m`);
               return; 
+          }
+
+          if (result.action === 'irc_sim' && result.data) {
+             const { server, channel, nick } = result.data;
+             isTopModeRef.current = true; // Use top mode to hijack input loop logic if we wanted, but we'll use a custom loop here
+             
+             term.clear();
+             term.writeln(`\x1b[1;36m[IRC] Connecting to ${server}...\x1b[0m`);
+             await new Promise(r => setTimeout(r, 800));
+             term.writeln(`[${server}] *** Looking up your hostname...`);
+             await new Promise(r => setTimeout(r, 600));
+             term.writeln(`[${server}] *** Found your hostname`);
+             term.writeln(`[${server}] *** You are connected to Black Site IRC Network`);
+             await new Promise(r => setTimeout(r, 500));
+             
+             // Initial channel join
+             term.writeln(`\x1b[1;32m*** Joined ${channel}\x1b[0m`);
+             
+             if (channel === '#shadow_ops') {
+                 term.writeln(`Topic: OPERATION BLACKOUT - PHASE 2 [ACTIVE]`);
+                 term.writeln(`Users: @Spectre, +Watcher, Admin, ${nick}`);
+                 term.writeln('');
+                 term.writeln(`[14:02] <Spectre> Breach detected in Sector 7.`);
+                 term.writeln(`[14:03] <Watcher> Is it the Ghost?`);
+                 term.writeln(`[14:04] <Admin> Likely. Monitor feed 03.`);
+                 term.writeln(`[14:06] <System> User ${nick} joined.`);
+                 term.writeln(`[14:06] <Admin> ...who is this?`);
+                 await new Promise(r => setTimeout(r, 1000));
+                 term.writeln(`\x1b[1;31m*** ${nick} was kicked by Admin (Unauthorized access)\x1b[0m`);
+                 term.writeln(`\x1b[1;31m*** Disconnected from ${server}\x1b[0m`);
+             } else {
+                 // Lobby logic
+                 term.writeln(`Topic: General discussion`);
+                 term.writeln(`Users: Guest1, Guest2, ${nick}`);
+                 term.writeln('');
+                 term.writeln(`[14:00] <Guest1> Any idea how to solve the matrix puzzle?`);
+                 term.writeln(`[14:01] <Guest2> Try 'man matrix'.`);
+                 term.writeln(`[14:02] <Guest1> Thanks.`);
+                 term.writeln('');
+                 term.writeln(`\x1b[7m[IRC] Type '/quit' to exit. Type '/join #channel' to switch.\x1b[0m`);
+                 
+                 // Fake interactive loop
+                 // Since we don't have a real separate input state for IRC, we'll just simulate a "read-only" view that exits on any key for now, 
+                 // OR we hijack isTopModeRef to be a "chat mode".
+                 // Let's make it simple: wait for 'q' or '/quit' isn't easy without refactoring input handler.
+                 // So we'll just wait a bit and then show a prompt simulation.
+                 
+                 term.writeln(`[${nick}] `);
+                 // We rely on the user pressing 'q' to exit "top mode" which this is technically using
+                 term.writeln(`\n(Press 'q' to disconnect)`);
+             }
+             
+             // Wait for exit
+             while (isTopModeRef.current) {
+                 await new Promise(r => setTimeout(r, 100));
+             }
+             
+             term.clear();
+             term.writeln('Connection closed.');
+          }
+
+          if (result.action === 'sqlmap_sim' && result.data) {
+             const { target } = result.data;
+             isTopModeRef.current = true;
+             
+             term.writeln('');
+             term.writeln(`\x1b[1;33m        ___
+       __H__
+ ___ ___[.]_____ ___ ___  {1.5.2#stable}
+|_ -| . [.]     | .'| . |
+|___|_  [.]_|_|_|__,|  _|
+      |_|V...       |_|   http://sqlmap.org\x1b[0m`);
+             term.writeln('');
+             term.writeln(`[*] starting at ${new Date().toISOString().replace('T', ' ').slice(0, 19)}`);
+             term.writeln('');
+             term.writeln(`[INFO] testing connection to the target URL`);
+             await new Promise(r => setTimeout(r, 1000));
+             
+             if (target.includes('admin/login.php') || target.includes('192.168.1.5') || target.includes('192.168.1.99')) {
+                 term.writeln(`[INFO] testing if the target URL content is stable`);
+                 await new Promise(r => setTimeout(r, 800));
+                 term.writeln(`[INFO] target URL content is stable`);
+                 term.writeln(`[INFO] testing if GET parameter 'id' is dynamic`);
+                 await new Promise(r => setTimeout(r, 800));
+                 term.writeln(`[INFO] confirming that GET parameter 'id' is dynamic`);
+                 term.writeln(`[INFO] GET parameter 'id' is dynamic`);
+                 
+                 const injections = [
+                     "boolean-based blind - WHERE or HAVING clause",
+                     "error-based - WHERE or HAVING clause",
+                     "UNION query - ORDER BY clause",
+                     "stacked queries"
+                 ];
+                 
+                 for (const inj of injections) {
+                     term.writeln(`[INFO] testing '${inj}'`);
+                     await new Promise(r => setTimeout(r, Math.random() * 1000 + 500));
+                 }
+                 
+                 term.writeln(`\x1b[1;32m[+] GET parameter 'id' is 'MySQL > 5.0.12' injectable \x1b[0m`);
+                 term.writeln(`[INFO] the back-end DBMS is MySQL`);
+                 term.writeln(`[INFO] fetching database names`);
+                 await new Promise(r => setTimeout(r, 1000));
+                 
+                 term.writeln(`available databases [2]:`);
+                 term.writeln(`[*] information_schema`);
+                 term.writeln(`[*] admin_db`);
+                 
+                 term.writeln(`\n[INFO] fetching tables for database: 'admin_db'`);
+                 await new Promise(r => setTimeout(r, 1000));
+                 term.writeln(`Database: admin_db`);
+                 term.writeln(`[1 table]`);
+                 term.writeln(`+-------------+`);
+                 term.writeln(`| users       |`);
+                 term.writeln(`+-------------+`);
+                 
+                 term.writeln(`\n[INFO] fetching columns for table 'users'`);
+                 await new Promise(r => setTimeout(r, 1000));
+                 term.writeln(`Database: admin_db`);
+                 term.writeln(`Table: users`);
+                 term.writeln(`[2 columns]`);
+                 term.writeln(`+----------+-------------+`);
+                 term.writeln(`| Column   | Type        |`);
+                 term.writeln(`+----------+-------------+`);
+                 term.writeln(`| username | varchar(50) |`);
+                 term.writeln(`| password | varchar(64) |`);
+                 term.writeln(`+----------+-------------+`);
+
+                 term.writeln(`\n[INFO] dumping table 'users'`);
+                 await new Promise(r => setTimeout(r, 1500));
+                 
+                 term.writeln(`Database: admin_db`);
+                 term.writeln(`Table: users`);
+                 term.writeln(`[1 entry]`);
+                 term.writeln(`+----------+------------------------------------------------------------------+`);
+                 term.writeln(`| username | password                                                         |`);
+                 term.writeln(`+----------+------------------------------------------------------------------+`);
+                 
+                 if (target.includes('192.168.1.99')) {
+                     term.writeln(`| admin    | 5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8 |`);
+                     term.writeln(`+----------+------------------------------------------------------------------+`);
+                     // SHA256 for 'password'
+                     term.writeln(`\n[INFO] table 'admin_db.users' dumped to CSV file '/home/ghost/dump.csv'`);
+                     // Save to VFS
+                     const dumpPath = '/home/ghost/dump.csv';
+                     VFS[dumpPath] = { type: 'file', content: 'username,password\nadmin,5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8' };
+                     const home = VFS['/home/ghost'];
+                     if (home && home.type === 'dir' && !home.children.includes('dump.csv')) {
+                         home.children.push('dump.csv');
+                     }
+                 } else {
+                     term.writeln(`| admin    | 5f4dcc3b5aa765d61d8327deb882cf99                                 |`); // password
+                     term.writeln(`+----------+------------------------------------------------------------------+`);
+                     const dumpPath = '/home/ghost/dump.csv';
+                     VFS[dumpPath] = { type: 'file', content: 'username,password\nadmin,password' };
+                     const home = VFS['/home/ghost'];
+                     if (home && home.type === 'dir' && !home.children.includes('dump.csv')) {
+                         home.children.push('dump.csv');
+                     }
+                 }
+
+             } else {
+                 term.writeln(`[CRITICAL] all tested parameters do not appear to be injectable.`);
+                 term.writeln(`[INFO] shutting down`);
+             }
+             
+             isTopModeRef.current = false;
+          }
+
+          if (result.action === 'tor_sim' && result.data) {
+             const { mode, url } = result.data;
+             isTopModeRef.current = true;
+             term.clear();
+             term.write('\x1b[?25l'); // Hide cursor
+
+             if (mode === 'start') {
+                 const steps = [
+                     "Bootstrapping 0%: Starting",
+                     "Bootstrapping 5%: Connecting to directory server",
+                     "Bootstrapping 10%: Finishing handshake with directory server",
+                     "Bootstrapping 15%: Establishing an encrypted directory connection",
+                     "Bootstrapping 20%: Asking for networkstatus consensus",
+                     "Bootstrapping 25%: Loading networkstatus consensus",
+                     "Bootstrapping 40%: Loading authority key certs",
+                     "Bootstrapping 45%: Asking for relay descriptors",
+                     "Bootstrapping 50%: Loading relay descriptors",
+                     "Bootstrapping 80%: Connecting to the Tor network",
+                     "Bootstrapping 90%: Establishing a Tor circuit",
+                     "Bootstrapping 100%: Done"
+                 ];
+                 
+                 for (const step of steps) {
+                     term.writeln(`[NOTICE] ${step}`);
+                     await new Promise(r => setTimeout(r, Math.random() * 500 + 200));
+                 }
+                 
+                 // Create PID file
+                 if (!VFS['/var/run']) VFS['/var/run'] = { type: 'dir', children: [] };
+                 VFS['/var/run/tor.pid'] = { type: 'file', content: '6666' };
+                 const runDir = VFS['/var/run'];
+                 if (runDir.type === 'dir' && !runDir.children.includes('tor.pid')) {
+                     runDir.children.push('tor.pid');
+                 }
+                 
+                 term.writeln('');
+                 term.writeln('Tor is ready. Use "tor browse <url>" to surf.');
+             } else if (mode === 'browse') {
+                 term.write('\x1b[H'); // Home
+                 term.writeln('\x1b[1;35mTor Browser 11.5.1 (Alpha)\x1b[0m');
+                 term.writeln('Connecting to onion site...');
+                 
+                 await new Promise(r => setTimeout(r, 2000));
+                 term.clear();
+                 term.write('\x1b[H');
+                 
+                 if (url === 'silkroad7.onion') {
+                     term.writeln(`\x1b[1;32m
+      .d88888b.  888 888 888      8888888b.                   888
+     d88P" "Y88b 888 888 888      888   Y88b                  888
+     Y88b.       888 888 888      888    888                  888
+      "Y88888b.  888 888 888  888 888   d88P  .d88b.   8888b. 888
+            "Y88b 888 888 888 .88P 8888888P"  d88""88b     "88b 888
+              "888 888 888 888888K  888 T88b   888  888 .d888888 888
+      Y88b  d88P 888 888 888 "88b 888  T88b  Y88..88P 888  888 888
+       "Y88888P"  888 888 888  888 888   T88b  "Y88P"  "Y888888 888
+                                                           v7.0
+     \x1b[0m`);
+                     term.writeln('     \x1b[7m[ MARKETPLACE STATUS: SEIZED BY FBI ]\x1b[0m');
+                     term.writeln('');
+                     term.writeln('     NOTICE: THIS DOMAIN HAS BEEN SEIZED');
+                     term.writeln('     pursuant to a seizure warrant issued by the');
+                     term.writeln('     United States District Court.');
+                 } else if (url === 'dread55.onion') {
+                     term.writeln(`\x1b[1;31m[ DREAD FORUM ]\x1b[0m - The Front Page of the Darknet`);
+                     term.writeln('--------------------------------------------------');
+                     term.writeln('[STICKY] Welcome to Dread /d/all');
+                     term.writeln('  by SystemAdmin (14 hours ago)');
+                     term.writeln('');
+                     term.writeln('[1] Has anyone solved the "Ghost Root" challenge?');
+                     term.writeln('    by n00b_slayer (2 mins ago)');
+                     term.writeln('    > "I heard you need to use `hydra` on the Black Site..."');
+                     term.writeln('');
+                     term.writeln('[2] WTS: Zero-day exploit for SSH v8.9');
+                     term.writeln('    by russian_bear (1 hour ago)');
+                     term.writeln('');
+                     term.writeln('[3] Looking for "Spectre" user');
+                     term.writeln('    by unknown (4 hours ago)');
+                     term.writeln('    > "Does anyone know where he hides his keys?"');
+                     term.writeln('    > "Check the satellite logs. He is careless."');
+                 } else if (url === 'ghostbox.onion') {
+                     term.writeln(`\x1b[1;36m[ GHOST DROPBOX ]\x1b[0m`);
+                     term.writeln('');
+                     term.writeln('Anonymous File Upload/Download Service');
+                     term.writeln('--------------------------------------');
+                     term.writeln('Public Drops:');
+                     term.writeln('1. manifesto.txt  (12KB)');
+                     term.writeln('2. tools.zip      (45MB) [PASSWORD PROTECTED]');
+                     term.writeln('3. key_fragment.dat (1KB)');
+                     term.writeln('');
+                     term.writeln('Hit: You can download these using "curl" or "wget" (if installed).');
+                     term.writeln('Or just imagine you did.');
+                     
+                     // Auto-save a clue
+                     const cluePath = '/home/ghost/downloads/key_fragment.dat';
+                     if (!VFS['/home/ghost/downloads']) VFS['/home/ghost/downloads'] = { type: 'dir', children: [] };
+                     VFS[cluePath] = { type: 'file', content: 'KEY_PART_2: _PROTOCOLS_ARE_' };
+                     const dlDir = VFS['/home/ghost/downloads'];
+                     if (dlDir.type === 'dir' && !dlDir.children.includes('key_fragment.dat')) {
+                         dlDir.children.push('key_fragment.dat');
+                         term.writeln('\n\x1b[1;32m[!] key_fragment.dat downloaded automatically.\x1b[0m');
+                     }
+                 } else {
+                     term.writeln(`\x1b[1;31m404 Not Found\x1b[0m`);
+                     term.writeln('The onion site you are trying to reach is unreachable.');
+                 }
+                 
+                 term.writeln('');
+                 term.writeln('\x1b[7m Press "q" to close Tor Browser. \x1b[0m');
+                 
+                 while (isTopModeRef.current) {
+                     await new Promise(r => setTimeout(r, 100));
+                 }
+             }
+             
+             isTopModeRef.current = false;
+             term.write('\x1b[?25h');
+             term.clear();
           }
 
           if (result.action === 'clear_history') {

@@ -164,11 +164,11 @@ export interface CommandResult {
   output: string;
   newCwd?: string;
   newPrompt?: string;
-  action?: 'delay' | 'crack_sim' | 'scan_sim' | 'top_sim' | 'kernel_panic' | 'edit_file' | 'wifi_scan_sim' | 'clear_history' | 'matrix_sim' | 'trace_sim' | 'netmap_sim' | 'theme_change' | 'sat_sim' | 'radio_sim' | 'tcpdump_sim';
+  action?: 'delay' | 'crack_sim' | 'scan_sim' | 'top_sim' | 'kernel_panic' | 'edit_file' | 'wifi_scan_sim' | 'clear_history' | 'matrix_sim' | 'trace_sim' | 'netmap_sim' | 'theme_change' | 'sat_sim' | 'radio_sim' | 'tcpdump_sim' | 'sqlmap_sim' | 'irc_sim' | 'tor_sim';
   data?: any;
 }
 
-const COMMANDS = ['ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump'];
+const COMMANDS = ['ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat'];
 
 export const tabCompletion = (cwd: string, inputBuffer: string): { matches: string[], completed: string } => {
   const parts = inputBuffer.split(' '); 
@@ -876,10 +876,10 @@ Pipe Utils:
   grep, head, tail, sort, uniq, wc, base64, rev, awk, sed, strings
 
 Network Tools:
-  ssh, ssh-keygen, ping, netstat, nmap, nc, scan, netmap, trace, traceroute, wifi, telnet, curl, nslookup, dig, irc, tcpdump
+  ssh, ssh-keygen, ping, netstat, nmap, nc, scan, netmap, trace, traceroute, wifi, telnet, curl, nslookup, dig, irc, tcpdump, tor
 
 Security Tools:
-  crack, analyze, decrypt, steghide, hydra, camsnap, whois
+  crack, analyze, decrypt, steghide, hydra, camsnap, whois, sqlmap
 
 System Tools:
   ps, kill, top, dmesg, mount, umount, reboot, shutdown, uptime, w, date, systemctl, journal, journalctl, lsof
@@ -1190,6 +1190,9 @@ Type "man <command>" for more information.`;
           } else if (filePath.includes('entry_02.enc')) {
               if (args[1] === 'black_widow') output = `Decrypting...\n${atob(fileNode.content)}`;
               else output = 'Error: Invalid password. (Hint: Check the evidence)';
+          } else if (filePath.includes('KEYS.enc')) {
+              if (args[1] === 'Spectre' || args[1] === 'spectre') output = `Decrypting...\n${atob(fileNode.content)}`;
+              else output = 'Error: Invalid password. (Hint: Check satellite logs)';
           } else {
               try { output = atob(fileNode.content); } catch (e) { output = 'Error: File not encrypted or corrupted.'; }
           }
@@ -2031,7 +2034,7 @@ The key's randomart image is:
     }
     case 'sat': {
       if (args.length < 1) {
-          output = 'usage: sat <connect|list|download|status> [target]';
+          output = 'usage: sat <connect|list|download|status|files> [target]';
       } else {
           const subcmd = args[0];
           if (subcmd === 'list') {
@@ -2054,6 +2057,11 @@ The key's randomart image is:
               }
           } else if (subcmd === 'status') {
               output = 'Uplink Status: DISCONNECTED\nSignal Strength: 0%\nEncryption: NONE';
+          } else if (subcmd === 'files') {
+               output = `[SAT_LINK] Remote File System (USA-224):
+- rwxr-x---  IMAGERY_001  (24MB)  [CLASSIFIED]
+- rwxr-x---  LOG_V2.txt   (4KB)
+- r--------  KEYS.enc     (1KB)   [LOCKED]`;
           } else if (subcmd === 'download') {
                if (args.length < 2) {
                   output = 'usage: sat download <file_id>';
@@ -2084,36 +2092,103 @@ The key's randomart image is:
            const channel = args[1] || '#lobby';
            const nick = args[2] || 'ghost';
 
-           if (server === '192.168.1.99' || server === 'chat.black-site.local') {
-               output = `Connecting to ${server} (${nick})...\n`;
-               output += `[${server}] *** Looking up your hostname...\n`;
-               output += `[${server}] *** Checking Ident\n`;
-               output += `[${server}] *** Found your hostname\n`;
-               output += `[${server}] *** You are connected to Black Site IRC Network\n`;
-               
-               if (channel === '#shadow_ops') {
-                   output += `\nTopic for ${channel}: OPERATION BLACKOUT - PHASE 2 [ACTIVE]\n`;
-                   output += `Users: @Spectre, +Watcher, Admin, ${nick}\n\n`;
-                   output += `[14:02] <Spectre> Breach detected in Sector 7.\n`;
-                   output += `[14:03] <Watcher> Is it the Ghost?\n`;
-                   output += `[14:04] <Admin> Likely. Monitor feed 03.\n`;
-                   output += `[14:05] <Spectre> Redirecting resources to honeycomb defense.\n`;
-                   output += `[14:06] <System> User ${nick} joined.\n`;
-                   output += `[14:06] <Admin> ...who is this?\n`;
-                   output += `[14:06] *** ${nick} was kicked by Admin (Unauthorized access)\n`;
-                   output += `\n[Disconnected]`;
-               } else if (channel === '#lobby') {
-                   output += `\nTopic for ${channel}: General discussion\n`;
-                   output += `Users: Guest1, Guest2, ${nick}\n\n`;
-                   output += `[14:00] <Guest1> Any idea how to solve the matrix puzzle?\n`;
-                   output += `[14:01] <Guest2> Try 'man matrix'.\n`;
-                   output += `[14:02] <Guest1> Thanks.\n`;
-                   output += `\n(Type '/join #shadow_ops' to switch channels - Simulated)`;
-               } else {
-                   output += `\nChannel ${channel} requires a key (+k).`;
-               }
+           if (server === '192.168.1.99' || server === 'chat.black-site.local' || server === '10.66.6.6') {
+               output = `Connecting to ${server}...\n`;
+               return { output, newCwd, action: 'irc_sim', data: { server, channel, nick } };
            } else {
                output = `irc: unable to connect to ${server}: Connection refused`;
+           }
+       }
+       break;
+    }
+    case 'sqlmap': {
+       const urlIndex = args.indexOf('-u');
+       if (urlIndex !== -1 && args[urlIndex + 1]) {
+           const url = args[urlIndex + 1];
+           output = 'Starting sqlmap...';
+           return { output, newCwd, action: 'sqlmap_sim', data: { target: url } };
+       } else {
+           output = 'Usage: sqlmap -u <url> [options]';
+       }
+       break;
+    }
+    case 'hashcat': {
+       if (args.length < 2) {
+           output = 'usage: hashcat [options] <hashfile> <wordlist>\n\nOptions:\n  -m 1400        SHA-256 mode\n  -a 0           Straight attack mode';
+       } else {
+           const hashFile = args.find(a => !a.startsWith('-') && (a.endsWith('.txt') || a.endsWith('.csv') || a.endsWith('.hash')));
+           const wordList = args.find(a => !a.startsWith('-') && (a.endsWith('.txt') || a.endsWith('.lst')) && a !== hashFile);
+           
+           if (hashFile && wordList) {
+               const node = getNode(resolvePath(cwd, hashFile));
+               if (node && node.type === 'file') {
+                   const content = node.content;
+                   let targetHash = '';
+                   
+                   if (content.includes('5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8')) {
+                       targetHash = '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8';
+                       // Password: red_ledger
+                   } else if (content.includes('5f4dcc3b5aa765d61d8327deb882cf99')) {
+                       targetHash = '5f4dcc3b5aa765d61d8327deb882cf99'; // SHA1 for 'password'
+                   }
+                   
+                   if (targetHash) {
+                       output = 'Initializing hashcat v6.1.1...';
+                       return { 
+                           output, 
+                           newCwd, 
+                           action: 'crack_sim', 
+                           data: { 
+                               mode: 'hashcat', 
+                               hash: targetHash, 
+                               wordlist: wordList 
+                           } 
+                       };
+                   } else {
+                       output = 'hashcat: No valid hashes found in file.';
+                   }
+               } else {
+                   output = `hashcat: ${hashFile}: No such file`;
+               }
+           } else {
+               output = 'hashcat: missing hashfile or wordlist';
+           }
+       }
+       break;
+    }
+    case 'tor': {
+       if (args.length < 1) {
+           output = 'usage: tor <start|status|list|browse <onion_url>>';
+       } else {
+           const subcmd = args[0];
+           if (subcmd === 'start') {
+               output = 'Bootstrapping Tor circuit...';
+               return { output, newCwd, action: 'tor_sim', data: { mode: 'start' } };
+           } else if (subcmd === 'status') {
+               // We need persistent state. For now, check VFS or assume running if files exist?
+               // Let's use VFS flag.
+               const runDir = getNode('/var/run');
+               if (runDir && runDir.type === 'dir' && runDir.children.includes('tor.pid')) {
+                   output = 'Tor is running (PID 6666).\nCircuit established: 3 hops.\nIdentity: Anonymous';
+               } else {
+                   output = 'Tor is not running.';
+               }
+           } else if (subcmd === 'list') {
+               output = `[HIDDEN SERVICES DIRECTORY]
+- silkroad7.onion        (Marketplace) [OFFLINE]
+- dread55.onion          (Forum)       [ONLINE]
+- ghostbox.onion         (Drop)        [ONLINE]
+- cicada3301.onion       (Puzzle)      [UNKNOWN]`;
+           } else if (subcmd === 'browse') {
+               if (args.length < 2) {
+                   output = 'usage: tor browse <onion_url>';
+               } else {
+                   const url = args[1];
+                   output = `Connecting to ${url}...`;
+                   return { output, newCwd, action: 'tor_sim', data: { mode: 'browse', url } };
+               }
+           } else {
+               output = `tor: unknown command: ${subcmd}`;
            }
        }
        break;

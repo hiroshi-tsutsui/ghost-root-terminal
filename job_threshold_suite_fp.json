@@ -1,0 +1,89 @@
+{
+  "taskGroups": [
+    {
+      "taskSpec": {
+        "runnables": [
+          {
+            "container": {
+              "imageUri": "us-central1-docker.pkg.dev/dev-dotsfty/yolo/yolo:latest",
+              "entrypoint": "bash",
+              "commands": [
+                "-c",
+                "mkdir -p /app/services/following_distance_detection && cp /mnt/disks/code/services/following_distance_detection/detector.py /app/services/following_distance_detection/detector.py && python3 /mnt/disks/scripts/run_experiment_suite.py --input_dir /mnt/disks/input --output_dir /mnt/disks/output --config /mnt/disks/config/threshold_experiments.json"
+              ],
+              "volumes": [
+                "/mnt/disks/input:/mnt/disks/input:rw",
+                "/mnt/disks/output:/mnt/disks/output:rw",
+                "/mnt/disks/code:/mnt/disks/code:ro",
+                "/mnt/disks/scripts:/mnt/disks/scripts:ro",
+                "/mnt/disks/config:/mnt/disks/config:ro"
+              ]
+            }
+          }
+        ],
+        "computeResource": {
+          "cpuMilli": "2000",
+          "memoryMib": "10000"
+        },
+        "maxRunDuration": "28800s",
+        "volumes": [
+          {
+            "gcs": {
+              "remotePath": "yolo-gcp/eagle/infer/input/labeled/following_distance_fp_Jan19_Feb5/"
+            },
+            "mountPath": "/mnt/disks/input"
+          },
+          {
+            "gcs": {
+              "remotePath": "yolo-gcp/eagle/infer/output/labeled/threshold_experiments_v1_fp/"
+            },
+            "mountPath": "/mnt/disks/output"
+          },
+          {
+            "gcs": {
+              "remotePath": "yolo-gcp/eagle/infer/code/"
+            },
+            "mountPath": "/mnt/disks/code"
+          },
+           {
+            "gcs": {
+              "remotePath": "yolo-gcp/eagle/scripts/"
+            },
+            "mountPath": "/mnt/disks/scripts"
+          },
+           {
+            "gcs": {
+              "remotePath": "yolo-gcp/eagle/configs/"
+            },
+            "mountPath": "/mnt/disks/config"
+          }
+        ]
+      },
+      "taskCount": 1,
+      "parallelism": 1
+    }
+  ],
+  "allocationPolicy": {
+    "instances": [
+      {
+        "policy": {
+          "machineType": "n1-standard-4",
+          "accelerators": [
+            {
+              "type": "nvidia-tesla-t4",
+              "count": 1
+            }
+          ],
+          "bootDisk": {
+            "type": "pd-balanced",
+            "sizeGb": 100
+          }
+        },
+        "installGpuDrivers": true
+      }
+    ]
+  },
+  "logsPolicy": {
+    "destination": "CLOUD_LOGGING"
+  }
+}

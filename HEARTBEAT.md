@@ -16,10 +16,11 @@
 - [x] Monitor Sub-agent: `omega-tony-vectors`. (Status: COMPLETE - Vectors Module Localized).
 - [x] Monitor Sub-agent: `omega-tony-trig`. (Status: COMPLETE - Trig Module Localized).
 - [x] Monitor Sub-agent: `omega-tony-sequences`. (Status: COMPLETE - Sequences Module Localized).
-- [x] Monitor Sub-agent: `omega-tony-functions`. (Status: COMPLETE - Functions Module Localized).
 - [x] Monitor Sub-agent: `omega-cto-game-architect`. (Status: COMPLETE - Web Port Ready & Deployed).
 - [x] Verify Project Omega Deployment (`https://projectomega-tau.vercel.app`). (Status: LIVE - Japanese Localized).
   - [x] Action: Fix webpack error in `locales/ja.json` (Commit: `edc3b79`).
+  - [x] Action: Localize Vectors Module (Commit: `70da647`).
+  - [x] Action: **INNOVATION** Quadratic Functions Module (`/math/quadratic`) Created & Deployed.
 - [x] Pivot Project Omega to Japanese/Pedagogy (Manual Override - Data/Calculus/Vectors/Trig/Sequences Live).
 - [x] Notify User: V16 Download Complete (`~/Downloads/yolo-gcp/eagle/infer/output/v16_depth_viz/`).
 - [ ] Execute Option C: Retrain Main YOLO (Hard Negative Mining).
@@ -33,5 +34,102 @@
   - [x] Action: Extract "Danger" Set (518 Videos) for Retraining.
   - [x] Action: Monitor High Precision Job (`fd-infer-high-prec-v1`) - FAILED.
   - [x] Action: Monitor Pipeline Job (`following-distance-infer-fp-jan19-feb5-v6-20260208-fix`) - SUCCEEDED (74% FP).
-  - [ ] Action: Monitor **True Positive Validation** (`fd-tp-merged-v1`) - RUNNING.
+  - [x] Action: Launch **True Positive Validation** (`fd-tp-merged-v1`) - SUCCEEDED.
+    - [x] Result: 266 Danger / 368 Total. Recall: ~72%.
+  - [ ] Action: Proceed to Retraining Configuration.
+    - [x] Action: Copy Data to Retraining Bucket (784 Videos).
+    - [x] Action: Monitor Label Gen Job FP (`retraining-v1-label-gen-fp-001`) - FAILED (Fixed in v2).
+    - [x] Action: Monitor Label Gen Job TP (`retraining-v1-label-gen-tp-001`) - FAILED (Fixed in v2).
+    - [x] Action: Monitor Label Gen Job FP V2 (`retraining-v1-label-gen-fp-002`) - FAILED (Exit Code 1).
+    - [x] Action: Monitor Label Gen Job TP V2 (`retraining-v1-label-gen-tp-002`) - FAILED (Exit Code 1).
+    - [x] Action: Monitor Label Gen Job FP V3 (`retraining-v1-label-gen-fp-003`) - FAILED (Exit Code 1).
+    - [x] Action: Monitor Label Gen Job TP V3 (`retraining-v1-label-gen-tp-003`) - FAILED (Exit Code 1).
+    - [x] Action: Monitor Source Fetch Job (`fetch-source-v1`) - FAILED (Exit Code 1).
+    - [x] Action: Monitor Environment Probe (`env-probe-v1`) - FAILED (Exit Code 1 - Diagnosed: Disk Full).
+    - [x] Action: Monitor Python3 Fix Job (`following-distance-infer-fp-jan19-feb5-v5...`) - SUCCEEDED (Multiple jobs completed).
+    - [x] Action: Monitor Threshold Experiment Job (`following-distance-infer-threshold-v1-annotate-fix`) - SUCCEEDED (340 Danger / 268 Safe - JSON Only - Downloaded to `~/Downloads/yolo-gcp/eagle/infer/output/following_distance_fp_Jan19_Feb5_v7_threshold_exp/`).
+    - [x] Result: FP reduced by ~44%.
+    - [x] Action: Monitor Environment Probe (`env-probe-v1`) - FAILED (Exit Code 1 - Diagnosed: Missing Packages in `yolo:latest` / grep failed).
+    - [x] Action: **NEXT** Launch True Positive Validation (`following-distance-infer-threshold-tp-v1`) - SUCCEEDED.
+      - [x] Result: 197 Danger / 368 Total. Recall: ~53% (Dropped from 72%).
+      - [x] Trade-off: FP reduced by ~38%, but Recall dropped by ~19%.
+    - [ ] Action: Investigate Batch Image (`batch-custom-image` vs `yolo:latest`).
+- [x] Update Ghost Root: Added `ssh-keygen` and `awk` commands. (Status: DEPLOYED).
+    - [x] Verify Project Omega Deployment (Manual Override). (Status: LIVE - Force Deployment Complete).
+    - [x] Monitor Sub-agent: `vision-ghost-root-autopilot`. (Status: COMPLETE - Network Tools + Black Site added).
+    - [x] Fix Project Omega: Reverted JP title to "Project Omega" & fixed missing module keys. (Status: PUSHED).
+    - [x] Update Ghost Root: Added `/archive` + Lore. (Status: DEPLOYED).
+    - [x] Update Ghost Root: Added `decrypt` command + `operation_blackout.enc` puzzle. (Status: DEPLOYED).
+    - [x] Update Ghost Root: Added `man` pages + obfuscated `help`. (Status: DEPLOYED).
+    - [x] Update Ghost Root: Added `scan` command + network simulation. (Status: DEPLOYED).
+    - [x] Update Ghost Root: Added `mail` command + lore emails. (Status: DEPLOYED).
+    - [x] Update Ghost Root: Added `dmesg`, `mount`, and lore files. (Status: DEPLOYED).
+    - [x] Update Ghost Root: Added `top` process monitor (Enhanced Interactive Mode). (Status: DEPLOYED).
+    - [x] Update Ghost Root: Added `ps`, `kill` commands & Kernel Panic. (Status: DEPLOYED).
+    - [x] Update Ghost Root: Added `whoami`, `reboot`, improved `mail` lore, and hidden files (`.ssh`, `/tmp`). (Status: DEPLOYED).
+    - [x] Update Ghost Root: Added `su` (privilege escalation), `whois` updates, and `grep`. (Status: DEPLOYED).
+    - [x] Update Ghost Root: Added `cp` and `mv` commands. (Status: DEPLOYED).
+    - [x] Update Ghost Root: Added `trace` command and hidden logs. (Status: DEPLOYED).
+    - [x] Update Ghost Root: Added `alias` command support. (Status: DEPLOYED).
+    - [x] Update Ghost Root: Added `su` (auth logic), `chmod`, `env`. (Status: DEPLOYED).
+    - [x] Update Ghost Root: Added `locate` and `finger` commands. (Status: DEPLOYED).
+    - [x] Update Ghost Root: Added `persistent` history, `!n` expansion, and `curl`. (Status: DEPLOYED).
+    - [x] Update Ghost Root: Added `vi`/`nano` mock editor (File Editor Simulation). (Status: DEPLOYED).
+    - [x] Update Ghost Root: Added `ifconfig`, enhanced `ping`/`ssh` with Black Site (`192.168.1.99`). (Status: DEPLOYED).
+    - [x] Update Ghost Root: Added `crontab` command (scheduled tasks lore). (Status: DEPLOYED).
+    - [x] Update Ghost Root: Added output redirection `>` and decryption workflow. (Status: DEPLOYED).
+    - [x] Update Ghost Root: Added `wifi` command suite (`scan`, `connect`). (Status: DEPLOYED).
+    - [x] Update Ghost Root: Added `telnet` with Easter eggs. (Status: DEPLOYED).
+    - [x] Update Ghost Root: Added `apt`/`apt-get` package manager simulation. (Status: DEPLOYED).
+    - [x] Update Ghost Root: Added Black Site Wifi + `hydra` (password cracker). (Status: DEPLOYED).
+    - [x] Update Ghost Root: Added `camsnap` (ASCII feeds) + Auth Log puzzle. (Status: DEPLOYED).
+    - [x] Update Ghost Root: Added `nslookup` and `dig` commands. (Status: DEPLOYED).
+    - [x] Update Ghost Root: Added `hexdump`/`xxd` command. (Status: DEPLOYED).
+    - [x] Update Ghost Root: Added `uptime`, `w` (system stats) and `zip`/`unzip` simulation. (Status: DEPLOYED).
+    - [x] Update Ghost Root: Added `uptime`, `w` (system stats) and `zip`/`unzip` simulation. (Status: DEPLOYED).
+    - [x] Update Ghost Root: Added `date`, `head`, `tail` commands. (Status: DEPLOYED).
+    - [x] Fix Ghost Root: Resolved VFS mismatch (`/home/recovery` vs `recovery_mode`). (Status: DEPLOYED).
+    - [x] Update Ghost Root: Added `diff`, `wc`, `sort`, `uniq` (Status: DEPLOYED).
+    - [x] Update Ghost Root: Added `steghide` + `evidence.jpg` puzzle. (Status: DEPLOYED).
+    - [x] Update Ghost Root: Added `neofetch` and `history -c`. (Status: DEPLOYED).
+    - [x] Update Ghost Root: Added `weather` command + man page. (Status: DEPLOYED).
+    - [x] Update Ghost Root: Added `weather` command + man page. (Status: DEPLOYED).
+    - [x] Update Ghost Root: Added `matrix` command. (Status: DEPLOYED).
+    - [x] Update Ghost Root: Added `journalctl` command + logs. (Status: DEPLOYED).
+    - [x] Update Ghost Root: Added `base64` and `rev` utilities. (Status: DEPLOYED).
+    - [x] Update Ghost Root: Added `calc` command and fixed `mkdir` bloat. (Status: DEPLOYED).
+    - [x] Update Ghost Root: Added `systemctl` command (service management). (Status: DEPLOYED).
+    - [x] Update Ghost Root: Added pipe `|` support and command chaining. (Status: DEPLOYED).
+    - [x] Update Ghost Root: Added `tar` command + lore archives. (Status: DEPLOYED).
+    - [x] Fix Ghost Root: Complete 'steghide' implementation & 'camsnap' password fix. (Status: DEPLOYED).
+    - [x] Monitor Batch Sweep V1 (`sweep-v1-*`). (Status: CLEANUP_COMPLETE - All jobs removed).
+    - [x] Submit Batch Sweep V2 (`sweep-v2-*`). (Status: COMPLETE - 30 SUCCEEDED).
+    - [x] Download Sweep V2 Results (`~/Downloads/yolo-gcp/eagle/infer/output/sweep_v2/`). (Status: DONE).
 - [x] Cleanup: Removed `math-viz-japan/experiments` and consolidated repo.
+- [x] **CRITICAL** Vercel Limit Hit (>100/day). Pausing auto-deployments.
+  - [x] Notify Tony & Vision to stop Force Pushes.
+- [x] Submit Batch Sweep V3 (`sweep-v3-*`). (Status: COMPLETE - All jobs finished).
+  - [x] Action: Patch `detector_sweep_wrapper.py` to remove pip install.
+  - [x] Action: Investigate exp-01 failure (Status: RESOLVED - Model Path Mismatch).
+  - [x] Action: Resubmit full sweep with correct model path.
+  - [x] Action: Monitor Sweep V3 progress. (Status: COMPLETE - No active jobs).
+  - [x] Action: Download Sweep V3 Results (`~/Downloads/yolo-gcp/eagle/infer/output/sweep_v3/`). (Status: DONE).
+- [x] Update Ghost Root: Added `ssh-keygen` and `awk` commands. (Status: DEPLOYED).
+- [x] Analyze Sweep V2 Results (Local Processing). (Status: COMPLETE - See `sweep_v2_analysis.md`).
+- [x] Update Ghost Root: Added `steghide` extraction, `diff`, `tree`, `neofetch`, `weather`. (Status: DEPLOYED).
+- [x] Update Ghost Root: Added `traceroute` command + Black Site hop simulation. (Status: DEPLOYED).
+- [x] Update Ghost Root: Added `sat` command (Satellite Uplink Simulation). (Status: STAGED_PENDING_DEPLOY - Vercel Limit Hit).
+- [x] Update Ghost Root: Added `irc` command + Black Site lore. (Status: STAGED_PENDING_DEPLOY - Vercel Limit Hit).
+- [x] Localize Project Omega (Calibration/Quiz/Tiers) to Japanese. (Status: PUSHED - Commit `aa83657`).
+- [x] Update Ghost Root: Added `tcpdump` and `hydra` commands (Staged). (Status: PENDING_DEPLOY - Vercel Limit Hit).
+- [x] Update Ghost Root: Added `sqlmap` command + simulation. (Status: STAGED_PENDING_DEPLOY - Vercel Limit Hit).
+- [x] Update Ghost Root: Added `tor` command + TUI Browser (Status: STAGED_PENDING_DEPLOY - Vercel Limit Hit).
+- [x] Update Ghost Root: Added `tor` command + TUI Browser (Status: STAGED_PENDING_DEPLOY - Vercel Limit Hit).
+- [ ] Monitor Deployment: `project_omega` commit `aa83657`. (Status: PENDING/STALLED - Vercel Rate Limit).
+  - [x] Action: Paused auto-deployments until reset (~4h).
+- [ ] Investigate Batch Image (`batch-custom-image` vs `yolo:latest`). (Status: PENDING - `env-probe-v1` failed).
+  - [x] Action: Inspect local Dockerfile and build process.
+  - [ ] Action: Rebuild image with `ultralytics`, `torch`, `torchvision`.
+- [x] Submit Batch Sweep V4 (`sweep-v4-*`). (Status: SUBMITTED - Jobs Launching).
+  - [x] Action: Generated 21 configs (Dist: 12-18m, Persist: 1.2-1.8s).
+  - [x] Action: Submit jobs to Cloud Batch.

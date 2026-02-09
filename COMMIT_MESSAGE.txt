@@ -1,7 +1,0 @@
-Project Omega: Continuous Expansion - Implemented Missing Features
-
-- Calculus: Added preset buttons for sin, cos, exp, log, tan.
-- Vectors: Added "Component View" toggle to visualize vector projections on axes.
-- Probability: Improved "Balls in Bins" simulation with speed control and expected average line.
-
-This commit fulfills the requirements for the "Continuous Expansion" phase.

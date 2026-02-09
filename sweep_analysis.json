@@ -1,0 +1,182 @@
+[
+  {
+    "id": "sweep_v1_exp_27",
+    "danger": 522,
+    "safe": 115,
+    "positive": 64
+  },
+  {
+    "id": "sweep_v1_exp_18",
+    "danger": 419,
+    "safe": 155,
+    "positive": 127
+  },
+  {
+    "id": "sweep_v1_exp_20",
+    "danger": 518,
+    "safe": 124,
+    "positive": 59
+  },
+  {
+    "id": "sweep_v1_exp_16",
+    "danger": 447,
+    "safe": 148,
+    "positive": 106
+  },
+  {
+    "id": "sweep_v1_exp_29",
+    "danger": 493,
+    "safe": 127,
+    "positive": 81
+  },
+  {
+    "id": "sweep_v1_exp_11",
+    "danger": 377,
+    "safe": 168,
+    "positive": 156
+  },
+  {
+    "id": "sweep_v1_exp_10",
+    "danger": 395,
+    "safe": 166,
+    "positive": 140
+  },
+  {
+    "id": "sweep_v1_exp_17",
+    "danger": 425,
+    "safe": 151,
+    "positive": 125
+  },
+  {
+    "id": "sweep_v1_exp_28",
+    "danger": 513,
+    "safe": 122,
+    "positive": 66
+  },
+  {
+    "id": "sweep_v1_exp_21",
+    "danger": 500,
+    "safe": 126,
+    "positive": 75
+  },
+  {
+    "id": "sweep_v1_exp_26",
+    "danger": 533,
+    "safe": 114,
+    "positive": 54
+  },
+  {
+    "id": "sweep_v1_exp_19",
+    "danger": 524,
+    "safe": 118,
+    "positive": 59
+  },
+  {
+    "id": "sweep_v1_exp_04",
+    "danger": 341,
+    "safe": 181,
+    "positive": 179
+  },
+  {
+    "id": "sweep_v1_exp_03",
+    "danger": 350,
+    "safe": 175,
+    "positive": 176
+  },
+  {
+    "id": "sweep_v1_exp_02",
+    "danger": 375,
+    "safe": 173,
+    "positive": 153
+  },
+  {
+    "id": "sweep_v1_exp_05",
+    "danger": 320,
+    "safe": 185,
+    "positive": 196
+  },
+  {
+    "id": "sweep_v1_exp_23",
+    "danger": 465,
+    "safe": 138,
+    "positive": 98
+  },
+  {
+    "id": "sweep_v1_exp_24",
+    "danger": 457,
+    "safe": 143,
+    "positive": 101
+  },
+  {
+    "id": "sweep_v1_exp_12",
+    "danger": 368,
+    "safe": 170,
+    "positive": 163
+  },
+  {
+    "id": "sweep_v1_exp_15",
+    "danger": 454,
+    "safe": 142,
+    "positive": 105
+  },
+  {
+    "id": "sweep_v1_exp_14",
+    "danger": 0,
+    "safe": 0,
+    "positive": 0
+  },
+  {
+    "id": "sweep_v1_exp_13",
+    "danger": 491,
+    "safe": 133,
+    "positive": 77
+  },
+  {
+    "id": "sweep_v1_exp_25",
+    "danger": 540,
+    "safe": 109,
+    "positive": 52
+  },
+  {
+    "id": "sweep_v1_exp_22",
+    "danger": 492,
+    "safe": 131,
+    "positive": 78
+  },
+  {
+    "id": "sweep_v1_exp_07",
+    "danger": 437,
+    "safe": 152,
+    "positive": 112
+  },
+  {
+    "id": "sweep_v1_exp_09",
+    "danger": 406,
+    "safe": 161,
+    "positive": 134
+  },
+  {
+    "id": "sweep_v1_exp_08",
+    "danger": 430,
+    "safe": 159,
+    "positive": 112
+  },
+  {
+    "id": "sweep_v1_exp_30",
+    "danger": 487,
+    "safe": 132,
+    "positive": 82
+  },
+  {
+    "id": "sweep_v1_exp_06",
+    "danger": 313,
+    "safe": 187,
+    "positive": 201
+  },
+  {
+    "id": "sweep_v1_exp_01",
+    "danger": 383,
+    "safe": 170,
+    "positive": 148
+  }
+]

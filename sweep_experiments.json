@@ -1,0 +1,272 @@
+[
+  {
+    "id": "sweep_v1_exp_01",
+    "params": {
+      "DIST_DANGER_M": 12.0,
+      "DANGER_PERSISTENCE_SEC": 0.5,
+      "EMA_ALPHA": 0.3,
+      "DIST_WARN_M": 30.0
+    }
+  },
+  {
+    "id": "sweep_v1_exp_02",
+    "params": {
+      "DIST_DANGER_M": 12.0,
+      "DANGER_PERSISTENCE_SEC": 0.6,
+      "EMA_ALPHA": 0.3,
+      "DIST_WARN_M": 30.0
+    }
+  },
+  {
+    "id": "sweep_v1_exp_03",
+    "params": {
+      "DIST_DANGER_M": 12.0,
+      "DANGER_PERSISTENCE_SEC": 0.7,
+      "EMA_ALPHA": 0.3,
+      "DIST_WARN_M": 30.0
+    }
+  },
+  {
+    "id": "sweep_v1_exp_04",
+    "params": {
+      "DIST_DANGER_M": 12.0,
+      "DANGER_PERSISTENCE_SEC": 0.8,
+      "EMA_ALPHA": 0.3,
+      "DIST_WARN_M": 30.0
+    }
+  },
+  {
+    "id": "sweep_v1_exp_05",
+    "params": {
+      "DIST_DANGER_M": 12.0,
+      "DANGER_PERSISTENCE_SEC": 0.9,
+      "EMA_ALPHA": 0.3,
+      "DIST_WARN_M": 30.0
+    }
+  },
+  {
+    "id": "sweep_v1_exp_06",
+    "params": {
+      "DIST_DANGER_M": 12.0,
+      "DANGER_PERSISTENCE_SEC": 1.0,
+      "EMA_ALPHA": 0.3,
+      "DIST_WARN_M": 30.0
+    }
+  },
+  {
+    "id": "sweep_v1_exp_07",
+    "params": {
+      "DIST_DANGER_M": 13.0,
+      "DANGER_PERSISTENCE_SEC": 0.5,
+      "EMA_ALPHA": 0.3,
+      "DIST_WARN_M": 30.0
+    }
+  },
+  {
+    "id": "sweep_v1_exp_08",
+    "params": {
+      "DIST_DANGER_M": 13.0,
+      "DANGER_PERSISTENCE_SEC": 0.6,
+      "EMA_ALPHA": 0.3,
+      "DIST_WARN_M": 30.0
+    }
+  },
+  {
+    "id": "sweep_v1_exp_09",
+    "params": {
+      "DIST_DANGER_M": 13.0,
+      "DANGER_PERSISTENCE_SEC": 0.7,
+      "EMA_ALPHA": 0.3,
+      "DIST_WARN_M": 30.0
+    }
+  },
+  {
+    "id": "sweep_v1_exp_10",
+    "params": {
+      "DIST_DANGER_M": 13.0,
+      "DANGER_PERSISTENCE_SEC": 0.8,
+      "EMA_ALPHA": 0.3,
+      "DIST_WARN_M": 30.0
+    }
+  },
+  {
+    "id": "sweep_v1_exp_11",
+    "params": {
+      "DIST_DANGER_M": 13.0,
+      "DANGER_PERSISTENCE_SEC": 0.9,
+      "EMA_ALPHA": 0.3,
+      "DIST_WARN_M": 30.0
+    }
+  },
+  {
+    "id": "sweep_v1_exp_12",
+    "params": {
+      "DIST_DANGER_M": 13.0,
+      "DANGER_PERSISTENCE_SEC": 1.0,
+      "EMA_ALPHA": 0.3,
+      "DIST_WARN_M": 30.0
+    }
+  },
+  {
+    "id": "sweep_v1_exp_13",
+    "params": {
+      "DIST_DANGER_M": 14.0,
+      "DANGER_PERSISTENCE_SEC": 0.5,
+      "EMA_ALPHA": 0.3,
+      "DIST_WARN_M": 30.0
+    }
+  },
+  {
+    "id": "sweep_v1_exp_14",
+    "params": {
+      "DIST_DANGER_M": 14.0,
+      "DANGER_PERSISTENCE_SEC": 0.6,
+      "EMA_ALPHA": 0.3,
+      "DIST_WARN_M": 30.0
+    }
+  },
+  {
+    "id": "sweep_v1_exp_15",
+    "params": {
+      "DIST_DANGER_M": 14.0,
+      "DANGER_PERSISTENCE_SEC": 0.7,
+      "EMA_ALPHA": 0.3,
+      "DIST_WARN_M": 30.0
+    }
+  },
+  {
+    "id": "sweep_v1_exp_16",
+    "params": {
+      "DIST_DANGER_M": 14.0,
+      "DANGER_PERSISTENCE_SEC": 0.8,
+      "EMA_ALPHA": 0.3,
+      "DIST_WARN_M": 30.0
+    }
+  },
+  {
+    "id": "sweep_v1_exp_17",
+    "params": {
+      "DIST_DANGER_M": 14.0,
+      "DANGER_PERSISTENCE_SEC": 0.9,
+      "EMA_ALPHA": 0.3,
+      "DIST_WARN_M": 30.0
+    }
+  },
+  {
+    "id": "sweep_v1_exp_18",
+    "params": {
+      "DIST_DANGER_M": 14.0,
+      "DANGER_PERSISTENCE_SEC": 1.0,
+      "EMA_ALPHA": 0.3,
+      "DIST_WARN_M": 30.0
+    }
+  },
+  {
+    "id": "sweep_v1_exp_19",
+    "params": {
+      "DIST_DANGER_M": 15.0,
+      "DANGER_PERSISTENCE_SEC": 0.5,
+      "EMA_ALPHA": 0.3,
+      "DIST_WARN_M": 30.0
+    }
+  },
+  {
+    "id": "sweep_v1_exp_20",
+    "params": {
+      "DIST_DANGER_M": 15.0,
+      "DANGER_PERSISTENCE_SEC": 0.6,
+      "EMA_ALPHA": 0.3,
+      "DIST_WARN_M": 30.0
+    }
+  },
+  {
+    "id": "sweep_v1_exp_21",
+    "params": {
+      "DIST_DANGER_M": 15.0,
+      "DANGER_PERSISTENCE_SEC": 0.7,
+      "EMA_ALPHA": 0.3,
+      "DIST_WARN_M": 30.0
+    }
+  },
+  {
+    "id": "sweep_v1_exp_22",
+    "params": {
+      "DIST_DANGER_M": 15.0,
+      "DANGER_PERSISTENCE_SEC": 0.8,
+      "EMA_ALPHA": 0.3,
+      "DIST_WARN_M": 30.0
+    }
+  },
+  {
+    "id": "sweep_v1_exp_23",
+    "params": {
+      "DIST_DANGER_M": 15.0,
+      "DANGER_PERSISTENCE_SEC": 0.9,
+      "EMA_ALPHA": 0.3,
+      "DIST_WARN_M": 30.0
+    }
+  },
+  {
+    "id": "sweep_v1_exp_24",
+    "params": {
+      "DIST_DANGER_M": 15.0,
+      "DANGER_PERSISTENCE_SEC": 1.0,
+      "EMA_ALPHA": 0.3,
+      "DIST_WARN_M": 30.0
+    }
+  },
+  {
+    "id": "sweep_v1_exp_25",
+    "params": {
+      "DIST_DANGER_M": 16.0,
+      "DANGER_PERSISTENCE_SEC": 0.5,
+      "EMA_ALPHA": 0.3,
+      "DIST_WARN_M": 30.0
+    }
+  },
+  {
+    "id": "sweep_v1_exp_26",
+    "params": {
+      "DIST_DANGER_M": 16.0,
+      "DANGER_PERSISTENCE_SEC": 0.6,
+      "EMA_ALPHA": 0.3,
+      "DIST_WARN_M": 30.0
+    }
+  },
+  {
+    "id": "sweep_v1_exp_27",
+    "params": {
+      "DIST_DANGER_M": 16.0,
+      "DANGER_PERSISTENCE_SEC": 0.7,
+      "EMA_ALPHA": 0.3,
+      "DIST_WARN_M": 30.0
+    }
+  },
+  {
+    "id": "sweep_v1_exp_28",
+    "params": {
+      "DIST_DANGER_M": 16.0,
+      "DANGER_PERSISTENCE_SEC": 0.8,
+      "EMA_ALPHA": 0.3,
+      "DIST_WARN_M": 30.0
+    }
+  },
+  {
+    "id": "sweep_v1_exp_29",
+    "params": {
+      "DIST_DANGER_M": 16.0,
+      "DANGER_PERSISTENCE_SEC": 0.9,
+      "EMA_ALPHA": 0.3,
+      "DIST_WARN_M": 30.0
+    }
+  },
+  {
+    "id": "sweep_v1_exp_30",
+    "params": {
+      "DIST_DANGER_M": 16.0,
+      "DANGER_PERSISTENCE_SEC": 1.0,
+      "EMA_ALPHA": 0.3,
+      "DIST_WARN_M": 30.0
+    }
+  }
+]

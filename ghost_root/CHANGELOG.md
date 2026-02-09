@@ -1,6 +1,11 @@
 # CHANGELOG
 
 ### Added
+- Implemented `tor` command (TUI Browser, Hidden Services, Fake Marketplace).
+- Implemented `sqlmap` command (SQL Injection Simulator).
+- Implemented `irc` command (Black Site Chat).
+- Implemented `sat` command (Satellite Uplink).
+- Implemented `tcpdump` command (Packet Capture).
 - Implemented `radio` command (SDR simulation): Scan FM frequencies and decode Morse code (`89.9 MHz`).
 - Added hint in `/var/log/syslog` about radio interference.
 - Fixed `Shell.ts` to include `radio` in `COMMANDS` list.

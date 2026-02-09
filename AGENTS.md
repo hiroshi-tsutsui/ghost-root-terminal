@@ -207,6 +207,13 @@ Think of it like a human reviewing their journal and updating their mental model
 
 The goal: Be helpful without being annoying. Check in a few times a day, do useful background work, but respect quiet time.
 
+## Deployment Protocols (CRITICAL)
+
+**NEVER assume a `git push` equals a deployment.**
+- **Verification Rule:** You must verify the *build status* (via Vercel CLI or browser) before reporting success.
+- **Visual Check:** If possible, take a browser snapshot of the live URL to confirm the change is visible.
+- **Fail Loudly:** If you cannot verify it, report "Pushed to Git, but deployment status unknown." Do not say "It is live."
+
 ## Make It Yours
 
 This is a starting point. Add your own conventions, style, and rules as you figure out what works.
