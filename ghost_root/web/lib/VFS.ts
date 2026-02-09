@@ -16,7 +16,41 @@ export type VFSNode = FileNode | DirNode;
 const VFS: Record<string, VFSNode> = {
   '/': {
     type: 'dir',
-    children: ['home', 'etc', 'var', 'archive']
+    children: ['home', 'etc', 'var', 'archive', 'usr']
+  },
+  '/usr': {
+    type: 'dir',
+    children: ['src', 'bin']
+  },
+  '/usr/bin': {
+    type: 'dir',
+    children: ['gcc']
+  },
+  '/usr/src': {
+    type: 'dir',
+    children: ['exploit.c']
+  },
+  '/usr/src/exploit.c': {
+    type: 'file',
+    content: `#include <stdio.h>
+#include <string.h>
+
+int main(int argc, char *argv[]) {
+    char buffer[64];
+    if (argc < 2) {
+        printf("Usage: %s <payload>\\n", argv[0]);
+        return 1;
+    }
+    // VULNERABILITY: strcpy is unsafe!
+    strcpy(buffer, argv[1]);
+    printf("Input: %s\\n", buffer);
+    return 0;
+}
+/*
+ * TODO: Compile with -fno-stack-protector
+ * Target: /usr/sbin/auth_service
+ * Offset: 76
+ */`
   },
   '/home': {
     type: 'dir',

@@ -168,7 +168,7 @@ export interface CommandResult {
   data?: any;
 }
 
-const COMMANDS = ['ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat'];
+const COMMANDS = ['ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', './'];
 
 export const tabCompletion = (cwd: string, inputBuffer: string): { matches: string[], completed: string } => {
   const parts = inputBuffer.split(' '); 
@@ -292,6 +292,32 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
       }
       return { output: out, newCwd: nCwd, action: act, data: dat, newPrompt: prompt };
   };
+
+  if (command.startsWith('./')) {
+      const fileName = command.substring(2);
+      const filePath = resolvePath(cwd, fileName);
+      const node = getNode(filePath);
+      
+      if (!node) {
+          return finalize(`bash: ${command}: No such file or directory`, newCwd);
+      } else if (node.type === 'dir') {
+          return finalize(`bash: ${command}: Is a directory`, newCwd);
+      } else {
+          if (node.content.includes('[BINARY_ELF_X86_64]') || node.content.includes('BINARY_PAYLOAD')) {
+              if (fileName === 'overflow' || fileName === 'exploit') {
+                  output = `[SYSTEM] Buffer Overflow Triggered at 0xBF800000...\n[SYSTEM] EIP overwritten with 0x08048000\n[SYSTEM] Spawning root shell...\n\n# whoami\nroot`;
+                  return { output, newCwd: '/root', newPrompt: 'root@ghost-root#', action: 'delay' };
+              } else {
+                  output = `bash: ${command}: Permission denied (Missing execute bit or corrupt header)`;
+              }
+          } else if (node.content.startsWith('#!/bin/bash')) {
+              output = `Executing script ${fileName}...\n` + node.content;
+          } else {
+              output = `bash: ${command}: Permission denied`;
+          }
+          return finalize(output, newCwd);
+      }
+  }
 
   switch (command) {
     case 'grep': {
@@ -1223,6 +1249,50 @@ Type "man <command>" for more information.`;
        }).join('\n');
        output = `${header}\nProto Recv-Q Send-Q  Local Address        Foreign Address      State        PID/Program name\n${table}`;
        break;
+    }
+    case 'gcc': {
+      if (args.length < 1) {
+        output = 'gcc: no input files';
+      } else {
+        let inputFile = '';
+        let outputFile = 'a.out';
+        
+        for (let i = 0; i < args.length; i++) {
+            if (args[i] === '-o') {
+                if (args[i+1]) {
+                    outputFile = args[i+1];
+                    i++;
+                }
+            } else if (!args[i].startsWith('-')) {
+                inputFile = args[i];
+            }
+        }
+
+        if (!inputFile) {
+            output = 'gcc: no input files';
+        } else {
+            const node = getNode(resolvePath(cwd, inputFile));
+            if (!node) {
+                output = `gcc: error: ${inputFile}: No such file or directory`;
+            } else if (node.type === 'dir') {
+                output = `gcc: error: ${inputFile}: Is a directory`;
+            } else {
+                // Compilation Success Simulation
+                output = '';
+                const newPath = resolvePath(cwd, outputFile);
+                const parentPath = newPath.substring(0, newPath.lastIndexOf('/')) || '/';
+                const fileName = newPath.substring(newPath.lastIndexOf('/') + 1);
+                
+                // Add the binary file
+                VFS[newPath] = { 
+                    type: 'file', 
+                    content: `[BINARY_ELF_X86_64: ${fileName}]\n(Execute with ./${fileName})` 
+                };
+                addChild(parentPath, fileName);
+            }
+        }
+      }
+      break;
     }
     case 'scan':
     case 'nmap': {
