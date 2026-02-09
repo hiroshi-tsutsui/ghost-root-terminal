@@ -125,11 +125,18 @@
 - [x] Update Ghost Root: Added `sqlmap` command + simulation. (Status: STAGED_PENDING_DEPLOY - Vercel Limit Hit).
 - [x] Update Ghost Root: Added `tor` command + TUI Browser (Status: STAGED_PENDING_DEPLOY - Vercel Limit Hit).
 - [x] Update Ghost Root: Added `tor` command + TUI Browser (Status: STAGED_PENDING_DEPLOY - Vercel Limit Hit).
-- [ ] Monitor Deployment: `project_omega` commit `aa83657`. (Status: PENDING/STALLED - Vercel Rate Limit).
-  - [x] Action: Paused auto-deployments until reset (~4h).
+- [x] Update Ghost Root: Added `cicada3301` puzzle + `man tor` (Status: STAGED_PENDING_DEPLOY).
+- [x] Update Ghost Root: Added `nc` (Netcat) with Listen/Connect simulation. (Status: STAGED_PENDING_DEPLOY).
+- [x] Implement `iptables` / `firewall` simulation.
+- [ ] Monitor Deployment: `project_omega` commit `aa83657`. (Status: BLOCKED - Force Deploy Failed/Limit Hit).
 - [ ] Investigate Batch Image (`batch-custom-image` vs `yolo:latest`). (Status: PENDING - `env-probe-v1` failed).
   - [x] Action: Inspect local Dockerfile and build process.
   - [ ] Action: Rebuild image with `ultralytics`, `torch`, `torchvision`.
-- [x] Submit Batch Sweep V4 (`sweep-v4-*`). (Status: SUBMITTED - Jobs Launching).
-  - [x] Action: Generated 21 configs (Dist: 12-18m, Persist: 1.2-1.8s).
-  - [x] Action: Submit jobs to Cloud Batch.
+- [x] Monitor Batch Sweep V4 (`sweep-v4-*`). (Status: RUNNING - Exp-09+ running as `sweep-v4-1` series. Data for 01-08 secured).
+  - [x] Action: Verified `sweep-v4-exp-01` through `08` results.
+  - [x] Action: Downloaded available results to `~/Downloads/yolo-gcp/eagle/infer/output/sweep_v4/`.
+  - [x] Action: Investigate missing jobs (Confirmed: Running as `sweep-v4-1` series).
+- [ ] Action: Monitor `sweep-v4-1` results.
+- [x] Download Harsh Brake Videos (`~/Desktop/harsh_brake/`). (Status: DONE - 377 files).
+- [x] Monitor Threshold Experiment Job (`following-distance-infer-threshold-v1-annotate-fix`) - SUCCEEDED (Verified).
+- [x] Monitor Environment Probe (`env-probe-v1`) - FAILED (Exit Code 1 - Diagnosed: `grep` failed implies `ultralytics`/`torch` missing in `yolo:latest`).
