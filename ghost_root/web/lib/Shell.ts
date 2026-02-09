@@ -168,7 +168,7 @@ export interface CommandResult {
   data?: any;
 }
 
-const COMMANDS = ['ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', './'];
+const COMMANDS = ['ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', './', 'iptables'];
 
 export const tabCompletion = (cwd: string, inputBuffer: string): { matches: string[], completed: string } => {
   const parts = inputBuffer.split(' '); 
@@ -853,6 +853,8 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
           if (user === 'root') {
              if (pass === 'black_widow_protocol_init' || pass === 'omega_protocol_override' || pass === 'red_ledger') {
                  output = 'Authentication successful.\n[SUDO] Access granted.\nWARNING: Audit logging enabled.';
+                 // Create root session marker
+                 VFS['/tmp/.root_session'] = { type: 'file', content: 'ACTIVE' };
                  return { output, newCwd, newPrompt: 'root@ghost-root#' };
              } else {
                  output = 'su: Authentication failure';
@@ -863,6 +865,34 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
           }
       }
       break;
+    }
+    case 'iptables': {
+        const isRoot = !!getNode('/tmp/.root_session');
+        const firewallFlushed = !!getNode('/var/run/firewall_flushed');
+
+        if (args.length === 0 || args[0] === '-L') {
+            if (firewallFlushed) {
+                output = `Chain INPUT (policy ACCEPT)
+target     prot opt source               destination
+ACCEPT     all  --  anywhere             anywhere`;
+            } else {
+                output = `Chain INPUT (policy DROP)
+target     prot opt source               destination
+DROP       tcp  --  192.168.1.99         anywhere             tcp dpt:ssh
+DROP       icmp --  192.168.1.99         anywhere
+ACCEPT     all  --  anywhere             anywhere`;
+            }
+        } else if (args[0] === '-F' || args[0] === '--flush') {
+            if (isRoot) {
+                VFS['/var/run/firewall_flushed'] = { type: 'file', content: 'TRUE' };
+                output = 'iptables: flushing firewall rules... done.\nChain INPUT policy changed to ACCEPT.';
+            } else {
+                output = 'iptables: Permission denied (you must be root)';
+            }
+        } else {
+            output = 'usage: iptables [-L|--list] [-F|--flush]';
+        }
+        break;
     }
     case 'chmod': {
        if (args.length < 2) {
@@ -927,6 +957,8 @@ Type "man <command>" for more information.`;
           case 'ssh-keygen': output = 'NAME\n\tssh-keygen - authentication key generation...'; break;
           case 'awk': output = 'NAME\n\tawk - pattern scanning and processing language...'; break;
           case 'grep': output = 'NAME\n\tgrep - print lines that match patterns...'; break;
+          case 'iptables': output = 'NAME\n\tiptables - administration tool for IPv4 packet filtering and NAT\n\nSYNOPSIS\n\tiptables [-L] [-F]\n\nDESCRIPTION\n\tiptables is used to set up, maintain, and inspect the tables of IPv4 packet filter rules in the Linux kernel.\n\nOPTIONS\n\t-L, --list\n\t\tList all rules in the selected chain.\n\t-F, --flush\n\t\tFlush the selected chain (delete all rules).\n\t\tWARNING: This action requires root privileges.'; break;
+          case 'tor': output = 'NAME\n\ttor - The Onion Router simulation.\n\nSYNOPSIS\n\ttor <command> [args]\n\nCOMMANDS\n\tstart - Initialize Tor circuit\n\tstatus - Check connection status\n\tlist - List hidden services\n\tbrowse <url> - Connect to .onion site'; break;
           default: output = `No manual entry for ${page}`;
         }
       }
@@ -1134,6 +1166,12 @@ Type "man <command>" for more information.`;
         output = 'usage: ssh [-i identity_file] user@host';
       } else {
         if (target.includes('black-site') || target.includes('192.168.1.99')) {
+             const firewallFlushed = !!getNode('/var/run/firewall_flushed');
+             if (!firewallFlushed) {
+                 output = `ssh: connect to host ${target} port 22: No route to host\n(Hint: Check firewall rules)`;
+                 return { output, newCwd, action: 'delay' };
+             }
+
              let hasKey = false;
              if (identityFile) {
                  const keyPath = resolvePath(cwd, identityFile);
@@ -1387,8 +1425,49 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
        output = 'eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>...';
        break;
     case 'nc': {
-       if (args.length < 1) output = 'usage: nc [options] <host> <port>';
-       else output = `nc: connect to ${args[0]} port ${args[1] || 23} (tcp) failed: Connection refused`;
+       const isListen = args.includes('-l');
+       const verbose = args.includes('-v');
+       const portIndex = args.indexOf('-p');
+       let port = portIndex !== -1 ? args[portIndex + 1] : null;
+       
+       // Filter out flags to find host
+       const nonFlagArgs = args.filter((a, i) => !a.startsWith('-') && (i === 0 || args[i-1] !== '-p'));
+       const host = nonFlagArgs[0];
+       if (!port && nonFlagArgs[1]) port = nonFlagArgs[1];
+
+       if (isListen) {
+           if (!port) {
+               output = 'nc: usage: nc -l -p <port>';
+           } else {
+               output = `Listening on [0.0.0.0] (family 0, port ${port})\n...`;
+               return { output, newCwd, action: 'delay' }; 
+           }
+       } else {
+           if (!host) {
+               output = 'usage: nc [options] <host> <port>';
+           } else {
+               const p = port || '23';
+               if (host === '192.168.1.99' || host === 'black-site.local') {
+                   if (p === '6667') {
+                       output = `(UNKNOWN) [192.168.1.99] 6667 (?) open\n:irc.black-site.local NOTICE * :*** Looking up your hostname...\n:irc.black-site.local NOTICE * :*** Found your hostname\n:irc.black-site.local 001 ghost :Welcome to the Black Site IRC Network ghost!user@ghost-root\n`;
+                       return { output, newCwd, action: 'irc_sim', data: { server: host, channel: '#lobby', nick: 'ghost' } };
+                   } else if (p === '80') {
+                        output = `(UNKNOWN) [192.168.1.99] 80 (http) open\nGET / HTTP/1.1\n\nHTTP/1.1 403 Forbidden\nServer: nginx/1.18.0\nDate: ${new Date().toUTCString()}\nContent-Type: text/html\nContent-Length: 162\n\n<html>\n<head><title>403 Forbidden</title></head>\n<body>\n<center><h1>403 Forbidden</h1></center>\n<hr><center>nginx/1.18.0</center>\n</body>\n</html>`;
+                   } else {
+                        output = `(UNKNOWN) [${host}] ${p} (?) : Connection refused`;
+                   }
+               } else if (host === 'localhost' || host === '127.0.0.1') {
+                   if (p === '1337') {
+                       output = `localhost [127.0.0.1] 1337 (?): open\n[BACKDOOR_LISTENER_V2]\n> Awaiting Payload...`;
+                   } else {
+                       output = `localhost [127.0.0.1] ${p} (?): Connection refused`;
+                   }
+               } else {
+                   if (verbose) output = `nc: connect to ${host} port ${p} (tcp) failed: Connection refused`;
+                   else output = `nc: connect to ${host} port ${p} (tcp) failed: Connection refused`;
+               }
+           }
+       }
        break;
     }
     case 'touch': {
