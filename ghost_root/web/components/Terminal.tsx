@@ -38,6 +38,7 @@ const WebTerminal = () => {
   const historyIndexRef = useRef(-1);
   const isBootingRef = useRef(true);
   const isEditingRef = useRef(false);
+  const isTopModeRef = useRef(false);
   const editorStateRef = useRef({ content: '', path: '', buffer: '' });
 
   useEffect(() => {
@@ -279,12 +280,56 @@ const WebTerminal = () => {
              term.writeln('Target found: DE:AD:BE:EF:CA:FE (Hidden SSID) [WEP]');
           }
 
-          if (result.action === 'top_sim') {
-             const duration = 5000;
-             const startTime = Date.now();
+          if (result.action === 'matrix_sim') {
+             isTopModeRef.current = true;
              term.clear();
+             term.write('\x1b[?25l'); // Hide cursor
              
-             while (Date.now() - startTime < duration) {
+             const cols = term.cols;
+             const drops = Array(cols).fill(0);
+             const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*";
+
+             while (isTopModeRef.current) {
+                 for (let i = 0; i < cols; i++) {
+                     if (Math.random() > 0.975) {
+                         drops[i] = 1;
+                     }
+                     
+                     if (drops[i] > 0) {
+                         const y = drops[i];
+                         if (y < term.rows) {
+                             const char = chars[Math.floor(Math.random() * chars.length)];
+                             term.write(`\x1b[${y};${i+1}H\x1b[1;32m${char}\x1b[0m`); // Bright Green Head
+                             
+                             if (y > 1) {
+                                 const prevChar = chars[Math.floor(Math.random() * chars.length)];
+                                 term.write(`\x1b[${y-1};${i+1}H\x1b[32m${prevChar}\x1b[0m`); // Normal Green
+                             }
+                             if (y > 2) {
+                                 const tailChar = chars[Math.floor(Math.random() * chars.length)];
+                                 term.write(`\x1b[${y-2};${i+1}H\x1b[2;32m${tailChar}\x1b[0m`); // Dim Green
+                             }
+                             if (y > 20) { 
+                                 term.write(`\x1b[${y-20};${i+1}H `); // Erase tail
+                             }
+                             drops[i]++;
+                         } else {
+                             drops[i] = 0;
+                         }
+                     }
+                 }
+                 await new Promise(r => setTimeout(r, 33));
+             }
+             term.write('\x1b[?25h'); // Show cursor
+             term.clear();
+          }
+
+          if (result.action === 'top_sim') {
+             isTopModeRef.current = true;
+             term.clear();
+             term.write('\x1b[?25l'); // Hide cursor
+             
+             while (isTopModeRef.current) {
                  term.write('\x1b[H'); // Move cursor to home
                  const now = new Date();
                  const timeStr = now.toTimeString().split(' ')[0];
@@ -304,8 +349,10 @@ const WebTerminal = () => {
                  ];
                  
                  term.write(header + '\r\n' + processes.join('\r\n'));
+                 term.write('\r\n\r\n\x1b[7m[top] Running... Press "q" to exit.\x1b[0m');
                  await new Promise(r => setTimeout(r, 1000));
              }
+             term.write('\x1b[?25h'); // Show cursor
              term.clear();
           }
 
@@ -345,6 +392,15 @@ const WebTerminal = () => {
               term.write(`\x1b[${term.rows};0H`); // Move to last row
               term.write(`\x1b[7m"${filePath}" [Read Only] ${lines.length}L, ${(content || '').length}C\x1b[0m`);
               return; 
+          }
+
+          if (result.action === 'clear_history') {
+             historyRef.current = [];
+             historyIndexRef.current = -1;
+             const hFile = VFS['/home/ghost/.bash_history'];
+             if (hFile && hFile.type === 'file') {
+                 hFile.content = '';
+             }
           }
 
           if (result.output) {
@@ -410,6 +466,13 @@ const WebTerminal = () => {
     term.onData(e => {
       // Block input during boot
       if (isBootingRef.current) return;
+
+      if (isTopModeRef.current) {
+          if (e === 'q' || e === '\x03') { // q or Ctrl+C
+              isTopModeRef.current = false;
+          }
+          return;
+      }
 
       if (isEditingRef.current) {
           // Pass raw key to editor handler

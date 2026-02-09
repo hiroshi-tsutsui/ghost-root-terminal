@@ -67,7 +67,47 @@ KEY_ID: GHOST_PROTOCOL_INIT_V2
   },
   '/home/ghost': {
     type: 'dir',
-    children: ['secrets', '.bash_history', 'wifi_note.txt']
+    children: ['secrets', '.bash_history', 'wifi_note.txt', 'journal', 'evidence.jpg']
+  },
+  '/home/ghost/evidence.jpg': {
+    type: 'file',
+    content: 'ÿØÿà\x00\x10JFIF\x00\x01\x01\x01\x00H\x00H\x00\x00ÿá\x00\x16Exif\x00\x00MM\x00*\x00\x00\x00\x08\x00\x01\x01\x12\x00\x03\x00\x01\x00\x00\x00\x01\x00\x00\x00\x00ÿÛ\x00C\x00\x08\x06\x06\x07\x06\x05\x08\x07\x07\x07\t\t\x08\n\x0C\x14\r\x0C\x0B\x0B\x0C\x19\x12\x13\x0F\x14\x1D\x1A\x1F\x1E\x1D\x1A\x1C\x1C $.\' ",#\x1C\x1C(7),01444\x1F\'9=82<.342ÿÛ\x00C\x01\t\t\t\x0C\x0B\x0C\x18\r\r\x182!\x1C!22222222222222222222222222222222222222222222222222ÿÀ\x00\x11\x08\x00d\x00d\x03\x01\x22\x00\x02\x11\x01\x03\x11\x01ÿÄ\x00\x1F\x00\x00\x01\x05\x01\x01\x01\x01\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x01\x02\x03\x04\x05\x06\x07\x08\t\n\x0BÿÄ\x00\xB5\x10\x00\x02\x01\x03\x03\x02\x04\x03\x05\x05\x04\x04\x00\x00\x01}\x01\x02\x03\x00\x04\x11\x05\x12!1A\x06\x13Qa\x07"q\x142\x81\x91¡\x08#B±Á\x15RÑð$3br\x82\t\n\x16\x17\x18\x19\x1A%&\'()*456789:CDEFGHIJSTUVWXYZcdefghijstuvwxyz\x83\x84\x85\x86\x87\x88\x89\x8A\x92\x93\x94\x95\x96\x97\x98\x99\x9A\xA2\xA3\xA4\xA5\xA6\xA7\xA8\xA9\xAA\xB2\xB3\xB4\xB5\xB6\xB7\xB8\xB9\xBA\xC2\xC3\xC4\xC5\xC6\xC7\xC8\xC9\xCA\xD2\xD3\xD4\xD5\xD6\xD7\xD8\xD9\xDA\xE1\xE2\xE3\xE4\xE5\xE6\xE7\xE8\xE9\xEA\xF1\xF2\xF3\xF4\xF5\xF6\xF7\xF8\xF9\xFA[HIDDEN_STEG_DATA:VGhlIHBhc3NwaHJhc2UgaXMgImJsYWNrX3dpZG93Ii4=]'
+  },
+  '/home/ghost/journal': {
+    type: 'dir',
+    children: ['entry_01.txt', 'entry_02.enc', 'entry_03.txt']
+  },
+  '/home/ghost/journal/entry_01.txt': {
+    type: 'file',
+    content: `Day 42
+The system is acting strange. I keep seeing processes I didn't start.
+'spectre_kernel'? What is that?
+I tried to kill it, but it just respawned with a new PID.
+I'm going to start encrypting my logs.
+`
+  },
+  '/home/ghost/journal/entry_01.bak': {
+    type: 'file',
+    content: `Day 42
+The system is acting strange. I keep seeing processes I didn't start.
+'spectre_kernel'? What is that?
+I tried to kill it, but it just respawned with a new PID.
+The PID was 666. It seems to be monitoring port 45678.
+I'm going to start encrypting my logs.
+`
+  },
+  '/home/ghost/journal/entry_02.enc': {
+    type: 'file',
+    content: `RU5DUllQVEVEIEpPVVJOQUwgRU5UUlkgMjMKClRoZXkgZm91bmQgbWUuClRoZSB3YXRjaGVycy4KVGhleSdyZSBpbiB0aGUgbmV0d29yay4KSSBoaWQgdGhlIGtleSBpbiB0aGUgY2FtZXJhIGZlZWQuCkNhbWVyYSAwMy4gVGhlIHBhc3N3b3JkIGlzIFNQRUNUUkVfRVZFLg==`
+  },
+  '/home/ghost/journal/entry_03.txt': {
+    type: 'file',
+    content: `Day 45
+If you are reading this, I'm already gone.
+They locked me out of the main server, but I managed to leave a backdoor.
+Check the wifi networks. There's a hidden one.
+The password is... obscure.
+`
   },
   '/home/ghost/wifi_note.txt': {
     type: 'file',
@@ -173,11 +213,19 @@ Click here to claim your prize!
   },
   '/dev': {
     type: 'dir',
-    children: ['sda1', 'sdb', 'video0', 'null', 'random']
+    children: ['sda1', 'sdb1', 'video0', 'null', 'random']
+  },
+  '/dev/sdb1': {
+    type: 'file',
+    content: '[BLOCK DEVICE: USB_DRIVE_16GB]'
   },
   '/dev/video0': {
     type: 'file',
     content: '[DEVICE: CAMERA_SYSTEM_V2]'
+  },
+  '/mnt': {
+      type: 'dir',
+      children: []
   },
   '/var/lib': {
       type: 'dir',
@@ -224,10 +272,28 @@ MIIEpQIBAAKCAQEA3...
   },
     '/var/log/syslog': {
         type: 'file',
-        content: `Oct 23 14:02:11 ghost-root systemd[1]: Started Session 1 of user root.
+        content: `Oct 23 09:00:01 ghost-root systemd[1]: Starting Rotate log files...
+Oct 23 09:00:01 ghost-root systemd[1]: Started Rotate log files.
+Oct 23 09:00:01 ghost-root CRON[1122]: (root) CMD (cd / && run-parts --report /etc/cron.hourly)
+Oct 23 10:23:45 ghost-root kernel: [    4.123456] usb 1-1: new high-speed USB device number 2 using xhci_hcd
+Oct 23 10:23:45 ghost-root kernel: [    4.234567] usb 1-1: New USB device found, idVendor=1337, idProduct=0xdead
+Oct 23 10:23:45 ghost-root kernel: [    4.234567] usb 1-1: Product: BLACK_WIDOW_V2
+Oct 23 10:23:45 ghost-root mtp-probe: checking bus 1, device 2: "/sys/devices/pci0000:00/0000:00:14.0/usb1/1-1"
+Oct 23 11:00:00 ghost-root systemd[1]: Started Session 42 of user ghost.
+Oct 23 11:05:22 ghost-root sudo: ghost : TTY=pts/0 ; PWD=/home/ghost ; USER=root ; COMMAND=/bin/su
+Oct 23 11:05:25 ghost-root su[2048]: (to root) ghost on pts/0
+Oct 23 11:05:25 ghost-root su[2048]: pam_unix(su:session): session opened for user root by ghost(uid=1000)
+Oct 23 12:00:00 ghost-root systemd[1]: Starting Cleanup of Temporary Directories...
+Oct 23 12:00:00 ghost-root systemd[1]: Started Cleanup of Temporary Directories.
+Oct 23 13:37:00 ghost-root sshd[666]: Refused connection from 192.168.1.99 (Black Site): User blacklisted.
+Oct 23 13:37:01 ghost-root sshd[666]: Invalid user spectre from 192.168.1.99
+Oct 23 14:02:11 ghost-root systemd[1]: Started Session 1 of user root.
 Oct 23 14:05:00 ghost-root CRON[1234]: (root) CMD (echo "System check complete")
-Oct 23 14:10:22 ghost-root kernel: [    0.000000] Linux version 5.4.0-123-generic (buildd@lcy02-amd64-001) (gcc version 9.4.0 (Ubuntu 9.4.0-1ubuntu1~20.04.1)) #139-Ubuntu SMP Mon Jul 11 15:47:32 UTC 2022
+Oct 23 14:45:00 ghost-root kernel: [ 3600.000000] SEGFAULT at 0x08048000 ip 0xdeadbeef sp 0xbfffffff error 4 in phantom_process[08048000+1000]
+Oct 23 14:45:01 ghost-root systemd-coredump[999]: Process 666 (phantom_process) of user 1000 dumped core.
 Oct 23 15:00:00 ghost-root shadow[666]: User Romanoff: red_ledger authentication successful.
+Oct 23 15:30:00 ghost-root systemd[1]: Reloading OpenClaw Agent Service.
+Oct 23 15:30:01 ghost-root openclaw[1337]: Agent "Vision" reporting status: ONLINE.
 `
     },
     '/var/log/connections.log': {

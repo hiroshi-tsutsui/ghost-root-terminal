@@ -66,6 +66,22 @@ const getNode = (vfsPath: string): VFSNode | undefined => {
   return VFS[normalized];
 };
 
+const addChild = (parentPath: string, childName: string) => {
+  const node = getNode(parentPath);
+  if (node && node.type === 'dir' && !node.children.includes(childName)) {
+    node.children.push(childName);
+  }
+};
+
+const removeChild = (parentPath: string, childName: string) => {
+  const node = getNode(parentPath);
+  if (node && node.type === 'dir') {
+    node.children = node.children.filter(c => c !== childName);
+  }
+};
+
+let MOUNTED_DEVICES: Record<string, string> = {}; // device -> mountPoint
+
 const tokenize = (cmd: string): string[] => {
   const tokens: string[] = [];
   let currentToken = '';
@@ -104,11 +120,11 @@ export interface CommandResult {
   output: string;
   newCwd?: string;
   newPrompt?: string;
-  action?: 'delay' | 'crack_sim' | 'scan_sim' | 'top_sim' | 'kernel_panic' | 'edit_file' | 'wifi_scan_sim';
+  action?: 'delay' | 'crack_sim' | 'scan_sim' | 'top_sim' | 'kernel_panic' | 'edit_file' | 'wifi_scan_sim' | 'clear_history' | 'matrix_sim';
   data?: any;
 }
 
-const COMMANDS = ['ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'alias', 'su', 'chmod', 'env', 'printenv', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'head', 'tail', 'strings'];
+const COMMANDS = ['ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix'];
 
 export const tabCompletion = (cwd: string, inputBuffer: string): { matches: string[], completed: string } => {
   // Simple split for completion (doesn't handle quotes perfectly yet)
@@ -222,6 +238,36 @@ export const processCommand = (cwd: string, commandLine: string): CommandResult 
   };
 
   switch (command) {
+    case 'sudo': {
+      if (args.length < 1) {
+        output = 'usage: sudo <command>';
+      } else {
+        // Simulate password prompt and failure
+        output = `[sudo] password for ghost:\n\nghost is not in the sudoers file. This incident will be reported.`;
+        return { output, newCwd, action: 'delay' };
+      }
+      break;
+    }
+    case 'wall': {
+      if (args.length < 1) {
+         output = 'wall: usage: wall <message>';
+      } else {
+         const message = args.join(' ');
+         const dateStr = new Date().toTimeString();
+         output = `\nBroadcast message from ghost@ghost-root (pts/0) (${dateStr}):\n\n${message}\n`;
+      }
+      break;
+    }
+    case 'shutdown': {
+      if (args[0] === 'now' || args[0] === '-h' && args[1] === 'now') {
+          output = 'System halting...';
+          return { output, newCwd, action: 'kernel_panic' };
+      } else {
+          const date = new Date(Date.now() + 60000); // 1 minute later
+          output = `Shutdown scheduled for ${date.toUTCString()}, use 'shutdown -c' to cancel.`;
+      }
+      break;
+    }
     case 'alias': {
         if (args.length === 0) {
             output = Object.entries(ALIASES).map(([k, v]) => `alias ${k}='${v}'`).join('\n');
@@ -445,6 +491,63 @@ export const processCommand = (cwd: string, commandLine: string): CommandResult 
        }
        break;
     }
+    case 'journal': {
+        const journalPath = '/home/ghost/journal';
+        const journalNode = getNode(journalPath);
+        
+        if (!journalNode || journalNode.type !== 'dir') {
+            output = 'Journal not found.';
+        } else {
+            if (args.length === 0) {
+                // List entries
+                output = `Ghost's Journal:\n\n${journalNode.children.map(f => {
+                    const isEncrypted = f.endsWith('.enc');
+                    return `  - ${f} ${isEncrypted ? '[ENCRYPTED]' : ''}`;
+                }).join('\n')}\n\nType 'journal <filename>' to read.`;
+            } else {
+                const entryName = args[0];
+                const entryPath = `${journalPath}/${entryName}`;
+                const entryNode = getNode(entryPath);
+                
+                if (!entryNode) {
+                    output = `journal: ${entryName}: Entry not found.`;
+                } else if (entryNode.type === 'dir') {
+                    output = `journal: ${entryName}: Is a directory.`;
+                } else {
+                    if (entryName.endsWith('.enc')) {
+                        output = `This entry is encrypted.\nUse 'decrypt ${entryPath} [password]' to read it.`;
+                    } else {
+                        output = entryNode.content;
+                    }
+                }
+            }
+        }
+        break;
+    }
+    case 'journalctl': {
+        const syslog = getNode('/var/log/syslog');
+        if (!syslog || syslog.type !== 'file') {
+            output = 'No journal files found.';
+        } else {
+            const lines = syslog.content.split('\n');
+            if (args.includes('-f')) {
+                output = lines.slice(-10).join('\n') + '\n\n[JOURNAL] Following new entries... (Ctrl+C to exit)';
+                return { output, newCwd, action: 'delay' };
+            }
+            const nIndex = args.indexOf('-n');
+            if (nIndex !== -1 && args[nIndex + 1]) {
+                const n = parseInt(args[nIndex + 1], 10);
+                if (!isNaN(n)) {
+                    output = lines.slice(-n).join('\n');
+                } else {
+                    output = 'journalctl: invalid line count';
+                }
+            } else {
+                output = syslog.content;
+            }
+        }
+        break;
+    }
     case 'pwd':
       output = cwd;
       break;
@@ -496,9 +599,7 @@ export const processCommand = (cwd: string, commandLine: string): CommandResult 
     case 'history': {
       if (args[0] === '-c') {
          output = 'History cleared.';
-         // In a real shell, this would clear the history buffer. 
-         // Here, we can't easily access the React state from this pure function, 
-         // but we can pretend.
+         return { output, newCwd, action: 'clear_history' };
       } else {
          const historyPath = '/home/ghost/.bash_history';
          const historyNode = getNode(historyPath);
@@ -568,6 +669,12 @@ export const processCommand = (cwd: string, commandLine: string): CommandResult 
           case 'mail':
              output = 'NAME\n\tmail - simple mail user agent\n\nSYNOPSIS\n\tmail [message-id]\n\nDESCRIPTION\n\tReads mail from the system mailbox (/var/mail/$USER).\n\tWith no argument, lists messages.\n\tWith an argument, reads that message.';
              break;
+          case 'journal':
+             output = 'NAME\n\tjournal - read personal logs\n\nSYNOPSIS\n\tjournal [entry]\n\nDESCRIPTION\n\tDisplays personal log entries from the user\'s journal directory.\n\tSome entries may be encrypted.';
+             break;
+          case 'journalctl':
+             output = 'NAME\n\tjournalctl - Query the systemd journal\n\nSYNOPSIS\n\tjournalctl [OPTIONS...]\n\nDESCRIPTION\n\tQuery the systemd journal.\n\nOPTIONS\n\t-f\n\t\tFollow the journal.\n\n\t-n <lines>\n\t\tShow the most recent journal events.';
+             break;
           case 'top':
              output = 'NAME\n\ttop - display Linux processes\n\nSYNOPSIS\n\ttop\n\nDESCRIPTION\n\tThe top program provides a dynamic real-time view of a running system.';
              break;
@@ -582,6 +689,9 @@ export const processCommand = (cwd: string, commandLine: string): CommandResult 
              break;
           case 'locate':
              output = 'NAME\n\tlocate - find files by name\n\nSYNOPSIS\n\tlocate [PATTERN]...\n\nDESCRIPTION\n\tlocate reads one or more databases prepared by updatedb and writes file names matching at least one of the PATTERNs to standard output, one per line.';
+             break;
+          case 'find':
+             output = 'NAME\n\tfind - search for files in a directory hierarchy\n\nSYNOPSIS\n\tfind [path] [-name pattern] [-type d|f]\n\nDESCRIPTION\n\tfind searches the directory tree rooted at each given file name by evaluating the given expression from left to right, according to the rules of precedence.';
              break;
           case 'finger':
              output = 'NAME\n\tfinger - user information lookup program\n\nSYNOPSIS\n\tfinger [user]\n\nDESCRIPTION\n\tThe finger displays information about the system users.';
@@ -622,6 +732,24 @@ export const processCommand = (cwd: string, commandLine: string): CommandResult 
              break;
           case 'tail':
              output = 'NAME\n\ttail - output the last part of files\n\nSYNOPSIS\n\ttail [OPTION]... [FILE]...\n\nDESCRIPTION\n\tPrint the last 10 lines of each FILE to standard output. With more than one FILE, precede each with a header giving the file name.';
+             break;
+          case 'lsof':
+             output = 'NAME\n\tlsof - list open files\n\nSYNOPSIS\n\tlsof [options]\n\nDESCRIPTION\n\tlsof lists information about files opened by processes.';
+             break;
+          case 'steghide':
+             output = 'NAME\n\tsteghide - a steganography program\n\nSYNOPSIS\n\tsteghide extract -sf <file> [-p <passphrase>]\n\nDESCRIPTION\n\tSteghide is a steganography program that is able to hide data in various kinds of image- and audio-files.';
+             break;
+          case 'sudo':
+             output = 'NAME\n\tsudo - execute a command as another user\n\nSYNOPSIS\n\tsudo [command]\n\nDESCRIPTION\n\tsudo allows a permitted user to execute a command as the superuser or another user, as specified by the security policy.';
+             break;
+          case 'wall':
+             output = 'NAME\n\twall - write a message to all users\n\nSYNOPSIS\n\twall [message]\n\nDESCRIPTION\n\twall displays the contents of file or, by default, its standard input, on the terminals of all currently logged in users.';
+             break;
+          case 'shutdown':
+             output = 'NAME\n\tshutdown - halt, power-off or reboot the machine\n\nSYNOPSIS\n\tshutdown [OPTIONS...] [TIME] [WALL...]\n\nDESCRIPTION\n\tshutdown may be used to halt, power-off or reboot the machine.';
+             break;
+          case 'weather':
+             output = 'NAME\n\tweather - display current weather conditions\n\nSYNOPSIS\n\tweather [location]\n\nDESCRIPTION\n\tDisplays the current atmospheric conditions. Warning: Data may be simulated or reflect local anomalies.';
              break;
           default:
             output = `No manual entry for ${page}`;
@@ -769,7 +897,7 @@ lo        no wireless extensions.`;
   |                 |
   '-----------------'`;
             } else if (id === '03') {
-                if (password === 'SPECTRE_EYE') {
+                if (password === 'SPECTRE_EYE' || password === 'SPECTRE_EVE') {
                     output = `Connecting to CAM_BLACK_SITE...
 [IMAGE CAPTURED: /var/lib/cams/cam_03_classified.jpg]
 
@@ -795,6 +923,106 @@ ACCESS DENIED. Authentication token required.
         }
       }
       break;
+    }
+    case 'mkdir': {
+       if (args.length < 1) {
+          output = 'usage: mkdir <directory>';
+       } else {
+          const dirPath = resolvePath(cwd, args[0]);
+          const parentPath = dirPath.substring(0, dirPath.lastIndexOf('/')) || '/';
+          const dirName = dirPath.substring(dirPath.lastIndexOf('/') + 1);
+          
+          if (!getNode(parentPath)) {
+             output = `mkdir: cannot create directory '${args[0]}': No such file or directory`;
+          } else if (getNode(dirPath)) {
+             output = `mkdir: cannot create directory '${args[0]}': File exists`;
+          } else {
+             VFS[dirPath] = { type: 'dir', children: [] };
+             addChild(parentPath, dirName);
+             // No output on success
+          }
+       }
+       break;
+    }
+    case 'mount': {
+       if (args.length === 0) {
+           if (Object.keys(MOUNTED_DEVICES).length === 0) {
+               output = '/dev/sda1 on / type ext4 (rw,relatime)\nproc on /proc type proc (rw,nosuid,nodev,noexec,relatime)\nsysfs on /sys type sysfs (rw,nosuid,nodev,noexec,relatime)\ntmpfs on /run type tmpfs (rw,nosuid,nodev,noexec,relatime,size=815276k,mode=755)';
+           } else {
+               output = '/dev/sda1 on / type ext4 (rw,relatime)\nproc on /proc type proc (rw,nosuid,nodev,noexec,relatime)\nsysfs on /sys type sysfs (rw,nosuid,nodev,noexec,relatime)\ntmpfs on /run type tmpfs (rw,nosuid,nodev,noexec,relatime,size=815276k,mode=755)\n' + 
+               Object.entries(MOUNTED_DEVICES).map(([dev, mp]) => `${dev} on ${mp} type vfat (rw,nosuid,nodev,relatime,fmask=0022,dmask=0022,codepage=437,iocharset=ascii,shortname=mixed,utf8,errors=remount-ro)`).join('\n');
+           }
+       } else if (args.length < 2) {
+           output = 'usage: mount <source> <target>';
+       } else {
+           const source = args[0];
+           const target = resolvePath(cwd, args[1]);
+           
+           if (!getNode(source)) {
+               output = `mount: ${source}: special device does not exist`;
+           } else if (!getNode(target)) {
+               output = `mount: mount point ${target} does not exist`;
+           } else if (MOUNTED_DEVICES[source]) {
+               output = `mount: ${source} is already mounted on ${MOUNTED_DEVICES[source]}`;
+           } else if (Object.values(MOUNTED_DEVICES).includes(target)) {
+               output = `mount: ${target} is busy`;
+           } else {
+               // Logic for specific devices
+               if (source === '/dev/sdb1') {
+                   MOUNTED_DEVICES[source] = target;
+                   
+                   // Populate target
+                   VFS[`${target}/README.txt`] = { type: 'file', content: 'WARNING: This drive contains restricted materials.\nAuthorized personnel only.' };
+                   VFS[`${target}/payload.exe`] = { type: 'file', content: 'MZ........PE..d.....(Binary content omitted)...' };
+                   VFS[`${target}/key.txt`] = { type: 'file', content: 'KEY_PART_1: GHOST_ROOT{M0UNT_AND_L0AD}' };
+                   
+                   addChild(target, 'README.txt');
+                   addChild(target, 'payload.exe');
+                   addChild(target, 'key.txt');
+               } else {
+                   output = `mount: wrong fs type, bad option, bad superblock on ${source}, missing codepage or helper program, or other error`;
+               }
+           }
+       }
+       break;
+    }
+    case 'umount': {
+       if (args.length < 1) {
+           output = 'usage: umount <target>';
+       } else {
+           const target = resolvePath(cwd, args[0]);
+           let device = null;
+           
+           for (const [dev, mp] of Object.entries(MOUNTED_DEVICES)) {
+               if (mp === target) {
+                   device = dev;
+                   break;
+               }
+               // Also support umount /dev/sdb1
+               if (dev === args[0]) { // args[0] might not be resolved fully if relative path to device... usually full path
+                   device = dev;
+                   break;
+               }
+           }
+           
+           if (!device) {
+               output = `umount: ${target}: not mounted`;
+           } else {
+               const mountPoint = MOUNTED_DEVICES[device];
+               delete MOUNTED_DEVICES[device];
+               
+               // Clear the mount point children
+               const node = getNode(mountPoint);
+               if (node && node.type === 'dir') {
+                   // Clean up VFS entries for children
+                   for (const child of node.children) {
+                       delete VFS[`${mountPoint}/${child}`];
+                   }
+                   node.children = [];
+               }
+           }
+       }
+       break;
     }
     case 'clear':
       output = '\x1b[2J\x1b[0;0H'; 
@@ -994,9 +1222,46 @@ ACCESS DENIED. Authentication token required.
        }
        break;
     }
-    case 'netstat':
-       output = `Active Internet connections (servers and established)\nProto Recv-Q Send-Q Local Address           Foreign Address         State\ntcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN\ntcp        0      0 127.0.0.1:631           0.0.0.0:*               LISTEN\ntcp6       0      0 :::80                   :::*                    LISTEN\n\nActive UNIX domain sockets (servers and established)\nProto RefCnt Flags       Type       State         I-Node   Path\nunix  2      [ ACC ]     STREAM     LISTENING     18291    /run/user/1000/systemd/private`;
+    case 'netstat': {
+       let connections = [
+          'tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN',
+          'tcp        0      0 127.0.0.1:631           0.0.0.0:*               LISTEN',
+          'tcp6       0      0 :::80                   :::*                    LISTEN'
+       ];
+       
+       // Dynamic check for Black Site connection
+       const netStatus = VFS['/var/run/net_status'];
+       if (netStatus && netStatus.type === 'file' && netStatus.content.includes('CONNECTED_BLACK_SITE')) {
+           connections.push('tcp        0      0 192.168.1.105:45678     172.16.66.6:666         ESTABLISHED');
+           connections.push('tcp        0      0 192.168.1.105:54321     172.16.66.6:22          TIME_WAIT');
+       }
+
+       output = `Active Internet connections (servers and established)\nProto Recv-Q Send-Q Local Address           Foreign Address         State\n${connections.join('\n')}\n\nActive UNIX domain sockets (servers and established)\nProto RefCnt Flags       Type       State         I-Node   Path\nunix  2      [ ACC ]     STREAM     LISTENING     18291    /run/user/1000/systemd/private`;
        break;
+    }
+    case 'lsof': {
+        const header = 'COMMAND     PID   USER   FD   TYPE DEVICE SIZE/OFF NODE NAME';
+        const rows = [
+            'systemd       1   root  cwd    DIR  259,1     4096    2 /',
+            'systemd       1   root  txt    REG  259,1  1632960 5623 /usr/lib/systemd/systemd',
+            'bash       1337  ghost  cwd    DIR  259,1     4096 1204 /home/ghost',
+            'bash       1337  ghost  txt    REG  259,1  1234560 4321 /bin/bash',
+            'sshd        404   root    3u  IPv4  23940      0t0  TCP *:ssh (LISTEN)',
+            'spectre_k   666   root  mem    REG  259,1    84592 9001 /lib/modules/spectre.ko',
+            'spectre_k   666   root    4r   REG  259,1      512 9002 /etc/shadow (deleted)',
+            'hydra-scan 9999 unknown   1w  FIFO    0,8      0t0 8888 pipe',
+            'watcher_d  8888   root    1w   REG  259,1    12044 7777 /var/log/auth.log'
+        ];
+        
+        // Dynamic check for Black Site connection
+        const netStatus = VFS['/var/run/net_status'];
+        if (netStatus && netStatus.type === 'file' && netStatus.content.includes('CONNECTED_BLACK_SITE')) {
+             rows.push('ssh        2025  ghost    3u  IPv4  99999      0t0  TCP 192.168.1.105:45678->172.16.66.6:666 (ESTABLISHED)');
+        }
+
+        output = [header, ...rows].join('\n');
+        break;
+    }
     case 'ifconfig':
        output = `eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
         inet 192.168.1.105  netmask 255.255.255.0  broadcast 192.168.1.255
@@ -1384,6 +1649,83 @@ lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
       }
       break;
     }
+    case 'find': {
+      let pathArg = '.';
+      let argsStart = 0;
+
+      if (args.length > 0 && !args[0].startsWith('-')) {
+          pathArg = args[0];
+          argsStart = 1;
+      }
+
+      const cmdArgs = args.slice(argsStart);
+      let namePattern: string | null = null;
+      let typePattern: string | null = null;
+      
+      const nameIndex = cmdArgs.indexOf('-name');
+      if (nameIndex !== -1 && cmdArgs[nameIndex + 1]) {
+          namePattern = cmdArgs[nameIndex + 1];
+          if ((namePattern.startsWith('"') && namePattern.endsWith('"')) || (namePattern.startsWith("'") && namePattern.endsWith("'"))) {
+              namePattern = namePattern.slice(1, -1);
+          }
+      }
+      
+      const typeIndex = cmdArgs.indexOf('-type');
+      if (typeIndex !== -1 && cmdArgs[typeIndex + 1]) {
+          typePattern = cmdArgs[typeIndex + 1];
+      }
+
+      // Resolve start path
+      let startPath = resolvePath(cwd, pathArg);
+      // Normalize to remove trailing slash for comparison, but keep root as /
+      if (startPath !== '/' && startPath.endsWith('/')) {
+          startPath = startPath.slice(0, -1);
+      }
+      
+      const startNode = getNode(startPath);
+      if (!startNode) {
+          output = `find: '${pathArg}': No such file or directory`;
+      } else {
+          // Recursive search logic
+          // Since VFS is flat, we can filter keys
+          const matches = Object.keys(VFS).filter(p => {
+              if (p === startPath) return true; 
+              if (startPath === '/') return true;
+              return p.startsWith(startPath + '/');
+          });
+
+          const results = matches.filter(p => {
+              const node = VFS[p];
+              const fileName = p.substring(p.lastIndexOf('/') + 1);
+
+              // Filter by type
+              if (typePattern) {
+                  if (typePattern === 'f' && node.type !== 'file') return false;
+                  if (typePattern === 'd' && node.type !== 'dir') return false;
+              }
+
+              // Filter by name (glob)
+              if (namePattern) {
+                  // Escape regex chars first
+                  let regexStr = namePattern.replace(/[.+^${}()|[\]\\]/g, '\\$&');
+                  // Convert glob wildcards to regex
+                  regexStr = regexStr.replace(/\*/g, '.*').replace(/\?/g, '.');
+                  regexStr = '^' + regexStr + '$';
+                  const regex = new RegExp(regexStr);
+                  if (!regex.test(fileName)) return false;
+              }
+              
+              return true;
+          });
+          
+          if (results.length === 0) {
+              output = '';
+          } else {
+              output = results.join('\n');
+          }
+      }
+      break;
+    }
     case 'finger': {
        if (args.length < 1) {
           output = 'Login     Name       Tty      Idle  Login Time   Office     Office Phone\nghost     Ghost User pts/0          Oct 23 14:02 (192.168.1.105)';
@@ -1766,6 +2108,279 @@ ${host}.		299	IN	A	${ip}
           }
        }
        break;
+    }
+    case 'diff': {
+       if (args.length < 2) {
+          output = 'usage: diff <file1> <file2>';
+       } else {
+          const path1 = resolvePath(cwd, args[0]);
+          const path2 = resolvePath(cwd, args[1]);
+          const node1 = getNode(path1);
+          const node2 = getNode(path2);
+          
+          if (!node1) {
+             output = `diff: ${args[0]}: No such file or directory`;
+          } else if (!node2) {
+             output = `diff: ${args[1]}: No such file or directory`;
+          } else if (node1.type === 'dir' || node2.type === 'dir') {
+             output = 'diff: target is a directory';
+          } else {
+             const lines1 = node1.content.split('\n');
+             const lines2 = node2.content.split('\n');
+             const diffs: string[] = [];
+             
+             let i = 0, j = 0;
+             while (i < lines1.length || j < lines2.length) {
+                 const l1 = i < lines1.length ? lines1[i] : null;
+                 const l2 = j < lines2.length ? lines2[j] : null;
+
+                 if (l1 === l2) {
+                     i++; j++;
+                 } else {
+                     if (l1 !== null) { diffs.push(`< ${l1}`); i++; }
+                     if (l2 !== null) { diffs.push(`> ${l2}`); j++; }
+                 }
+             }
+             
+             if (diffs.length === 0) {
+                 output = '';
+             } else {
+                 output = diffs.join('\n');
+             }
+          }
+       }
+       break;
+    }
+    case 'wc': {
+       if (args.length < 1) {
+          output = 'usage: wc <file>';
+       } else {
+          const target = args[0];
+          const path = resolvePath(cwd, target);
+          const node = getNode(path);
+          
+          if (!node) {
+             output = `wc: ${target}: No such file or directory`;
+          } else if (node.type === 'dir') {
+             output = `wc: ${target}: Is a directory`;
+          } else {
+             const lines = node.content.split('\n');
+             const words = node.content.split(/\s+/).filter(w => w.length > 0);
+             const bytes = node.content.length;
+             output = ` ${lines.length}  ${words.length} ${bytes} ${target}`;
+          }
+       }
+       break;
+    }
+    case 'sort': {
+       if (args.length < 1) {
+          output = 'usage: sort <file>';
+       } else {
+          const target = args[0];
+          const path = resolvePath(cwd, target);
+          const node = getNode(path);
+          
+          if (!node) {
+             output = `sort: ${target}: No such file or directory`;
+          } else if (node.type === 'dir') {
+             output = `sort: ${target}: Is a directory`;
+          } else {
+             const lines = node.content.split('\n');
+             lines.sort();
+             output = lines.join('\n');
+          }
+       }
+       break;
+    }
+    case 'uniq': {
+       if (args.length < 1) {
+          output = 'usage: uniq <file>';
+       } else {
+          const target = args[0];
+          const path = resolvePath(cwd, target);
+          const node = getNode(path);
+          
+          if (!node) {
+             output = `uniq: ${target}: No such file or directory`;
+          } else if (node.type === 'dir') {
+             output = `uniq: ${target}: Is a directory`;
+          } else {
+             const lines = node.content.split('\n');
+             const uniqueLines = lines.filter((line, index) => {
+                 return index === 0 || line !== lines[index - 1];
+             });
+             output = uniqueLines.join('\n');
+          }
+       }
+       break;
+    }
+    case 'steghide': {
+       if (args.length < 1) {
+          output = 'steghide: usage: steghide extract -sf <file> [-p <passphrase>]';
+       } else {
+          const subcommand = args[0];
+          if (subcommand !== 'extract') {
+              output = `steghide: unknown command "${subcommand}".\nUsage: steghide extract -sf <file>`;
+          } else {
+              const sfIndex = args.indexOf('-sf');
+              const pIndex = args.indexOf('-p');
+              
+              if (sfIndex === -1) {
+                  output = 'steghide: argument "-sf" is missing';
+              } else {
+                  const fileTarget = args[sfIndex + 1];
+                  const passphrase = pIndex !== -1 ? args[pIndex + 1] : null;
+                  
+                  if (!fileTarget) {
+                      output = 'steghide: filename expected after -sf';
+                  } else {
+                      const path = resolvePath(cwd, fileTarget);
+                      const node = getNode(path);
+                      
+                      if (!node) {
+                          output = `steghide: could not open file "${fileTarget}".`;
+                      } else if (node.type === 'dir') {
+                          output = `steghide: "${fileTarget}" is a directory.`;
+                      } else {
+                          const content = node.content;
+                          const marker = '[HIDDEN_STEG_DATA:';
+                          const markerIndex = content.indexOf(marker);
+                          
+                          if (markerIndex !== -1) {
+                              if (!passphrase) {
+                                  output = 'Enter passphrase: \n(Interactive input not supported, use -p <passphrase>)';
+                              } else {
+                                  // Verify passphrase
+                                  if (passphrase === 'I_SEE_YOU') {
+                                       const endMarker = ']';
+                                       const dataStart = markerIndex + marker.length;
+                                       const dataEnd = content.indexOf(endMarker, dataStart);
+                                       if (dataEnd !== -1) {
+                                           const b64 = content.substring(dataStart, dataEnd);
+                                           try {
+                                               const decoded = atob(b64);
+                                               output = `wrote extracted data to "steg_result.txt".`;
+                                               // Write result to file
+                                               const outPath = resolvePath(cwd, 'steg_result.txt');
+                                               const parentPath = outPath.substring(0, outPath.lastIndexOf('/')) || '/';
+                                               const fileName = outPath.substring(outPath.lastIndexOf('/') + 1);
+                                               const parent = getNode(parentPath);
+                                               
+                                               if (parent && parent.type === 'dir') {
+                                                   VFS[outPath] = { type: 'file', content: decoded };
+                                                   if (!parent.children.includes(fileName)) {
+                                                       parent.children.push(fileName);
+                                                   }
+                                               }
+                                           } catch (e) {
+                                               output = 'steghide: error decoding data.';
+                                           }
+                                       } else {
+                                           output = 'steghide: file format error.';
+                                       }
+                                  } else {
+                                      output = `steghide: could not extract data: wrong passphrase.`;
+                                  }
+                              }
+                          } else {
+                              output = `steghide: could not extract any data with that passphrase!`;
+                          }
+                      }
+                  }
+              }
+          }
+       }
+       break;
+    }
+// Fixed duplicate block
+    case 'tree': {
+       const target = args[0] || '.';
+       const path = resolvePath(cwd, target);
+       const rootNode = getNode(path);
+
+       if (!rootNode) {
+           output = `tree: ${target} [error opening dir]`;
+       } else if (rootNode.type !== 'dir') {
+           output = `${target} [error opening dir]`;
+       } else {
+           const lines: string[] = [path === '/' ? '/' : (path.split('/').pop() || '/')];
+           let dirs = 0;
+           let files = 0;
+
+           const buildTree = (currentPath: string, prefix: string) => {
+               const node = getNode(currentPath);
+               if (!node || node.type !== 'dir') return;
+
+               const items = node.children.sort();
+               const visibleItems = items.filter(i => args.includes('-a') || !i.startsWith('.'));
+               
+               visibleItems.forEach((item, index) => {
+                   const isLast = index === visibleItems.length - 1;
+                   const childPath = currentPath === '/' ? `/${item}` : `${currentPath}/${item}`;
+                   const childNode = getNode(childPath);
+                   
+                   lines.push(`${prefix}${isLast ? '└── ' : '├── '}${item}`);
+                   
+                   if (childNode) {
+                       if (childNode.type === 'dir') {
+                           dirs++;
+                           buildTree(childPath, prefix + (isLast ? '    ' : '│   '));
+                       } else {
+                           files++;
+                       }
+                   }
+               });
+           };
+
+           buildTree(path, '');
+           output = `${lines.join('\n')}\n\n${dirs} directories, ${files} files`;
+       }
+       break;
+    }
+    case 'neofetch': {
+       if (!VFS['/usr/bin/neofetch']) {
+           output = 'bash: neofetch: command not found';
+       } else {
+           const uptimeSeconds = Math.floor((Date.now() - 1700000000000) / 1000); 
+           const days = Math.floor(uptimeSeconds / 86400);
+           const hours = Math.floor((uptimeSeconds % 86400) / 3600);
+           const minutes = Math.floor((uptimeSeconds % 3600) / 60);
+           const uptime = `${days}d ${hours}h ${minutes}m`;
+           
+           output = `       .---.
+      /     \\      \x1b[1;32mghost@ghost-root\x1b[0m
+      | (). |      ----------------
+      \\   - /      OS: Ghost OS 1.0 (Debian Based)
+       |   |       Kernel: 5.4.0-ghost
+       |   |       Uptime: ${uptime}
+      _|_|_|_      Shell: bash (simulated)
+     (_______)     Resolution: 1920x1080
+                   CPU: Neural-Net Processor (Simulated)
+                   Memory: 8192MiB / 16384MiB`;
+       }
+       break;
+    }
+    case 'weather': {
+       const location = args.join(' ') || 'The Void';
+       const conditions = [
+           'Acid Rain - pH 3.5 - Shelter advised',
+           'Heavy Smog - Visibility < 50m - Respirator required',
+           'Solar Flare Activity - Radio blackout imminent',
+           'Electrical Storm - Surge protection enabled',
+           'Clear Skies - Drone surveillance optimal',
+           'Nuclear Winter - Temperature -20°C',
+           'Data Fog - Packet loss 45%',
+           'Neon Rain - Aesthetic only'
+       ];
+       const condition = conditions[Math.floor(Math.random() * conditions.length)];
+       const temp = Math.floor(Math.random() * 30) - 10;
+       
+       output = `Weather for ${location}:\nCondition: ${condition}\nTemp: ${temp}°C\nWind: ${Math.floor(Math.random() * 50)} km/h NW\nHumidity: ${Math.floor(Math.random() * 100)}%\n\n[ALERT] Atmospheric sensors indicate high toxicity levels.`;
+       break;
+    }
+    case 'matrix': {
+       output = 'Wake up, Neo...';
+       return { output, newCwd, action: 'matrix_sim' };
     }
     default:
       output = `bash: ${command}: command not found`;
