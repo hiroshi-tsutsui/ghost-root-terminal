@@ -67,7 +67,11 @@ KEY_ID: GHOST_PROTOCOL_INIT_V2
   },
   '/home/ghost': {
     type: 'dir',
-    children: ['secrets', '.bash_history', 'wifi_note.txt', 'journal', 'evidence.jpg']
+    children: ['secrets', '.bash_history', 'wifi_note.txt', 'journal', 'evidence.jpg', 'tools.zip']
+  },
+  '/home/ghost/tools.zip': {
+    type: 'file',
+    content: 'PK_SIM_V1:{exploit.py:cHJpbnQoIlRoaXMgaXMgYSBmYWtlIGV4cGxvaXQuIik=}{README.md:VGhpcyB6aXAgY29udGFpbnMgdG9vbHMgZm9yIHRlc3Rpbmcu}'
   },
   '/home/ghost/evidence.jpg': {
     type: 'file',
@@ -154,6 +158,15 @@ exit`
   '/var': {
     type: 'dir',
     children: ['log', 'mail']
+  },
+  '/var/backups': {
+      type: 'dir',
+      children: ['logs.tar']
+  },
+  '/var/backups/logs.tar': {
+      type: 'file',
+      // encoded content: old_syslog.txt -> "Log entry 001: Admin password rotated to 'hunter2'. Do not write this down."
+      content: 'TAR_V1:{old_syslog.txt:TG9nIGVudHJ5IDAwMTogQWRtaW4gcGFzc3dvcmQgcm90YXRlZCB0byAnaHVudGVyMicuIERvIG5vdCB3cml0ZSB0aGlzIGRvd24u}'
   },
   '/var/log': {
       type: 'dir',
@@ -294,6 +307,7 @@ Oct 23 14:45:01 ghost-root systemd-coredump[999]: Process 666 (phantom_process) 
 Oct 23 15:00:00 ghost-root shadow[666]: User Romanoff: red_ledger authentication successful.
 Oct 23 15:30:00 ghost-root systemd[1]: Reloading OpenClaw Agent Service.
 Oct 23 15:30:01 ghost-root openclaw[1337]: Agent "Vision" reporting status: ONLINE.
+Oct 23 15:45:00 ghost-root kernel: [ 4000.000000] RADIO: Strong FM interference detected on 89.9 MHz.
 `
     },
     '/var/log/connections.log': {

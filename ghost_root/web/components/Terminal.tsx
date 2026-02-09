@@ -280,6 +280,42 @@ const WebTerminal = () => {
              term.writeln('Target found: DE:AD:BE:EF:CA:FE (Hidden SSID) [WEP]');
           }
 
+          if (result.action === 'trace_sim' && result.data) {
+             const target = result.data.target;
+             const isBlackSite = target.includes('192.168.1.99') || target.includes('black-site') || target.includes('10.66.6.6');
+             const hops = isBlackSite ? 12 : Math.floor(Math.random() * 5) + 6;
+             
+             for (let i = 1; i <= hops; i++) {
+                 await new Promise(r => setTimeout(r, 200 + Math.random() * 400));
+                 
+                 let hopLine = '';
+                 const ms1 = (Math.random() * 10).toFixed(3);
+                 const ms2 = (Math.random() * 10).toFixed(3);
+                 const ms3 = (Math.random() * 10).toFixed(3);
+                 
+                 if (i === 1) {
+                     hopLine = ` 1  gateway (192.168.1.1)  ${ms1} ms  ${ms2} ms  ${ms3} ms`;
+                 } else if (i === hops) {
+                     if (isBlackSite) {
+                         hopLine = ` ${i}  BLACK_SITE_NODE (10.66.6.6)  ${ms1} ms  ${ms2} ms  ${ms3} ms`;
+                     } else {
+                         hopLine = ` ${i}  ${target} (${target})  ${ms1} ms  ${ms2} ms  ${ms3} ms`;
+                     }
+                 } else {
+                     if (isBlackSite && i > 5) {
+                         hopLine = ` ${i}  * * *`; 
+                     } else if (isBlackSite && i === 4) {
+                         hopLine = ` ${i}  fw-dmz.ghost-net.local (172.16.0.1)  ${ms1} ms  ${ms2} ms  ${ms3} ms`;
+                     } else {
+                         const randomIP = `10.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}`;
+                         hopLine = ` ${i}  node-${Math.floor(Math.random()*9999)}.isp.net (${randomIP})  ${ms1} ms  ${ms2} ms  ${ms3} ms`;
+                     }
+                 }
+                 term.writeln(hopLine);
+             }
+             term.writeln('');
+          }
+
           if (result.action === 'matrix_sim') {
              isTopModeRef.current = true;
              term.clear();
@@ -319,6 +355,68 @@ const WebTerminal = () => {
                      }
                  }
                  await new Promise(r => setTimeout(r, 33));
+             }
+             term.write('\x1b[?25h'); // Show cursor
+             term.clear();
+          }
+
+          if (result.action === 'netmap_sim') {
+             isTopModeRef.current = true;
+             term.clear();
+             term.write('\x1b[?25l'); // Hide cursor
+             
+             const mapFrame = [
+                "                     [ INTERNET ]                     ",
+                "                          |                           ",
+                "                 +--------+--------+                  ",
+                "                 |                 |                  ",
+                "            [ ISP-A ]         [ ISP-B ]               ",
+                "                 |                 |                  ",
+                "      +----------+                 +-----------+      ",
+                "      |                                        |      ",
+                " [ HOME-PC ]                              [ SERVER ]  ",
+                "      |                                        |      ",
+                "  (Router)                                   (FW)     ",
+                "      |                                        |      ",
+                " [ IOT-HUB ]                              [ DB-MAIN ] "
+             ];
+             
+             // Simple packet animation paths (row, col)
+             const path1 = [[8, 2], [8, 6], [7, 6], [6, 6], [6, 17], [5, 17], [4, 17], [3, 17], [2, 17], [2, 26], [1, 26], [0, 26]]; // Home -> Internet
+             const path2 = [[0, 26], [1, 26], [2, 26], [2, 35], [3, 35], [4, 35], [5, 35], [6, 35], [6, 51], [7, 51], [8, 51]]; // Internet -> Server
+             
+             let tick = 0;
+             
+             while (isTopModeRef.current) {
+                 term.write('\x1b[H'); // Home
+                 term.writeln('\x1b[1;36m NETWORK TOPOLOGY MAP v1.0 (Live) \x1b[0m');
+                 term.writeln(` Status: \x1b[1;32mONLINE\x1b[0m  Latency: ${(Math.random() * 20 + 10).toFixed(1)}ms`);
+                 term.writeln('');
+                 
+                 for (let r = 0; r < mapFrame.length; r++) {
+                     let line = mapFrame[r];
+                     // Render packets
+                     // Packet 1
+                     const p1Pos = path1[tick % path1.length];
+                     if (p1Pos && p1Pos[0] === r) {
+                         const idx = p1Pos[1];
+                         line = line.substring(0, idx) + '\x1b[1;33m*\x1b[0m' + line.substring(idx + 1);
+                     }
+                     // Packet 2 (offset)
+                     const p2Pos = path2[(tick + 5) % path2.length];
+                     if (p2Pos && p2Pos[0] === r) {
+                         const idx = p2Pos[1];
+                         line = line.substring(0, idx) + '\x1b[1;31m*\x1b[0m' + line.substring(idx + 1);
+                     }
+                     
+                     term.writeln(' ' + line);
+                 }
+                 
+                 term.writeln('');
+                 term.writeln('\x1b[7m Press "q" to exit map view. \x1b[0m');
+                 
+                 tick++;
+                 await new Promise(r => setTimeout(r, 200));
              }
              term.write('\x1b[?25h'); // Show cursor
              term.clear();
