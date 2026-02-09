@@ -10,42 +10,42 @@ const anomalies = [
   {
     id: "A-001",
     protocol: "FLUX_ENGINE (Calculus)",
-    query: "Identify the derivative of f(x) = x². Stability depends on it.",
+    query: "f(x) = x² の導関数を特定せよ。安定性はこれに依存する。",
     options: ["x", "2x", "x²", "2"],
     answer: "2x",
-    explanation: "Power Rule confirmed: d/dx(x^n) = n*x^(n-1). Stability restored."
+    explanation: "べき乗則を確認: d/dx(x^n) = n*x^(n-1)。安定性が回復しました。"
   },
   {
     id: "A-002",
     protocol: "ENTROPY_WEAVER (Probability)",
-    query: "Define the semantic meaning of Standard Deviation (σ).",
-    options: ["Central Tendency", "Dataset Size", "Dispersion Magnitude", "Maximum Amplitude"],
-    answer: "Dispersion Magnitude",
-    explanation: "σ quantifies the dispersion from the mean. Entropy managed."
+    query: "標準偏差 (σ) の意味論的定義を答えよ。",
+    options: ["中心傾向", "データセットのサイズ", "分散の大きさ", "最大振幅"],
+    answer: "分散の大きさ",
+    explanation: "σ は平均からのばらつきを定量化します。エントロピーが管理されました。"
   },
   {
     id: "A-003",
     protocol: "GRAVITY_WELL (Quadratics)",
-    query: "Locate the vertex singularity of y = (x - 2)² + 1.",
+    query: "y = (x - 2)² + 1 の頂点特異点を特定せよ。",
     options: ["(2, 1)", "(-2, 1)", "(2, -1)", "(-2, -1)"],
     answer: "(2, 1)",
-    explanation: "Vertex form y = a(x - h)² + k identifies singularity at (h, k)."
+    explanation: "頂点形式 y = a(x - h)² + k により、特異点は (h, k) です。"
   },
   {
     id: "A-004",
     protocol: "VECTOR_NAV (Vectors)",
-    query: "Orthogonality check: Dot product of perpendicular vectors?",
-    options: ["1", "-1", "0", "Undefined"],
+    query: "直交性チェック: 垂直なベクトルの内積は？",
+    options: ["1", "-1", "0", "未定義"],
     answer: "0",
-    explanation: "Cos(90°) = 0. Orthogonality confirmed. Trajectory clear."
+    explanation: "Cos(90°) = 0。直交性が確認されました。軌道クリア。"
   },
   {
     id: "A-005",
     protocol: "VOID_PHASE (Complex)",
-    query: "Resolve the value of i² within the Void Plane.",
+    query: "ヴォイド平面における i² の値を解決せよ。",
     options: ["1", "-1", "i", "-i"],
     answer: "-1",
-    explanation: "i² represents a 180° rotation into the real axis (negative)."
+    explanation: "i² は実軸への180°回転（負）を表します。"
   }
 ];
 
@@ -167,13 +167,13 @@ export default function CalibrationProtocol() {
       <header className="border-b border-white/10 h-16 flex items-center px-6 sticky top-0 z-50 bg-[#050505]/80 backdrop-blur-md">
          <div className="max-w-5xl mx-auto w-full flex items-center justify-between">
              <Link href="/" className="text-[10px] font-bold text-cyan-500 hover:text-cyan-400 transition-colors tracking-widest uppercase">
-               &lt; Abort Sequence
+               &lt; 中止 (ABORT)
              </Link>
-             <h1 className="font-bold tracking-[0.2em] text-white/90 text-sm hidden md:block">PROTOCOL: CALIBRATION</h1>
+             <h1 className="font-bold tracking-[0.2em] text-white/90 text-sm hidden md:block">プロトコル: キャリブレーション (PROTOCOL: CALIBRATION)</h1>
              
              <div className="flex gap-6 text-[10px] font-mono">
                  <div className={`flex items-center gap-2 ${stability < 30 ? 'text-red-500 animate-pulse' : 'text-cyan-500'}`}>
-                    <span>STABILITY:</span>
+                    <span>安定性 (STABILITY):</span>
                     <div className="w-24 h-2 bg-gray-800 rounded-full overflow-hidden">
                         <motion.div 
                             className={`h-full ${stability < 30 ? 'bg-red-500' : 'bg-cyan-500'}`}
@@ -185,7 +185,7 @@ export default function CalibrationProtocol() {
                  </div>
                  
                  <div className="text-gray-400">
-                    SYNC RATE: <span className="text-white">{syncRate}%</span>
+                    同期率 (SYNC RATE): <span className="text-white">{syncRate}%</span>
                  </div>
              </div>
          </div>
@@ -284,10 +284,10 @@ export default function CalibrationProtocol() {
                                 {syncRate}%
                             </div>
                             
-                            <h2 className="text-xl font-bold mb-6 text-white tracking-[0.3em] uppercase">Calibration Complete</h2>
+                            <h2 className="text-xl font-bold mb-6 text-white tracking-[0.3em] uppercase">キャリブレーション完了 (CALIBRATION COMPLETE)</h2>
                             
                             <div className="mb-10 space-y-2">
-                                <p className="text-gray-500 text-xs font-mono uppercase tracking-widest">Clearance Level Granted</p>
+                                <p className="text-gray-500 text-xs font-mono uppercase tracking-widest">クリアランスレベル承認 (CLEARANCE GRANTED)</p>
                                 <p className={`text-2xl font-bold ${getRank(syncRate) === 'OMEGA' ? 'text-cyan-400 drop-shadow-[0_0_10px_cyan]' : 'text-white'}`}>
                                     {getRank(syncRate)}
                                 </p>
@@ -295,11 +295,11 @@ export default function CalibrationProtocol() {
 
                             <div className="flex flex-col gap-3 max-w-xs mx-auto">
                                 <Link href="/" className="w-full py-3 bg-white text-black font-bold text-xs tracking-[0.2em] hover:bg-cyan-400 transition-all uppercase flex items-center justify-center gap-2">
-                                    <span>Enter Simulation</span>
+                                    <span>シミュレーション開始 (ENTER)</span>
                                     <span>→</span>
                                 </Link>
                                 <button onClick={resetProtocol} className="w-full py-3 border border-white/10 hover:bg-white/5 text-xs tracking-[0.2em] text-gray-400 transition-all uppercase">
-                                    Re-Calibrate
+                                    再キャリブレーション (RE-CALIBRATE)
                                 </button>
                             </div>
                         </motion.div>
@@ -310,14 +310,14 @@ export default function CalibrationProtocol() {
                             className="bg-[#0A0A0A] border border-red-500/30 p-12 text-center relative overflow-hidden shadow-[0_0_100px_rgba(255,0,0,0.1)]"
                         >
                             <div className="text-6xl mb-6 font-mono font-bold text-red-500 tracking-tighter">
-                                CRITICAL FAILURE
+                                致命的エラー (CRITICAL FAILURE)
                             </div>
                             <p className="text-gray-400 mb-8 font-mono text-sm">
-                                SYSTEM STABILITY COLLAPSED. <br/>
-                                OPERATOR NOT SYNCHRONIZED.
+                                システム安定性が崩壊しました。<br/>
+                                オペレーターは同期されていません。
                             </p>
                             <button onClick={resetProtocol} className="px-8 py-3 bg-red-900/20 border border-red-500/50 hover:bg-red-900/40 text-red-400 font-bold text-xs tracking-[0.2em] transition-all uppercase">
-                                REBOOT SYSTEM
+                                システム再起動 (REBOOT)
                             </button>
                         </motion.div>
                     )}
@@ -329,18 +329,18 @@ export default function CalibrationProtocol() {
                 
                 {/* Status Card */}
                 <div className="bg-[#0A0A0A] border border-white/5 p-6 rounded-sm">
-                    <h3 className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-4">Protocol Status</h3>
+                    <h3 className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-4">プロトコル状態 (PROTOCOL STATUS)</h3>
                     <div className="space-y-4">
                         <div className="flex justify-between items-center text-xs font-mono">
-                            <span className="text-gray-400">ANOMALIES</span>
-                            <span className="text-white">{status === 'ACTIVE' ? `${currentIndex + 1}/${anomalies.length}` : status === 'COMPLETED' ? 'CLEARED' : 'FAILED'}</span>
+                            <span className="text-gray-400">異常検知 (ANOMALIES)</span>
+                            <span className="text-white">{status === 'ACTIVE' ? `${currentIndex + 1}/${anomalies.length}` : status === 'COMPLETED' ? 'クリア (CLEARED)' : '失敗 (FAILED)'}</span>
                         </div>
                         <div className="flex justify-between items-center text-xs font-mono">
-                            <span className="text-gray-400">STABILITY</span>
+                            <span className="text-gray-400">安定性 (STABILITY)</span>
                             <span className={`${stability < 30 ? 'text-red-500' : 'text-cyan-500'}`}>{Math.round(stability)}%</span>
                         </div>
                         <div className="flex justify-between items-center text-xs font-mono">
-                            <span className="text-gray-400">SYNC RATE</span>
+                            <span className="text-gray-400">同期率 (SYNC RATE)</span>
                             <span className="text-white">{syncRate}%</span>
                         </div>
                     </div>
@@ -350,7 +350,7 @@ export default function CalibrationProtocol() {
                 <div className="bg-[#0A0A0A] border border-white/5 p-4 flex-1 rounded-sm font-mono text-[10px] text-gray-500 overflow-hidden flex flex-col relative">
                     <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-900/20 to-transparent"></div>
                     <div className="mb-4 text-gray-400 font-bold tracking-widest border-b border-white/5 pb-2 flex justify-between">
-                        <span>SYSTEM LOG</span>
+                        <span>システムログ (SYSTEM LOG)</span>
                         <span className="animate-pulse text-cyan-500">● REC</span>
                     </div>
                     <div className="flex-1 overflow-hidden relative">

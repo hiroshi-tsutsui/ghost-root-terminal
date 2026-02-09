@@ -103,7 +103,7 @@ export default function Home() {
     },
     {
       id: 'logs',
-      title: 'ENTROPY COMPRESSOR',
+      title: t('modules.logs.title') || 'ENTROPY COMPRESSOR',
       subtitle: 'Protocol: Scale_Down',
       desc: 'Compress the infinite. Manage the exponential.',
       status: 'STANDBY',
@@ -113,7 +113,7 @@ export default function Home() {
     },
     {
       id: 'matrices',
-      title: 'FABRIC WEAVER',
+      title: t('modules.matrices.title') || 'FABRIC WEAVER',
       subtitle: 'Protocol: Transform',
       desc: 'Warp space-time. Shear the grid.',
       status: 'NEW',
@@ -133,7 +133,7 @@ export default function Home() {
     },
     {
       id: 'quiz',
-      title: 'THE GAUNTLET',
+      title: t('modules.quiz.title') || 'THE GAUNTLET',
       subtitle: 'Protocol: Calibration',
       desc: 'Test system stability. Establish baseline sync rate.',
       status: 'CRITICAL',
@@ -145,28 +145,28 @@ export default function Home() {
 
   const tiers = [
     {
-      name: "PROTOCOL: CALIBRATION",
-      desc: "System Initialization Required.",
+      name: "プロトコル: キャリブレーション (CALIBRATION)",
+      desc: "システム初期化が必要です (System Initialization Required).",
       ids: ['quiz']
     },
     {
-      name: "TIER 1: THE SANDBOX",
-      desc: "Master the visible world.",
+      name: "ティア1: サンドボックス (THE SANDBOX)",
+      desc: "可視化された世界を支配せよ (Master the visible world).",
       ids: ['data', 'functions', 'vectors']
     },
     {
-      name: "TIER 2: THE MOTION",
-      desc: "Master the flow of reality.",
+      name: "ティア2: モーション (THE MOTION)",
+      desc: "現実の流れを制御せよ (Master the flow of reality).",
       ids: ['math/quadratic', 'sequences', 'calculus', 'quadratics', 'logs']
     },
     {
-      name: "TIER 3: THE VOID",
-      desc: "Step outside the simulation.",
+      name: "ティア3: ヴォイド (THE VOID)",
+      desc: "シミュレーションの外側へ (Step outside the simulation).",
       ids: ['complex', 'matrices']
     },
     {
-      name: "TIER 4: THE SOURCE",
-      desc: "See the code.",
+      name: "ティア4: ソースコード (THE SOURCE)",
+      desc: "真理を見る (See the code).",
       ids: ['probability', 'trig']
     }
   ];

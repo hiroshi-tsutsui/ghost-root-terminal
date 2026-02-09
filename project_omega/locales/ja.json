@@ -30,13 +30,16 @@
       "title": "PHASE ANALYZER (複素数)"
     },
     "logs": {
-      "title": "LOG SCALE (対数)"
+      "title": "ENTROPY COMPRESSOR (対数)"
     },
     "matrices": {
-      "title": "MATRIX GRID (行列)"
+      "title": "FABRIC WEAVER (行列)"
+    },
+    "quiz": {
+      "title": "THE GAUNTLET (キャリブレーション)"
     },
     "data": {
-      "title": "DATA_ARCHIVE (データ解析)",
+      "title": "データ解析 (DATA_ARCHIVE)",
       "levels": {
         "1": {
           "name": "SIGNAL INJECTION (信号注入)",
