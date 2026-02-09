@@ -1094,6 +1094,14 @@ const WebTerminal = () => {
                          dlDir.children.push('key_fragment.dat');
                          term.writeln('\n\x1b[1;32m[!] key_fragment.dat downloaded automatically.\x1b[0m');
                      }
+                 } else if (url === 'cicada3301.onion') {
+                     term.writeln('\x1b[1;32m[ 3301 ]\x1b[0m');
+                     term.writeln('');
+                     term.writeln('A cicada chirps in the void.');
+                     term.writeln('The path is null.');
+                     term.writeln('The destination is /dev/null.');
+                     term.writeln('');
+                     term.writeln('3301');
                  } else {
                      term.writeln(`\x1b[1;31m404 Not Found\x1b[0m`);
                      term.writeln('The onion site you are trying to reach is unreachable.');

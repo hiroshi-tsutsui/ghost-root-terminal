@@ -889,8 +889,14 @@ ACCEPT     all  --  anywhere             anywhere`;
             } else {
                 output = 'iptables: Permission denied (you must be root)';
             }
+        } else if (args[0] === '-A' || args[0] === '-I' || args[0] === '-D') {
+             if (isRoot) {
+                 output = `iptables: rule updated (simulated).`;
+             } else {
+                 output = 'iptables: Permission denied (you must be root)';
+             }
         } else {
-            output = 'usage: iptables [-L|--list] [-F|--flush]';
+            output = 'usage: iptables [-L|--list] [-F|--flush] [-A chain rule]';
         }
         break;
     }
@@ -2303,6 +2309,30 @@ The key's randomart image is:
                output = 'hashcat: missing hashfile or wordlist';
            }
        }
+       break;
+    }
+    case 'cicada3301': {
+       output = `
+       .   .
+      / \\ / \\
+     (   Y   )
+      \\  |  /
+      /  |  \\
+     (   |   )
+      \\  |  /
+       ' | '
+         |
+       3301
+       
+   Hello. We are looking for highly intelligent individuals.
+   To find them, we have devised a test.
+   
+   There is a message hidden in this system.
+   Find it, and it will lead you on the road to finding us.
+   
+   Good luck.
+   
+   (Hint: The message is hidden where the ghosts roam. Try 'man steghide' or check .onion sites)`;
        break;
     }
     case 'tor': {
