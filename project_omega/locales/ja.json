@@ -1,7 +1,7 @@
 {
   "common": {
-    "app_title": "プロジェクト・オメガ",
-    "app_subtitle": "シミュレーション",
+    "app_title": "Project Omega",
+    "app_subtitle": "Simulation",
     "back_root": "← OMEGA_ROOT",
     "protocol": "PROTOCOL",
     "level": "LEVEL",
@@ -15,6 +15,26 @@
     "op": "OP"
   },
   "modules": {
+    "math_quadratic": {
+      "title": "二次関数イノベーション (QUADRATIC INNOVATION)",
+      "subtitle": "プロトコル: 放物線の設計者 (PARABOLIC ARCHITECT)",
+      "controls": "パラメータ制御 (PARAMETER CONTROLS)"
+    },
+    "quadratics": {
+      "title": "GRAVITY WELL (重力井戸)"
+    },
+    "probability": {
+      "title": "ENTROPY WEAVER (確率)"
+    },
+    "complex": {
+      "title": "PHASE ANALYZER (複素数)"
+    },
+    "logs": {
+      "title": "LOG SCALE (対数)"
+    },
+    "matrices": {
+      "title": "MATRIX GRID (行列)"
+    },
     "data": {
       "title": "DATA_ARCHIVE (データ解析)",
       "levels": {

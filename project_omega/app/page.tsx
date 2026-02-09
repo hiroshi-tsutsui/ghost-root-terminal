@@ -12,6 +12,16 @@ export default function Home() {
 
   const modules = [
     {
+      id: 'math/quadratic',
+      title: t('modules.math_quadratic.title') || 'QUADRATIC INNOVATION',
+      subtitle: 'Protocol: Architect',
+      desc: 'Design the curve. Innovate with parameters.',
+      status: 'NEW',
+      color: 'text-cyan-500',
+      border: 'border-cyan-500/30',
+      bg: 'bg-cyan-900/10'
+    },
+    {
       id: 'quadratics',
       title: t('modules.quadratics.title') || 'GRAVITY WELL',
       subtitle: 'Protocol: Singularity',
@@ -147,7 +157,7 @@ export default function Home() {
     {
       name: "TIER 2: THE MOTION",
       desc: "Master the flow of reality.",
-      ids: ['sequences', 'calculus', 'quadratics', 'logs']
+      ids: ['math/quadratic', 'sequences', 'calculus', 'quadratics', 'logs']
     },
     {
       name: "TIER 3: THE VOID",

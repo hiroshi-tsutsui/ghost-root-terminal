@@ -15,6 +15,11 @@
     "op": "OP"
   },
   "modules": {
+    "math_quadratic": {
+      "title": "QUADRATIC INNOVATION",
+      "subtitle": "PROTOCOL: PARABOLIC ARCHITECT",
+      "controls": "PARAMETER CONTROLS"
+    },
     "data": {
       "title": "DATA_ARCHIVE (Data Analysis)",
       "levels": {
