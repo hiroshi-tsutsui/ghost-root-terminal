@@ -164,11 +164,11 @@ export interface CommandResult {
   output: string;
   newCwd?: string;
   newPrompt?: string;
-  action?: 'delay' | 'crack_sim' | 'scan_sim' | 'top_sim' | 'kernel_panic' | 'edit_file' | 'wifi_scan_sim' | 'clear_history' | 'matrix_sim' | 'trace_sim' | 'netmap_sim' | 'theme_change' | 'sat_sim' | 'radio_sim';
+  action?: 'delay' | 'crack_sim' | 'scan_sim' | 'top_sim' | 'kernel_panic' | 'edit_file' | 'wifi_scan_sim' | 'clear_history' | 'matrix_sim' | 'trace_sim' | 'netmap_sim' | 'theme_change' | 'sat_sim' | 'radio_sim' | 'tcpdump_sim';
   data?: any;
 }
 
-const COMMANDS = ['ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc'];
+const COMMANDS = ['ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump'];
 
 export const tabCompletion = (cwd: string, inputBuffer: string): { matches: string[], completed: string } => {
   const parts = inputBuffer.split(' '); 
@@ -876,7 +876,7 @@ Pipe Utils:
   grep, head, tail, sort, uniq, wc, base64, rev, awk, sed, strings
 
 Network Tools:
-  ssh, ssh-keygen, ping, netstat, nmap, nc, scan, netmap, trace, traceroute, wifi, telnet, curl, nslookup, dig, irc
+  ssh, ssh-keygen, ping, netstat, nmap, nc, scan, netmap, trace, traceroute, wifi, telnet, curl, nslookup, dig, irc, tcpdump
 
 Security Tools:
   crack, analyze, decrypt, steghide, hydra, camsnap, whois
@@ -1547,7 +1547,33 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
       break;
     }
     case 'hydra': {
-       output = 'hydra: starting...';
+       if (args.length < 2) {
+           output = 'usage: hydra -l <user> -P <passlist> <target>';
+       } else {
+           const userIdx = args.indexOf('-l');
+           const passIdx = args.indexOf('-P');
+           const target = args[args.length - 1];
+           
+           if (userIdx !== -1 && passIdx !== -1) {
+               const user = args[userIdx + 1];
+               const passList = args[passIdx + 1];
+               
+               let success = false;
+               let password = '';
+               
+               if (target === '192.168.1.99' || target.includes('black-site')) {
+                   if (user === 'root' && passList === 'rockyou.txt') {
+                       success = true;
+                       password = 'black_widow_protocol_init';
+                   }
+               }
+               
+               output = `Hydra v9.1 (c) 2020 by van Hauser/THC - Please do not use in military or secret service organizations, or for illegal purposes.\n\nHydra (https://github.com/vanhauser-thc/thc-hydra) starting at ${new Date().toISOString()}`;
+               return { output, newCwd, action: 'crack_sim', data: { target, user, success, password, mode: 'hydra' } };
+           } else {
+               output = 'hydra: missing -l or -P arguments';
+           }
+       }
        break;
     }
     case 'uptime': {
@@ -2040,6 +2066,15 @@ The key's randomart image is:
           }
       }
       break;
+    }
+    case 'tcpdump': {
+       if (args.includes('--help') || args.includes('-h')) {
+           output = 'tcpdump version 4.9.3\nlibpcap version 1.9.1\nUsage: tcpdump [-i interface] [-w file] [expression]';
+       } else {
+           output = '';
+           return { output, newCwd, action: 'tcpdump_sim' };
+       }
+       break;
     }
     case 'irc': {
        if (args.length < 1) {

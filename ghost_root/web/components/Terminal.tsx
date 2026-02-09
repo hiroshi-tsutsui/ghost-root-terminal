@@ -193,23 +193,45 @@ const WebTerminal = () => {
           }
 
           if (result.action === 'crack_sim' && result.data) {
-             const { target, user, success, password } = result.data;
-             const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()';
-             const duration = 3000;
+             const { target, user, success, password, mode } = result.data;
+             const duration = mode === 'hydra' ? 6000 : 3000;
              const startTime = Date.now();
              
-             while (Date.now() - startTime < duration) {
-                 const randomStr = Array(15).fill(0).map(() => chars.charAt(Math.floor(Math.random() * chars.length))).join('');
-                 term.write(`\rTrying: ${randomStr}`);
-                 await new Promise(r => setTimeout(r, 50));
-             }
-             
-             term.write('\r\x1b[2K'); // Clear line
-             
-             if (success) {
-                 term.writeln(`\x1b[1;32m[SUCCESS]\x1b[0m Password found for ${user}@${target}: \x1b[1;37m${password}\x1b[0m`);
+             if (mode === 'hydra') {
+                 term.writeln(`\x1b[1;36m[DATA] max 16 tasks per 1 server, overall 16 tasks, 1435 login tries (l:1/p:1435), ~897 tries per task\x1b[0m`);
+                 term.writeln(`\x1b[1;36m[DATA] attacking ssh://${target}:22/\x1b[0m`);
+                 term.writeln('');
+                 
+                 const words = ['123456', 'password', '12345678', 'qwerty', '123456789', '12345', '1234', '111111', '1234567', 'dragon', 'admin', 'welcome', '123123', '987654321', '666666', 'monkey', 'letmein', 'orange', 'login', 'sunshine', 'princess', 'football', 'charlie', 'jordan', 'bailey', 'iloveyou', 'starwars', 'killer', 'harley', 'shadow', 'hunter', 'buster', 'robert', 'daniel', 'jessica', 'michael', 'thomas', 'george', 'samantha', 'katherine', 'superman', 'batman', '007', 'mustang', 'secret', 'snoopy', 'tigger', 'master', 'angel', 'lovely', 'cookie', 'soccer', 'hockey', 'baseball', 'tennis', 'amber', 'purple', 'flower', 'jasmine', 'jennifer', 'brittany', 'ashley', 'nicole', 'taylor', 'megan', 'amanda', 'chelsea', 'elizabeth', 'hannah', 'madison', 'rachel', 'sarah', 'kayla', 'alexis', 'victoria', 'morgan', 'hailey', 'destiny', 'summer', 'sierra', 'savannah', 'jasmine', 'andrea', 'melissa', 'rebecca', 'courtney', 'monica', 'veronica', 'danielle', 'natasha'];
+                 
+                 let tries = 0;
+                 while (Date.now() - startTime < duration) {
+                     const w = words[Math.floor(Math.random() * words.length)];
+                     term.write(`[ATTEMPT] target ${target} - login "${user}" - pass "${w}" - 1 of 1 target completed, 0 valid password found`);
+                     tries++;
+                     await new Promise(r => setTimeout(r, 100));
+                     term.write('\r\x1b[2K'); // Clear line for next attempt
+                 }
+                 
+                 term.writeln('1 of 1 target completed, ' + (success ? '1' : '0') + ' valid password found');
+                 if (success) {
+                     term.writeln(`\x1b[1;32m[22][ssh] host: ${target}   login: ${user}   password: ${password}\x1b[0m`);
+                 }
              } else {
-                 term.writeln(`\x1b[1;31m[FAILED]\x1b[0m Access denied. Intrusion detection triggered.`);
+                 const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()';
+                 while (Date.now() - startTime < duration) {
+                     const randomStr = Array(15).fill(0).map(() => chars.charAt(Math.floor(Math.random() * chars.length))).join('');
+                     term.write(`\rTrying: ${randomStr}`);
+                     await new Promise(r => setTimeout(r, 50));
+                 }
+                 
+                 term.write('\r\x1b[2K'); // Clear line
+                 
+                 if (success) {
+                     term.writeln(`\x1b[1;32m[SUCCESS]\x1b[0m Password found for ${user}@${target}: \x1b[1;37m${password}\x1b[0m`);
+                 } else {
+                     term.writeln(`\x1b[1;31m[FAILED]\x1b[0m Access denied. Intrusion detection triggered.`);
+                 }
              }
           }
 
@@ -443,6 +465,168 @@ const WebTerminal = () => {
               }
           }
 
+          if (result.action === 'sat_sim' && result.data) {
+             const { target, mode } = result.data;
+             isTopModeRef.current = true;
+             term.clear();
+             term.write('\x1b[?25l'); // Hide cursor
+
+             if (mode === 'connect') {
+                 const duration = 5000;
+                 const startTime = Date.now();
+                 
+                 while (isTopModeRef.current && Date.now() - startTime < duration) {
+                     term.write('\x1b[H'); // Home
+                     const progress = (Date.now() - startTime) / duration;
+                     const bars = Math.floor(progress * 20);
+                     const barStr = '='.repeat(bars) + '>'.padEnd(20 - bars, ' ');
+                     
+                     term.writeln(`\x1b[1;36m[ SATELLITE UPLINK: ${target} ]\x1b[0m`);
+                     term.writeln(`Status: ACQUIRING SIGNAL...`);
+                     term.writeln(`Signal: [${barStr}] ${Math.floor(progress * 100)}%`);
+                     term.writeln('');
+                     
+                     // Random noise
+                     term.writeln(`FREQ: ${(1000 + Math.random() * 500).toFixed(2)} MHz  |  AZ: ${(Math.random() * 360).toFixed(1)}°  |  EL: ${(Math.random() * 90).toFixed(1)}°`);
+                     
+                     // ASCII globe placeholder (simple circle)
+                     term.writeln('');
+                     term.writeln('       .---.');
+                     term.writeln('     /       \\');
+                     term.writeln(`    |    ${['|','/','-','\\'][Math.floor((Date.now() / 200) % 4)]}    |`);
+                     term.writeln('     \\       /');
+                     term.writeln('       \'---\'');
+                     
+                     await new Promise(r => setTimeout(r, 100));
+                 }
+                 
+                 term.write('\x1b[H');
+                 term.clear();
+                 term.writeln(`\x1b[1;32m[CONNECTED] Uplink Established to ${target}.\x1b[0m`);
+                 term.writeln('Auth Token: 0x' + Math.floor(Math.random() * 1000000).toString(16).toUpperCase());
+             } else if (mode === 'download') {
+                  const duration = 4000;
+                  const startTime = Date.now();
+                  while (isTopModeRef.current && Date.now() - startTime < duration) {
+                       term.write('\x1b[H'); // Home
+                       const progress = (Date.now() - startTime) / duration;
+                       const bytes = Math.floor(progress * 1024 * 1024);
+                       term.writeln(`Downloading ${target}...`);
+                       term.writeln(`Received: ${(bytes / 1024).toFixed(1)} KB`);
+                       
+                       const loadBar = '#'.repeat(Math.floor(progress * 40));
+                       term.writeln(`[${loadBar.padEnd(40, ' ')}]`);
+
+                       await new Promise(r => setTimeout(r, 100));
+                  }
+                  
+                  // Reveal file content
+                  if (target === 'IMAGERY_001' || target === 'img_001') {
+                      term.clear();
+                      term.writeln('\x1b[1;32m[IMAGE DECODED]\x1b[0m');
+                      term.writeln(`
+      .                  .-.    .  _   *     _   .
+           *          /   \\     ((       _/ \\       *
+         _    .   .--'\\/\\_ \\     \`      /    \\  *    .
+     *  / \\_    _/ ^      \\/\\'__        /\\/\\  /\\  _
+       /    \\  /    .'   _/  /  \\  *' /    \\/  \\/ \\
+      /\\/\\  /\\/ .'__  _   /  ^ /  _   /    '      \\
+      /    \\/   \\/    \\/ \\/    \\/  \\ /              \\
+      --------------------------------------------------
+      TARGET LOCATION: [REDACTED]
+      THERMAL SIGNATURE DETECTED: HIGH
+                      `);
+                      
+                      // Save file to VFS
+                      const fPath = `/home/ghost/downloads/${target}.txt`;
+                      if (!VFS['/home/ghost/downloads']) VFS['/home/ghost/downloads'] = { type: 'dir', children: [] };
+                      VFS[fPath] = { type: 'file', content: 'THERMAL_MAP_DATA_V2\n[BINARY DATA HIDDEN]' };
+                      const dlDir = VFS['/home/ghost/downloads'];
+                      if (dlDir.type === 'dir' && !dlDir.children.includes(`${target}.txt`)) {
+                          dlDir.children.push(`${target}.txt`);
+                      }
+                  } else {
+                      term.clear();
+                      term.writeln(`Download complete. File saved to /home/ghost/downloads/${target}`);
+                  }
+             }
+
+             isTopModeRef.current = false;
+             term.write('\x1b[?25h'); // Show cursor
+             term.writeln('');
+             term.writeln('\x1b[7m[SAT] Uplink Terminated.\x1b[0m');
+          }
+
+          if (result.action === 'radio_sim' && result.data) {
+             const { mode, freq } = result.data;
+             isTopModeRef.current = true;
+             term.clear();
+             term.write('\x1b[?25l'); // Hide cursor
+
+             if (mode === 'scan') {
+                 const startFreq = 87.5;
+                 const endFreq = 108.0;
+                 let current = startFreq;
+                 
+                 while (isTopModeRef.current && current < endFreq) {
+                     term.write('\x1b[H'); // Home
+                     term.writeln('\x1b[1;35m[ RADIO SPECTRUM ANALYZER v1.0 ]\x1b[0m');
+                     term.writeln('');
+                     
+                     current += 0.1;
+                     const strength = (Math.abs(current - 89.9) < 0.2) ? 90 + Math.random() * 10 : Math.random() * 10;
+                     const bars = '#'.repeat(Math.floor(strength / 2));
+                     
+                     term.writeln(`FREQ: ${current.toFixed(1)} MHz`);
+                     term.writeln(`STR : [${bars.padEnd(50, ' ')}] ${(strength).toFixed(1)} dB`);
+                     
+                     if (strength > 50) {
+                         term.writeln(`\x1b[1;32mSIGNAL DETECTED\x1b[0m`);
+                     } else {
+                         term.writeln(`Scanning...`);
+                     }
+                     
+                     await new Promise(r => setTimeout(r, 50));
+                 }
+                 
+                 term.writeln('');
+                 term.writeln('Scan complete. Found signal at 89.9 MHz.');
+             } else if (mode === 'tune') {
+                 const targetFreq = parseFloat(freq);
+                 const isSignal = Math.abs(targetFreq - 89.9) < 0.2;
+                 
+                 while (isTopModeRef.current) {
+                     term.write('\x1b[H');
+                     term.writeln(`\x1b[1;35m[ TUNER: ${targetFreq.toFixed(1)} MHz ]\x1b[0m`);
+                     
+                     // Visualize waveform
+                     let wave = '';
+                     for (let i = 0; i < term.cols; i++) {
+                         const v = isSignal 
+                            ? Math.sin(i * 0.2 + Date.now() * 0.01) * 5 
+                            : Math.random() * 2;
+                         wave += (v > 2) ? '^' : (v < -2 ? '_' : '-');
+                     }
+                     term.writeln(wave.substring(0, term.cols));
+                     
+                     if (isSignal) {
+                         term.writeln(`\n\x1b[1;32mDECODING AUDIO STREAM...\x1b[0m`);
+                         term.writeln(`MSG: "The... key... is... hidden... in... the... noise..."`);
+                         term.writeln(`CODE: GHOST_ROOT{RADI0_SILENC3_BR0K3N}`);
+                     } else {
+                         term.writeln(`\n[STATIC]`);
+                     }
+                     term.writeln(`\nPress 'q' to stop.`);
+                     
+                     await new Promise(r => setTimeout(r, 100));
+                 }
+             }
+             
+             isTopModeRef.current = false;
+             term.write('\x1b[?25h');
+             term.clear();
+          }
+
           if (result.action === 'top_sim') {
              isTopModeRef.current = true;
              term.clear();
@@ -473,6 +657,54 @@ const WebTerminal = () => {
              }
              term.write('\x1b[?25h'); // Show cursor
              term.clear();
+          }
+
+          if (result.action === 'tcpdump_sim') {
+             isTopModeRef.current = true;
+             term.writeln('');
+             term.writeln('tcpdump: verbose output suppressed, use -v or -vv for full protocol decode');
+             term.writeln('listening on eth0, link-type EN10MB (Ethernet), capture size 262144 bytes');
+             
+             const protocols = ['TCP', 'UDP', 'ICMP', 'HTTP', 'SSH', 'TLSv1.3'];
+             const srcIPs = ['192.168.1.105', '192.168.1.1', '10.0.0.5', '172.16.0.1', '8.8.8.8'];
+             const dstIPs = ['192.168.1.5', '192.168.1.99', '10.66.6.6', '1.1.1.1', '192.168.1.255'];
+             
+             while (isTopModeRef.current) {
+                 const now = new Date();
+                 const timeStr = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}.${now.getMilliseconds().toString().padStart(6,'0')}`;
+                 const proto = protocols[Math.floor(Math.random() * protocols.length)];
+                 const src = srcIPs[Math.floor(Math.random() * srcIPs.length)];
+                 const dst = dstIPs[Math.floor(Math.random() * dstIPs.length)];
+                 const len = Math.floor(Math.random() * 1500);
+                 
+                 let info = `length ${len}`;
+                 let color = '\x1b[0m'; // Default
+                 
+                 if (dst.includes('99') || src.includes('99') || dst.includes('6.6') || src.includes('6.6')) {
+                     color = '\x1b[1;31m'; // Red for Black Site
+                     info += ' [SUSPICIOUS TRAFFIC]';
+                 } else if (proto === 'SSH') {
+                     color = '\x1b[1;33m'; // Yellow
+                     info += ' [Encrypted Packet]';
+                 } else if (proto === 'HTTP') {
+                     color = '\x1b[1;34m'; // Blue
+                     info += ' GET /admin/login.php';
+                 }
+                 
+                 term.writeln(`${color}${timeStr} IP ${src} > ${dst}: ${proto} ${info}\x1b[0m`);
+                 
+                 // Occasional hex dump
+                 if (Math.random() > 0.85) {
+                     term.writeln(`\t0x0000:  4500 003c 1a2b 4000 4006 b00b c0a8 0105`);
+                     term.writeln(`\t0x0010:  c0a8 0163 0016 c40e aabb ccdd 5018 1000`);
+                 }
+                 
+                 await new Promise(r => setTimeout(r, Math.random() * 400 + 100));
+             }
+             term.writeln('');
+             term.writeln('24 packets captured');
+             term.writeln('24 packets received by filter');
+             term.writeln('0 packets dropped by kernel');
           }
 
           if (result.action === 'kernel_panic') {
