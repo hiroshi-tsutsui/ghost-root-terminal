@@ -422,6 +422,27 @@ const WebTerminal = () => {
              term.clear();
           }
 
+          if (result.action === 'theme_change' && result.data) {
+              const { theme } = result.data;
+              const themes: Record<string, any> = {
+                  green: { background: '#000000', foreground: '#00ff00', cursor: '#00ff00' },
+                  amber: { background: '#000000', foreground: '#ffb000', cursor: '#ffb000' },
+                  blue: { background: '#000000', foreground: '#00aaff', cursor: '#00aaff' },
+                  red: { background: '#110000', foreground: '#ff0000', cursor: '#ff0000' },
+                  cyber: { background: '#0a0a1a', foreground: '#00ffff', cursor: '#ff00ff' },
+                  bw: { background: '#ffffff', foreground: '#000000', cursor: '#000000' },
+              };
+              
+              const t = themes[theme];
+              if (t && termRef.current) {
+                  termRef.current.options.theme = t;
+                  // Force background update
+                  if (terminalContainerRef.current) {
+                      terminalContainerRef.current.style.backgroundColor = t.background;
+                  }
+              }
+          }
+
           if (result.action === 'top_sim') {
              isTopModeRef.current = true;
              term.clear();

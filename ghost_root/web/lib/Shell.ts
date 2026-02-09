@@ -12,6 +12,28 @@ const ALIASES: Record<string, string> = {
   'c': 'clear'
 };
 
+interface Process {
+  pid: number;
+  user: string;
+  cpu: number;
+  mem: number;
+  time: string;
+  command: string;
+  tty: string;
+  stat: string;
+}
+
+const PROCESSES: Process[] = [
+  { pid: 1, user: 'root', cpu: 0.1, mem: 0.4, time: '12:34', command: '/sbin/init', tty: '?', stat: 'Ss' },
+  { pid: 2, user: 'root', cpu: 0.0, mem: 0.0, time: '0:00', command: '[kthreadd]', tty: '?', stat: 'S' },
+  { pid: 404, user: 'root', cpu: 0.0, mem: 0.8, time: '0:05', command: '/usr/sbin/sshd -D', tty: '?', stat: 'Ss' },
+  { pid: 666, user: 'root', cpu: 13.3, mem: 66.6, time: '66:66', command: '[spectre_kernel]', tty: '?', stat: 'R' },
+  { pid: 1337, user: 'ghost', cpu: 0.5, mem: 1.2, time: '0:01', command: '-bash', tty: 'pts/0', stat: 'Ss' },
+  { pid: 2024, user: 'root', cpu: 0.0, mem: 0.2, time: '0:02', command: '/usr/sbin/cron -f', tty: '?', stat: 'Ss' },
+  { pid: 8888, user: 'root', cpu: 1.5, mem: 2.1, time: '1:23', command: '/usr/bin/watcher --silent', tty: '?', stat: 'Sl' },
+  { pid: 9999, user: 'unknown', cpu: 45.2, mem: 12.8, time: '9:59', command: './hydra -l admin -P pass.txt 192.168.1.99', tty: 'pts/1', stat: 'R+' }
+];
+
 // Mock Network Connections
 const CONNECTIONS = [
   { proto: 'tcp', recv: 0, send: 0, local: '192.168.1.105:22', remote: '192.168.1.5:54322', state: 'ESTABLISHED', pid: '404/sshd' },
@@ -142,11 +164,11 @@ export interface CommandResult {
   output: string;
   newCwd?: string;
   newPrompt?: string;
-  action?: 'delay' | 'crack_sim' | 'scan_sim' | 'top_sim' | 'kernel_panic' | 'edit_file' | 'wifi_scan_sim' | 'clear_history' | 'matrix_sim' | 'trace_sim' | 'netmap_sim';
+  action?: 'delay' | 'crack_sim' | 'scan_sim' | 'top_sim' | 'kernel_panic' | 'edit_file' | 'wifi_scan_sim' | 'clear_history' | 'matrix_sim' | 'trace_sim' | 'netmap_sim' | 'theme_change';
   data?: any;
 }
 
-const COMMANDS = ['ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap'];
+const COMMANDS = ['ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme'];
 
 export const tabCompletion = (cwd: string, inputBuffer: string): { matches: string[], completed: string } => {
   const parts = inputBuffer.split(' '); 
@@ -845,7 +867,27 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
       break;
     }
     case 'help':
-      output = 'GHOST_ROOT Recovery Shell v0.8 (Pipes Enabled)\n\nStandard Commands:\n  ls, cd, cat, pwd, clear, exit, man\n\nPipe Utils:\n  grep, head, tail, sort, uniq, wc, base64, rev, awk\n\nNetwork Tools:\n  ssh, ssh-keygen, ping, netstat, nmap, nc, scan\n\nSystem Tools:\n  ps, kill, top, dmesg, mount, umount\n\nType "man <command>" for more information.';
+      output = `GHOST_ROOT Recovery Shell v0.9 (Pipes Enabled)
+
+Standard Commands:
+  ls, cd, cat, pwd, clear, exit, man, mkdir, touch, rm, cp, mv
+
+Pipe Utils:
+  grep, head, tail, sort, uniq, wc, base64, rev, awk, sed, strings
+
+Network Tools:
+  ssh, ssh-keygen, ping, netstat, nmap, nc, scan, netmap, trace, traceroute, wifi, telnet, curl, nslookup, dig
+
+Security Tools:
+  crack, analyze, decrypt, steghide, hydra, camsnap, whois
+
+System Tools:
+  ps, kill, top, dmesg, mount, umount, reboot, shutdown, uptime, w, date, systemctl, journal, journalctl, lsof
+
+Misc:
+  zip, unzip, neofetch, weather, matrix, radio, alias, env, history, calc
+
+Type "man <command>" for more information.`;
       break;
     case 'man': {
       if (args.length < 1) {
@@ -1145,6 +1187,9 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
           } else if (filePath.includes('operation_blackout')) {
               if (args[1] === 'red_ledger') output = `Decrypting...\n${atob(fileNode.content)}`;
               else output = 'Error: Invalid password.';
+          } else if (filePath.includes('entry_02.enc')) {
+              if (args[1] === 'black_widow') output = `Decrypting...\n${atob(fileNode.content)}`;
+              else output = 'Error: Invalid password. (Hint: Check the evidence)';
           } else {
               try { output = atob(fileNode.content); } catch (e) { output = 'Error: File not encrypted or corrupted.'; }
           }
@@ -1230,7 +1275,51 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
       break;
     }
     case 'lsof': {
-        output = 'COMMAND PID USER FD TYPE DEVICE SIZE/OFF NODE NAME...';
+        const header = 'COMMAND    PID  USER   FD   TYPE DEVICE SIZE/OFF NODE NAME';
+        let outputLines = [header];
+        
+        PROCESSES.forEach(p => {
+             // Generate fake LSOF lines based on PID
+             const cmd = p.command.split(' ')[0].split('/').pop() || p.command;
+             outputLines.push(`${cmd.padEnd(9)} ${String(p.pid).padStart(5)} ${p.user.padEnd(5)}  cwd    DIR  253,0     4096    2 /`);
+             outputLines.push(`${cmd.padEnd(9)} ${String(p.pid).padStart(5)} ${p.user.padEnd(5)}  txt    REG  253,0   13370 1024 ${p.command.split(' ')[0]}`);
+             
+             if (p.pid === 1) {
+                 outputLines.push(`${cmd.padEnd(9)} ${String(p.pid).padStart(5)} ${p.user.padEnd(5)}   22u  IPv4  13370      0t0  TCP *:631 (LISTEN)`);
+             } else if (p.pid === 404) {
+                 outputLines.push(`${cmd.padEnd(9)} ${String(p.pid).padStart(5)} ${p.user.padEnd(5)}    3u  IPv4  22222      0t0  TCP *:22 (LISTEN)`);
+             } else if (p.pid === 8888) {
+                 outputLines.push(`${cmd.padEnd(9)} ${String(p.pid).padStart(5)} ${p.user.padEnd(5)}    4u  IPv4  88888      0t0  UDP *:68`);
+             } else if (p.pid === 9999) {
+                 outputLines.push(`${cmd.padEnd(9)} ${String(p.pid).padStart(5)} ${p.user.padEnd(5)}    3u  IPv4  99999      0t0  TCP 192.168.1.105:31337->192.168.1.99:443 (SYN_SENT)`);
+             } else if (p.pid === 1337) {
+                 outputLines.push(`${cmd.padEnd(9)} ${String(p.pid).padStart(5)} ${p.user.padEnd(5)}  255u   CHR  136,0      0t0    3 /dev/pts/0`);
+             }
+        });
+        
+        if (args.length > 0) {
+            if (args.includes('-i')) {
+                output = outputLines.filter((l, i) => i === 0 || l.includes('IPv4') || l.includes('IPv6')).join('\n');
+            } else {
+                // Filter by PID or name if provided
+                const query = args[0];
+                output = outputLines.filter((l, i) => i === 0 || l.includes(query)).join('\n');
+            }
+        } else {
+            output = outputLines.join('\n');
+        }
+        break;
+    }
+            if (args.includes('-i')) {
+                output = outputLines.filter((l, i) => i === 0 || l.includes('IPv4') || l.includes('IPv6')).join('\n');
+            } else {
+                // Filter by PID or name if provided
+                const query = args[0];
+                output = outputLines.filter((l, i) => i === 0 || l.includes(query)).join('\n');
+            }
+        } else {
+            output = outputLines.join('\n');
+        }
         break;
     }
     case 'ifconfig':
@@ -1284,12 +1373,63 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
       break;
     case 'top':
       return { output: '', newCwd, action: 'top_sim' };
-    case 'ps':
-      output = 'PID TTY TIME CMD...';
+    case 'ps': {
+      if (args.includes('aux') || args.includes('-aux')) {
+          output = 'USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND\n' +
+          PROCESSES.map(p => {
+              const vsz = Math.floor(Math.random() * 100000);
+              const rss = Math.floor(Math.random() * 50000);
+              return `${p.user.padEnd(8)} ${String(p.pid).padStart(5)} ${p.cpu.toFixed(1).padStart(4)} ${p.mem.toFixed(1).padStart(4)} ${String(vsz).padStart(6)} ${String(rss).padStart(5)} ${p.tty.padEnd(8)} ${p.stat.padEnd(4)} 14:02   ${p.time.padStart(5)} ${p.command}`;
+          }).join('\n');
+      } else if (args.includes('-ef') || args.includes('ef')) {
+          output = 'UID        PID  PPID  C STIME TTY          TIME CMD\n' +
+          PROCESSES.map(p => {
+              const ppid = p.pid === 1 ? 0 : 1;
+              return `${p.user.padEnd(8)} ${String(p.pid).padStart(5)} ${String(ppid).padStart(5)}  0 14:02 ${p.tty.padEnd(8)} ${p.time.padStart(8)} ${p.command}`;
+          }).join('\n');
+      } else {
+          // Default minimal output
+          output = '  PID TTY          TIME CMD\n' +
+          PROCESSES.filter(p => p.tty !== '?').map(p => {
+              return `${String(p.pid).padStart(5)} ${p.tty.padEnd(8)} ${p.time.padStart(8)} ${p.command}`;
+          }).join('\n');
+      }
       break;
-    case 'kill':
-      output = 'Terminated.';
+    }
+    case 'kill': {
+      if (args.length < 1) {
+          output = 'kill: usage: kill [-s signal|-p] [-a] <pid>...';
+      } else {
+          // Ignore signals for now, just extract PID
+          const pidStr = args[args.length - 1];
+          const pid = parseInt(pidStr, 10);
+          
+          if (isNaN(pid)) {
+              output = `kill: ${pidStr}: arguments must be process or job IDs`;
+          } else {
+              const idx = PROCESSES.findIndex(p => p.pid === pid);
+              if (idx === -1) {
+                  output = `kill: (${pid}) - No such process`;
+              } else {
+                  const proc = PROCESSES[idx];
+                  if (pid === 1) {
+                      output = 'Attempting to kill init process...';
+                      return { output, newCwd, action: 'kernel_panic' };
+                  } else if (pid === 666) {
+                      output = `bash: kill: (${pid}) - Operation not permitted\n[SYSTEM] Warning: Do not disturb the spectre kernel.`;
+                      // Maybe modify it slightly to show it reacted? No, just deny.
+                  } else if (pid === 1337) {
+                      output = 'Terminating shell...';
+                      return { output, newCwd, action: 'kernel_panic' }; // Or just exit
+                  } else {
+                      PROCESSES.splice(idx, 1);
+                      output = `[${pid}] Terminated.`;
+                  }
+              }
+          }
+      }
       break;
+    }
     case 'cp': {
       if (args.length < 2) output = 'usage: cp <source> <dest>';
       else {
@@ -1321,7 +1461,78 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
       break;
     }
     case 'find': {
-      output = Object.keys(VFS).filter(k => k.startsWith(cwd)).join('\n');
+      let searchPath = cwd;
+      let namePattern: RegExp | null = null;
+      let typeFilter: 'f' | 'd' | null = null;
+      
+      let argIdx = 0;
+      // Check if first arg is a path (doesn't start with -)
+      if (args.length > 0 && !args[0].startsWith('-')) {
+          searchPath = resolvePath(cwd, args[0]);
+          argIdx++;
+      }
+      
+      let error = '';
+
+      while (argIdx < args.length) {
+          const arg = args[argIdx];
+          if (arg === '-name') {
+              const pattern = args[argIdx + 1];
+              if (pattern) {
+                  // Simple glob to regex
+                  // Escape regex special chars except *
+                  // Then replace * with .*
+                  const escaped = pattern.replace(/[.+?^${}()|[\]\\]/g, '\\$&');
+                  const regexStr = '^' + escaped.replace(/\*/g, '.*') + '$';
+                  namePattern = new RegExp(regexStr);
+                  argIdx += 2;
+              } else {
+                  error = 'find: missing argument to `-name\'';
+                  break;
+              }
+          } else if (arg === '-type') {
+              const type = args[argIdx + 1];
+              if (type === 'f' || type === 'd') {
+                  typeFilter = type;
+                  argIdx += 2;
+              } else {
+                  error = 'find: unknown argument to `-type\'';
+                  break;
+              }
+          } else {
+               error = `find: unknown predicate \`${arg}'`;
+               break;
+          }
+      }
+
+      if (error) {
+          output = error;
+          break;
+      }
+      
+      const results = [];
+      const searchRoot = searchPath === '/' ? '/' : searchPath + '/'; 
+      
+      for (const key of Object.keys(VFS)) {
+          // Check if key is inside searchPath
+          if (key === searchPath || key.startsWith(searchRoot)) {
+               const node = VFS[key];
+               const fileName = key.substring(key.lastIndexOf('/') + 1);
+               
+               if (typeFilter) {
+                   if (typeFilter === 'f' && node.type !== 'file') continue;
+                   if (typeFilter === 'd' && node.type !== 'dir') continue;
+               }
+               
+               if (namePattern) {
+                   if (!namePattern.test(fileName)) continue;
+               }
+               
+               results.push(key);
+          }
+      }
+      
+      output = results.sort().join('\n');
       break;
     }
     case 'finger': {
@@ -1795,6 +2006,20 @@ The key's randomart image is:
     case 'netmap': {
        output = 'Loading Network Map...';
        return { output, newCwd, action: 'netmap_sim' };
+    }
+    case 'theme': {
+       if (args.length < 1) {
+           output = 'usage: theme <name>\nAvailable themes: green, amber, blue, red, cyber, bw';
+       } else {
+           const themeName = args[0];
+           if (['green', 'amber', 'blue', 'red', 'cyber', 'bw'].includes(themeName)) {
+               output = `Switching theme to ${themeName}...`;
+               return { output, newCwd, action: 'theme_change', data: { theme: themeName } };
+           } else {
+               output = `theme: '${themeName}' not found.`;
+           }
+       }
+       break;
     }
     default:
       output = `bash: ${command}: command not found`;
