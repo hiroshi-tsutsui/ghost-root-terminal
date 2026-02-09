@@ -164,11 +164,11 @@ export interface CommandResult {
   output: string;
   newCwd?: string;
   newPrompt?: string;
-  action?: 'delay' | 'crack_sim' | 'scan_sim' | 'top_sim' | 'kernel_panic' | 'edit_file' | 'wifi_scan_sim' | 'clear_history' | 'matrix_sim' | 'trace_sim' | 'netmap_sim' | 'theme_change';
+  action?: 'delay' | 'crack_sim' | 'scan_sim' | 'top_sim' | 'kernel_panic' | 'edit_file' | 'wifi_scan_sim' | 'clear_history' | 'matrix_sim' | 'trace_sim' | 'netmap_sim' | 'theme_change' | 'sat_sim' | 'radio_sim';
   data?: any;
 }
 
-const COMMANDS = ['ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme'];
+const COMMANDS = ['ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc'];
 
 export const tabCompletion = (cwd: string, inputBuffer: string): { matches: string[], completed: string } => {
   const parts = inputBuffer.split(' '); 
@@ -876,7 +876,7 @@ Pipe Utils:
   grep, head, tail, sort, uniq, wc, base64, rev, awk, sed, strings
 
 Network Tools:
-  ssh, ssh-keygen, ping, netstat, nmap, nc, scan, netmap, trace, traceroute, wifi, telnet, curl, nslookup, dig
+  ssh, ssh-keygen, ping, netstat, nmap, nc, scan, netmap, trace, traceroute, wifi, telnet, curl, nslookup, dig, irc
 
 Security Tools:
   crack, analyze, decrypt, steghide, hydra, camsnap, whois
@@ -1298,18 +1298,6 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
         });
         
         if (args.length > 0) {
-            if (args.includes('-i')) {
-                output = outputLines.filter((l, i) => i === 0 || l.includes('IPv4') || l.includes('IPv6')).join('\n');
-            } else {
-                // Filter by PID or name if provided
-                const query = args[0];
-                output = outputLines.filter((l, i) => i === 0 || l.includes(query)).join('\n');
-            }
-        } else {
-            output = outputLines.join('\n');
-        }
-        break;
-    }
             if (args.includes('-i')) {
                 output = outputLines.filter((l, i) => i === 0 || l.includes('IPv4') || l.includes('IPv6')).join('\n');
             } else {
@@ -1936,21 +1924,15 @@ The key's randomart image is:
        } else {
            const subcmd = args[0];
            if (subcmd === 'scan') {
-               output = `Scanning FM frequencies...\n[88.0 MHz] ...\n[89.9 MHz] STRONG SIGNAL DETECTED\n[95.5 MHz] Music (Pop)\n[104.5 MHz] News/Talk\nScanning complete. Found 3 signals.`;
+               output = 'Scanning radio frequencies...';
+               return { output, newCwd, action: 'radio_sim', data: { mode: 'scan' } };
            } else if (subcmd === 'tune') {
                if (args.length < 2) {
                    output = 'usage: radio tune <freq>';
                } else {
                    const freq = args[1];
-                   if (freq === '89.9') {
-                       output = `Tuning to 89.9 MHz...\nSignal Strength: 98%\nAudio: [Static] ... -... .-. --- -.- . -. ... .. .-.. . -. -.-. . ...\n(Morse Code Detected)\n\nDecoding...\n...\nOutput: GHOST_ROOT{RADI0_SILENC3_BR0K3N}`;
-                   } else if (freq === '104.5') {
-                       output = `Tuning to 104.5 MHz...\nPlaying: "Late Night Tech News with Leo"`;
-                   } else if (freq === '95.5') {
-                       output = `Tuning to 95.5 MHz...\nPlaying: "Top 40 Hits"`;
-                   } else {
-                       output = `Tuning to ${freq} MHz...\n[Static]`;
-                   }
+                   output = `Tuning to ${freq} MHz...`;
+                   return { output, newCwd, action: 'radio_sim', data: { mode: 'tune', freq } };
                }
            } else {
                output = `radio: unknown subcommand: ${subcmd}`;
@@ -2017,6 +1999,86 @@ The key's randomart image is:
                return { output, newCwd, action: 'theme_change', data: { theme: themeName } };
            } else {
                output = `theme: '${themeName}' not found.`;
+           }
+       }
+       break;
+    }
+    case 'sat': {
+      if (args.length < 1) {
+          output = 'usage: sat <connect|list|download|status> [target]';
+      } else {
+          const subcmd = args[0];
+          if (subcmd === 'list') {
+              output = `Available Satellites (Low Earth Orbit):
+[ID: KH-11]  USA-224 (Keyhole)   - ONLINE  (Encrypted)
+[ID: COSM]   Cosmos-2542         - ONLINE  (Signal Weak)
+[ID: OMEG]   Omega-Sat-V1        - OFFLINE (Maintenance)
+[ID: BLK]    BLACK_KNIGHT        - UNKNOWN (Beacon Active)`;
+          } else if (subcmd === 'connect') {
+              if (args.length < 2) {
+                  output = 'usage: sat connect <id>';
+              } else {
+                  const id = args[1];
+                  if (['KH-11', 'COSM', 'BLK'].includes(id)) {
+                      output = `Initializing uplink to ${id}...`;
+                      return { output, newCwd, action: 'sat_sim', data: { target: id, mode: 'connect' } };
+                  } else {
+                      output = `sat: uplink failed: Target ${id} not found or out of range.`;
+                  }
+              }
+          } else if (subcmd === 'status') {
+              output = 'Uplink Status: DISCONNECTED\nSignal Strength: 0%\nEncryption: NONE';
+          } else if (subcmd === 'download') {
+               if (args.length < 2) {
+                  output = 'usage: sat download <file_id>';
+               } else {
+                  output = 'Downloading...';
+                  return { output, newCwd, action: 'sat_sim', data: { target: args[1], mode: 'download' } };
+               }
+          } else {
+              output = `sat: unknown subcommand: ${subcmd}`;
+          }
+      }
+      break;
+    }
+    case 'irc': {
+       if (args.length < 1) {
+           output = 'usage: irc <server> [channel] [nick]';
+       } else {
+           const server = args[0];
+           const channel = args[1] || '#lobby';
+           const nick = args[2] || 'ghost';
+
+           if (server === '192.168.1.99' || server === 'chat.black-site.local') {
+               output = `Connecting to ${server} (${nick})...\n`;
+               output += `[${server}] *** Looking up your hostname...\n`;
+               output += `[${server}] *** Checking Ident\n`;
+               output += `[${server}] *** Found your hostname\n`;
+               output += `[${server}] *** You are connected to Black Site IRC Network\n`;
+               
+               if (channel === '#shadow_ops') {
+                   output += `\nTopic for ${channel}: OPERATION BLACKOUT - PHASE 2 [ACTIVE]\n`;
+                   output += `Users: @Spectre, +Watcher, Admin, ${nick}\n\n`;
+                   output += `[14:02] <Spectre> Breach detected in Sector 7.\n`;
+                   output += `[14:03] <Watcher> Is it the Ghost?\n`;
+                   output += `[14:04] <Admin> Likely. Monitor feed 03.\n`;
+                   output += `[14:05] <Spectre> Redirecting resources to honeycomb defense.\n`;
+                   output += `[14:06] <System> User ${nick} joined.\n`;
+                   output += `[14:06] <Admin> ...who is this?\n`;
+                   output += `[14:06] *** ${nick} was kicked by Admin (Unauthorized access)\n`;
+                   output += `\n[Disconnected]`;
+               } else if (channel === '#lobby') {
+                   output += `\nTopic for ${channel}: General discussion\n`;
+                   output += `Users: Guest1, Guest2, ${nick}\n\n`;
+                   output += `[14:00] <Guest1> Any idea how to solve the matrix puzzle?\n`;
+                   output += `[14:01] <Guest2> Try 'man matrix'.\n`;
+                   output += `[14:02] <Guest1> Thanks.\n`;
+                   output += `\n(Type '/join #shadow_ops' to switch channels - Simulated)`;
+               } else {
+                   output += `\nChannel ${channel} requires a key (+k).`;
+               }
+           } else {
+               output = `irc: unable to connect to ${server}: Connection refused`;
            }
        }
        break;
