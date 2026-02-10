@@ -26,6 +26,8 @@ const Shell = () => {
   const [cwd, setCwd] = useState('/home/recovery_mode');
   const [history, setHistory] = useState([]);
   const [input, setInput] = useState('');
+  const [user, setUser] = useState('ghost');
+  const [hostname, setHostname] = useState('blackbox');
 
   const handleSubmit = (val) => {
     const cmdLine = val.trim();
@@ -79,13 +81,66 @@ const Shell = () => {
     } else if (command === 'pwd') {
         output = cwd;
     } else if (command === 'help') {
-        output = 'GHOST_ROOT Recovery Shell v0.1\nAvailable commands: ls, cd, cat, pwd, help, clear, exit';
+        output = 'GHOST_ROOT Recovery Shell v0.2\nAvailable commands: ls, cd, cat, pwd, help, clear, exit, mail, hostname, decrypt, whoami';
     } else if (command === 'clear') {
         setHistory([]);
         setInput('');
         return;
     } else if (command === 'exit') {
         process.exit(0);
+    } else if (command === 'whoami') {
+        output = user;
+    } else if (command === 'hostname') {
+        output = hostname;
+    } else if (command === 'mail') {
+        // Simulate checking mail
+        const mailPath = '/var/mail/ghost';
+        const mailNode = getNode(mailPath);
+        if (mailNode) {
+            output = `Checking mail for ${user}...\n\n${mailNode.content}`;
+        } else {
+            output = 'No mail.';
+        }
+    } else if (command === 'decrypt') {
+        const targetFile = args[0];
+        const password = args[1];
+
+        if (!targetFile) {
+            output = 'usage: decrypt <file> [password]';
+        } else {
+            const filePath = resolvePath(cwd, targetFile);
+            
+            // Win Condition Logic
+            if (filePath.endsWith('secure.enc')) {
+                if (!password) {
+                    output = 'Error: Password required for encrypted volume.';
+                } else if (password === 'xobkcalb') {
+                    // THE WIN STATE
+                    output = `
+Decrypting [secure.enc]...
+[========================================] 100%
+
+ACCESS GRANTED.
+
+SYSTEM LIBERATED.
+ROOT PRIVILEGES RESTORED.
+
+Welcome back, Operator.
+Project Omega Link Established.
+                    `;
+                } else {
+                    output = 'Error: Decryption failed. Invalid password.';
+                }
+            } else {
+                // Generic file check
+                const node = getNode(filePath);
+                if (!node) {
+                    output = `decrypt: ${targetFile}: No such file`;
+                } else {
+                    output = `decrypt: ${targetFile}: File is not encrypted or format not recognized.`;
+                }
+            }
+        }
     } else {
         output = `bash: ${command}: command not found`;
     }
@@ -99,7 +154,7 @@ const Shell = () => {
       {history.map((item, index) => (
         <Box key={index} flexDirection="column">
           <Box>
-            <Text color="green">ghost@root</Text>
+            <Text color="green">{user}@{hostname}</Text>
             <Text>:</Text>
             <Text color="blue">{item.cwd}</Text>
             <Text>$ {item.cmd}</Text>
@@ -109,7 +164,7 @@ const Shell = () => {
       ))}
 
       <Box>
-        <Text color="green">ghost@root</Text>
+        <Text color="green">{user}@{hostname}</Text>
         <Text>:</Text>
         <Text color="blue">{cwd}</Text>
         <Text>$ </Text>
