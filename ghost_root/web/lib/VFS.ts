@@ -78,7 +78,7 @@ int main(int argc, char *argv[]) {
   },
   '/home': {
     type: 'dir',
-    children: ['recovery', 'ghost']
+    children: ['recovery', 'ghost', 'dr_akira']
   },
   '/home/recovery': {
     type: 'dir',
@@ -481,6 +481,49 @@ Oct 23 15:45:00 ghost-root kernel: [ 4000.000000] RADIO: Strong FM interference 
   '/home/ghost/capture.cap': {
     type: 'file',
     content: '[PCAP_HEADER_LE: a1b2c3d4 0002 0004 0000 0000 ffff 0000]\n[PACKET: IV=1234 KEYID=0 DATA=Encrypted]\n[PACKET: IV=1235 KEYID=0 DATA=Encrypted]\n[HANDSHAKE: 00:C0:CA:AD:88:99 -> DE:AD:BE:EF:CA:FE]'
+  },
+  '/home/dr_akira': {
+    type: 'dir',
+    children: ['notes.txt', 'project_chimera', '.bash_history']
+  },
+  '/home/dr_akira/notes.txt': {
+    type: 'file',
+    content: `THEY ARE WATCHING.
+I know the "Watcher" process isn't just a daemon. It's an AI.
+It tracks keystrokes. It monitors the "alert_level" variable.
+I've hidden the true schematics in the "chimera" folder, but I had to corrupt them to bypass the deep packet inspection.
+To restore them, you need the sequence. 
+It involves the number of active processes...`
+  },
+  '/home/dr_akira/.bash_history': {
+    type: 'file',
+    content: `export DECRYPTION_PROTOCOL=ENABLED
+./fix_corruption.sh --force
+netstat -an | grep 666
+kill -9 666
+rm -rf /var/log/watcher.log
+exit`
+  },
+  '/home/dr_akira/project_chimera': {
+    type: 'dir',
+    children: ['blueprint_v1.corrupt', 'README.md']
+  },
+  '/home/dr_akira/project_chimera/README.md': {
+    type: 'file',
+    content: `PROJECT CHIMERA: AUTONOMOUS DEFENSE GRID
+Status: HALTED by Admin Order 66.
+
+The corrupt file contains the access codes for the satellite uplink.
+Do not attempt to fix it unless the alert level is 0.
+`
+  },
+  '/home/dr_akira/project_chimera/blueprint_v1.corrupt': {
+    type: 'file',
+    content: `[HEADER_CORRUPT]
+0000: DE AD BE EF CA FE BA BE
+0010: ?? ?? ?? ?? ?? ?? ?? ??
+[DATA_LOST]
+(Try 'hexdump' to analyze structure)`
   },
 };
 

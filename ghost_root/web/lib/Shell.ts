@@ -501,7 +501,7 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
           output = `cat: ${fileTarget}: No such file or directory`;
         } else if (fileNode.type === 'dir') {
           output = `cat: ${fileTarget}: Is a directory`;
-        } else if (filePath.startsWith('/root') && !VFS['/tmp/.root_session']) {
+        } else if ((filePath.startsWith('/root') || filePath.startsWith('/home/dr_akira')) && !VFS['/tmp/.root_session']) {
           output = `cat: ${fileTarget}: Permission denied`;
         } else {
           output = fileNode.content;
@@ -809,7 +809,7 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
       const paths = args.filter(arg => !arg.startsWith('-'));
       const targetPath = paths[0] ? resolvePath(cwd, paths[0]) : cwd;
 
-      if (targetPath.startsWith('/root') && !VFS['/tmp/.root_session']) {
+      if ((targetPath.startsWith('/root') || targetPath.startsWith('/home/dr_akira')) && !VFS['/tmp/.root_session']) {
           output = `ls: cannot open directory '${targetPath}': Permission denied`;
           break;
       }
@@ -872,7 +872,7 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
         output = `bash: cd: ${target}: No such file or directory`;
       } else if (targetNode.type !== 'dir') {
         output = `bash: cd: ${target}: Not a directory`;
-      } else if (potentialPath.startsWith('/root') && !VFS['/tmp/.root_session']) {
+      } else if ((potentialPath.startsWith('/root') || potentialPath.startsWith('/home/dr_akira')) && !VFS['/tmp/.root_session']) {
         output = `bash: cd: ${target}: Permission denied`;
       } else {
         newCwd = potentialPath;
