@@ -305,10 +305,13 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
       } else if (node.type === 'dir') {
           return finalize(`bash: ${command}: Is a directory`, newCwd);
       } else {
-          if (node.content.includes('[BINARY_ELF_X86_64]') || node.content.includes('BINARY_PAYLOAD')) {
+          if (node.content.includes('[BINARY_ELF_X86_64]') || node.content.includes('BINARY_PAYLOAD') || node.content.includes('DOOMSDAY_PROTOCOL')) {
               if (fileName === 'overflow' || fileName === 'exploit') {
                   output = `[SYSTEM] Buffer Overflow Triggered at 0xBF800000...\n[SYSTEM] EIP overwritten with 0x08048000\n[SYSTEM] Spawning root shell...\n\n# whoami\nroot`;
                   return { output, newCwd: '/root', newPrompt: 'root@ghost-root#', action: 'delay' };
+              } else if (fileName === 'launch_codes.bin' || fileName === './launch_codes.bin') {
+                  output = `[SYSTEM] INITIATING LAUNCH SEQUENCE...\n[SYSTEM] AUTHENTICATION VERIFIED (OMEGA-LVL-5)\n[SYSTEM] TARGET: GLOBAL_RESET_PROTOCOL\n\n3...\n2...\n1...\n`;
+                  return { output, newCwd, action: 'win_sim' };
               } else {
                   output = `bash: ${command}: Permission denied (Missing execute bit or corrupt header)`;
               }
@@ -419,9 +422,7 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
           output = `cat: ${fileTarget}: Permission denied`;
         } else {
           output = fileNode.content;
-          if (filePath === '/root/flag.txt') {
-            return { output, newCwd, action: 'win_sim' };
-          }
+          // Legacy win trigger removed. Now requires launch codes.
         }
       }
       break;
@@ -2836,18 +2837,25 @@ ${validUnits.length} loaded units listed.`;
           output = 'usage: sat <connect|list|download|status|files> [target]';
       } else {
           const subcmd = args[0];
+          const runDir = getNode('/var/run');
+          const isLinked = runDir && runDir.type === 'dir' && runDir.children.includes('sat_link.pid');
+          
           if (subcmd === 'list') {
               output = `Available Satellites (Low Earth Orbit):
 [ID: KH-11]  USA-224 (Keyhole)   - ONLINE  (Encrypted)
 [ID: COSM]   Cosmos-2542         - ONLINE  (Signal Weak)
-[ID: OMEG]   Omega-Sat-V1        - OFFLINE (Maintenance)
+[ID: OMEG]   Omega-Sat-V1        - ONLINE  (Secure Uplink Available)
 [ID: BLK]    BLACK_KNIGHT        - UNKNOWN (Beacon Active)`;
           } else if (subcmd === 'connect') {
               if (args.length < 2) {
                   output = 'usage: sat connect <id>';
               } else {
                   const id = args[1];
-                  if (['KH-11', 'COSM', 'BLK'].includes(id)) {
+                  if (['KH-11', 'COSM', 'BLK', 'OMEG'].includes(id)) {
+                      if (runDir && runDir.type === 'dir') {
+                          VFS['/var/run/sat_link.pid'] = { type: 'file', content: id };
+                          if (!runDir.children.includes('sat_link.pid')) runDir.children.push('sat_link.pid');
+                      }
                       output = `Initializing uplink to ${id}...`;
                       return { output, newCwd, action: 'sat_sim', data: { target: id, mode: 'connect' } };
                   } else {
@@ -2855,18 +2863,38 @@ ${validUnits.length} loaded units listed.`;
                   }
               }
           } else if (subcmd === 'status') {
-              output = 'Uplink Status: DISCONNECTED\nSignal Strength: 0%\nEncryption: NONE';
+              if (isLinked) {
+                  const id = VFS['/var/run/sat_link.pid'].content;
+                  output = `Uplink Status: CONNECTED (${id})\nSignal Strength: 98%\nEncryption: AES-256-GCM`;
+              } else {
+                  output = 'Uplink Status: DISCONNECTED\nSignal Strength: 0%\nEncryption: NONE';
+              }
           } else if (subcmd === 'files') {
-               output = `[SAT_LINK] Remote File System (USA-224):
+               if (isLinked) {
+                   const id = VFS['/var/run/sat_link.pid'].content;
+                   if (id === 'OMEG') {
+                       output = `[SAT_LINK] Remote File System (${id}):
+- rwx------  launch_codes.bin  (512B)  [DOOMSDAY_PROTOCOL]
+- r--------  README.txt        (1KB)   [INFO]`;
+                   } else {
+                       output = `[SAT_LINK] Remote File System (${id}):
 - rwxr-x---  IMAGERY_001  (24MB)  [CLASSIFIED]
 - rwxr-x---  LOG_V2.txt   (4KB)
 - r--------  KEYS.enc     (1KB)   [LOCKED]`;
+                   }
+               } else {
+                   output = 'sat: not connected. Use "sat connect <id>" first.';
+               }
           } else if (subcmd === 'download') {
                if (args.length < 2) {
                   output = 'usage: sat download <file_id>';
                } else {
-                  output = 'Downloading...';
-                  return { output, newCwd, action: 'sat_sim', data: { target: args[1], mode: 'download' } };
+                  if (isLinked) {
+                      output = 'Downloading...';
+                      return { output, newCwd, action: 'sat_sim', data: { target: args[1], mode: 'download' } };
+                  } else {
+                      output = 'sat: not connected.';
+                  }
                }
           } else {
               output = `sat: unknown subcommand: ${subcmd}`;

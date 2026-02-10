@@ -643,6 +643,18 @@ const WebTerminal = () => {
                       if (dlDir.type === 'dir' && !dlDir.children.includes(target)) {
                           dlDir.children.push(target);
                       }
+                  } else if (target === 'launch_codes.bin') {
+                      term.clear();
+                      term.writeln('\x1b[1;31m[WARNING] CLASSIFIED WEAPON SYSTEM DETECTED\x1b[0m');
+                      term.writeln('Verifying integrity... [OK]');
+                      
+                      const fPath = `/home/ghost/downloads/${target}`;
+                      if (!VFS['/home/ghost/downloads']) VFS['/home/ghost/downloads'] = { type: 'dir', children: [] };
+                      VFS[fPath] = { type: 'file', content: '[BINARY_ELF_X86_64: DOOMSDAY_PROTOCOL_V666]\n(Execute to initiate Global Reset)' };
+                      const dlDir = VFS['/home/ghost/downloads'];
+                      if (dlDir.type === 'dir' && !dlDir.children.includes(target)) {
+                          dlDir.children.push(target);
+                      }
                   } else {
                       term.clear();
                       term.writeln(`Download complete. File saved to /home/ghost/downloads/${target}`);
