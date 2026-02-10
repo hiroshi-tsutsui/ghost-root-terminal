@@ -194,8 +194,34 @@ const WebTerminal = () => {
 
           if (result.action === 'crack_sim' && result.data) {
              const { target, user, success, password, mode, hash } = result.data;
-             const duration = (mode === 'hydra' || mode === 'hashcat') ? 6000 : 3000;
+             const duration = (mode === 'hydra' || mode === 'hashcat' || mode === 'aircrack') ? 6000 : 3000;
              const startTime = Date.now();
+             
+             if (mode === 'aircrack') {
+                 isTopModeRef.current = true;
+                 term.clear();
+                 term.write('\x1b[?25l'); // Hide cursor
+                 
+                 while (isTopModeRef.current && Date.now() - startTime < duration) {
+                     term.write('\x1b[H');
+                     term.writeln('                                 Aircrack-ng 1.6');
+                     term.writeln('');
+                     term.writeln(`      [00:00:${Math.floor((Date.now() - startTime)/1000).toString().padStart(2,'0')}] 1337 keys tested (420.69 k/s)`);
+                     term.writeln('');
+                     term.writeln('      Time left: 4 seconds                   Status: Testing');
+                     term.writeln('');
+                     term.writeln('      Key: [ Testing... ]');
+                     
+                     await new Promise(r => setTimeout(r, 100));
+                 }
+                 
+                 isTopModeRef.current = false;
+                 term.write('\x1b[?25h');
+                 term.clear();
+                 term.writeln('\x1b[1;32mKEY FOUND! [ 0xDEADBEEF ]\x1b[0m');
+                 term.writeln('Decrypted phrase: "deadbeef" (hex)');
+                 return;
+             }
              
              if (mode === 'hashcat') {
                  isTopModeRef.current = true;
@@ -787,6 +813,132 @@ const WebTerminal = () => {
              term.writeln('0 packets dropped by kernel');
           }
 
+          if (result.action === 'intercept_sim' && result.data) {
+             const { freq } = result.data;
+             isTopModeRef.current = true;
+             term.clear();
+             term.write('\x1b[?25l'); // Hide cursor
+
+             const targetFreq = parseFloat(freq);
+             const isValid = !isNaN(targetFreq) && Math.abs(targetFreq - 14.2) < 0.1;
+             
+             let buffer: string[] = [];
+             const conversation = [
+                 { user: 'OVERLORD', text: 'Status report.', delay: 1000 },
+                 { user: 'ASSET_9', text: 'Package secured. Moving to exfil point.', delay: 2000 },
+                 { user: 'OVERLORD', text: 'Any resistance?', delay: 1500 },
+                 { user: 'ASSET_9', text: 'Negative. Perimeter was clear.', delay: 2000 },
+                 { user: 'OVERLORD', text: 'Good. The code for the safe house is 7-2-1-9.', delay: 3000 },
+                 { user: 'ASSET_9', text: 'Copy. 7219. Out.', delay: 1000 }
+             ];
+
+             const startTime = Date.now();
+             let msgIndex = 0;
+             let lastMsgTime = 0;
+
+             while (isTopModeRef.current) {
+                 term.write('\x1b[H'); // Home
+                 term.writeln(`\x1b[1;31m[ SIGNAL INTERCEPTOR v2.4 ]\x1b[0m`);
+                 term.writeln(`Target: ${freq} MHz | Encryption: AES-256 (Broken)`);
+                 term.writeln('--------------------------------------------------');
+                 
+                 if (isValid) {
+                     if (msgIndex < conversation.length) {
+                         const msg = conversation[msgIndex];
+                         if (Date.now() - lastMsgTime > msg.delay) {
+                             buffer.push(`\x1b[1;33m[${msg.user}]\x1b[0m: ${msg.text}`);
+                             msgIndex++;
+                             lastMsgTime = Date.now();
+                         }
+                     }
+                 } else {
+                     if (Math.random() > 0.8) {
+                         buffer.push(`\x1b[2m[STATIC] ...${Math.random().toString(36).substring(7)}...\x1b[0m`);
+                     }
+                 }
+
+                 // Keep buffer size limited
+                 if (buffer.length > 15) buffer.shift();
+
+                 for (const line of buffer) {
+                     term.writeln(line);
+                 }
+                 
+                 // Fill rest with blank
+                 for (let i = buffer.length; i < 15; i++) {
+                     term.writeln('');
+                 }
+
+                 term.writeln('--------------------------------------------------');
+                 term.writeln('\x1b[7m Press "q" to stop intercept. \x1b[0m');
+                 
+                 await new Promise(r => setTimeout(r, 100));
+             }
+             
+             isTopModeRef.current = false;
+             term.write('\x1b[?25h');
+             term.clear();
+          }
+
+          if (result.action === 'drone_sim' && result.data) {
+             const { id } = result.data;
+             isTopModeRef.current = true;
+             term.clear();
+             term.write('\x1b[?25l'); // Hide cursor
+
+             const duration = 60000; // 60s
+             const startTime = Date.now();
+             let battery = 100;
+             let alt = 0;
+             
+             while (isTopModeRef.current && Date.now() - startTime < duration) {
+                 term.write('\x1b[H'); // Home
+                 
+                 const timeStr = new Date().toISOString().replace('T', ' ').slice(0, 19);
+                 battery -= 0.1;
+                 if (alt < 50) alt += 2;
+                 
+                 term.writeln(`\x1b[1;36m[DRONE CONTROL LINK] ID: ${id} \x1b[0m  ${timeStr}`);
+                 term.writeln(`BATTERY: ${battery.toFixed(1)}%  ALT: ${alt}m  SPD: 12km/h  SIG: 88%`);
+                 term.writeln('--------------------------------------------------');
+                 
+                 // Render simple ASCII view (First Person View)
+                 const ground = Math.floor(Date.now() / 200) % 3;
+                 if (ground === 0) {
+                     term.writeln('          +           ');
+                     term.writeln('                      ');
+                     term.writeln('      _|_             ');
+                     term.writeln('     /   \\    [BUILDING]');
+                     term.writeln('    |     |           ');
+                 } else if (ground === 1) {
+                     term.writeln('                      ');
+                     term.writeln('          +           ');
+                     term.writeln('      _|_             ');
+                     term.writeln('     /   \\    [BUILDING]');
+                     term.writeln('    |     |           ');
+                 } else {
+                     term.writeln('                      ');
+                     term.writeln('                      ');
+                     term.writeln('          +           ');
+                     term.writeln('      _|_             ');
+                     term.writeln('     /   \\    [BUILDING]');
+                 }
+                 
+                 term.writeln('    |     |           ');
+                 term.writeln('    |_____|           ');
+                 term.writeln('--------------------------------------------------');
+                 term.writeln('[HUD] [REC] [NIGHT_VISION: ON]');
+                 term.writeln('');
+                 term.writeln(`\x1b[7m Press "q" to land and disconnect. \x1b[0m`);
+                 
+                 await new Promise(r => setTimeout(r, 200));
+             }
+             
+             isTopModeRef.current = false;
+             term.write('\x1b[?25h');
+             term.clear();
+          }
+
           if (result.action === 'kernel_panic') {
              term.write('\r\n\x1b[1;31mKERNEL PANIC: CRITICAL PROCESS TERMINATED\x1b[0m');
              term.write('\r\n\x1b[1;31mSystem halted.\x1b[0m');
@@ -1014,6 +1166,136 @@ const WebTerminal = () => {
                      "Bootstrapping 100%: Done"
                  ];
                  
+                 term.writeln(`\x1b[1;35m[Tor] Initializing Daemon...\x1b[0m`);
+                 for (const step of steps) {
+                     if (!isTopModeRef.current) break;
+                     term.writeln(`[NOTICE] ${step}`);
+                     await new Promise(r => setTimeout(r, Math.random() * 800 + 200));
+                 }
+                 
+                 if (isTopModeRef.current) {
+                     term.writeln('');
+                     term.writeln(`\x1b[1;32m[SUCCESS] Connected to Tor Network.\x1b[0m`);
+                     term.writeln(`IP: 127.0.0.1:9050 (Socks5)`);
+                     
+                     // Create lock file
+                     const fPath = '/var/run/tor.pid';
+                     if (!VFS['/var/run']) VFS['/var/run'] = { type: 'dir', children: [] };
+                     VFS[fPath] = { type: 'file', content: '6666' };
+                     const runDir = VFS['/var/run'];
+                     if (runDir.type === 'dir' && !runDir.children.includes('tor.pid')) {
+                         runDir.children.push('tor.pid');
+                     }
+                 }
+                 
+             } else if (mode === 'browse') {
+                 const duration = 2000;
+                 // Loading simulation
+                 term.writeln(`Resolving ${url}...`);
+                 await new Promise(r => setTimeout(r, 1000));
+                 term.writeln(`Connecting to hidden service...`);
+                 await new Promise(r => setTimeout(r, 1000));
+                 
+                 term.clear();
+                 // TUI Browser Interface
+                 const renderBrowser = (content: string[]) => {
+                     term.write('\x1b[H');
+                     term.writeln(`\x1b[1;37;45m TOR BROWSER v11.5.8 \x1b[0m \x1b[1;30;47m ${url.padEnd(40)} \x1b[0m`);
+                     term.writeln('┌──────────────────────────────────────────────────────────────────────────────┐');
+                     content.forEach(line => term.writeln(`│ ${line.padEnd(76)} │`));
+                     for(let i=content.length; i<15; i++) term.writeln(`│ ${''.padEnd(76)} │`);
+                     term.writeln('└──────────────────────────────────────────────────────────────────────────────┘');
+                     term.writeln(' [Q] Quit  [R] Reload');
+                 };
+
+                 let pageContent: string[] = [];
+                 
+                 if (url.includes('silkroad')) {
+                     pageContent = [
+                         "",
+                         "        \x1b[1;31mTHIS HIDDEN SITE HAS BEEN SEIZED\x1b[0m",
+                         "",
+                         "           by the Federal Bureau of Investigation",
+                         "              in conjunction with the DOJ",
+                         "",
+                         "                  ( U S D O J )",
+                         "",
+                         "         Illegal narcotics are prohibited.",
+                         ""
+                     ];
+                 } else if (url.includes('cicada') || url.includes('3301')) {
+                     pageContent = [
+                         "",
+                         "   \x1b[1;32m       .   .\x1b[0m",
+                         "   \x1b[1;32m      / \\ / \\\x1b[0m",
+                         "   \x1b[1;32m     (   Y   )\x1b[0m     WELCOME PILGRIM.",
+                         "   \x1b[1;32m      \\  |  /\x1b[0m",
+                         "   \x1b[1;32m      /  |  \\\x1b[0m      The path lies in the shadow.",
+                         "   \x1b[1;32m     (   |   )\x1b[0m",
+                         "   \x1b[1;32m      \\  |  /\x1b[0m      KEY: 0xCAFEBABE",
+                         "   \x1b[1;32m       ' | '\x1b[0m",
+                         "",
+                         "     To continue, you must decrypt the",
+                         "     evidence file using the key above."
+                     ];
+                 } else if (url.includes('ghost')) {
+                     pageContent = [
+                         "",
+                         "   \x1b[1;34m[ GHOST DROP DEAD DROP ]\x1b[0m",
+                         "",
+                         "   Latest Dumps:",
+                         "   - admin_pass.txt  (0.2 BTC)",
+                         "   - zero_day.c      (5.0 BTC)",
+                         "   - black_site_map  (10 BTC)",
+                         "",
+                         "   \x1b[1;31mStatus: OFFLINE (Maintenance)\x1b[0m"
+                     ];
+                 } else {
+                     pageContent = [
+                         "",
+                         "   \x1b[1;31m404 Not Found\x1b[0m",
+                         "",
+                         "   The onion site you are trying to reach",
+                         "   is unreachable or does not exist.",
+                         ""
+                     ];
+                 }
+
+                 renderBrowser(pageContent);
+
+                 // Wait for exit
+                 while (isTopModeRef.current) {
+                     await new Promise(r => setTimeout(r, 100));
+                 }
+             }
+
+             isTopModeRef.current = false;
+             term.write('\x1b[?25h'); // Show cursor
+             term.clear();
+          }
+
+          if (result.action === 'tor_sim' && result.data) {
+             const { mode, url } = result.data;
+             isTopModeRef.current = true;
+             term.clear();
+             term.write('\x1b[?25l'); // Hide cursor
+
+             if (mode === 'start') {
+                 const steps = [
+                     "Bootstrapping 0%: Starting",
+                     "Bootstrapping 5%: Connecting to directory server",
+                     "Bootstrapping 10%: Finishing handshake with directory server",
+                     "Bootstrapping 15%: Establishing an encrypted directory connection",
+                     "Bootstrapping 20%: Asking for networkstatus consensus",
+                     "Bootstrapping 25%: Loading networkstatus consensus",
+                     "Bootstrapping 40%: Loading authority key certs",
+                     "Bootstrapping 45%: Asking for relay descriptors",
+                     "Bootstrapping 50%: Loading relay descriptors",
+                     "Bootstrapping 80%: Connecting to the Tor network",
+                     "Bootstrapping 90%: Establishing a Tor circuit",
+                     "Bootstrapping 100%: Done"
+                 ];
+                 
                  for (const step of steps) {
                      term.writeln(`[NOTICE] ${step}`);
                      await new Promise(r => setTimeout(r, Math.random() * 500 + 200));
@@ -1120,6 +1402,81 @@ const WebTerminal = () => {
              term.clear();
           }
 
+          if (result.action === 'camsnap_sim' && result.data) {
+             const { id } = result.data;
+             isTopModeRef.current = true;
+             term.clear();
+             term.write('\x1b[?25l'); // Hide cursor
+
+             const duration = 30000; // 30 seconds max
+             const startTime = Date.now();
+             
+             while (isTopModeRef.current && Date.now() - startTime < duration) {
+                 term.write('\x1b[H'); // Home
+                 
+                 const timeStr = new Date().toISOString().replace('T', ' ').slice(0, 19);
+                 const blink = Date.now() % 1000 < 500 ? 'REC' : '   ';
+                 
+                 if (id === '01') { // LOBBY
+                     term.writeln(`\x1b[1;37;41m [CAM_01] LOBBY - ${blink} \x1b[0m  ${timeStr}`);
+                     term.writeln(' __________________________________________________ ');
+                     term.writeln('|  [EXIT]       |    |         |                   |');
+                     term.writeln('|      __       |    |   (O)   |                   |');
+                     term.writeln('|     |  |      |____|____|____|                   |');
+                     term.writeln('|     |__|      /              \\                   |');
+                     term.writeln('|              /    RECEPTION   \\                  |');
+                     term.writeln('|             /__________________\\                 |');
+                     term.writeln('|            |                    |                |');
+                     term.writeln('|            |   [    PC    ]     |      o         |');
+                     term.writeln('|            |____________________|     /|\\        |');
+                     term.writeln('|                                       / \\        |');
+                     term.writeln('|                                                  |');
+                     term.writeln('|__________________________________________________|');
+                     term.writeln('\n[ACTIVITY] Normal. Guard patrol due in 2 mins.');
+                 } else if (id === '02') { // SERVER ROOM
+                     term.writeln(`\x1b[1;37;44m [CAM_02] SERVER_RM - ${blink} \x1b[0m  ${timeStr}`);
+                     term.writeln(' __________________________________________________ ');
+                     term.writeln('| [||||] [||||] | [||||] [||||] | [||||] [||||]    |');
+                     term.writeln('| [....] [....] | [....] [....] | [....] [....]    |');
+                     term.writeln('| [====] [====] | [====] [====] | [====] [====]    |');
+                     term.writeln('|               |               |                  |');
+                     term.writeln('|      __       |               |                  |');
+                     term.writeln('|     /  \\      |               |                  |');
+                     term.writeln('|     \\__/      |               |                  |');
+                     term.writeln('|      ||       |               |                  |');
+                     term.writeln('|     /  \\      |               |                  |');
+                     term.writeln('|               |               |                  |');
+                     term.writeln('|__________________________________________________|');
+                     term.writeln('\n[Temp] 18°C [Humidity] 45% [Status] Secure');
+                 } else if (id === '03') { // BLACK SITE
+                     // Glitch effect
+                     const glitch = Math.random() > 0.9 ? '???' : '   ';
+                     term.writeln(`\x1b[1;37;41m [CAM_03] BLACK_SITE - ${blink} \x1b[0m  ${timeStr} ${glitch}`);
+                     term.writeln(' __________________________________________________ ');
+                     term.writeln('|                                                  |');
+                     term.writeln('|      \x1b[1;31mWARNING: BIOHAZARD DETECTED\x1b[0m                 |');
+                     term.writeln('|                                                  |');
+                     term.writeln('|           (   )            (   )                 |');
+                     term.writeln('|          (     )          (     )                |');
+                     term.writeln('|         (   @   )        (   @   )               |');
+                     term.writeln('|          (     )          (     )                |');
+                     term.writeln('|           (   )            (   )                 |');
+                     term.writeln('|                                                  |');
+                     term.writeln('|      \x1b[1;31m[ SUBJECT 09: ESCAPED ]\x1b[0m                     |');
+                     term.writeln('|                                                  |');
+                     term.writeln('|__________________________________________________|');
+                     term.writeln('\n[ALERT] LOCKDOWN INITIATED. SECTOR 7 SEALED.');
+                 }
+                 
+                 term.writeln('\n\x1b[7m Press "q" to disconnect feed. \x1b[0m');
+                 await new Promise(r => setTimeout(r, 200));
+             }
+             
+             isTopModeRef.current = false;
+             term.write('\x1b[?25h');
+             term.clear();
+          }
+
           if (result.action === 'clear_history') {
              historyRef.current = [];
              historyIndexRef.current = -1;
@@ -1127,6 +1484,91 @@ const WebTerminal = () => {
              if (hFile && hFile.type === 'file') {
                  hFile.content = '';
              }
+          }
+
+          if (result.action === 'call_sim' && result.data) {
+             const { number } = result.data;
+             isTopModeRef.current = true;
+             term.clear();
+             term.write('\x1b[?25l'); // Hide cursor
+
+             const startTime = Date.now();
+             let duration = 8000;
+             let connected = false;
+             
+             // Lore numbers
+             if (number === '555-0199' || number === '867-5309' || number === '1337' || number === '666') {
+                 connected = true;
+                 duration = 15000;
+             }
+             
+             while (isTopModeRef.current && Date.now() - startTime < duration) {
+                 term.write('\x1b[H');
+                 const elapsed = Date.now() - startTime;
+                 
+                 // Dialing Animation
+                 if (!connected && elapsed < 4000) {
+                     const dots = '.'.repeat(Math.floor(elapsed / 500) % 4);
+                     term.writeln(`\x1b[1;36m[PHONE] Dialing ${number}${dots}\x1b[0m`);
+                     term.writeln('');
+                     term.writeln('  __________  ');
+                     term.writeln(' |          | ');
+                     term.writeln(' |  CALLING | ');
+                     term.writeln(' |          | ');
+                     term.writeln(' |__________| ');
+                 } else if (!connected && elapsed >= 4000) {
+                     // Connect or Fail
+                     if (number === '555-0199' || number === '867-5309' || number === '1337' || number === '666') {
+                         connected = true;
+                     } else {
+                         term.writeln(`\x1b[1;31m[PHONE] Connection Failed.\x1b[0m`);
+                         term.writeln('Subscriber not available.');
+                         await new Promise(r => setTimeout(r, 2000));
+                         break;
+                     }
+                 } else if (connected) {
+                     // In Call UI
+                     const callTime = Math.floor((elapsed - 4000) / 1000);
+                     const mins = Math.floor(callTime / 60).toString().padStart(2, '0');
+                     const secs = (callTime % 60).toString().padStart(2, '0');
+                     
+                     term.writeln(`\x1b[1;32m[PHONE] Connected (${mins}:${secs})\x1b[0m`);
+                     term.writeln('');
+                     term.writeln('  __________  ');
+                     term.writeln(' |  ACTIVE  | ');
+                     
+                     // Voice Waveform
+                     let wave = '';
+                     for (let i = 0; i < 10; i++) {
+                         const v = Math.random();
+                         wave += v > 0.5 ? '|' : '.';
+                     }
+                     term.writeln(` | [${wave}] | `);
+                     term.writeln(' |__________| ');
+                     
+                     term.writeln('');
+                     if (number === '555-0199') {
+                         term.writeln('Voice: "The package is delivered."');
+                     } else if (number === '867-5309') {
+                         term.writeln('Voice: "Jenny? Who is this?"');
+                     } else if (number === '1337') {
+                         term.writeln('Voice: "Welcome to the elite."');
+                     } else if (number === '666') {
+                         term.writeln('Voice: "I see you."');
+                     } else {
+                         term.writeln('Voice: (Heavy breathing)');
+                     }
+                 }
+                 
+                 term.writeln('');
+                 term.writeln('\x1b[7m Press "q" to hang up. \x1b[0m');
+                 await new Promise(r => setTimeout(r, 200));
+             }
+             
+             isTopModeRef.current = false;
+             term.write('\x1b[?25h');
+             term.clear();
+             term.writeln('[PHONE] Call Ended.');
           }
 
           if (result.output) {

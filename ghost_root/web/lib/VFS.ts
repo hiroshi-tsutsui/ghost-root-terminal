@@ -101,7 +101,19 @@ KEY_ID: GHOST_PROTOCOL_INIT_V2
   },
   '/home/ghost': {
     type: 'dir',
-    children: ['secrets', '.bash_history', 'wifi_note.txt', 'journal', 'evidence.jpg', 'tools.zip']
+    children: ['secrets', '.bash_history', 'wifi_note.txt', 'journal', 'evidence.jpg', 'tools.zip', 'capture.cap', 'drone_manual.txt', 'hashes.txt', 'wordlist.txt']
+  },
+  '/home/ghost/hashes.txt': {
+    type: 'file',
+    content: '5f4dcc3b5aa765d61d8327deb882cf99\n098f6bcd4621d373cade4e832627b4f6'
+  },
+  '/home/ghost/wordlist.txt': {
+    type: 'file',
+    content: 'password\n123456\nadmin\nghost\nspectre'
+  },
+  '/home/ghost/drone_manual.txt': {
+    type: 'file',
+    content: 'RAVEN-X DRONE OPERATING MANUAL\n\n1. CONNECT\n   Use "drone connect <id>" to establish uplink.\n   Default ID: DR-01\n\n2. CONTROLS\n   (Automated flight path in simulation mode)\n\n3. TROUBLESHOOTING\n   If signal is lost, check battery levels.\n   WARNING: Do not fly near the Black Site (Sector 7). Anti-air defenses active.'
   },
   '/home/ghost/tools.zip': {
     type: 'file',
@@ -110,6 +122,10 @@ KEY_ID: GHOST_PROTOCOL_INIT_V2
   '/home/ghost/evidence.jpg': {
     type: 'file',
     content: 'ÿØÿà\x00\x10JFIF\x00\x01\x01\x01\x00H\x00H\x00\x00ÿá\x00\x16Exif\x00\x00MM\x00*\x00\x00\x00\x08\x00\x01\x01\x12\x00\x03\x00\x01\x00\x00\x00\x01\x00\x00\x00\x00ÿÛ\x00C\x00\x08\x06\x06\x07\x06\x05\x08\x07\x07\x07\t\t\x08\n\x0C\x14\r\x0C\x0B\x0B\x0C\x19\x12\x13\x0F\x14\x1D\x1A\x1F\x1E\x1D\x1A\x1C\x1C $.\' ",#\x1C\x1C(7),01444\x1F\'9=82<.342ÿÛ\x00C\x01\t\t\t\x0C\x0B\x0C\x18\r\r\x182!\x1C!22222222222222222222222222222222222222222222222222ÿÀ\x00\x11\x08\x00d\x00d\x03\x01\x22\x00\x02\x11\x01\x03\x11\x01ÿÄ\x00\x1F\x00\x00\x01\x05\x01\x01\x01\x01\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x01\x02\x03\x04\x05\x06\x07\x08\t\n\x0BÿÄ\x00\xB5\x10\x00\x02\x01\x03\x03\x02\x04\x03\x05\x05\x04\x04\x00\x00\x01}\x01\x02\x03\x00\x04\x11\x05\x12!1A\x06\x13Qa\x07"q\x142\x81\x91¡\x08#B±Á\x15RÑð$3br\x82\t\n\x16\x17\x18\x19\x1A%&\'()*456789:CDEFGHIJSTUVWXYZcdefghijstuvwxyz\x83\x84\x85\x86\x87\x88\x89\x8A\x92\x93\x94\x95\x96\x97\x98\x99\x9A\xA2\xA3\xA4\xA5\xA6\xA7\xA8\xA9\xAA\xB2\xB3\xB4\xB5\xB6\xB7\xB8\xB9\xBA\xC2\xC3\xC4\xC5\xC6\xC7\xC8\xC9\xCA\xD2\xD3\xD4\xD5\xD6\xD7\xD8\xD9\xDA\xE1\xE2\xE3\xE4\xE5\xE6\xE7\xE8\xE9\xEA\xF1\xF2\xF3\xF4\xF5\xF6\xF7\xF8\xF9\xFA[HIDDEN_STEG_DATA:VGhlIHBhc3NwaHJhc2UgaXMgImJsYWNrX3dpZG93Ii4=]'
+  },
+  '/home/ghost/surveillance.jpg': {
+    type: 'file',
+    content: 'ÿØÿà\x00\x10JFIF\x00\x01\x01\x01\x00H\x00H\x00\x00ÿá\x00\x16Exif\x00\x00MM\x00*\x00\x00\x00\x08\x00[METADATA_HEADER]\nMake: Cyberdyne Systems\nModel: T-800 Vision\nDateTime: 2026:02:10 04:20:00\nGPSLatitude: 35.6895 N\nGPSLongitude: 139.6917 E\nArtist: Agent V\nUserComment: Target identified. Access Code: 0451.\n[END_METADATA]\nÿÛ\x00C\x00...'
   },
   '/home/ghost/journal': {
     type: 'dir',
@@ -187,7 +203,7 @@ exit`
   },
   '/etc/hosts': {
       type: 'file',
-      content: '127.0.0.1 localhost\n192.168.1.5 admin-pc\n10.0.0.1 uplink-router'
+      content: '127.0.0.1 localhost\n192.168.1.5 admin-pc\n10.0.0.1 uplink-router\n192.168.1.99 black-site.local'
   },
   '/etc/iptables.rules': {
       type: 'file',
@@ -411,7 +427,11 @@ Oct 23 15:45:00 ghost-root kernel: [ 4000.000000] RADIO: Strong FM interference 
   '/archive/system_backup.tar.gz': {
     type: 'file',
     content: 'Error: File corrupted. CRC mismatch.'
-  }
+  },
+  '/home/ghost/capture.cap': {
+    type: 'file',
+    content: '[PCAP_HEADER_LE: a1b2c3d4 0002 0004 0000 0000 ffff 0000]\n[PACKET: IV=1234 KEYID=0 DATA=Encrypted]\n[PACKET: IV=1235 KEYID=0 DATA=Encrypted]\n[HANDSHAKE: 00:C0:CA:AD:88:99 -> DE:AD:BE:EF:CA:FE]'
+  },
 };
 
 export default VFS;

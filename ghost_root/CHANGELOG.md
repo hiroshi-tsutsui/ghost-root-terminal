@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## [Released] - 2026-02-10 (Vision Update)
+### Added
+- Implemented `gobuster` command (Directory brute-forcing simulation).
+- Added `gobuster` to `COMMANDS` list.
+
+### Fixed
+- Fixed duplicate `hashcat` logic in `Shell.ts`.
+
 ### Added
 - Implemented `tor` command (TUI Browser, Hidden Services, Fake Marketplace).
 - Implemented `sqlmap` command (SQL Injection Simulator).

@@ -4,12 +4,7 @@ Long-term memory for Natasha.
 
 ## Protocols
 - **[EVOLUTION LOOP]**: High-frequency heartbeat (1-minute cron). Tasks: 1. Check Sub-agents. 2. Check Batch Jobs. 3. Update Memory. 4. Report to User.
-- **[AVENGERS PROTOCOL]**: Autonomous Team Structure.
-    - **Natasha (Lead)**: Main interface, strategy, and orchestration.
-    - **Tony (Architect)**: Project Omega (Math App) Localization & Architecture. (Autopilot: 15m).
-    - **Pepper (Ops)**: Continuous Deployment & Verification. (Watchdog: 5m).
-    - **Hawkeye (Overseer)**: Batch Job Monitoring (YOLO). (Monitor: 10m).
-    - **Vision (Game Lead)**: `ghost_root` (Hacker TUI Game). (Autopilot: 10m).
+- **[AVENGERS PROTOCOL]**: **DISABLED**. (Autonomous Team Structure suspended).
 - **"Go Dark"**: Immediate exit/shutdown command. When James says "go dark", I exit.
 - **Agent Persona**: "Sidekick behind the desk" — evolving into an autonomous Agent (Agent Romanoff).
 - **Restart Protocol**: Read `memory/2026-02-09.md` immediately upon waking.
@@ -26,19 +21,19 @@ Long-term memory for Natasha.
 ## Key Projects
 - **dot-sfty-core-analytics (Following Distance)**:
   - **Status**: Production Optimization.
-  - **Strategy**: Threshold Tuning (Sweep V3 Complete, V4 Launching).
+  - **Strategy**: Threshold Tuning (Sweep V3 Complete, V4 Active).
   - **Winner (V3)**: `sweep_v3_exp_03` (Dist: 15m, Persist: 1.5s).
-  - **Sweep V4**: Fine-tuning Distance (12-18m) and Persistence (1.2-1.8s) on mixed FP/TP datasets.
+  - **Sweep V4**: Active (`sweep-v4-1` series). Massive parallel execution detected. Analyzing 09-48.
   - **Retraining**: Currently BLOCKED by Cloud Batch environment issues (Exit Code 1). Bypassed via local injection for experiments.
 
 - **Project Omega (Math App)**:
-  - **Status**: Live at `https://projectomega-tau.vercel.app` (v2.7.0).
+  - **Status**: Live at `https://projectomega-tau.vercel.app` (v2.7.0). Deployment SUCCESS (Manual Force).
   - **Branding**: "プロジェクト・オメガ" (Project Omega JP).
   - **Modules**: Data, Calculus, Vectors, Trig, Sequences, Quadratic.
   - **Recent Update**: Fully Localized "Calibration Protocol" (Quiz) & Tiers. Fixed `DATA_ARCHIVE` EN text.
 
 - **GHOST_ROOT (Hacker Game)**:
-  - **Status**: Active Development.
+  - **Status**: Active Development. Deployment STALLED (4h ago).
   - **Goal**: Realistic Web TUI (ZSH-like), Red Herrings, Math Puzzles.
   - **Repo**: `ghost_root/`.
   - **Deployment**: `https://ghost-root-terminal.vercel.app`.

@@ -37,7 +37,7 @@ base_job = {
         "volumes": [
           {
             "gcs": {
-              "remotePath": "yolo-gcp/eagle/infer/input/labeled/following_distance_tp_Jan19_Feb5/" # CHANGED: TP Bucket
+              "remotePath": "yolo-gcp/eagle/infer/input/labeled/seino_following_distance_true/"
             },
             "mountPath": "/mnt/disks/input"
           },
@@ -118,8 +118,8 @@ for dist in distances:
             "FRAME_SKIP": 2
         }
         
-        job_name = f"sweep-v4-1-tp-exp-{exp_id:02d}"
-        job_file = f"job_sweep_v4_1_tp_exp_{exp_id:02d}.json"
+        job_name = f"sweep-v4-1-tp-retry-exp-{exp_id:02d}"
+        job_file = f"job_sweep_v4_1_tp_retry_exp_{exp_id:02d}.json"
         
         job = json.loads(json.dumps(base_job))
         job['taskGroups'][0]['taskSpec']['runnables'][0]['environment']['variables']['SWEEP_CONFIG'] = json.dumps(config)

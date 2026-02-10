@@ -12,6 +12,8 @@ const ALIASES: Record<string, string> = {
   'c': 'clear'
 };
 
+const LOADED_MODULES: string[] = [];
+
 interface Process {
   pid: number;
   user: string;
@@ -164,11 +166,11 @@ export interface CommandResult {
   output: string;
   newCwd?: string;
   newPrompt?: string;
-  action?: 'delay' | 'crack_sim' | 'scan_sim' | 'top_sim' | 'kernel_panic' | 'edit_file' | 'wifi_scan_sim' | 'clear_history' | 'matrix_sim' | 'trace_sim' | 'netmap_sim' | 'theme_change' | 'sat_sim' | 'radio_sim' | 'tcpdump_sim' | 'sqlmap_sim' | 'irc_sim' | 'tor_sim';
+  action?: 'delay' | 'crack_sim' | 'scan_sim' | 'top_sim' | 'kernel_panic' | 'edit_file' | 'wifi_scan_sim' | 'clear_history' | 'matrix_sim' | 'trace_sim' | 'netmap_sim' | 'theme_change' | 'sat_sim' | 'radio_sim' | 'tcpdump_sim' | 'sqlmap_sim' | 'irc_sim' | 'tor_sim' | 'camsnap_sim' | 'drone_sim' | 'call_sim' | 'intercept_sim';
   data?: any;
 }
 
-const COMMANDS = ['ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', './', 'iptables'];
+const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod'];
 
 export const tabCompletion = (cwd: string, inputBuffer: string): { matches: string[], completed: string } => {
   const parts = inputBuffer.split(' '); 
@@ -661,6 +663,16 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
         }
         break;
     }
+    case 'intercept': {
+       if (args.length < 1) {
+          output = 'usage: intercept <frequency|channel> [-v]';
+       } else {
+          const freq = args[0];
+          output = `Initializing SIGINT protocol on ${freq}...\n[ENCRYPTED TRANSMISSION DETECTED]`;
+          return { output, newCwd, action: 'intercept_sim', data: { freq } };
+       }
+       break;
+    }
     case 'ls': {
       const flags = args.filter(arg => arg.startsWith('-'));
       const paths = args.filter(arg => !arg.startsWith('-'));
@@ -679,6 +691,11 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
         let items = node.children;
         if (!showHidden) {
           items = items.filter(item => !item.startsWith('.'));
+        }
+        
+        if (LOADED_MODULES.includes('rootkit')) {
+          // Rootkit hides itself and other sensitive files
+          items = items.filter(item => !item.includes('rootkit') && !item.startsWith('ghost_') && !item.includes('spectre') && item !== 'secrets');
         }
         
         if (longFormat) {
@@ -938,10 +955,10 @@ Pipe Utils:
   grep, head, tail, sort, uniq, wc, base64, rev, awk, sed, strings
 
 Network Tools:
-  ssh, ssh-keygen, ping, netstat, nmap, nc, scan, netmap, trace, traceroute, wifi, telnet, curl, nslookup, dig, irc, tcpdump, tor
+  ssh, ssh-keygen, ping, netstat, nmap, nc, scan, netmap, trace, traceroute, wifi, telnet, curl, nslookup, dig, irc, tcpdump, tor, wget, geoip
 
 Security Tools:
-  crack, analyze, decrypt, steghide, hydra, camsnap, whois, sqlmap
+  crack, analyze, decrypt, steghide, hydra, camsnap, whois, sqlmap, binwalk
 
 System Tools:
   ps, kill, top, dmesg, mount, umount, reboot, shutdown, uptime, w, date, systemctl, journal, journalctl, lsof
@@ -965,6 +982,11 @@ Type "man <command>" for more information.`;
           case 'grep': output = 'NAME\n\tgrep - print lines that match patterns...'; break;
           case 'iptables': output = 'NAME\n\tiptables - administration tool for IPv4 packet filtering and NAT\n\nSYNOPSIS\n\tiptables [-L] [-F]\n\nDESCRIPTION\n\tiptables is used to set up, maintain, and inspect the tables of IPv4 packet filter rules in the Linux kernel.\n\nOPTIONS\n\t-L, --list\n\t\tList all rules in the selected chain.\n\t-F, --flush\n\t\tFlush the selected chain (delete all rules).\n\t\tWARNING: This action requires root privileges.'; break;
           case 'tor': output = 'NAME\n\ttor - The Onion Router simulation.\n\nSYNOPSIS\n\ttor <command> [args]\n\nCOMMANDS\n\tstart - Initialize Tor circuit\n\tstatus - Check connection status\n\tlist - List hidden services\n\tbrowse <url> - Connect to .onion site'; break;
+          case 'radio': output = 'NAME\n\tradio - Software Defined Radio (SDR) interface\n\nSYNOPSIS\n\tradio [scan | tune <freq>]\n\nDESCRIPTION\n\tScans for or tunes to radio frequencies. Useful for intercepting analog signals or numbers stations.\n\nEXAMPLES\n\tradio scan\n\tradio tune 89.9'; break;
+          case 'netmap': output = 'NAME\n\tnetmap - Visual Network Mapper\n\nSYNOPSIS\n\tnetmap\n\nDESCRIPTION\n\tLaunches a graphical visualization of the known network topology, showing active nodes and connections.'; break;
+          case 'camsnap': output = 'NAME\n\tcamsnap - CCTV/Webcam Interface\n\nSYNOPSIS\n\tcamsnap [-l] [-c <id> [-p <pass>]]\n\nDESCRIPTION\n\tConnects to unsecured video feeds on the local network.\n\nOPTIONS\n\t-l\tList available feeds\n\t-c <id>\tConnect to feed ID\n\t-p <pass>\tProvide authentication token'; break;
+          case 'hydra': output = 'NAME\n\thydra - Network Logon Cracker\n\nSYNOPSIS\n\thydra -l <user> -P <passlist> <target>\n\nDESCRIPTION\n\tA very fast network logon cracker which supports many different services.'; break;
+          case 'hashcat': output = 'NAME\n\thashcat - Advanced Password Recovery\n\nSYNOPSIS\n\thashcat -m <mode> <hashfile> <wordlist>\n\nDESCRIPTION\n\tWorld\'s fastest password recovery tool.\n\nMODES\n\t0\tMD5\n\t1000\tNTLM\n\t1800\tsha512crypt'; break;
           default: output = `No manual entry for ${page}`;
         }
       }
@@ -1057,9 +1079,16 @@ Type "man <command>" for more information.`;
         } else if (connectIndex !== -1) {
             const id = args[connectIndex + 1];
             const password = passIndex !== -1 ? args[passIndex + 1] : null;
-            if (id === '01') output = `Connecting to CAM_LOBBY... [IMAGE CAPTURED]`;
-            else if (id === '03' && (password === 'SPECTRE_EYE' || password === 'SPECTRE_EVE')) output = `Connecting to CAM_BLACK_SITE... [IMAGE CAPTURED]\nFLAG: GHOST_ROOT{I_SEE_YOU}`;
-            else output = `camsnap: Camera ID ${id} not found or access denied.`;
+            
+            // Check auth for ID 03
+            if (id === '03' && password !== 'SPECTRE_EYE' && password !== 'SPECTRE_EVE') {
+                output = `camsnap: Camera ID ${id} access denied (Auth Required).`;
+            } else if (['01', '02', '03'].includes(id)) {
+                output = `Connecting to CAM_${id === '01' ? 'LOBBY' : id === '02' ? 'SERVER' : 'BLACK_SITE'}...`;
+                return { output, newCwd, action: 'camsnap_sim', data: { id } };
+            } else {
+                output = `camsnap: Camera ID ${id} not found.`;
+            }
         }
       }
       break;
@@ -1270,12 +1299,141 @@ Type "man <command>" for more information.`;
       }
       break;
     }
+    case 'phone':
+    case 'call': {
+       if (args.length < 1) {
+           output = 'usage: phone <number>';
+       } else {
+           const number = args[0];
+           if (number === '911' || number === '110' || number === '999') {
+               output = 'Emergency services are not available in this secure environment.';
+           } else {
+               output = `Dialing ${number}...`;
+               return { output, newCwd, action: 'call_sim', data: { number } };
+           }
+       }
+       break;
+    }
     case 'exit':
         output = 'Logout.';
         break;
     case 'ping': {
-       output = `PING ${args[0]}... timeout`;
-       return { output, newCwd, action: 'delay' };
+       if (args.length < 1) {
+           output = 'usage: ping <host>';
+       } else {
+           const host = args[0];
+           // Lore mapping
+           const hosts: Record<string, string> = {
+               'localhost': '127.0.0.1',
+               '127.0.0.1': '127.0.0.1',
+               'google.com': '8.8.8.8',
+               '8.8.8.8': '8.8.8.8',
+               'black-site.local': '192.168.1.99',
+               '192.168.1.99': '192.168.1.99',
+               'admin-pc': '192.168.1.5',
+               '192.168.1.5': '192.168.1.5',
+               'gateway': '192.168.1.1',
+               '192.168.1.1': '192.168.1.1'
+           };
+           
+           const ip = hosts[host] || (host.match(/^\d+\.\d+\.\d+\.\d+$/) ? host : null);
+           
+           if (ip) {
+               const seqs = [1, 2, 3, 4];
+               output = `PING ${host} (${ip}) 56(84) bytes of data.\n` + 
+                        seqs.map(s => `64 bytes from ${ip}: icmp_seq=${s} ttl=64 time=${(Math.random() * 10 + 2).toFixed(1)} ms`).join('\n') +
+                        `\n\n--- ${host} ping statistics ---\n4 packets transmitted, 4 received, 0% packet loss, time 3005ms`;
+               return { output, newCwd, action: 'delay' };
+           } else {
+               output = `ping: ${host}: Name or service not known`;
+           }
+       }
+       break;
+    }
+    case 'nslookup': {
+       if (args.length < 1) {
+           output = 'usage: nslookup <host>';
+       } else {
+           const host = args[0];
+           const dnsServer = '192.168.1.1';
+           
+           const records: Record<string, string> = {
+               'black-site.local': '192.168.1.99',
+               'ghost-net.local': '10.0.0.1',
+               'admin-pc.local': '192.168.1.5',
+               'towne.local': '192.168.1.10',
+               'google.com': '142.250.196.14',
+               'project-omega.com': '203.0.113.42'
+           };
+           
+           const ip = records[host];
+           
+           output = `Server:\t\t${dnsServer}\nAddress:\t${dnsServer}#53\n\n`;
+           
+           if (ip) {
+               output += `Non-authoritative answer:\nName:\t${host}\nAddress: ${ip}`;
+           } else {
+               output += `** server can't find ${host}: NXDOMAIN`;
+           }
+       }
+       break;
+    }
+    case 'dig': {
+       if (args.length < 1) {
+           output = 'usage: dig <host>';
+       } else {
+           const host = args[0];
+           const records: Record<string, string> = {
+               'black-site.local': '192.168.1.99',
+               'ghost-net.local': '10.0.0.1',
+               'admin-pc.local': '192.168.1.5',
+               'towne.local': '192.168.1.10',
+               'google.com': '142.250.196.14',
+               'project-omega.com': '203.0.113.42'
+           };
+           const ip = records[host];
+           
+           if (ip) {
+               output = `
+; <<>> DiG 9.16.1-Ubuntu <<>> ${host}
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: ${Math.floor(Math.random()*65535)}
+;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 4096
+;; QUESTION SECTION:
+;${host}.			IN	A
+
+;; ANSWER SECTION:
+${host}.		300	IN	A	${ip}
+
+;; Query time: ${Math.floor(Math.random()*50)} msec
+;; SERVER: 192.168.1.1#53(192.168.1.1)
+;; WHEN: ${new Date().toUTCString()}
+;; MSG SIZE  rcvd: 59`;
+           } else {
+               output = `
+; <<>> DiG 9.16.1-Ubuntu <<>> ${host}
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NXDOMAIN, id: ${Math.floor(Math.random()*65535)}
+;; flags: qr rd ra; QUERY: 1, ANSWER: 0, AUTHORITY: 1, ADDITIONAL: 1
+
+;; QUESTION SECTION:
+;${host}.			IN	A
+
+;; AUTHORITY SECTION:
+.			10800	IN	SOA	a.root-servers.net. nstld.verisign-grs.com. 2026021000 1800 900 604800 86400
+
+;; Query time: ${Math.floor(Math.random()*50)} msec
+;; SERVER: 192.168.1.1#53(192.168.1.1)
+;; WHEN: ${new Date().toUTCString()}
+;; MSG SIZE  rcvd: 104`;
+           }
+       }
+       break;
     }
     case 'trace':
     case 'traceroute': {
@@ -1287,8 +1445,48 @@ Type "man <command>" for more information.`;
        return { output, newCwd, action: 'trace_sim', data: { target: args[0] } };
     }
     case 'netstat': {
+       const runDir = '/var/run';
+       if (!VFS[runDir]) VFS[runDir] = { type: 'dir', children: [] };
+       const rdNode = VFS[runDir];
+       // Ensure init if empty (same logic as systemctl)
+       if (rdNode && rdNode.type === 'dir' && rdNode.children.length === 0 && !(rdNode as any).__init) {
+           ['sshd', 'cron', 'networking'].forEach(s => {
+               VFS[`${runDir}/${s}.pid`] = { type: 'file', content: String(Math.floor(Math.random() * 30000)) };
+               rdNode.children.push(`${s}.pid`);
+           });
+           (rdNode as any).__init = true;
+       }
+
+       const activePids = (rdNode && rdNode.type === 'dir') ? rdNode.children
+           .filter(f => f.endsWith('.pid'))
+           .map(f => f.replace('.pid', '')) : [];
+
+       const dynamicConnections = [];
+       
+       if (activePids.includes('sshd')) {
+           dynamicConnections.push({ proto: 'tcp', recv: 0, send: 0, local: '0.0.0.0:22', remote: '0.0.0.0:*', state: 'LISTEN', pid: '404/sshd' });
+       }
+       if (activePids.includes('tor')) {
+           dynamicConnections.push({ proto: 'tcp', recv: 0, send: 0, local: '127.0.0.1:9050', remote: '0.0.0.0:*', state: 'LISTEN', pid: '6666/tor' });
+       }
+       if (activePids.includes('apache2')) {
+           dynamicConnections.push({ proto: 'tcp', recv: 0, send: 0, local: '0.0.0.0:80', remote: '0.0.0.0:*', state: 'LISTEN', pid: '8080/apache2' });
+       }
+       if (activePids.includes('postgresql')) {
+           dynamicConnections.push({ proto: 'tcp', recv: 0, send: 0, local: '127.0.0.1:5432', remote: '0.0.0.0:*', state: 'LISTEN', pid: '5432/postgres' });
+       }
+       
+       // Add some random established connections if networking is up
+       if (activePids.includes('networking')) {
+           dynamicConnections.push({ proto: 'tcp', recv: 0, send: 0, local: '192.168.1.105:22', remote: '192.168.1.5:54322', state: 'ESTABLISHED', pid: '404/sshd' });
+           dynamicConnections.push({ proto: 'tcp', recv: 0, send: 0, local: '192.168.1.105:443', remote: '10.0.0.1:49201', state: 'TIME_WAIT', pid: '-' });
+           if (activePids.includes('tor')) {
+               dynamicConnections.push({ proto: 'tcp', recv: 0, send: 0, local: '127.0.0.1:9050', remote: '127.0.0.1:54321', state: 'ESTABLISHED', pid: '6666/tor' });
+           }
+       }
+
        const header = 'Active Internet connections (servers and established)';
-       const table = CONNECTIONS.map(c => {
+       const table = dynamicConnections.map(c => {
          return `${c.proto}  ${String(c.recv).padStart(6)} ${String(c.send).padStart(6)}  ${c.local.padEnd(20)} ${c.remote.padEnd(20)} ${c.state.padEnd(12)} ${c.pid}`;
        }).join('\n');
        output = `${header}\nProto Recv-Q Send-Q  Local Address        Foreign Address      State        PID/Program name\n${table}`;
@@ -1337,6 +1535,70 @@ Type "man <command>" for more information.`;
         }
       }
       break;
+    }
+    case 'gobuster': {
+       if (args.length < 1) {
+           output = 'usage: gobuster <dir|dns> -u <url> -w <wordlist>';
+       } else {
+           const urlIdx = args.indexOf('-u');
+           const url = urlIdx !== -1 ? args[urlIdx + 1] : null;
+           
+           if (!url) {
+               output = 'gobuster: error: required flag --url not set';
+           } else {
+               if (url.includes('192.168.1.99') || url.includes('black-site')) {
+                   output = `
+===============================================================
+Gobuster v3.1.0
+by OJ Reeves (@TheColonial) & Christian Mehlmauer (@firefart)
+===============================================================
+[+] Url:                     ${url}
+[+] Method:                  GET
+[+] Threads:                 10
+[+] Wordlist:                /usr/share/wordlists/dirb/common.txt
+[+] Status codes:            200,204,301,302,307,401,403
+[+] User Agent:              gobuster/3.1.0
+[+] Timeout:                 10s
+===============================================================
+2026/10/23 15:45:01 Starting gobuster in directory enumeration mode
+===============================================================
+/index.html           (Status: 200) [Size: 162]
+/robots.txt           (Status: 200) [Size: 45]
+/admin                (Status: 301) [Size: 0] [--> /admin/]
+/backup               (Status: 403) [Size: 284]
+/hidden               (Status: 301) [Size: 0] [--> /hidden/]
+/.git                 (Status: 403) [Size: 284]
+===============================================================
+2026/10/23 15:45:05 Finished
+===============================================================
+`;
+                   return { output, newCwd, action: 'scan_sim' };
+               } else if (url.includes('google.com')) {
+                   output = `
+===============================================================
+Gobuster v3.1.0
+===============================================================
+[+] Url:                     ${url}
+...
+/search               (Status: 200)
+/images               (Status: 200)
+/maps                 (Status: 200)
+===============================================================
+`;
+               } else {
+                   output = `
+===============================================================
+Gobuster v3.1.0
+===============================================================
+[+] Url:                     ${url}
+...
+Error: Connection timed out (Is the host up?)
+===============================================================
+`;
+               }
+           }
+       }
+       break;
     }
     case 'scan':
     case 'nmap': {
@@ -1500,15 +1762,51 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
       } else {
         const target = args[0];
         const path = resolvePath(cwd, target);
-        const parentPath = path.substring(0, path.lastIndexOf('/')) || '/';
-        const fileName = path.substring(path.lastIndexOf('/') + 1);
-        const parentNode = getNode(parentPath);
-        if (parentNode && parentNode.type === 'dir') {
-          delete VFS[path];
-          parentNode.children = parentNode.children.filter(c => c !== fileName);
+        const isRoot = !!getNode('/tmp/.root_session');
+
+        // Critical system files check
+        if (['/bin/bash', '/sbin/init', '/vmlinuz', '/boot/vmlinuz'].includes(path) || path === '/') {
+             if (isRoot && (args.includes('-rf') || args.includes('--no-preserve-root'))) {
+                 return { output: 'Deleting critical system file...', newCwd, action: 'kernel_panic' };
+             } else {
+                 output = `rm: cannot remove '${target}': Permission denied`;
+             }
+        } else {
+            const parentPath = path.substring(0, path.lastIndexOf('/')) || '/';
+            const fileName = path.substring(path.lastIndexOf('/') + 1);
+            const parentNode = getNode(parentPath);
+            if (parentNode && parentNode.type === 'dir') {
+              delete VFS[path];
+              parentNode.children = parentNode.children.filter(c => c !== fileName);
+            } else {
+                output = `rm: cannot remove '${target}': No such file or directory`;
+            }
         }
       }
       break;
+    }
+    case 'dd': {
+        const ifArg = args.find(a => a.startsWith('if='));
+        const ofArg = args.find(a => a.startsWith('of='));
+        if (ifArg && ofArg) {
+            const outFile = ofArg.split('=')[1];
+            const outPath = resolvePath(cwd, outFile);
+            
+            if (outPath === '/dev/sda' || outPath === '/dev/hda' || outPath === '/dev/disk0') {
+                 const isRoot = !!getNode('/tmp/.root_session');
+                 if (isRoot) {
+                     output = 'dd: writing to disk...';
+                     return { output, newCwd, action: 'kernel_panic' };
+                 } else {
+                     output = `dd: ${outFile}: Permission denied`;
+                 }
+            } else {
+                output = `1024+0 records in\n1024+0 records out\n524288 bytes (524 kB) copied, 0.001337 s, 392 MB/s`;
+            }
+        } else {
+            output = 'usage: dd if=<source> of=<dest>';
+        }
+        break;
     }
     case 'crack': {
       output = 'Cracking...';
@@ -1520,27 +1818,85 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
     case 'top':
       return { output: '', newCwd, action: 'top_sim' };
     case 'ps': {
+      let procs = [...PROCESSES];
+      if (LOADED_MODULES.includes('rootkit')) {
+          procs = procs.filter(p => p.pid !== 666 && p.pid !== 9999 && !p.command.includes('hydra') && !p.command.includes('spectre'));
+      }
+
       if (args.includes('aux') || args.includes('-aux')) {
           output = 'USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND\n' +
-          PROCESSES.map(p => {
+          procs.map(p => {
               const vsz = Math.floor(Math.random() * 100000);
               const rss = Math.floor(Math.random() * 50000);
               return `${p.user.padEnd(8)} ${String(p.pid).padStart(5)} ${p.cpu.toFixed(1).padStart(4)} ${p.mem.toFixed(1).padStart(4)} ${String(vsz).padStart(6)} ${String(rss).padStart(5)} ${p.tty.padEnd(8)} ${p.stat.padEnd(4)} 14:02   ${p.time.padStart(5)} ${p.command}`;
           }).join('\n');
       } else if (args.includes('-ef') || args.includes('ef')) {
           output = 'UID        PID  PPID  C STIME TTY          TIME CMD\n' +
-          PROCESSES.map(p => {
+          procs.map(p => {
               const ppid = p.pid === 1 ? 0 : 1;
               return `${p.user.padEnd(8)} ${String(p.pid).padStart(5)} ${String(ppid).padStart(5)}  0 14:02 ${p.tty.padEnd(8)} ${p.time.padStart(8)} ${p.command}`;
           }).join('\n');
       } else {
           // Default minimal output
           output = '  PID TTY          TIME CMD\n' +
-          PROCESSES.filter(p => p.tty !== '?').map(p => {
+          procs.filter(p => p.tty !== '?').map(p => {
               return `${String(p.pid).padStart(5)} ${p.tty.padEnd(8)} ${p.time.padStart(8)} ${p.command}`;
           }).join('\n');
       }
       break;
+    }
+    case 'lsmod': {
+      if (LOADED_MODULES.length === 0) {
+          output = 'Module                  Size  Used by';
+      } else {
+          output = 'Module                  Size  Used by\n' + 
+                   LOADED_MODULES.map(m => `${m.padEnd(24)} ${String(Math.floor(Math.random()*10000+4096)).padEnd(6)} 0`).join('\n');
+      }
+      break;
+    }
+    case 'insmod': {
+      if (args.length < 1) {
+          output = 'insmod: usage: insmod <filename>';
+      } else {
+          const fileTarget = args[0];
+          const node = getNode(resolvePath(cwd, fileTarget));
+          
+          if (!node) {
+              output = `insmod: ERROR: could not load module ${fileTarget}: No such file or directory`;
+          } else if (node.type === 'dir') {
+              output = `insmod: ERROR: could not load module ${fileTarget}: Is a directory`;
+          } else {
+              // Check magic signature for .ko
+              if (node.content.startsWith('\x7fELF') || fileTarget.endsWith('.ko')) {
+                  const modName = fileTarget.split('/').pop()?.replace('.ko', '') || 'unknown';
+                  
+                  if (LOADED_MODULES.includes(modName)) {
+                      output = `insmod: ERROR: could not insert module ${fileTarget}: Module already in kernel`;
+                  } else {
+                      LOADED_MODULES.push(modName);
+                      output = ''; // Silent success on Linux usually
+                  }
+              } else {
+                  output = `insmod: ERROR: could not insert module ${fileTarget}: Invalid module format`;
+              }
+          }
+      }
+      break;
+    }
+    case 'rmmod': {
+       if (args.length < 1) {
+           output = 'rmmod: usage: rmmod <modulename>';
+       } else {
+           const modName = args[0];
+           const idx = LOADED_MODULES.indexOf(modName);
+           if (idx !== -1) {
+               LOADED_MODULES.splice(idx, 1);
+               output = ''; // Silent success
+           } else {
+               output = `rmmod: ERROR: Module ${modName} is not currently loaded`;
+           }
+       }
+       break;
     }
     case 'kill': {
       if (args.length < 1) {
@@ -2115,7 +2471,13 @@ The key's randomart image is:
                    output = 'usage: radio tune <freq>';
                } else {
                    const freq = args[1];
-                   output = `Tuning to ${freq} MHz...`;
+                   if (freq === '89.9') {
+                       output = `Tuning to ${freq} MHz...\n[SIGNAL LOCKED]\nBroadcast: "The... crow... flies... at... midnight... Repeat... The... crow... flies..."\n[END TRANSMISSION]`;
+                   } else if (freq === '101.5') {
+                       output = `Tuning to ${freq} MHz...\n[MUSIC] Smooth Jazz playing...`;
+                   } else {
+                       output = `Tuning to ${freq} MHz...\n[STATIC] No signal detected.`;
+                   }
                    return { output, newCwd, action: 'radio_sim', data: { mode: 'tune', freq } };
                }
            } else {
@@ -2125,7 +2487,116 @@ The key's randomart image is:
        break;
     }
     case 'systemctl': {
-       output = 'systemctl...';
+       if (args.length < 1) {
+           output = 'usage: systemctl [command] [unit]';
+       } else {
+           const cmd = args[0];
+           const unit = args[1];
+           
+           const validUnits = ['sshd', 'tor', 'apache2', 'postgresql', 'cron', 'networking', 'bluetooth'];
+           const runDir = '/var/run';
+           if (!VFS[runDir]) VFS[runDir] = { type: 'dir', children: [] };
+           
+           const rd = VFS[runDir];
+           // Initialize default state if not present (mock persistence)
+           if (rd && rd.type === 'dir' && rd.children.length === 0 && !(rd as any).__init) {
+               ['sshd', 'cron', 'networking'].forEach(s => {
+                   VFS[`${runDir}/${s}.pid`] = { type: 'file', content: String(Math.floor(Math.random() * 30000)) };
+                   rd.children.push(`${s}.pid`);
+               });
+               (rd as any).__init = true;
+           }
+
+           if (cmd === 'list-units') {
+               output = 'UNIT           LOAD   ACTIVE SUB     DESCRIPTION\n';
+               validUnits.forEach(u => {
+                   const rdNode = VFS[runDir];
+                   const isRunning = rdNode && rdNode.type === 'dir' && rdNode.children.includes(`${u}.pid`);
+                   const active = isRunning ? 'active' : 'inactive';
+                   const sub = isRunning ? 'running' : 'dead';
+                   output += `${u}.service`.padEnd(16) + `loaded ${active.padEnd(6)} ${sub.padEnd(7)} ${u} service\n`;
+               });
+               output += `\nLOAD   = Reflects whether the unit definition was properly loaded.
+ACTIVE = The high-level unit activation state, i.e. generalization of SUB.
+SUB    = The low-level unit activation state, values depend on unit type.
+
+${validUnits.length} loaded units listed.`;
+           } else if (cmd === 'status') {
+               if (!unit) {
+                   output = 'systemctl: unit name required';
+               } else if (!validUnits.includes(unit)) {
+                   output = `Unit ${unit}.service could not be found.`;
+               } else {
+                   const rdNode = VFS[runDir];
+                   const isRunning = rdNode && rdNode.type === 'dir' && rdNode.children.includes(`${unit}.pid`);
+                   const pidNode = isRunning ? VFS[`${runDir}/${unit}.pid`] : null;
+                   const pid = (pidNode && pidNode.type === 'file') ? pidNode.content : null;
+                   
+                   output = `● ${unit}.service - ${unit} service
+   Loaded: loaded (/lib/systemd/system/${unit}.service; enabled; vendor preset: enabled)
+   Active: ${isRunning ? 'active (running)' : 'inactive (dead)'} since ${new Date(Date.now() - 10000000).toUTCString()}
+     Docs: man:${unit}(8)
+ Main PID: ${pid || '(null)'} (${unit})
+    Tasks: ${isRunning ? 1 : 0} (limit: 4915)
+   Memory: ${isRunning ? '12.4M' : '0B'}
+   CGroup: /system.slice/${unit}.service`;
+               }
+           } else if (cmd === 'start') {
+               if (!unit) {
+                   output = 'systemctl: unit name required';
+               } else if (!validUnits.includes(unit)) {
+                   output = `Failed to start ${unit}.service: Unit ${unit}.service not found.`;
+               } else {
+                   if (unit === 'networking') {
+                       // Do nothing special visual
+                   }
+                   const pidFile = `${unit}.pid`;
+                   const rdNode = VFS[runDir];
+                   if (rdNode && rdNode.type === 'dir' && !rdNode.children.includes(pidFile)) {
+                       const newPid = String(Math.floor(Math.random() * 30000) + 1000);
+                       VFS[`${runDir}/${pidFile}`] = { type: 'file', content: newPid };
+                       rdNode.children.push(pidFile);
+                   }
+                   output = ''; // Silent success
+               }
+           } else if (cmd === 'stop') {
+               if (!unit) {
+                   output = 'systemctl: unit name required';
+               } else if (!validUnits.includes(unit)) {
+                   output = `Failed to stop ${unit}.service: Unit ${unit}.service not found.`;
+               } else {
+                   const pidFile = `${unit}.pid`;
+                   const rdNode = VFS[runDir];
+                   if (rdNode && rdNode.type === 'dir' && rdNode.children.includes(pidFile)) {
+                       delete VFS[`${runDir}/${pidFile}`];
+                       rdNode.children = rdNode.children.filter(c => c !== pidFile);
+                   }
+                   output = ''; // Silent success
+               }
+           } else if (cmd === 'restart') {
+                if (!unit) { output = 'systemctl: unit name required'; }
+                else {
+                    // Stop logic
+                    const pidFile = `${unit}.pid`;
+                    const rdNode = VFS[runDir];
+                    if (validUnits.includes(unit) && rdNode && rdNode.type === 'dir') {
+                        if (rdNode.children.includes(pidFile)) {
+                           delete VFS[`${runDir}/${pidFile}`];
+                           rdNode.children = rdNode.children.filter(c => c !== pidFile);
+                        }
+                        // Start logic
+                        const newPid = String(Math.floor(Math.random() * 30000) + 1000);
+                        VFS[`${runDir}/${pidFile}`] = { type: 'file', content: newPid };
+                        rdNode.children.push(pidFile);
+                        output = '';
+                    } else {
+                        output = `Failed to restart ${unit}.service: Unit not found.`;
+                    }
+                }
+           } else {
+               output = `Unknown command verb ${cmd}.`;
+           }
+       }
        break;
     }
     case 'sed': {
@@ -2340,34 +2811,462 @@ The key's randomart image is:
            output = 'usage: tor <start|status|list|browse <onion_url>>';
        } else {
            const subcmd = args[0];
+           const runDir = getNode('/var/run');
+           const isRunning = runDir && runDir.type === 'dir' && runDir.children.includes('tor.pid');
+
            if (subcmd === 'start') {
-               output = 'Bootstrapping Tor circuit...';
-               return { output, newCwd, action: 'tor_sim', data: { mode: 'start' } };
+               if (isRunning) {
+                   output = 'Tor is already running.';
+               } else {
+                   // Start via systemctl logic equivalent
+                   if (runDir && runDir.type === 'dir') {
+                       VFS['/var/run/tor.pid'] = { type: 'file', content: '6666' };
+                       runDir.children.push('tor.pid');
+                   }
+                   output = 'Bootstrapping Tor circuit...';
+                   return { output, newCwd, action: 'tor_sim', data: { mode: 'start' } };
+               }
            } else if (subcmd === 'status') {
-               // We need persistent state. For now, check VFS or assume running if files exist?
-               // Let's use VFS flag.
-               const runDir = getNode('/var/run');
-               if (runDir && runDir.type === 'dir' && runDir.children.includes('tor.pid')) {
+               if (isRunning) {
                    output = 'Tor is running (PID 6666).\nCircuit established: 3 hops.\nIdentity: Anonymous';
                } else {
                    output = 'Tor is not running.';
                }
            } else if (subcmd === 'list') {
-               output = `[HIDDEN SERVICES DIRECTORY]
+               if (!isRunning) {
+                   output = 'tor: service not running. (Use "tor start" or "systemctl start tor")';
+               } else {
+                   output = `[HIDDEN SERVICES DIRECTORY]
 - silkroad7.onion        (Marketplace) [OFFLINE]
 - dread55.onion          (Forum)       [ONLINE]
 - ghostbox.onion         (Drop)        [ONLINE]
 - cicada3301.onion       (Puzzle)      [UNKNOWN]`;
+               }
            } else if (subcmd === 'browse') {
                if (args.length < 2) {
                    output = 'usage: tor browse <onion_url>';
                } else {
-                   const url = args[1];
-                   output = `Connecting to ${url}...`;
-                   return { output, newCwd, action: 'tor_sim', data: { mode: 'browse', url } };
+                   if (!isRunning) {
+                       output = 'tor: connection failed: Tor service is not active.\n(Hint: Start the service first)';
+                   } else {
+                       const url = args[1];
+                       output = `Connecting to ${url}...`;
+                       return { output, newCwd, action: 'tor_sim', data: { mode: 'browse', url } };
+                   }
                }
            } else {
                output = `tor: unknown command: ${subcmd}`;
+           }
+       }
+       break;
+    }
+    case 'pip': {
+       if (args.length < 2 || args[0] !== 'install') {
+           output = 'usage: pip install <package>';
+       } else {
+           output = `Collecting ${args[1]}...\nDownloading ${args[1]}-1.0.0.tar.gz (1.2 MB)\nInstalling collected packages: ${args[1]}\nSuccessfully installed ${args[1]}-1.0.0`;
+       }
+       break;
+    }
+    case 'python':
+    case 'python3': {
+       if (args.length < 1) {
+           output = 'Python 3.8.10 (default, Mar 15 2022, 12:22:08)\n[GCC 9.4.0] on linux\nType "help", "copyright", "credits" or "license" for more information.\n>>> exit()\n(Interactive mode not supported)';
+       } else {
+           const fileName = args[0];
+           const filePath = resolvePath(cwd, fileName);
+           const node = getNode(filePath);
+           
+           if (!node) {
+               output = `python: can't open file '${fileName}': [Errno 2] No such file or directory`;
+           } else if (node.type === 'dir') {
+               output = `/usr/bin/python3: can't find '__main__' module in '${fileName}'`;
+           } else {
+               // Simple mock interpreter
+               const content = node.content;
+               if (content.includes('import os') || content.includes('system(')) {
+                   output = 'RuntimeError: Restricted environment. System calls disabled.';
+               } else if (content.includes('print("This is a fake exploit.")')) {
+                   output = 'This is a fake exploit.';
+               } else if (fileName === 'exploit.py') {
+                   // Fallback for exploit.py if content changed
+                   output = '[*] Exploit started...\n[+] Target: 127.0.0.1\n[-] VULN NOT FOUND.';
+               } else {
+                   // Try to extract print statements
+                   const printMatch = content.match(/print\s*\(['"](.+?)['"]\)/);
+                   if (printMatch) {
+                       output = printMatch[1];
+                   } else {
+                       output = ''; // No output
+                   }
+               }
+           }
+       }
+       break;
+    }
+    case 'wget': {
+      if (args.length < 1) {
+          output = 'usage: wget <url>';
+      } else {
+          const url = args[0];
+          // Mock download logic
+          if (url.includes('firmware.bin') || url === 'http://192.168.1.99/files/firmware_v2.bin') {
+               output = `--${new Date().toISOString().slice(0,19)}--  ${url}
+Resolving 192.168.1.99... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 4194304 (4.0M) [application/octet-stream]
+Saving to: ‘firmware.bin’
+
+firmware.bin          100%[===================>]   4.00M  11.2MB/s    in 0.4s    
+
+2026-02-10 14:02:55 (11.2 MB/s) - ‘firmware.bin’ saved [4194304/4194304]`;
+               
+               const fName = 'firmware.bin';
+               const fPath = resolvePath(cwd, fName);
+               const parent = getNode(cwd);
+               if (parent && parent.type === 'dir') {
+                   // Create binary-looking content
+                   VFS[fPath] = { type: 'file', content: 'MAGIC_HEADER: 0xDEADBEEF\n[BINARY_DATA_ENCRYPTED_Block1]\n... (4MB of data) ...\nPK_SIM_V1:{_hidden_key:SEKRET_KEY_99}\n[EOF]' };
+                   if (!parent.children.includes(fName)) parent.children.push(fName);
+               }
+          } else if (url.includes('payload')) {
+               output = `Downloading payload... [ERROR] 403 Forbidden`;
+          } else {
+               output = `--${new Date().toISOString().slice(0,19)}--  ${url}
+Resolving host... failed: Name or service not known.
+wget: unable to resolve host address`;
+          }
+      }
+      break;
+    }
+    case 'binwalk': {
+       const extract = args.includes('-e') || args.includes('--extract');
+       const targetFile = args.find(a => !a.startsWith('-'));
+       
+       if (!targetFile) {
+           output = 'binwalk: usage: binwalk [-e] <file>';
+       } else {
+           const fNode = getNode(resolvePath(cwd, targetFile));
+           if (!fNode || fNode.type !== 'file') {
+               output = `binwalk: ${targetFile}: No such file or directory`;
+           } else {
+               output = `DECIMAL       HEXADECIMAL     DESCRIPTION
+--------------------------------------------------------------------------------
+0             0x0             Unified Extensible Firmware Interface (UEFI) PI
+4096          0x1000          Linux kernel ARM boot executable zImage (little-endian)
+24554         0x5FEA          gzip compressed data, maximum compression, from Unix, last modified: 2026-01-15
+88291         0x158E3         Squashfs filesystem, little endian, version 4.0, compression:gzip, size: 102422 bytes`;
+
+               if (fNode.content.includes('PK_SIM_V1')) {
+                    output += `\n1048576       0x100000        Zip archive data, at least v2.0 to extract, compressed size: 412, uncompressed size: 1024, name: _hidden_key`;
+               }
+
+               if (extract) {
+                   if (fNode.content.includes('PK_SIM_V1')) {
+                       output += `\n\n[INFO] Extraction initiated...
+[+] Zip archive data found at 0x100000
+[+] Extracting to '_${targetFile}.extracted/'...
+[+] File '_hidden_key' extracted successfully.`;
+
+                       const extractDir = `_${targetFile}.extracted`;
+                       const extractPath = resolvePath(cwd, extractDir);
+                       const parent = getNode(cwd);
+                       if (parent && parent.type === 'dir') {
+                           VFS[extractPath] = { type: 'dir', children: ['_hidden_key'] };
+                           if (!parent.children.includes(extractDir)) parent.children.push(extractDir);
+                           
+                           VFS[`${extractPath}/_hidden_key`] = { type: 'file', content: 'KEY_PART_3: GHOST_ROOT{F1RMW4R3_R3V3RS3D}' };
+                       }
+                   } else {
+                       output += `\n\n[INFO] Extraction initiated...
+[!] No known file signatures found for extraction.`;
+                   }
+               }
+           }
+       }
+       break;
+    }
+    case 'drone': {
+       if (args.length < 1) {
+           output = 'usage: drone <list|connect|status> [id]';
+       } else {
+           const subcmd = args[0];
+           if (subcmd === 'list') {
+               output = `Available Drones:
+[ID: DR-01]  Model: RAVEN-X   - STATUS: CHARGING
+[ID: DR-02]  Model: PHANTOM-4 - STATUS: ONLINE (Patrol Mode)
+[ID: DR-99]  Model: BLACK-OPS - STATUS: [CLASSIFIED]`;
+           } else if (subcmd === 'connect') {
+               if (args.length < 2) {
+                   output = 'usage: drone connect <id>';
+               } else {
+                   const id = args[1];
+                   if (id === 'DR-02') {
+                       output = 'Connecting to Drone DR-02...';
+                       return { output, newCwd, action: 'drone_sim', data: { id } };
+                   } else if (id === 'DR-99') {
+                       output = 'drone: Connection refused (Encryption Key Required)';
+                   } else {
+                       output = `drone: ${id} not available or offline.`;
+                   }
+               }
+           } else if (subcmd === 'status') {
+               output = 'Drone Interface: STANDBY\nSignal: WEAK\nTelemetry: OFFLINE';
+           } else {
+               output = `drone: unknown subcommand: ${subcmd}`;
+           }
+       }
+       break;
+    }
+    case 'bluetoothctl': {
+       if (args.length === 0) {
+           output = 'bluetoothctl: usage: bluetoothctl <command> [args]\n\nCommands:\n  scan <on/off>   - Start/stop scanning\n  devices         - List available devices\n  pair <mac>      - Pair with device\n  connect <mac>   - Connect to device\n  info <mac>      - Device information';
+       } else {
+           const cmd = args[0];
+           if (cmd === 'scan') {
+               if (args[1] === 'on') {
+                   output = 'Discovery started\n[CHG] Controller 00:1A:7D:DA:71:13 Discovering: yes\n[NEW] Device 44:55:66:77:88:99 Unknown\n[NEW] Device A1:B2:C3:D4:E5:F6 J_Phone_13\n[NEW] Device 11:22:33:44:55:66 GHOST_BEACON_V1';
+                   return { output, newCwd, action: 'delay' };
+               } else {
+                   output = 'Discovery stopped\n[CHG] Controller 00:1A:7D:DA:71:13 Discovering: no';
+               }
+           } else if (cmd === 'devices') {
+               output = 'Device 44:55:66:77:88:99 Unknown\nDevice A1:B2:C3:D4:E5:F6 J_Phone_13\nDevice 11:22:33:44:55:66 GHOST_BEACON_V1';
+           } else if (cmd === 'pair') {
+               const mac = args[1];
+               if (mac === '11:22:33:44:55:66') {
+                   output = `Attempting to pair with ${mac}...\n[CHG] Device ${mac} Connected: yes\n[CHG] Device ${mac} Paired: yes\nPairing successful.`;
+                   return { output, newCwd, action: 'delay' };
+               } else if (mac) {
+                   output = `Attempting to pair with ${mac}...\nFailed to pair: org.bluez.Error.AuthenticationFailed`;
+                   return { output, newCwd, action: 'delay' };
+               } else {
+                   output = 'Usage: bluetoothctl pair <mac_address>';
+               }
+           } else if (cmd === 'connect') {
+               const mac = args[1];
+               if (mac === '11:22:33:44:55:66') {
+                   output = `Attempting to connect to ${mac}...\nConnection successful.\n[NEW] Service 00001101-0000-1000-8000-00805f9b34fb Serial Port\n\nDevice sent message: "SEKRET_KEY_BT: 0xBLU3T00TH_GH0ST"`;
+                   return { output, newCwd, action: 'delay' };
+               } else {
+                   output = `Failed to connect: org.bluez.Error.Failed`;
+               }
+           } else if (cmd === 'info') {
+               const mac = args[1];
+               if (mac === '11:22:33:44:55:66') {
+                   output = `Device ${mac} (public)\n\tName: GHOST_BEACON_V1\n\tAlias: GHOST_BEACON_V1\n\tPaired: yes\n\tTrusted: yes\n\tBlocked: no\n\tConnected: no\n\tLegacyPairing: no\n\tUUID: Serial Port             (00001101-0000-1000-8000-00805f9b34fb)`;
+               } else {
+                   output = `Device ${mac} not found`;
+               }
+           } else {
+               output = `bluetoothctl: invalid command: ${cmd}`;
+           }
+       }
+       break;
+    }
+    case 'exiftool': {
+        if (args.length < 1) {
+            output = 'usage: exiftool <file>';
+        } else {
+            const target = args[0];
+            const node = getNode(resolvePath(cwd, target));
+            if (!node) {
+                output = `exiftool: ${target}: No such file`;
+            } else if (node.type === 'dir') {
+                output = `exiftool: ${target}: Is a directory`;
+            } else {
+                const content = node.content;
+                // Check for Metadata Header in our mock format
+                const match = content.match(/\[METADATA_HEADER\]([\s\S]*?)\[END_METADATA\]/);
+                
+                if (match) {
+                    const metadata = match[1].trim().split('\n');
+                    output = `ExifTool Version Number         : 12.00\nFile Name                       : ${target}\nFile Size                       : ${content.length} bytes\nFile Permissions                : rw-r--r--\n` + 
+                             metadata.map(line => {
+                                 const [key, val] = line.split(':');
+                                 if (!val) return line;
+                                 return `${key.trim().padEnd(32)}: ${val.trim()}`;
+                             }).join('\n');
+                } else if (target === 'evidence.jpg' || content.startsWith('ÿØÿà')) {
+                    output = `ExifTool Version Number         : 12.00
+File Name                       : ${target}
+File Size                       : ${content.length} bytes
+File Type                       : JPEG
+MIME Type                       : image/jpeg
+JFIF Version                    : 1.01
+Resolution Unit                 : inches
+X Resolution                    : 72
+Y Resolution                    : 72
+Image Width                     : 640
+Image Height                    : 480
+Encoding Process                : Baseline DCT, Huffman coding
+Bits Per Sample                 : 8
+Color Components                : 3
+Y Cb Cr Sub Sampling            : YCbCr4:2:0 (2 2)
+Comment                         : [HIDDEN_STEG_DATA_DETECTED]`;
+                } else {
+                    output = `ExifTool Version Number         : 12.00
+File Name                       : ${target}
+File Size                       : ${content.length} bytes
+Error                           : Unknown file type`;
+                }
+            }
+        }
+        break;
+    }
+    case 'aircrack-ng': {
+       if (args.length < 1) {
+           output = 'usage: aircrack-ng [options] <.cap file>';
+       } else {
+           const fileTarget = args.find(a => !a.startsWith('-'));
+           const wordlistArg = args.indexOf('-w');
+           const wordlist = wordlistArg !== -1 ? args[wordlistArg + 1] : null;
+           
+           if (fileTarget) {
+               const node = getNode(resolvePath(cwd, fileTarget));
+               if (!node || node.type !== 'file') {
+                   output = `aircrack-ng: ${fileTarget}: No such file`;
+               } else {
+                   // Check signature (mock)
+                   if (node.content.includes('HANDSHAKE') || fileTarget.endsWith('.cap')) {
+                       if (wordlist) {
+                           output = `Opening ${fileTarget}...\nReading wordlist ${wordlist}...`;
+                           return { 
+                               output, 
+                               newCwd, 
+                               action: 'crack_sim', 
+                               data: { 
+                                   mode: 'aircrack', 
+                                   target: fileTarget, 
+                                   success: true // Always success for demo if correct file
+                               } 
+                           };
+                       } else {
+                           output = 'aircrack-ng: Please specify a dictionary (wordlist) with -w';
+                       }
+                   } else {
+                       output = `aircrack-ng: ${fileTarget}: Invalid pcap format (no handshake found)`;
+                   }
+               }
+           } else {
+               output = 'aircrack-ng: No capture file specified';
+           }
+       }
+       break;
+    }
+    case 'geoip': {
+        if (args.length < 1) {
+            output = 'usage: geoip <ip_address>';
+        } else {
+            const ip = args[0];
+            const locations: Record<string, any> = {
+                '192.168.1.99': { country: 'Unknown', city: 'Classified', lat: '??.????', lon: '??.????', isp: 'Satellite Uplink' },
+                '10.66.6.6': { country: 'Russia', city: 'Oymyakon (Siberia)', lat: '63.4641', lon: '142.7737', isp: 'Black Site Node' },
+                '172.16.66.6': { country: 'Russia', city: 'Oymyakon (Siberia)', lat: '63.4641', lon: '142.7737', isp: 'Black Site Link' },
+                '8.8.8.8': { country: 'United States', city: 'Mountain View, CA', lat: '37.4056', lon: '-122.0775', isp: 'Google LLC' },
+                '1.1.1.1': { country: 'United States', city: 'Los Angeles, CA', lat: '34.0522', lon: '-118.2437', isp: 'Cloudflare, Inc.' },
+                '192.168.1.5': { country: 'Local Network', city: 'Admin Office', lat: '0.0000', lon: '0.0000', isp: 'LAN' },
+                '127.0.0.1': { country: 'Localhost', city: 'Home', lat: '0.0000', lon: '0.0000', isp: 'Loopback' }
+            };
+
+            const data = locations[ip];
+            if (data) {
+                output = `
+GeoIP Target: ${ip}
+----------------------------------------
+Country:      ${data.country}
+City:         ${data.city}
+Latitude:     ${data.lat}
+Longitude:    ${data.lon}
+ISP:          ${data.isp}
+----------------------------------------`;
+            } else if (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(ip)) {
+                const parts = ip.split('.');
+                const octet = parseInt(parts[0]);
+                let country = 'United States';
+                let city = 'Unknown';
+                
+                if (octet > 200) { country = 'Russia'; city = 'Moscow'; }
+                else if (octet > 150) { country = 'China'; city = 'Beijing'; }
+                else if (octet > 100) { country = 'Germany'; city = 'Berlin'; }
+                else if (octet > 50) { country = 'United Kingdom'; city = 'London'; }
+                
+                output = `
+GeoIP Target: ${ip}
+----------------------------------------
+Country:      ${country}
+City:         ${city}
+Latitude:     ${(Math.random() * 180 - 90).toFixed(4)}
+Longitude:    ${(Math.random() * 360 - 180).toFixed(4)}
+ISP:          Generic ISP Node
+----------------------------------------`;
+            } else {
+                output = `geoip: ${ip}: Invalid IP address`;
+            }
+        }
+        break;
+    }
+    case 'volatility': {
+       if (args.length < 3) {
+           output = 'usage: volatility -f <dump_file> <plugin>\nPlugins: imageinfo, pslist, cmdline, netscan';
+       } else {
+           const fileIdx = args.indexOf('-f');
+           if (fileIdx === -1 || !args[fileIdx+1]) {
+               output = 'volatility: missing -f argument';
+           } else {
+               const dumpFile = args[fileIdx+1];
+               const plugin = args.find(a => a !== '-f' && a !== dumpFile);
+               
+               const node = getNode(resolvePath(cwd, dumpFile));
+               if (!node || node.type !== 'file') {
+                   output = `volatility: ${dumpFile}: No such file or directory`;
+               } else {
+                   // Check for magic header
+                   if (node.content.startsWith('\x7fELF') || dumpFile.endsWith('.dump') || dumpFile.endsWith('.dmp')) {
+                       if (plugin === 'imageinfo') {
+                           output = `Volatility Foundation Volatility Framework 2.6
+INFO    : volatility.debug    : Determining profile based on KDBG search...
+          Suggested Profile(s) : LinuxGhost5.4x64, LinuxDebian5.4x64
+                     AS Layer1 : LinuxAMD64PagedMemory (Kernel AS)
+                     AS Layer2 : FileAddressSpace (${dumpFile})
+                      PAE type : No PAE
+                           DTB : 0x1a2b3c00L
+                          KDBG : 0xdeadbeefL`;
+                       } else if (plugin === 'pslist') {
+                           output = `Volatility Foundation Volatility Framework 2.6
+Offset             Name                 Pid             PPid            Uid             Gid    DTB                Start Time
+------------------ -------------------- --------------- --------------- --------------- ------ ------------------ ----------
+0xffff8800bd8d8000 systemd              1               0               0               0      0x00000000bd8d8000 2026-10-23 09:00:00 UTC+0000
+0xffff8800bd8d9000 kthreadd             2               0               0               0      0x00000000bd8d9000 2026-10-23 09:00:00 UTC+0000
+0xffff8800bd8da000 sshd                 404             1               0               0      0x00000000bd8da000 2026-10-23 10:00:00 UTC+0000
+0xffff8800bd8db000 bash                 1337            404             1000            1000   0x00000000bd8db000 2026-10-23 11:00:00 UTC+0000
+0xffff8800bd8dc000 nc                   1338            1337            1000            1000   0x00000000bd8dc000 2026-10-23 14:02:00 UTC+0000
+0xffff8800bd8dd000 phantom_process      666             1               0               0      0x00000000bd8dd000 2026-10-23 14:45:00 UTC+0000`;
+                       } else if (plugin === 'cmdline') {
+                           output = `Volatility Foundation Volatility Framework 2.6
+************************************************************************
+pid: 1      Command line : /sbin/init
+************************************************************************
+pid: 404    Command line : /usr/sbin/sshd -D
+************************************************************************
+pid: 1337   Command line : -bash
+************************************************************************
+pid: 666    Command line : ./phantom_process --backdoor --port 45678 --key GHOST_ROOT{M3M0RY_L34K_D3T3CT3D}
+************************************************************************
+pid: 1338   Command line : nc -l -p 1337 -e /bin/bash`;
+                       } else if (plugin === 'netscan') {
+                           output = `Volatility Foundation Volatility Framework 2.6
+Offset             Proto    Local Address                  Foreign Address                State        Pid      Owner
+0xffff880036d07c00 TCP      0.0.0.0:22                     0.0.0.0:0                      LISTEN       404      sshd
+0xffff880036d07c00 TCP      0.0.0.0:45678                  0.0.0.0:0                      LISTEN       666      phantom_process
+0xffff880036d07c00 TCP      127.0.0.1:1337                 0.0.0.0:0                      LISTEN       1338     nc`;
+                       } else {
+                           output = `volatility: unknown plugin '${plugin}'`;
+                       }
+                   } else {
+                       output = `volatility: ${dumpFile}: Not a valid memory dump (ELF header missing)`;
+                   }
+               }
            }
        }
        break;
