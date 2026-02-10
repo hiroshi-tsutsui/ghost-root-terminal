@@ -20,17 +20,15 @@ const VFS: Record<string, VFSNode> = {
   },
   '/root': {
     type: 'dir',
-    children: ['flag.txt']
+    children: ['launch_codes.bin', 'README.txt']
   },
-  '/root/flag.txt': {
+  '/root/launch_codes.bin': {
     type: 'file',
-    content: `CONGRATULATIONS! SYSTEM LIBERATED.
-    
-You have successfully gained root access and exposed the Ghost Protocol.
-The simulation is now complete... or is it?
-
-[END OF SIMULATION v1.0]
-`
+    content: 'TEFVTkNIX0NPREVTX0lOSVRJQVRFRA==' // Base64 for "LAUNCH_CODES_INITIATED"
+  },
+  '/root/README.txt': {
+    type: 'file',
+    content: 'WARNING: DO NOT DECRYPT WITHOUT AUTHORIZATION.\nKEY IS ROTATED DAILY VIA SATELLITE LINK (COSMOS-2542).'
   },
   '/usr': {
     type: 'dir',

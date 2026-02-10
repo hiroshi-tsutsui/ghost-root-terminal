@@ -1349,8 +1349,15 @@ Type "man <command>" for more information.`;
               if (args[1] === 'hunter2') output = `Decrypting...\n${atob(fileNode.content)}`;
               else output = 'Error: Invalid password. (Hint: Check the logs)';
           } else if (filePath.includes('KEYS.enc')) {
-              if (args[1] === 'Spectre' || args[1] === 'spectre') output = `Decrypting...\n${atob(fileNode.content)}`;
-              else output = 'Error: Invalid password. (Hint: Check satellite logs)';
+              if (args[1] === 'Spectre' || args[1] === 'spectre') output = `Decrypting...\n[SUCCESS] DECRYPTED CONTENT:\n\nKEY_ID: COSMOS-2542\nPAYLOAD: LAUNCH_CODE_KEY = "RED_STORM_RISING"`;
+              else output = 'Error: Invalid password. (Hint: The password is the name of the user who owns the key)';
+          } else if (filePath.includes('launch_codes.bin')) {
+              if (args[1] === 'RED_STORM_RISING') {
+                  output = 'Decrypting...\n\n[SUCCESS] LAUNCH CODES CONFIRMED.\nINITIATING SYSTEM LIBERATION...';
+                  return { output, newCwd, action: 'win_sim' };
+              } else {
+                  output = 'Error: Invalid decryption key. (Hint: The key is on the COSMOS satellite)';
+              }
           } else {
               try { output = atob(fileNode.content); } catch (e) { output = 'Error: File not encrypted or corrupted.'; }
           }
@@ -2890,8 +2897,34 @@ ${validUnits.length} loaded units listed.`;
                   output = 'usage: sat download <file_id>';
                } else {
                   if (isLinked) {
-                      output = 'Downloading...';
-                      return { output, newCwd, action: 'sat_sim', data: { target: args[1], mode: 'download' } };
+                      const id = VFS['/var/run/sat_link.pid'].content;
+                      const fileId = args[1];
+                      let success = false;
+
+                      if (id === 'COSM' && fileId === 'KEYS.enc') {
+                           const fPath = resolvePath(cwd, 'KEYS.enc');
+                           VFS[fPath] = { type: 'file', content: 'U29tZSBlbmNyeXB0ZWQgZGF0YS4uLiAoaGV4IGR1bXAp' }; // Dummy content, decrypt checks name
+                           const parent = getNode(cwd);
+                           if (parent && parent.type === 'dir' && !parent.children.includes('KEYS.enc')) {
+                               parent.children.push('KEYS.enc');
+                           }
+                           success = true;
+                      } else if (id === 'OMEG' && fileId === 'launch_codes.bin') {
+                           const fPath = resolvePath(cwd, 'launch_codes.bin');
+                           VFS[fPath] = { type: 'file', content: 'TEFVTkNIX0NPREVTX0lOSVRJQVRFRA==' };
+                           const parent = getNode(cwd);
+                           if (parent && parent.type === 'dir' && !parent.children.includes('launch_codes.bin')) {
+                               parent.children.push('launch_codes.bin');
+                           }
+                           success = true;
+                      }
+
+                      if (success) {
+                          output = 'Downloading...';
+                          return { output, newCwd, action: 'sat_sim', data: { target: args[1], mode: 'download' } };
+                      } else {
+                          output = `sat: file '${fileId}' not found on satellite ${id}.`;
+                      }
                   } else {
                       output = 'sat: not connected.';
                   }

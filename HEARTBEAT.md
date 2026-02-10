@@ -56,7 +56,7 @@
     - [ ] Action: Investigate Batch Image (`batch-custom-image` vs `yolo:latest`).
 - [x] Update Ghost Root: Added `ssh-keygen` and `awk` commands. (Status: DEPLOYED).
     - [x] Verify Project Omega Deployment (Manual Override). (Status: LIVE - Force Deployment Complete).
-    - [x] Monitor Sub-agent: `vision-ghost-root-autopilot`. (Status: COMPLETE - Network Tools + Black Site added).
+    - [x] Monitor Sub-agent: `vision-ghost-root-autopilot`. (Status: COMPLETE - Implemented Narrative Convergence: Win State via Decrypt).
     - [x] Fix Project Omega: Reverted JP title to "Project Omega" & fixed missing module keys. (Status: PUSHED).
     - [x] Update Ghost Root: Added `/archive` + Lore. (Status: DEPLOYED).
     - [x] Update Ghost Root: Added `decrypt` command + `operation_blackout.enc` puzzle. (Status: DEPLOYED).
@@ -118,17 +118,26 @@
 - [x] Analyze Sweep V2 Results (Local Processing). (Status: COMPLETE - See `sweep_v2_analysis.md`).
 - [x] Update Ghost Root: Added `steghide` extraction, `diff`, `tree`, `neofetch`, `weather`. (Status: DEPLOYED).
 - [x] Update Ghost Root: Added `traceroute` command + Black Site hop simulation. (Status: DEPLOYED).
-- [x] Update Ghost Root: Added `sat` command (Satellite Uplink Simulation). (Status: STAGED_PENDING_DEPLOY - Vercel Limit Hit).
-- [x] Update Ghost Root: Added `irc` command + Black Site lore. (Status: STAGED_PENDING_DEPLOY - Vercel Limit Hit).
+- [x] Update Ghost Root: Added `sat` command (Satellite Uplink Simulation). (Status: DEPLOYED - Commit `124d614`).
+- [x] Update Ghost Root: Added `irc` command + Black Site lore. (Status: DEPLOYED - Commit `124d614`).
 - [x] Localize Project Omega (Calibration/Quiz/Tiers) to Japanese. (Status: PUSHED - Commit `aa83657`).
-- [x] Update Ghost Root: Added `tcpdump` and `hydra` commands (Staged). (Status: PENDING_DEPLOY - Vercel Limit Hit).
-- [x] Update Ghost Root: Added `sqlmap` command + simulation. (Status: STAGED_PENDING_DEPLOY - Vercel Limit Hit).
-- [x] Update Ghost Root: Added `tor` command + TUI Browser (Status: STAGED_PENDING_DEPLOY - Vercel Limit Hit).
-- [x] Update Ghost Root: Added `tor` command + TUI Browser (Status: STAGED_PENDING_DEPLOY - Vercel Limit Hit).
-- [x] Update Ghost Root: Added `cicada3301` puzzle + `man tor` (Status: STAGED_PENDING_DEPLOY).
-- [x] Update Ghost Root: Added `nc` (Netcat) with Listen/Connect simulation. (Status: STAGED_PENDING_DEPLOY).
-- [x] Implement `iptables` / `firewall` simulation. (Status: STAGED_PENDING_DEPLOY - Vercel Limit Hit).
-- [x] Monitor Deployment: `project_omega` commit `aa83657`. (Status: LIVE - Manual Force Success).
+- [x] Update Ghost Root: Added `tcpdump` and `hydra` commands. (Status: DEPLOYED - Commit `124d614`).
+- [x] Update Ghost Root: Added `sqlmap` command + simulation. (Status: DEPLOYED - Commit `124d614`).
+- [x] Update Ghost Root: Added `tor` command + TUI Browser (Status: DEPLOYED - Commit `124d614`).
+- [x] Update Ghost Root: Added `cicada3301` puzzle + `man tor` (Status: DEPLOYED - Commit `124d614`).
+- [x] Update Ghost Root: Added `nc` (Netcat) with Listen/Connect simulation. (Status: DEPLOYED - Commit `124d614`).
+- [x] Implement `iptables` / `firewall` simulation. (Status: DEPLOYED - Commit `124d614`).
+- [x] Update Ghost Root: Added `make` command + `Makefile` puzzle. (Status: DEPLOYED - Commit `124d614`).
+- [x] Update Ghost Root: Added `passwd` and `useradd` commands + `/etc/shadow` puzzle. (Status: DEPLOYED).
+- [x] Update Ghost Root: Added `medscan` / `biomon` (ASCII EKG + Neural Interface). (Status: DEPLOYED).
+- [x] Update Ghost Root: Implemented End Game Narrative Chain (Status: DEPLOYED - Commit `e6c25b3`).
+- [x] Update Ghost Root: Consolidated Narrative Chain (logs.tar -> journal -> evidence.jpg -> root). (Status: DEPLOYED).
+- [x] Update Ghost Root: Implemented `win_sim` (System Liberated Screen). (Status: DEPLOYED).
+- [x] Update Ghost Root: Secured `/root` access (Requires `su`). (Status: DEPLOYED).
+- [x] Update Ghost Root: Narrative/Puzzle Convergence (Journal -> Hydra -> Steghide). (Status: DEPLOYED).
+- [x] Update Ghost Root: Added 'launch_codes.bin' via Omega Satellite. (Status: DEPLOYED).
+- [x] Update Ghost Root: Implemented 'sat download' logic + Win State trigger via 'decrypt'. (Status: DEPLOYED).
+- [ ] Monitor Batch Sweep V6 (`sweep-v6-*`).
 - [ ] Investigate Batch Image (`batch-custom-image` vs `yolo:latest`). (Status: PENDING - `env-probe-v1` failed).
   - [x] Action: Inspect local Dockerfile and build process.
   - [ ] Action: Rebuild image with `ultralytics`, `torch`, `torchvision`.
@@ -137,7 +146,11 @@
   - [x] Action: Downloaded available results to `~/Downloads/yolo-gcp/eagle/infer/output/sweep_v4/`.
   - [x] Action: Investigate missing jobs (Confirmed: Running as `sweep-v4-1` series).
   - [x] Action: Download available `sweep-v4-1` results (Experiments 01-10, 12, 14, 18-24 + TP 01-10, 12-24).
-- [ ] Action: Monitor `sweep-v4-1` remaining jobs.
+- [x] Action: Monitor `sweep-v4-1` remaining jobs. (Status: COMPLETE - No active jobs found).
 - [x] Download Harsh Brake Videos (`~/Desktop/harsh_brake/`). (Status: DONE - 377 files).
 - [x] Monitor Threshold Experiment Job (`following-distance-infer-threshold-v1-annotate-fix`) - SUCCEEDED (Verified).
 - [x] Monitor Environment Probe (`env-probe-v1`) - FAILED (Exit Code 1 - Diagnosed: `grep` failed implies `ultralytics`/`torch` missing in `yolo:latest`).
+- [x] Monitor Batch Sweep V5 (`sweep-v5-*`). (Status: COMPLETE - All jobs finished).
+  - [x] Action: Download FP Results.
+  - [x] Action: Download TP Results.
+  - [x] Action: Analyze Results (`exp_06` Winner: 18m / 3.0s / α=0.2).
