@@ -1077,7 +1077,7 @@ Type "man <command>" for more information.`;
                   output = 'Connected to Guest (192.168.2.14). Internet access: Limited.';
               } else if (ssid === 'DE:AD:BE:EF:CA:FE' || ssid === 'Hidden') {
                   if (password === '0xDEADBEEF') {
-                      output = 'Connected to BLACK_SITE_LINK (172.16.66.6). WARNING: TRAFFIC MONITORED.';
+                      output = 'Connected to BLACK_SITE_LINK (172.16.66.6). WARNING: TRAFFIC MONITORED.\n\x1b[1;32m[MISSION UPDATE] Objective Complete: NETWORK LINK ESTABLISHED.\x1b[0m';
                       if (!VFS['/var/run']) VFS['/var/run'] = { type: 'dir', children: [] };
                       if (!VFS['/var/run/net_status']) {
                           VFS['/var/run/net_status'] = { type: 'file', content: 'CONNECTED_BLACK_SITE' };
@@ -1276,7 +1276,7 @@ Type "man <command>" for more information.`;
                  }
              }
              if (hasKey) {
-                 output = `Connecting to ${target}...\n[BLACK SITE TERMINAL]\nWARNING: You are being watched.`;
+                 output = `Connecting to ${target}...\n[BLACK SITE TERMINAL]\nWARNING: You are being watched.\n\x1b[1;32m[MISSION UPDATE] Objective Complete: BLACK SITE INFILTRATED.\x1b[0m`;
                  newCwd = '/remote/black-site/root';
                  if (!getNode('/remote/black-site/root')) {
                      VFS['/remote/black-site'] = { type: 'dir', children: ['root'] };
@@ -1356,17 +1356,17 @@ Type "man <command>" for more information.`;
           if (fileNode.content.includes('BINARY_PAYLOAD') || filePath.endsWith('payload.bin')) {
               if (args[1] === 'spectre') {
                   updateCount();
-                  output = `[SUCCESS] Decryption Complete.\n-----BEGIN RSA PRIVATE KEY-----\nKEY_ID: BLACK_SITE_ACCESS_V1\n-----END RSA PRIVATE KEY-----`;
+                  output = `[SUCCESS] Decryption Complete.\n\x1b[1;32m[MISSION UPDATE] INTEL RECOVERED (1/3)\x1b[0m\n-----BEGIN RSA PRIVATE KEY-----\nKEY_ID: BLACK_SITE_ACCESS_V1\n-----END RSA PRIVATE KEY-----`;
               } else output = 'Error: Invalid password.';
           } else if (filePath.includes('operation_blackout')) {
               if (args[1] === 'red_ledger') {
                   updateCount();
-                  output = `[SUCCESS] Decryption Complete.\n${atob(fileNode.content)}`;
+                  output = `[SUCCESS] Decryption Complete.\n\x1b[1;32m[MISSION UPDATE] INTEL RECOVERED (2/3)\x1b[0m\n${atob(fileNode.content)}`;
               } else output = 'Error: Invalid password.';
           } else if (filePath.includes('entry_02.enc')) {
               if (args[1] === 'hunter2') {
                   updateCount();
-                  output = `[SUCCESS] Decryption Complete.\n${atob(fileNode.content)}`;
+                  output = `[SUCCESS] Decryption Complete.\n\x1b[1;32m[MISSION UPDATE] INTEL RECOVERED (3/3)\x1b[0m\n${atob(fileNode.content)}`;
               } else output = 'Error: Invalid password. (Hint: Check the logs)';
           } else if (filePath.includes('KEYS.enc')) {
               if (args[1] === 'Spectre' || args[1] === 'spectre') {
@@ -1379,7 +1379,7 @@ Type "man <command>" for more information.`;
                       VFS['/var/run/launch_ready'] = { type: 'file', content: 'TRUE' };
                       if (!run.children.includes('launch_ready')) run.children.push('launch_ready');
                   }
-                  output = 'Decrypting...\n\n[SUCCESS] LAUNCH CODES CONFIRMED.\nINITIATING SYSTEM LIBERATION...';
+                  output = 'Decrypting...\n\n[SUCCESS] LAUNCH CODES CONFIRMED.\n\x1b[1;32m[MISSION UPDATE] FINAL OBJECTIVE: SYSTEM LIBERATION READY.\x1b[0m\nINITIATING SYSTEM LIBERATION...';
                   return { output, newCwd, action: 'win_sim' };
               } else {
                   output = 'Error: Invalid decryption key. (Hint: The key is on the COSMOS satellite)';
@@ -1785,7 +1785,8 @@ PORT     STATE    SERVICE
 443/tcp  open     https
 6667/tcp open     irc
 
-Nmap done: 256 IP addresses (3 hosts up) scanned in 4.20 seconds`;
+Nmap done: 256 IP addresses (3 hosts up) scanned in 4.20 seconds
+\x1b[1;32m[MISSION UPDATE] Objective Complete: NETWORK MAPPED.\x1b[0m`;
               return { output, newCwd, action: 'scan_sim' }; // Trigger UI effect
           } else if (target === '192.168.1.99') {
               output = `Starting Nmap 7.91...
@@ -2962,6 +2963,9 @@ ${validUnits.length} loaded units listed.`;
 
                       if (success) {
                           output = 'Downloading...';
+                          if (fileId === 'launch_codes.bin') {
+                              output += '\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PAYLOAD ACQUIRED.\x1b[0m';
+                          }
                           return { output, newCwd, action: 'sat_sim', data: { target: args[1], mode: 'download' } };
                       } else {
                           output = `sat: file '${fileId}' not found on satellite ${id}.`;
@@ -3589,28 +3593,47 @@ Device     Boot Start      End  Sectors Size Id Type
         const hasScan = !!getNode('/var/run/scan_complete');
         const decryptNode = getNode('/var/run/decrypt_count');
         const decryptCount = decryptNode && decryptNode.type === 'file' ? parseInt(decryptNode.content) : 0;
-        const hasLaunchCodes = !!getNode('/var/run/launch_ready');
+        const hasBlackSite = !!getNode('/remote/black-site/root/FLAG.txt');
+        const hasPayload = !!getNode('/home/ghost/launch_codes.bin') || !!getNode('/launch_codes.bin');
+        const hasLaunchReady = !!getNode('/var/run/launch_ready');
 
-        const color = (cond: boolean) => cond ? '\x1b[1;32m[COMPLETE]\x1b[0m' : '\x1b[1;31m[INCOMPLETE]\x1b[0m';
-        const dColor = decryptCount >= 3 ? '\x1b[1;32m' : '\x1b[1;33m';
+        // Logic for Next Directive
+        let nextStep = 'Check manual pages (man) or list files (ls).';
+        if (!hasNet) nextStep = 'Connect to a network. Try "wifi scan".';
+        else if (!hasScan) nextStep = 'Scan the network for targets. Try "nmap" or "netmap".';
+        else if (decryptCount < 1) nextStep = 'Find encrypted files and decrypt them. Check "journal".';
+        else if (!isRoot) nextStep = 'Escalate privileges. You need root access. Check "steghide" or "hydra".';
+        else if (!hasBlackSite) nextStep = 'Infiltrate the Black Site. Use "ssh" with the key you found.';
+        else if (!hasPayload) nextStep = 'Acquire the launch codes. Use "sat" to download from orbit.';
+        else if (!hasLaunchReady) nextStep = 'Decrypt the launch codes to initiate protocol.';
+        else nextStep = 'EXECUTE THE LAUNCH PROTOCOL. RUN THE BINARY.';
+
+        const color = (cond: boolean) => cond ? '\x1b[1;32m[COMPLETE]\x1b[0m' : '\x1b[1;30m[PENDING ]\x1b[0m';
+        const activeColor = (cond: boolean) => cond ? '\x1b[1;32m' : '\x1b[1;30m';
         
+        // Calculate Progress
+        const steps = [hasNet, hasScan, decryptCount > 0, isRoot, hasBlackSite, hasPayload, hasLaunchReady];
+        const progress = Math.round((steps.filter(s => s).length / steps.length) * 100);
+        const barLen = 20;
+        const filled = Math.round((progress / 100) * barLen);
+        const bar = '█'.repeat(filled) + '░'.repeat(barLen - filled);
+
         output = `
-\x1b[1;34m========================================\x1b[0m
-\x1b[1;34m   GHOST_ROOT MISSION STATUS v1.0       \x1b[0m
-\x1b[1;34m========================================\x1b[0m
+\x1b[1;36m╔══════════════════════════════════════════╗
+║   GHOST_ROOT OPERATION TRACKER v2.0      ║
+╚══════════════════════════════════════════╝\x1b[0m
+STATUS: ${progress}% COMPLETE [${bar}]
 
-IDENTITY: ${isRoot ? '\x1b[1;31mROOT (ADMIN)\x1b[0m' : '\x1b[1;32mGHOST (USER)\x1b[0m'}
-LOCATION: ${cwd}
+\x1b[1;33mCURRENT OBJECTIVES:\x1b[0m
+ 1. Establish Network Link (wifi)     ${color(hasNet)}
+ 2. Reconnaissance (scan/nmap)        ${color(hasScan)}
+ 3. Recover Intel (decrypt)           ${color(decryptCount > 0)}
+ 4. Privilege Escalation (root)       ${color(isRoot)}
+ 5. Breach Black Site (ssh)           ${color(hasBlackSite)}
+ 6. Acquire Payload (sat)             ${color(hasPayload)}
+ 7. System Liberation                 ${color(hasLaunchReady)}
 
-\x1b[1;33mOBJECTIVES:\x1b[0m
-1. Establish Network Link (wifi)      ${color(hasNet)}
-2. Locate Black Site Node (scan)      ${color(hasScan)}
-3. Gain Root Access (su/exploit)      ${color(isRoot)}
-4. Decrypt Intel Files (decrypt)      ${dColor}[ ${decryptCount} / 3 ]\x1b[0m
-5. Execute Launch Protocol            ${color(hasLaunchCodes)}
-
-\x1b[1;34m========================================\x1b[0m
-Hint: Type 'help' for available commands.
+\x1b[1;31m>>> NEXT DIRECTIVE: ${nextStep}\x1b[0m
 `;
         break;
     }
