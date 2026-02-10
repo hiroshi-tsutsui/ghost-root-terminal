@@ -112,6 +112,8 @@ const addChild = (parentPath: string, childName: string) => {
 };
 
 const MOUNTED_DEVICES: Record<string, string> = {}; // device -> mountPoint
+const LOADED_MODULES: string[] = [];
+
 
 const tokenize = (cmd: string): string[] => {
   const tokens: string[] = [];
@@ -187,7 +189,7 @@ export interface CommandResult {
   data?: any;
 }
 
-const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status'];
+const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route'];
 
 export interface MissionStatus {
   objectives: {
@@ -420,6 +422,12 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
                       output = `Error: Input file ${inputPath} not found.\nPlease restore from backup if missing.`;
                       return { output, newCwd, action: 'delay' };
                   }
+                  
+                  if (inputNode.type !== 'file') {
+                    output = `Error: ${inputPath} is not a file.`;
+                    return { output, newCwd, action: 'delay' };
+                  }
+
                   // Decode and Grep Logic
                   const raw = inputNode.content;
                   // Base64 decode
@@ -1101,8 +1109,8 @@ ACCEPT     all  --  anywhere             anywhere`;
             } else {
                 output = `Chain INPUT (policy DROP)
 target     prot opt source               destination
-DROP       tcp  --  192.168.1.99         anywhere             tcp dpt:ssh
-DROP       icmp --  192.168.1.99         anywhere
+DROP       tcp  --  10.10.99.1           anywhere             tcp dpt:ssh
+DROP       icmp --  10.10.99.1           anywhere
 ACCEPT     all  --  anywhere             anywhere`;
             }
         } else if (args[0] === '-F' || args[0] === '--flush') {
@@ -1420,6 +1428,7 @@ Type "status" for mission objectives.`;
        } else {
            const source = args[0];
            const target = resolvePath(cwd, args[1]);
+           
            if (source === '/dev/sdb1') {
                MOUNTED_DEVICES[source] = target;
                VFS[`${target}/README.txt`] = { type: 'file', content: 'WARNING: Restricted materials.' };
@@ -1428,6 +1437,17 @@ Type "status" for mission objectives.`;
                addChild(target, 'README.txt');
                addChild(target, 'payload.exe');
                addChild(target, 'key.txt');
+           } else if (source === '/dev/vault') {
+               if (LOADED_MODULES.includes('cryptex')) {
+                   MOUNTED_DEVICES[source] = target;
+                   VFS[`${target}/classified_intel.txt`] = { type: 'file', content: 'TOP SECRET\n\nTarget: OMEGA\nStatus: VULNERABLE\nAccess Point: 10.10.99.1\nProtocol: SSH\nCredentials: [REDACTED]\n(Hint: Check /var/backups/lost+found for a key)' };
+                   VFS[`${target}/mission_09.enc`] = { type: 'file', content: 'U2FsdGVkX19+...' };
+                   addChild(target, 'classified_intel.txt');
+                   addChild(target, 'mission_09.enc');
+                   output = `mount: /dev/vault mounted on ${target}.`;
+               } else {
+                   output = `mount: /dev/vault: unknown filesystem type 'cryptex_fs'`;
+               }
            } else {
                output = `mount: ${source}: special device does not exist`;
            }
@@ -1493,10 +1513,17 @@ Type "status" for mission objectives.`;
             }
         }
 
-        if (target.includes('black-site') || target.includes('192.168.1.99')) {
+        if (target.includes('black-site') || target.includes('192.168.1.99') || target.includes('10.10.99.1')) {
              const firewallFlushed = !!getNode('/var/run/firewall_flushed');
+             const routeAdded = !!getNode('/var/run/route_added');
+             
+             if (!routeAdded) {
+                 output = `ssh: connect to host ${target} port 22: Network is unreachable`;
+                 return { output, newCwd, action: 'delay' };
+             }
+
              if (!firewallFlushed) {
-                 output = `ssh: connect to host ${target} port 22: No route to host\n(Hint: Check firewall rules)`;
+                 output = `ssh: connect to host ${target} port 22: Connection timed out\n(Hint: Check firewall rules)`;
                  return { output, newCwd, action: 'delay' };
              }
 
@@ -1504,7 +1531,7 @@ Type "status" for mission objectives.`;
              if (identityFile) {
                  const keyPath = resolvePath(cwd, identityFile);
                  const keyNode = getNode(keyPath);
-                 if (keyNode && keyNode.type === 'file' && keyNode.content.includes('KEY_ID: BLACK_SITE_ACCESS_V1')) {
+                 if (keyNode && keyNode.type === 'file' && (keyNode.content.includes('KEY_ID: BLACK_SITE_ACCESS_V1') || keyNode.content.includes('KEY_ID: GHOST_PROTOCOL_INIT_V2'))) {
                      hasKey = true;
                  }
              }
@@ -1683,33 +1710,84 @@ Type "status" for mission objectives.`;
     case 'exit':
         output = 'Logout.';
         break;
+    case 'route': {
+        const isRoot = !!getNode('/tmp/.root_session');
+        const routeAdded = !!getNode('/var/run/route_added');
+
+        if (args.length === 0 || args[0] === '-n') {
+            const extraRoute = routeAdded ? '10.10.99.0      192.168.1.1     255.255.255.0   UG    0      0        0 eth0' : '';
+            output = `Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+0.0.0.0         192.168.1.1     0.0.0.0         UG    100    0        0 eth0
+192.168.1.0     0.0.0.0         255.255.255.0   U     100    0        0 eth0
+10.0.0.0        192.168.1.254   255.0.0.0       U     200    0        0 eth0
+${extraRoute}`;
+        } else if (args[0] === 'add') {
+            if (!isRoot) {
+                output = 'route: SIOCADDRT: Operation not permitted';
+            } else {
+                // Parsing logic: looking for "10.10.99.0" (target) and "192.168.1.1" (gw)
+                const commandStr = args.join(' ');
+                if (commandStr.includes('10.10.99.0') && commandStr.includes('192.168.1.1')) {
+                     VFS['/var/run/route_added'] = { type: 'file', content: 'TRUE' };
+                     output = ''; // Silent success
+                } else {
+                     output = 'route: SIOCADDRT: No such device';
+                }
+            }
+        } else if (args[0] === 'del') {
+            if (!isRoot) {
+                output = 'route: SIOCDELRT: Operation not permitted';
+            } else {
+                // Check if deleting the route
+                 const commandStr = args.join(' ');
+                if (commandStr.includes('10.10.99.0')) {
+                     delete VFS['/var/run/route_added'];
+                     output = '';
+                } else {
+                    output = 'route: SIOCDELRT: No such process';
+                }
+            }
+        } else {
+            output = 'usage: route [-n] [add|del] [target] [gw]';
+        }
+        break;
+    }
     case 'ping': {
        if (args.length < 1) {
            output = 'usage: ping <host>';
        } else {
            const host = args[0];
+           const routeAdded = !!getNode('/var/run/route_added');
+           
            // Lore mapping
            const hosts: Record<string, string> = {
                'localhost': '127.0.0.1',
                '127.0.0.1': '127.0.0.1',
                'google.com': '8.8.8.8',
                '8.8.8.8': '8.8.8.8',
-               'black-site.local': '192.168.1.99',
-               '192.168.1.99': '192.168.1.99',
+               'black-site.remote': '10.10.99.1',
+               '10.10.99.1': '10.10.99.1',
                'admin-pc': '192.168.1.5',
                '192.168.1.5': '192.168.1.5',
                'gateway': '192.168.1.1',
                '192.168.1.1': '192.168.1.1'
            };
            
+           // Resolve IP
            const ip = hosts[host] || (host.match(/^\d+\.\d+\.\d+\.\d+$/) ? host : null);
            
            if (ip) {
-               const seqs = [1, 2, 3, 4];
-               output = `PING ${host} (${ip}) 56(84) bytes of data.\n` + 
-                        seqs.map(s => `64 bytes from ${ip}: icmp_seq=${s} ttl=64 time=${(Math.random() * 10 + 2).toFixed(1)} ms`).join('\n') +
-                        `\n\n--- ${host} ping statistics ---\n4 packets transmitted, 4 received, 0% packet loss, time 3005ms`;
-               return { output, newCwd, action: 'delay' };
+               // Route Check for Black Site
+               if (ip === '10.10.99.1' && !routeAdded) {
+                   output = `ping: connect: Network is unreachable`;
+               } else {
+                   const seqs = [1, 2, 3, 4];
+                   output = `PING ${host} (${ip}) 56(84) bytes of data.\n` + 
+                            seqs.map(s => `64 bytes from ${ip}: icmp_seq=${s} ttl=64 time=${(Math.random() * 10 + 2).toFixed(1)} ms`).join('\n') +
+                            `\n\n--- ${host} ping statistics ---\n4 packets transmitted, 4 received, 0% packet loss, time 3005ms`;
+                   return { output, newCwd, action: 'delay' };
+               }
            } else {
                output = `ping: ${host}: Name or service not known`;
            }
@@ -1724,7 +1802,7 @@ Type "status" for mission objectives.`;
            const dnsServer = '192.168.1.1';
            
            const records: Record<string, string> = {
-               'black-site.local': '192.168.1.99',
+               'black-site.remote': '10.10.99.1',
                'ghost-net.local': '10.0.0.1',
                'admin-pc.local': '192.168.1.5',
                'towne.local': '192.168.1.10',

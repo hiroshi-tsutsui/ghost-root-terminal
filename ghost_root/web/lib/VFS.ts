@@ -286,7 +286,15 @@ exit`
   },
   '/etc/hosts': {
       type: 'file',
-      content: '127.0.0.1 localhost\n192.168.1.5 admin-pc\n10.0.0.1 uplink-router\n192.168.1.99 black-site.local'
+      content: '127.0.0.1 localhost\n192.168.1.5 admin-pc\n10.0.0.1 uplink-router\n10.10.99.1 black-site.remote'
+  },
+  '/etc/network': {
+      type: 'dir',
+      children: ['interfaces']
+  },
+  '/etc/network/interfaces': {
+      type: 'file',
+      content: '# The route to the Black Site (10.10.99.0/24) was deleted by the intruder.\n# Gateway is 192.168.1.1.\n# You must restore the route manually.'
   },
   '/etc/iptables.rules': {
       type: 'file',
@@ -295,8 +303,8 @@ exit`
 :INPUT ACCEPT [0:0]
 :FORWARD ACCEPT [0:0]
 :OUTPUT ACCEPT [0:0]
--A INPUT -s 192.168.1.99/32 -p tcp -m tcp --dport 22 -j DROP
--A INPUT -s 192.168.1.99/32 -p icmp -j DROP
+-A INPUT -s 10.10.99.1/32 -p tcp -m tcp --dport 22 -j DROP
+-A INPUT -s 10.10.99.1/32 -p icmp -j DROP
 COMMIT
 # Completed on Oct 23 09:00:00`
   },
@@ -455,17 +463,49 @@ Click here to claim your prize!
     type: 'file',
     content: '[DEVICE: CAMERA_SYSTEM_V2]'
   },
+  '/dev/vault': {
+    type: 'file',
+    content: '[BLOCK DEVICE: CRYPTEX_VAULT_PARTITION]'
+  },
   '/dev/null': {
     type: 'file',
     content: 'GHOST_ROOT{N0THING_IS_TRU3}'
   },
   '/mnt': {
       type: 'dir',
+      children: ['vault']
+  },
+  '/mnt/vault': {
+      type: 'dir',
       children: []
   },
   '/var/lib': {
       type: 'dir',
-      children: ['cams', 'tor']
+      children: ['cams', 'tor', 'modules']
+  },
+  '/lib': {
+      type: 'dir',
+      children: ['modules']
+  },
+  '/lib/modules': {
+      type: 'dir',
+      children: ['5.15.0']
+  },
+  '/lib/modules/5.15.0': {
+      type: 'dir',
+      children: ['kernel']
+  },
+  '/lib/modules/5.15.0/kernel': {
+      type: 'dir',
+      children: ['drivers']
+  },
+  '/lib/modules/5.15.0/kernel/drivers': {
+      type: 'dir',
+      children: ['cryptex.ko']
+  },
+  '/lib/modules/5.15.0/kernel/drivers/cryptex.ko': {
+      type: 'file',
+      content: '\x7fELF\x02\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x3e\x00\x01\x00\x00\x00\x30\x05\x40\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00[MODULE_LICENSE: GPL]\n[MODULE_AUTHOR: Ghost]\n[MODULE_DESCRIPTION: Encrypted Vault Filesystem Driver]\n'
   },
   '/var/lib/tor': {
       type: 'dir',
