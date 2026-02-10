@@ -137,9 +137,14 @@
 - [x] Update Ghost Root: Narrative/Puzzle Convergence (Journal -> Hydra -> Steghide). (Status: DEPLOYED).
 - [x] Update Ghost Root: Added 'launch_codes.bin' via Omega Satellite. (Status: DEPLOYED).
 - [x] Update Ghost Root: Implemented 'sat download' logic + Win State trigger via 'decrypt'. (Status: DEPLOYED).
-- [ ] Monitor Batch Sweep V6 (`sweep-v6-*`).
-- [ ] Investigate Batch Image (`batch-custom-image` vs `yolo:latest`). (Status: PENDING - `env-probe-v1` failed).
-  - [x] Action: Inspect local Dockerfile and build process.
+- [x] Update Ghost Root: Implemented `status` command (Objective Tracker). (Status: DEPLOYED).
+- [x] Update Ghost Root: Implemented "Mission Update" feedback on success. (Status: DEPLOYED).
+- [x] Update Ghost Root: Implemented `status` Command v2.0 (Progress Bar + "Next Directive" Hint). (Status: PUSHED).
+- [x] Update Ghost Root: Added `[MISSION UPDATE]` feedback to 6 core actions. (Status: PUSHED).
+- [x] Update Ghost Root: Implemented Mission Tracker Sidebar (Persistent UI) & enhanced `status`. (Status: DEPLOYED - Commit `74164eb`).
+- [ ] Update Ghost Root: Polish mobile experience & add sound effects for milestones. (In Progress - Sidebar Hidden by Default).
+- [ ] Monitor Batch Sweep V6 (`sweep-v6-*`). (Pending - No active jobs found).
+- [ ] Investigate Batch Image (`batch-custom-image` vs `yolo:latest`). (Pending - Image Rebuild Required).
   - [ ] Action: Rebuild image with `ultralytics`, `torch`, `torchvision`.
 - [x] Monitor Batch Sweep V4 (`sweep-v4-*`). (Status: COMPLETE/MISSING - Jobs cleared from list. Data for 01-08 secured. V4-1 series finished?).
   - [x] Action: Verified `sweep-v4-exp-01` through `08` results.
