@@ -576,6 +576,7 @@ Oct 23 15:30:00 ghost-root systemd[1]: Reloading OpenClaw Agent Service.
 Oct 23 15:30:01 ghost-root openclaw[1337]: Agent "Vision" reporting status: ONLINE.
 Oct 23 15:45:00 ghost-root kernel: [ 4000.000000] RADIO: Strong FM interference detected on 89.9 MHz.
 Oct 23 16:00:00 ghost-root network[500]: BRIDGE_TARGET initiated at 10.10.10.10
+Oct 23 16:20:00 ghost-root kernel: [ 4200.000000] VAULT_NODE: Connection refused from 192.168.1.200 (vault-node.local).
 `
     },
     '/var/log/connections.log': {
@@ -601,6 +602,18 @@ Oct 23 16:00:00 ghost-root network[500]: BRIDGE_TARGET initiated at 10.10.10.10
   '/remote/backup-server/home': {
     type: 'dir',
     children: ['admin_hash.txt']
+  },
+  '/remote/vault-node': {
+    type: 'dir',
+    children: ['root']
+  },
+  '/remote/vault-node/root': {
+    type: 'dir',
+    children: ['VAULT_ACCESS_LOG.txt']
+  },
+  '/remote/vault-node/root/VAULT_ACCESS_LOG.txt': {
+    type: 'file',
+    content: '[SECURE LOG]\nAccess granted to USER: ghost via DNS_OVERRIDE.\nFlag: GHOST_ROOT{DNS_P01S0N_SUCC3SS}'
   },
   '/remote/backup-server/home/admin_hash.txt': {
     type: 'file',

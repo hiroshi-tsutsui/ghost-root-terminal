@@ -330,13 +330,21 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
   }
 
   // 2. Handle Redirection (>)
-  const redirectIndex = commandLine.indexOf('>');
+  let redirectIndex = commandLine.indexOf('>>');
   let redirectFile: string | null = null;
   let cmdToProcess = commandLine;
+  let redirectMode: 'write' | 'append' = 'write';
 
   if (redirectIndex !== -1) {
-    redirectFile = commandLine.substring(redirectIndex + 1).trim();
+    redirectMode = 'append';
+    redirectFile = commandLine.substring(redirectIndex + 2).trim();
     cmdToProcess = commandLine.substring(0, redirectIndex).trim();
+  } else {
+    redirectIndex = commandLine.indexOf('>');
+    if (redirectIndex !== -1) {
+      redirectFile = commandLine.substring(redirectIndex + 1).trim();
+      cmdToProcess = commandLine.substring(0, redirectIndex).trim();
+    }
   }
 
   let parts = tokenize(cmdToProcess);
@@ -368,7 +376,14 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
           const parentNode = getNode(parentPath);
           
           if (parentNode && parentNode.type === 'dir') {
-              VFS[filePath] = { type: 'file', content: out };
+              let newContent = out;
+              if (redirectMode === 'append') {
+                 const existingNode = getNode(filePath);
+                 if (existingNode && existingNode.type === 'file') {
+                     newContent = existingNode.content + '\n' + out;
+                 }
+              }
+              VFS[filePath] = { type: 'file', content: newContent };
               if (!parentNode.children.includes(fileName)) {
                   parentNode.children.push(fileName);
               }
@@ -1492,7 +1507,38 @@ Type "status" for mission objectives.`;
       if (!target) {
         output = 'usage: ssh [-i identity_file] user@host';
       } else {
-        // PERMISSION CHECK LOGIC
+        // Resolve Target Host
+        let userPart = 'root';
+        let hostPart = target;
+        if (target.includes('@')) {
+            const split = target.split('@');
+            userPart = split[0];
+            hostPart = split[1];
+        }
+
+        const hosts: Record<string, string> = {
+            'black-site.remote': '10.10.99.1',
+            '10.10.99.1': '10.10.99.1',
+            'admin-pc': '192.168.1.5',
+            '192.168.1.5': '192.168.1.5',
+            'backup-server': '192.168.1.50',
+            '192.168.1.50': '192.168.1.50'
+        };
+        
+        const etcHosts = getNode('/etc/hosts');
+        if (etcHosts && etcHosts.type === 'file') {
+            const lines = etcHosts.content.split('\n');
+            for (const line of lines) {
+                const parts = line.trim().split(/\s+/);
+                if (parts.length >= 2 && !line.trim().startsWith('#')) {
+                    hosts[parts[1]] = parts[0];
+                }
+            }
+        }
+        
+        const resolvedIP = hosts[hostPart] || hostPart;
+
+        // PERMISSION CHECK LOGIC (Identity File)
         if (identityFile) {
             const keyPath = resolvePath(cwd, identityFile);
             const keyNode = getNode(keyPath);
@@ -1512,17 +1558,17 @@ Type "status" for mission objectives.`;
             }
         }
 
-        if (target.includes('black-site') || target.includes('192.168.1.99') || target.includes('10.10.99.1')) {
+        if (resolvedIP === '10.10.99.1') {
              const firewallFlushed = !!getNode('/var/run/firewall_flushed');
              const routeAdded = !!getNode('/var/run/route_added');
              
              if (!routeAdded) {
-                 output = `ssh: connect to host ${target} port 22: Network is unreachable`;
+                 output = `ssh: connect to host ${hostPart} port 22: Network is unreachable`;
                  return { output, newCwd, action: 'delay' };
              }
 
              if (!firewallFlushed) {
-                 output = `ssh: connect to host ${target} port 22: Connection timed out\n(Hint: Check firewall rules)`;
+                 output = `ssh: connect to host ${hostPart} port 22: Connection timed out\n(Hint: Check firewall rules)`;
                  return { output, newCwd, action: 'delay' };
              }
 
@@ -1535,7 +1581,7 @@ Type "status" for mission objectives.`;
                  }
              }
              if (hasKey) {
-                 output = `Connecting to ${target}...\n[BLACK SITE TERMINAL]\nWARNING: You are being watched.\n\x1b[1;32m[MISSION UPDATE] Objective Complete: BLACK SITE INFILTRATED.\x1b[0m`;
+                 output = `Connecting to ${hostPart}...\n[BLACK SITE TERMINAL]\nWARNING: You are being watched.\n\x1b[1;32m[MISSION UPDATE] Objective Complete: BLACK SITE INFILTRATED.\x1b[0m`;
                  newCwd = '/remote/black-site/root';
                  if (!getNode('/remote/black-site/root')) {
                      VFS['/remote/black-site'] = { type: 'dir', children: ['root'] };
@@ -1544,10 +1590,10 @@ Type "status" for mission objectives.`;
                  }
                  return { output, newCwd, action: 'delay', newPrompt: 'root@black-site#' };
              } else {
-                 output = `Connecting to ${target}...\nPermission denied (publickey).\n(Hint: You need a valid key file.)`;
+                 output = `Connecting to ${hostPart}...\nPermission denied (publickey).\n(Hint: You need a valid key file.)`;
                  return { output, newCwd, action: 'delay' };
              }
-        } else if (target.includes('192.168.1.50') || target.includes('backup-server')) {
+        } else if (resolvedIP === '192.168.1.50') {
              let hasKey = false;
              if (identityFile) {
                  const keyPath = resolvePath(cwd, identityFile);
@@ -1561,14 +1607,18 @@ Type "status" for mission objectives.`;
                  newCwd = '/remote/backup-server/home'; 
                  return { output, newCwd, action: 'delay', newPrompt: 'backup@server:~$ ' };
              } else {
-                 output = `Connecting to ${target}...\nPermission denied (publickey).`;
+                 output = `Connecting to ${hostPart}...\nPermission denied (publickey).`;
                  return { output, newCwd, action: 'delay' };
              }
-        } else if (target.includes('admin-pc')) {
-             output = `Connecting to ${target}...\nPermission denied (publickey).\n(Hint: Try cracking the 'backup' user)`;
+        } else if (resolvedIP === '192.168.1.5') {
+             output = `Connecting to ${hostPart}...\nPermission denied (publickey).\n(Hint: Try cracking the 'backup' user)`;
              return { output, newCwd, action: 'delay' };
+        } else if (resolvedIP === '192.168.1.200') {
+             output = `Connecting to ${hostPart} (${resolvedIP})...\n[VAULT NODE TERMINAL]\nACCESS GRANTED: DNS_OVERRIDE_CONFIRMED.\n\nType 'cat root/VAULT_ACCESS_LOG.txt' to view logs.`;
+             newCwd = '/remote/vault-node';
+             return { output, newCwd, action: 'delay', newPrompt: 'vault@node:~$ ' };
         } else {
-             output = `ssh: connect to host ${target} port 22: Connection timed out`;
+             output = `ssh: connect to host ${hostPart} port 22: Connection timed out`;
              return { output, newCwd, action: 'delay' };
         }
       }
@@ -1772,6 +1822,19 @@ ${extraRoute}`;
                'gateway': '192.168.1.1',
                '192.168.1.1': '192.168.1.1'
            };
+
+           // Dynamic Hosts from /etc/hosts
+           const etcHosts = getNode('/etc/hosts');
+           if (etcHosts && etcHosts.type === 'file') {
+               const lines = etcHosts.content.split('\n');
+               for (const line of lines) {
+                   const parts = line.trim().split(/\s+/);
+                   if (parts.length >= 2 && !line.trim().startsWith('#')) {
+                       // Format: IP Hostname [Aliases]
+                       hosts[parts[1]] = parts[0];
+                   }
+               }
+           }
            
            // Resolve IP
            const ip = hosts[host] || (host.match(/^\d+\.\d+\.\d+\.\d+$/) ? host : null);

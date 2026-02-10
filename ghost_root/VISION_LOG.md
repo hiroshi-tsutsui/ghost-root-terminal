@@ -69,3 +69,11 @@ This file tracks the development cycles of the `ghost_root` project under the ne
 > MECHANICS: Added `lsmod`, `insmod`, `rmmod` logic. Added `/lib/modules/.../cryptex.ko` and `/dev/vault`.
 > LORE: A secure partition (`/dev/vault`) is locked. The kernel module `cryptex.ko` must be loaded to mount it.
 > SOLUTION: `mount /dev/vault /mnt/vault` (fails) -> `find /lib -name *.ko` -> `insmod .../cryptex.ko` -> `mount /dev/vault /mnt/vault` -> `cat /mnt/vault/classified_intel.txt`.
+
+[2026-02-11 05:30]
+> CHANGES: ghost_root/web/lib/Shell.ts, ghost_root/web/lib/VFS.ts
+> PUZZLE ADDED: "The Dead Drop" (DNS Poisoning / Hosts File).
+> MECHANICS: Added `>>` (append) support. Updated `ping` and `ssh` to read `/etc/hosts`.
+> LORE: A secure node (`vault-node.local`) is rejecting connections. The DNS entry is missing, but the IP is in the logs.
+> SOLUTION: `cat /var/log/syslog` (find 192.168.1.200) -> `ping vault-node.local` (fails) -> `echo "192.168.1.200 vault-node.local" >> /etc/hosts` -> `ssh vault-node.local` -> Access Granted.
+
