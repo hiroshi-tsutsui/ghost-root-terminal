@@ -7,6 +7,13 @@ import { processCommand, tabCompletion, getMissionStatus, MissionStatus } from '
 import VFS from '../lib/VFS';
 import '@xterm/xterm/css/xterm.css';
 
+const ObjectiveItem = ({ label, done }: { label: string, done: boolean }) => (
+  <div className={`flex items-center space-x-2 ${done ? 'text-green-400' : 'text-gray-600'}`}>
+    <span>{done ? '[✓]' : '[ ]'}</span>
+    <span className={done ? 'line-through opacity-50' : ''}>{label}</span>
+  </div>
+);
+
 const BOOT_LOGS = [
   "KERNEL: Initializing...",
   "VFS: Mounting root filesystem...",
@@ -65,6 +72,10 @@ const WebTerminal = () => {
   const prevProgressRef = useRef<number | null>(null);
 
   useEffect(() => {
+      setMission(getMissionStatus());
+  }, []);
+
+  useEffect(() => {
     if (mission) {
         // Update Prompt based on Rank
         const rank = mission.rank.toLowerCase();
@@ -75,8 +86,10 @@ const WebTerminal = () => {
             setTimeout(() => playBeep(1100, 'square', 0.3), 150);
             
             const msg = `OBJECTIVE COMPLETE. RANK: ${mission.rank.toUpperCase()}`;
-            setToast({ message: msg, visible: true });
-            setTimeout(() => setToast(t => ({ ...t, visible: false })), 4000);
+            setTimeout(() => {
+                setToast({ message: msg, visible: true });
+                setTimeout(() => setToast(t => ({ ...t, visible: false })), 4000);
+            }, 0);
             
             // Write to terminal for persistence
             if (termRef.current) {
@@ -105,10 +118,6 @@ const WebTerminal = () => {
         cursor: '#00ff00',
       },
     });
-
-    // Initial mission status
-    setMission(getMissionStatus());
-    // (Moved to top-level useEffect)
 
     const fitAddon = new FitAddon();
     term.loadAddon(fitAddon);
@@ -1771,6 +1780,17 @@ const WebTerminal = () => {
           }
 
           if (result.output) {
+            // Detect Mission Updates in output for Toast feedback
+            const cleanOutput = result.output.replace(/\x1b\[[0-9;]*m/g, '');
+            const updateMatch = cleanOutput.match(/\[MISSION UPDATE\] (.*)/);
+            if (updateMatch) {
+                const msg = updateMatch[1].trim();
+                // Avoid duplicate toasts if the useEffect already triggered one (rare race condition, but okay)
+                setToast({ message: msg, visible: true });
+                setTimeout(() => setToast(t => ({ ...t, visible: false })), 4000);
+                playBeep(880, 'square', 0.15);
+            }
+
             term.writeln(result.output.replace(/\n/g, '\r\n'));
           }
           if (result.newCwd) {
@@ -1927,13 +1947,6 @@ const WebTerminal = () => {
   useEffect(() => {
      setTimeout(() => window.dispatchEvent(new Event('resize')), 100);
   }, [mission]);
-
-  const ObjectiveItem = ({ label, done }: { label: string, done: boolean }) => (
-    <div className={`flex items-center space-x-2 ${done ? 'text-green-400' : 'text-gray-600'}`}>
-      <span>{done ? '[✓]' : '[ ]'}</span>
-      <span className={done ? 'line-through opacity-50' : ''}>{label}</span>
-    </div>
-  );
 
   return (
     <div className="flex w-full h-screen bg-black text-green-500 font-mono relative">
