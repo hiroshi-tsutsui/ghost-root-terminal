@@ -9,8 +9,24 @@ const C_RESET = '\x1b[0m';
 const ALIASES: Record<string, string> = {
   'l': 'ls -la',
   'll': 'ls -l',
-  'c': 'clear'
+  'c': 'clear',
+  'check': 'status',
+  'todo': 'status',
+  'objectives': 'status',
+  'mission': 'status',
+  'hint': 'status'
 };
+
+const ENV_VARS: Record<string, string> = {
+  'SHELL': '/bin/bash',
+  'USER': 'ghost',
+  'TERM': 'xterm-256color',
+  'PATH': '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
+  '_': '/usr/bin/env',
+  'GHOST_PROTOCOL': 'ACTIVE'
+};
+
+let ALERT_LEVEL = 0;
 
 const LOADED_MODULES: string[] = [];
 
@@ -170,7 +186,7 @@ export interface CommandResult {
   data?: any;
 }
 
-const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status'];
+const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status'];
 
 export interface MissionStatus {
   objectives: {
@@ -199,24 +215,28 @@ export const getMissionStatus = (): MissionStatus => {
   const hasLaunchReady = !!getNode('/var/run/launch_ready');
 
   let nextStep = 'Check manual pages (man) or list files (ls).';
+  
+  // Logic Flow: Net -> Scan -> Root -> BlackSite -> Payload -> Decrypt Keys -> Launch
   if (!hasNet) nextStep = 'Connect to a network. Try "wifi scan" then "wifi connect".';
   else if (!hasScan) nextStep = 'Scan the network for targets. Try "nmap 192.168.1.0/24" or "netmap".';
-  else if (decryptCount < 3) nextStep = `Find encrypted files and decrypt them (${decryptCount}/3). Check "journal" entries or "ls -R /home".`;
-  else if (!isRoot) nextStep = 'Escalate privileges to root. Try "steghide extract" on images or "hydra" to crack passwords.';
-  else if (!hasBlackSite) nextStep = 'Infiltrate the Black Site. Use "ssh -i <key> root@192.168.1.99".';
+  else if (!isRoot) nextStep = 'Escalate privileges to root. Try "steghide extract" on evidence.jpg (check EXIF data/tor for password) or "hydra".';
+  else if (!hasBlackSite) nextStep = 'Infiltrate the Black Site. Use "ssh -i <key> root@192.168.1.99". Key is hidden in steganography payload.';
   else if (!hasPayload) nextStep = 'Acquire the launch codes. Use "sat connect OMEG" to download from orbit.';
-  else if (!hasLaunchReady) nextStep = 'Decrypt "launch_codes.bin". The key is hidden in the "firmware.bin" (use binwalk) or elsewhere.';
+  else if (decryptCount < 3) nextStep = 'Decrypt "KEYS.enc" (found on Sat COSM). Password is the owner\'s name (check logs).';
+  else if (!hasLaunchReady) nextStep = 'Decrypt "launch_codes.bin" using the key from KEYS.enc.';
   else nextStep = 'EXECUTE THE LAUNCH PROTOCOL. RUN "./launch_codes.bin".';
 
-  const steps = [hasNet, hasScan, decryptCount >= 3, isRoot, hasBlackSite, hasPayload, hasLaunchReady];
+  const steps = [hasNet, hasScan, isRoot, hasBlackSite, hasPayload, decryptCount >= 3, hasLaunchReady];
   const progress = Math.round((steps.filter(s => s).length / steps.length) * 100);
 
   let rank = 'Initiate';
   if (progress >= 100) rank = 'Ghost';
-  else if (progress >= 80) rank = 'Elite';
-  else if (progress >= 60) rank = 'Operator';
-  else if (progress >= 40) rank = 'Hacker';
-  else if (progress >= 20) rank = 'Scout';
+  else if (progress >= 85) rank = 'Elite';
+  else if (progress >= 70) rank = 'Operator';
+  else if (progress >= 50) rank = 'Hacker';
+  else if (progress >= 25) rank = 'Scout';
+
+  const threatLevel = ALERT_LEVEL > 3 ? 'CRITICAL' : ALERT_LEVEL > 1 ? 'ELEVATED' : 'LOW';
 
   return {
     objectives: {
@@ -230,7 +250,7 @@ export const getMissionStatus = (): MissionStatus => {
       hasLaunchReady
     },
     progress,
-    rank,
+    rank: `${rank} (Threat: ${threatLevel})`,
     nextStep
   };
 };
@@ -1048,9 +1068,45 @@ ACCEPT     all  --  anywhere             anywhere`;
        }
        break;
     }
+    case 'export': {
+        if (args.length < 1) {
+            output = 'usage: export VAR=VALUE';
+        } else {
+            const pair = args.join(' ');
+            if (pair.includes('=')) {
+                const [key, val] = pair.split('=');
+                if (key && val) {
+                    ENV_VARS[key.trim()] = val.trim();
+                    output = ''; // Silent
+                } else {
+                    output = 'export: invalid format';
+                }
+            } else {
+                output = 'export: invalid format';
+            }
+        }
+        break;
+    }
+    case 'monitor': {
+        const bar = '='.repeat(ALERT_LEVEL * 4).padEnd(20, ' ');
+        const color = ALERT_LEVEL > 3 ? '\x1b[1;31m' : ALERT_LEVEL > 1 ? '\x1b[1;33m' : '\x1b[1;32m';
+        output = `
+[SYSTEM MONITOR v2.4]
+---------------------
+CPU Usage:    12%
+Mem Usage:    34%
+Net Traffic:  ${Math.floor(Math.random() * 100)} Mbps
+
+[INTRUSION DETECTION SYSTEM]
+Threat Level: ${color}[${bar}] ${ALERT_LEVEL}/5\x1b[0m
+Status:       ${ALERT_LEVEL > 3 ? 'LOCKDOWN IMMINENT' : 'MONITORING'}
+Active Traces: ${ALERT_LEVEL * 2}
+`;
+        break;
+    }
     case 'env':
     case 'printenv':
-       output = 'SHELL=/bin/bash\nUSER=ghost\nPWD=' + cwd + '\nHOME=/home/ghost\nTERM=xterm-256color\nPATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\n_=/usr/bin/env\nGHOST_PROTOCOL=ACTIVE';
+       output = Object.entries(ENV_VARS).map(([k, v]) => `${k}=${v}`).join('\n');
        break;
     case 'history': {
       if (args[0] === '-c') {
@@ -1395,6 +1451,11 @@ Type "status" for mission objectives.`;
       break;
     }
     case 'decrypt': {
+      if (ALERT_LEVEL > 4) {
+          output = '[SYSTEM] SECURITY LOCKDOWN ACTIVE. TERMINAL UNRESPONSIVE.';
+          return { output, newCwd, action: 'kernel_panic' };
+      }
+
       if (args.length < 1) {
         output = 'usage: decrypt <file> [password]';
       } else {
@@ -1424,23 +1485,41 @@ Type "status" for mission objectives.`;
               if (args[1] === 'spectre') {
                   updateCount();
                   output = `[SUCCESS] Decryption Complete.\n\x1b[1;32m[MISSION UPDATE] INTEL RECOVERED (1/3)\x1b[0m\n-----BEGIN RSA PRIVATE KEY-----\nKEY_ID: BLACK_SITE_ACCESS_V1\n-----END RSA PRIVATE KEY-----`;
-              } else output = 'Error: Invalid password.';
+              } else {
+                  ALERT_LEVEL++;
+                  output = `Error: Invalid password. [WARNING: INTRUSION DETECTED. THREAT LEVEL ${ALERT_LEVEL}/5]`;
+              }
           } else if (filePath.includes('operation_blackout')) {
               if (args[1] === 'red_ledger') {
                   updateCount();
                   output = `[SUCCESS] Decryption Complete.\n\x1b[1;32m[MISSION UPDATE] INTEL RECOVERED (2/3)\x1b[0m\n${atob(fileNode.content)}`;
-              } else output = 'Error: Invalid password.';
+              } else {
+                  ALERT_LEVEL++;
+                  output = `Error: Invalid password. [WARNING: INTRUSION DETECTED. THREAT LEVEL ${ALERT_LEVEL}/5]`;
+              }
           } else if (filePath.includes('entry_02.enc')) {
               if (args[1] === 'hunter2') {
                   updateCount();
                   output = `[SUCCESS] Decryption Complete.\n\x1b[1;32m[MISSION UPDATE] INTEL RECOVERED (3/3)\x1b[0m\n${atob(fileNode.content)}`;
-              } else output = 'Error: Invalid password. (Hint: Check the logs)';
+              } else {
+                  ALERT_LEVEL++;
+                  output = 'Error: Invalid password. (Hint: Check the logs)';
+              }
           } else if (filePath.includes('KEYS.enc')) {
               if (args[1] === 'Spectre' || args[1] === 'spectre') {
                   updateCount();
                   output = `Decrypting...\n[SUCCESS] DECRYPTED CONTENT:\n\nKEY_ID: COSMOS-2542\nPAYLOAD: LAUNCH_CODE_KEY = "RED_STORM_RISING"`;
-              } else output = 'Error: Invalid password. (Hint: The password is the name of the user who owns the key)';
+              } else {
+                  ALERT_LEVEL++;
+                  output = 'Error: Invalid password. (Hint: The password is the name of the user who owns the key)';
+              }
           } else if (filePath.includes('launch_codes.bin')) {
+              // ADVERSARIAL LAYER: Requires ENV VAR check
+              if (!ENV_VARS['DECRYPTION_PROTOCOL'] || ENV_VARS['DECRYPTION_PROTOCOL'] !== 'ENABLED') {
+                  output = 'decrypt: ERROR: Decryption Protocol not initialized.\n[HINT] Set environment variable DECRYPTION_PROTOCOL=ENABLED';
+                  return { output, newCwd };
+              }
+
               if (args[1] === 'RED_STORM_RISING') {
                   if (run && run.type === 'dir') {
                       VFS['/var/run/launch_ready'] = { type: 'file', content: 'TRUE' };
@@ -1449,7 +1528,8 @@ Type "status" for mission objectives.`;
                   output = 'Decrypting...\n\n[SUCCESS] LAUNCH CODES CONFIRMED.\n\x1b[1;32m[MISSION UPDATE] FINAL OBJECTIVE: SYSTEM LIBERATION READY.\x1b[0m\nINITIATING SYSTEM LIBERATION...';
                   return { output, newCwd, action: 'win_sim' };
               } else {
-                  output = 'Error: Invalid decryption key. (Hint: The key is on the COSMOS satellite)';
+                  ALERT_LEVEL++;
+                  output = `Error: Invalid decryption key. [WARNING: THREAT LEVEL ${ALERT_LEVEL}/5]`;
               }
           } else {
               try { output = atob(fileNode.content); } catch (e) { output = 'Error: File not encrypted or corrupted.'; }
@@ -3655,7 +3735,7 @@ Device     Boot Start      End  Sectors Size Id Type
        break;
     }
     case 'status': {
-        const { objectives, progress, nextStep } = getMissionStatus();
+        const { objectives, progress, nextStep, rank } = getMissionStatus();
         const { hasNet, hasScan, hasIntel, decryptCount, isRoot, hasBlackSite, hasPayload, hasLaunchReady } = objectives;
 
         const color = (cond: boolean) => cond ? '\x1b[1;32m[COMPLETE]\x1b[0m' : '\x1b[1;30m[PENDING ]\x1b[0m';
@@ -3665,20 +3745,22 @@ Device     Boot Start      End  Sectors Size Id Type
 
         output = `
 \x1b[1;36m╔══════════════════════════════════════════╗
-║   GHOST_ROOT OPERATION TRACKER v2.0      ║
+║   GHOST_ROOT OPERATION TRACKER v2.1      ║
 ╚══════════════════════════════════════════╝\x1b[0m
-STATUS: ${progress}% COMPLETE [${bar}]
+AGENT RANK: ${rank.toUpperCase()}
+PROGRESS:   ${progress}% [${bar}]
 
 \x1b[1;33mCURRENT OBJECTIVES:\x1b[0m
  1. Establish Network Link (wifi)     ${color(hasNet)}
  2. Reconnaissance (scan/nmap)        ${color(hasScan)}
- 3. Recover Intel (decrypt)           ${color(hasIntel)} [${decryptCount}/3]
- 4. Privilege Escalation (root)       ${color(isRoot)}
- 5. Breach Black Site (ssh)           ${color(hasBlackSite)}
- 6. Acquire Payload (sat)             ${color(hasPayload)}
+ 3. Privilege Escalation (root)       ${color(isRoot)}
+ 4. Breach Black Site (ssh)           ${color(hasBlackSite)}
+ 5. Acquire Payload (sat)             ${color(hasPayload)}
+ 6. Recover Intel (decrypt keys)      ${color(decryptCount >= 3)} [${decryptCount}/3]
  7. System Liberation                 ${color(hasLaunchReady)}
 
-\x1b[1;31m>>> NEXT DIRECTIVE: ${nextStep}\x1b[0m
+\x1b[1;31m>>> ACTIVE DIRECTIVE: ${nextStep}\x1b[0m
+\x1b[1;30m(Type 'hint' or 'man <tool>' for assistance)\x1b[0m
 `;
         break;
     }
