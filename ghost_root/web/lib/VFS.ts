@@ -28,7 +28,19 @@ const VFS: Record<string, VFSNode> = {
   },
   '/usr/src': {
     type: 'dir',
-    children: ['exploit.c']
+    children: ['exploit.c', 'Makefile']
+  },
+  '/usr/src/Makefile': {
+    type: 'file',
+    content: `all: exploit
+
+exploit: exploit.c
+	gcc exploit.c -o exploit
+	@echo "Build successful."
+
+clean:
+	rm exploit
+`
   },
   '/usr/src/exploit.c': {
     type: 'file',

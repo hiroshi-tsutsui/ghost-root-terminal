@@ -170,7 +170,7 @@ export interface CommandResult {
   data?: any;
 }
 
-const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod'];
+const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod'];
 
 export const tabCompletion = (cwd: string, inputBuffer: string): { matches: string[], completed: string } => {
   const parts = inputBuffer.split(' '); 
@@ -1535,6 +1535,60 @@ ${host}.		300	IN	A	${ip}
         }
       }
       break;
+    }
+    case 'make': {
+        const makefileNode = getNode(resolvePath(cwd, 'Makefile'));
+        if (!makefileNode || makefileNode.type !== 'file') {
+            output = 'make: *** No targets specified and no makefile found.  Stop.';
+        } else {
+            output = '';
+            const lines = makefileNode.content.split('\n');
+            let targetFound = false;
+            
+            // Simple make simulation: find first target or specified target
+            // and execute commands below it (must be indented)
+            const target = args[0] || 'all';
+            
+            // If target is all and not explicitly defined, grab first target
+            let actualTarget = target;
+            if (target === 'all' && !lines.some(l => l.startsWith('all:'))) {
+                 const first = lines.find(l => /^[a-zA-Z0-9_-]+:/.test(l));
+                 if (first) actualTarget = first.split(':')[0];
+            }
+
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i];
+                if (line.startsWith(actualTarget + ':')) {
+                    targetFound = true;
+                    continue; 
+                }
+                
+                if (targetFound) {
+                    if (line.trim() === '' || line.startsWith('#')) continue;
+                    if (!line.startsWith('\t') && !line.startsWith('    ')) {
+                        break; // End of target block
+                    }
+                    
+                    const cmd = line.trim();
+                    output += cmd + '\n';
+                    
+                    // Dangerous: recursive call to processCommand. 
+                    // To avoid infinite recursion or complexity, we'll manually handle gcc here or call simple logic
+                    // Actually, let's just support 'gcc' inside make for now.
+                    if (cmd.startsWith('gcc')) {
+                         const gccRes = processCommand(cwd, cmd);
+                         if (gccRes.output) output += gccRes.output + '\n';
+                    } else if (cmd.startsWith('echo')) {
+                         output += cmd.substring(5).replace(/"/g, '') + '\n';
+                    }
+                }
+            }
+            
+            if (!targetFound) {
+                 output = `make: *** No rule to make target '${target}'.  Stop.`;
+            }
+        }
+        break;
     }
     case 'gobuster': {
        if (args.length < 1) {
