@@ -3,7 +3,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Terminal } from '@xterm/xterm';
 import { FitAddon } from '@xterm/addon-fit';
-import { processCommand, tabCompletion } from '../lib/Shell';
+import { processCommand, tabCompletion, getMissionStatus, MissionStatus } from '../lib/Shell';
 import VFS from '../lib/VFS';
 import '@xterm/xterm/css/xterm.css';
 
@@ -40,6 +40,7 @@ const WebTerminal = () => {
   const isEditingRef = useRef(false);
   const isTopModeRef = useRef(false);
   const editorStateRef = useRef({ content: '', path: '', buffer: '' });
+  const [mission, setMission] = React.useState<MissionStatus | null>(null);
 
   useEffect(() => {
     if (!terminalContainerRef.current) return;
@@ -55,6 +56,9 @@ const WebTerminal = () => {
         cursor: '#00ff00',
       },
     });
+
+    // Initial mission status
+    setMission(getMissionStatus());
 
     const fitAddon = new FitAddon();
     term.loadAddon(fitAddon);
@@ -186,6 +190,9 @@ const WebTerminal = () => {
 
         if (commandLine) {
           const result = processCommand(cwdRef.current, commandLine);
+          
+          // Update mission status
+          setMission(getMissionStatus());
           
           if (result.action === 'delay') {
              // Simulate delay
@@ -1866,11 +1873,54 @@ const WebTerminal = () => {
     };
   }, []);
 
+  // Re-fit when sidebar toggles
+  useEffect(() => {
+     setTimeout(() => window.dispatchEvent(new Event('resize')), 100);
+  }, [mission]);
+
+  const ObjectiveItem = ({ label, done }: { label: string, done: boolean }) => (
+    <div className={`flex items-center space-x-2 ${done ? 'text-green-400' : 'text-gray-600'}`}>
+      <span>{done ? '[✓]' : '[ ]'}</span>
+      <span className={done ? 'line-through opacity-50' : ''}>{label}</span>
+    </div>
+  );
+
   return (
-    <div 
-      ref={terminalContainerRef} 
-      className="w-full h-screen bg-black"
-    />
+    <div className="flex w-full h-screen bg-black text-green-500 font-mono">
+      <div className="flex-grow h-full" ref={terminalContainerRef} />
+      {mission && (
+        <div className="w-80 border-l border-green-900 p-4 hidden md:flex flex-col overflow-y-auto bg-black bg-opacity-90">
+          <h2 className="text-lg font-bold mb-4 border-b border-green-900 pb-2 tracking-wider text-green-400">MISSION STATUS</h2>
+          
+          <div className="mb-6">
+             <div className="flex justify-between mb-1 text-xs text-green-600">
+               <span>PROGRESS</span>
+               <span>{mission.progress}%</span>
+             </div>
+             <div className="w-full bg-green-900/30 h-1.5 border border-green-900/50">
+               <div className="bg-green-500 h-full transition-all duration-500" style={{ width: `${mission.progress}%` }}></div>
+             </div>
+          </div>
+          
+          <div className="space-y-3 text-xs flex-grow">
+            <ObjectiveItem label="Establish Uplink" done={mission.objectives.hasNet} />
+            <ObjectiveItem label="Network Recon" done={mission.objectives.hasScan} />
+            <ObjectiveItem label={`Recover Intel (${mission.objectives.decryptCount}/3)`} done={mission.objectives.hasIntel} />
+            <ObjectiveItem label="Root Access" done={mission.objectives.isRoot} />
+            <ObjectiveItem label="Breach Black Site" done={mission.objectives.hasBlackSite} />
+            <ObjectiveItem label="Acquire Payload" done={mission.objectives.hasPayload} />
+            <ObjectiveItem label="System Liberation" done={mission.objectives.hasLaunchReady} />
+          </div>
+
+          <div className="mt-auto pt-4 border-t border-green-900/50">
+            <h3 className="font-bold mb-2 text-yellow-600 text-xs tracking-wider">NEXT DIRECTIVE:</h3>
+            <p className="text-xs text-green-300 opacity-90 leading-relaxed blink-cursor">
+              {mission.nextStep}
+            </p>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 

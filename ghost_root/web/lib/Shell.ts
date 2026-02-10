@@ -172,6 +172,60 @@ export interface CommandResult {
 
 const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status'];
 
+export interface MissionStatus {
+  objectives: {
+    hasNet: boolean;
+    hasScan: boolean;
+    hasIntel: boolean;
+    decryptCount: number;
+    isRoot: boolean;
+    hasBlackSite: boolean;
+    hasPayload: boolean;
+    hasLaunchReady: boolean;
+  };
+  progress: number;
+  nextStep: string;
+}
+
+export const getMissionStatus = (): MissionStatus => {
+  const isRoot = !!getNode('/tmp/.root_session');
+  const hasNet = !!getNode('/var/run/net_status');
+  const hasScan = !!getNode('/var/run/scan_complete');
+  const decryptNode = getNode('/var/run/decrypt_count');
+  const decryptCount = decryptNode && decryptNode.type === 'file' ? parseInt(decryptNode.content) : 0;
+  const hasBlackSite = !!getNode('/remote/black-site/root/FLAG.txt');
+  const hasPayload = !!getNode('/home/ghost/launch_codes.bin') || !!getNode('/launch_codes.bin');
+  const hasLaunchReady = !!getNode('/var/run/launch_ready');
+
+  let nextStep = 'Check manual pages (man) or list files (ls).';
+  if (!hasNet) nextStep = 'Connect to a network. Try "wifi scan".';
+  else if (!hasScan) nextStep = 'Scan the network for targets. Try "nmap" or "netmap".';
+  else if (decryptCount < 3) nextStep = `Find encrypted files and decrypt them (${decryptCount}/3). Check "journal".`;
+  else if (!isRoot) nextStep = 'Escalate privileges. You need root access. Check "steghide" or "hydra".';
+  else if (!hasBlackSite) nextStep = 'Infiltrate the Black Site. Use "ssh" with the key you found.';
+  else if (!hasPayload) nextStep = 'Acquire the launch codes. Use "sat" to download from orbit.';
+  else if (!hasLaunchReady) nextStep = 'Decrypt the launch codes to initiate protocol.';
+  else nextStep = 'EXECUTE THE LAUNCH PROTOCOL. RUN THE BINARY.';
+
+  const steps = [hasNet, hasScan, decryptCount >= 3, isRoot, hasBlackSite, hasPayload, hasLaunchReady];
+  const progress = Math.round((steps.filter(s => s).length / steps.length) * 100);
+
+  return {
+    objectives: {
+      hasNet,
+      hasScan,
+      hasIntel: decryptCount >= 3,
+      decryptCount,
+      isRoot,
+      hasBlackSite,
+      hasPayload,
+      hasLaunchReady
+    },
+    progress,
+    nextStep
+  };
+};
+
 export const tabCompletion = (cwd: string, inputBuffer: string): { matches: string[], completed: string } => {
   const parts = inputBuffer.split(' '); 
   if (!inputBuffer) return { matches: [], completed: inputBuffer };
@@ -3588,32 +3642,10 @@ Device     Boot Start      End  Sectors Size Id Type
        break;
     }
     case 'status': {
-        const isRoot = !!getNode('/tmp/.root_session');
-        const hasNet = !!getNode('/var/run/net_status');
-        const hasScan = !!getNode('/var/run/scan_complete');
-        const decryptNode = getNode('/var/run/decrypt_count');
-        const decryptCount = decryptNode && decryptNode.type === 'file' ? parseInt(decryptNode.content) : 0;
-        const hasBlackSite = !!getNode('/remote/black-site/root/FLAG.txt');
-        const hasPayload = !!getNode('/home/ghost/launch_codes.bin') || !!getNode('/launch_codes.bin');
-        const hasLaunchReady = !!getNode('/var/run/launch_ready');
-
-        // Logic for Next Directive
-        let nextStep = 'Check manual pages (man) or list files (ls).';
-        if (!hasNet) nextStep = 'Connect to a network. Try "wifi scan".';
-        else if (!hasScan) nextStep = 'Scan the network for targets. Try "nmap" or "netmap".';
-        else if (decryptCount < 1) nextStep = 'Find encrypted files and decrypt them. Check "journal".';
-        else if (!isRoot) nextStep = 'Escalate privileges. You need root access. Check "steghide" or "hydra".';
-        else if (!hasBlackSite) nextStep = 'Infiltrate the Black Site. Use "ssh" with the key you found.';
-        else if (!hasPayload) nextStep = 'Acquire the launch codes. Use "sat" to download from orbit.';
-        else if (!hasLaunchReady) nextStep = 'Decrypt the launch codes to initiate protocol.';
-        else nextStep = 'EXECUTE THE LAUNCH PROTOCOL. RUN THE BINARY.';
+        const { objectives, progress, nextStep } = getMissionStatus();
+        const { hasNet, hasScan, hasIntel, decryptCount, isRoot, hasBlackSite, hasPayload, hasLaunchReady } = objectives;
 
         const color = (cond: boolean) => cond ? '\x1b[1;32m[COMPLETE]\x1b[0m' : '\x1b[1;30m[PENDING ]\x1b[0m';
-        const activeColor = (cond: boolean) => cond ? '\x1b[1;32m' : '\x1b[1;30m';
-        
-        // Calculate Progress
-        const steps = [hasNet, hasScan, decryptCount > 0, isRoot, hasBlackSite, hasPayload, hasLaunchReady];
-        const progress = Math.round((steps.filter(s => s).length / steps.length) * 100);
         const barLen = 20;
         const filled = Math.round((progress / 100) * barLen);
         const bar = '█'.repeat(filled) + '░'.repeat(barLen - filled);
@@ -3627,7 +3659,7 @@ STATUS: ${progress}% COMPLETE [${bar}]
 \x1b[1;33mCURRENT OBJECTIVES:\x1b[0m
  1. Establish Network Link (wifi)     ${color(hasNet)}
  2. Reconnaissance (scan/nmap)        ${color(hasScan)}
- 3. Recover Intel (decrypt)           ${color(decryptCount > 0)}
+ 3. Recover Intel (decrypt)           ${color(hasIntel)} [${decryptCount}/3]
  4. Privilege Escalation (root)       ${color(isRoot)}
  5. Breach Black Site (ssh)           ${color(hasBlackSite)}
  6. Acquire Payload (sat)             ${color(hasPayload)}
