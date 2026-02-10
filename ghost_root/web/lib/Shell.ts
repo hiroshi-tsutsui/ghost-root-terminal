@@ -170,7 +170,7 @@ export interface CommandResult {
   data?: any;
 }
 
-const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon'];
+const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status'];
 
 export const tabCompletion = (cwd: string, inputBuffer: string): { matches: string[], completed: string } => {
   const parts = inputBuffer.split(' '); 
@@ -929,7 +929,7 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
           const pass = args[1];
           if (user === 'root') {
              if (pass === 'black_widow_protocol_init' || pass === 'omega_protocol_override' || pass === 'red_ledger') {
-                 output = 'Authentication successful.\n[SUDO] Access granted.\nWARNING: Audit logging enabled.';
+                 output = 'Authentication successful.\n[SUDO] Access granted.\nWARNING: Audit logging enabled.\n\x1b[1;32m[MISSION UPDATE] Objective Complete: ROOT ACCESS ACQUIRED.\x1b[0m';
                  // Create root session marker
                  VFS['/tmp/.root_session'] = { type: 'file', content: 'ACTIVE' };
                  return { output, newCwd, newPrompt: 'root@ghost-root#' };
@@ -1334,25 +1334,51 @@ Type "man <command>" for more information.`;
         const fileTarget = args[0];
         const filePath = resolvePath(cwd, fileTarget);
         const fileNode = getNode(filePath);
+        const run = getNode('/var/run');
+        
+        const updateCount = () => {
+            if (run && run.type === 'dir') {
+                const c = getNode('/var/run/decrypt_count');
+                let val = (c && c.type === 'file') ? parseInt(c.content) : 0;
+                val++;
+                VFS['/var/run/decrypt_count'] = { type: 'file', content: String(val) };
+                if (!run.children.includes('decrypt_count')) run.children.push('decrypt_count');
+                return val;
+            }
+            return 1;
+        };
+
         if (!fileNode) {
           output = `decrypt: ${fileTarget}: No such file`;
         } else if (fileNode.type === 'dir') {
           output = `decrypt: ${fileTarget}: Is a directory`;
         } else {
           if (fileNode.content.includes('BINARY_PAYLOAD') || filePath.endsWith('payload.bin')) {
-              if (args[1] === 'spectre') output = `-----BEGIN RSA PRIVATE KEY-----\nKEY_ID: BLACK_SITE_ACCESS_V1\n-----END RSA PRIVATE KEY-----`;
-              else output = 'Error: Invalid password.';
+              if (args[1] === 'spectre') {
+                  updateCount();
+                  output = `[SUCCESS] Decryption Complete.\n-----BEGIN RSA PRIVATE KEY-----\nKEY_ID: BLACK_SITE_ACCESS_V1\n-----END RSA PRIVATE KEY-----`;
+              } else output = 'Error: Invalid password.';
           } else if (filePath.includes('operation_blackout')) {
-              if (args[1] === 'red_ledger') output = `Decrypting...\n${atob(fileNode.content)}`;
-              else output = 'Error: Invalid password.';
+              if (args[1] === 'red_ledger') {
+                  updateCount();
+                  output = `[SUCCESS] Decryption Complete.\n${atob(fileNode.content)}`;
+              } else output = 'Error: Invalid password.';
           } else if (filePath.includes('entry_02.enc')) {
-              if (args[1] === 'hunter2') output = `Decrypting...\n${atob(fileNode.content)}`;
-              else output = 'Error: Invalid password. (Hint: Check the logs)';
+              if (args[1] === 'hunter2') {
+                  updateCount();
+                  output = `[SUCCESS] Decryption Complete.\n${atob(fileNode.content)}`;
+              } else output = 'Error: Invalid password. (Hint: Check the logs)';
           } else if (filePath.includes('KEYS.enc')) {
-              if (args[1] === 'Spectre' || args[1] === 'spectre') output = `Decrypting...\n[SUCCESS] DECRYPTED CONTENT:\n\nKEY_ID: COSMOS-2542\nPAYLOAD: LAUNCH_CODE_KEY = "RED_STORM_RISING"`;
-              else output = 'Error: Invalid password. (Hint: The password is the name of the user who owns the key)';
+              if (args[1] === 'Spectre' || args[1] === 'spectre') {
+                  updateCount();
+                  output = `Decrypting...\n[SUCCESS] DECRYPTED CONTENT:\n\nKEY_ID: COSMOS-2542\nPAYLOAD: LAUNCH_CODE_KEY = "RED_STORM_RISING"`;
+              } else output = 'Error: Invalid password. (Hint: The password is the name of the user who owns the key)';
           } else if (filePath.includes('launch_codes.bin')) {
               if (args[1] === 'RED_STORM_RISING') {
+                  if (run && run.type === 'dir') {
+                      VFS['/var/run/launch_ready'] = { type: 'file', content: 'TRUE' };
+                      if (!run.children.includes('launch_ready')) run.children.push('launch_ready');
+                  }
                   output = 'Decrypting...\n\n[SUCCESS] LAUNCH CODES CONFIRMED.\nINITIATING SYSTEM LIBERATION...';
                   return { output, newCwd, action: 'win_sim' };
               } else {
@@ -1727,6 +1753,13 @@ Error: Connection timed out (Is the host up?)
       } else {
           const target = args[0];
           if (target === '192.168.1.0/24' || target === '10.0.0.0/24') {
+              // Mark scan complete for status
+              const run = getNode('/var/run');
+              if (run && run.type === 'dir') {
+                  VFS['/var/run/scan_complete'] = { type: 'file', content: 'TRUE' };
+                  if (!run.children.includes('scan_complete')) run.children.push('scan_complete');
+              }
+
               // Simulated scan result
               output = `Starting Nmap 7.91 ( https://nmap.org ) at 2026-10-23 15:42 JST
 Nmap scan report for 192.168.1.1 (Gateway)
@@ -2822,6 +2855,11 @@ ${validUnits.length} loaded units listed.`;
        break;
     }
     case 'netmap': {
+       const run = getNode('/var/run');
+       if (run && run.type === 'dir') {
+           VFS['/var/run/scan_complete'] = { type: 'file', content: 'TRUE' };
+           if (!run.children.includes('scan_complete')) run.children.push('scan_complete');
+       }
        output = 'Loading Network Map...';
        return { output, newCwd, action: 'netmap_sim' };
     }
@@ -2871,14 +2909,16 @@ ${validUnits.length} loaded units listed.`;
               }
           } else if (subcmd === 'status') {
               if (isLinked) {
-                  const id = VFS['/var/run/sat_link.pid'].content;
+                  const node = VFS['/var/run/sat_link.pid'];
+                  const id = (node && node.type === 'file') ? node.content : 'UNKNOWN';
                   output = `Uplink Status: CONNECTED (${id})\nSignal Strength: 98%\nEncryption: AES-256-GCM`;
               } else {
                   output = 'Uplink Status: DISCONNECTED\nSignal Strength: 0%\nEncryption: NONE';
               }
           } else if (subcmd === 'files') {
                if (isLinked) {
-                   const id = VFS['/var/run/sat_link.pid'].content;
+                   const node = VFS['/var/run/sat_link.pid'];
+                   const id = (node && node.type === 'file') ? node.content : 'UNKNOWN';
                    if (id === 'OMEG') {
                        output = `[SAT_LINK] Remote File System (${id}):
 - rwx------  launch_codes.bin  (512B)  [DOOMSDAY_PROTOCOL]
@@ -2897,7 +2937,8 @@ ${validUnits.length} loaded units listed.`;
                   output = 'usage: sat download <file_id>';
                } else {
                   if (isLinked) {
-                      const id = VFS['/var/run/sat_link.pid'].content;
+                      const node = VFS['/var/run/sat_link.pid'];
+                      const id = (node && node.type === 'file') ? node.content : 'UNKNOWN';
                       const fileId = args[1];
                       let success = false;
 
@@ -3541,6 +3582,37 @@ Device     Boot Start      End  Sectors Size Id Type
            output = 'fdisk: permission denied (try -l to list partition tables)';
        }
        break;
+    }
+    case 'status': {
+        const isRoot = !!getNode('/tmp/.root_session');
+        const hasNet = !!getNode('/var/run/net_status');
+        const hasScan = !!getNode('/var/run/scan_complete');
+        const decryptNode = getNode('/var/run/decrypt_count');
+        const decryptCount = decryptNode && decryptNode.type === 'file' ? parseInt(decryptNode.content) : 0;
+        const hasLaunchCodes = !!getNode('/var/run/launch_ready');
+
+        const color = (cond: boolean) => cond ? '\x1b[1;32m[COMPLETE]\x1b[0m' : '\x1b[1;31m[INCOMPLETE]\x1b[0m';
+        const dColor = decryptCount >= 3 ? '\x1b[1;32m' : '\x1b[1;33m';
+        
+        output = `
+\x1b[1;34m========================================\x1b[0m
+\x1b[1;34m   GHOST_ROOT MISSION STATUS v1.0       \x1b[0m
+\x1b[1;34m========================================\x1b[0m
+
+IDENTITY: ${isRoot ? '\x1b[1;31mROOT (ADMIN)\x1b[0m' : '\x1b[1;32mGHOST (USER)\x1b[0m'}
+LOCATION: ${cwd}
+
+\x1b[1;33mOBJECTIVES:\x1b[0m
+1. Establish Network Link (wifi)      ${color(hasNet)}
+2. Locate Black Site Node (scan)      ${color(hasScan)}
+3. Gain Root Access (su/exploit)      ${color(isRoot)}
+4. Decrypt Intel Files (decrypt)      ${dColor}[ ${decryptCount} / 3 ]\x1b[0m
+5. Execute Launch Protocol            ${color(hasLaunchCodes)}
+
+\x1b[1;34m========================================\x1b[0m
+Hint: Type 'help' for available commands.
+`;
+        break;
     }
     case 'medscan':
     case 'biomon': {
