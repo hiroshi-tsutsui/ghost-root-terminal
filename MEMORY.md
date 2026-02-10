@@ -33,11 +33,11 @@ Long-term memory for Natasha.
   - **Recent Update**: Fully Localized "Calibration Protocol" (Quiz) & Tiers. Fixed `DATA_ARCHIVE` EN text.
 
 - **GHOST_ROOT (Hacker Game)**:
-  - **Status**: Live (Commit `74164eb`). Deployment SUCCESS.
+  - **Status**: Staged (Commit `b6d2412`). Deployment PENDING (Limit Reset).
   - **Goal**: Realistic Web TUI (ZSH-like), Red Herrings, Math Puzzles.
   - **Repo**: `ghost_root/`.
   - **Deployment**: `https://ghost-root-terminal.vercel.app`.
-  - **Features**: `whois` (lore), `decrypt` (puzzle), `cat` (filesystem), `sat` (new), `irc` (new), Mission Tracker Sidebar.
+  - **Features**: `whois` (lore), `decrypt` (puzzle), `cat` (filesystem), `sat` (new), `irc` (new), Mission Tracker Sidebar, Rank Progression, Win Animation Polish.
 
 ## Capabilities
 - **Voice**: Jarvis (Ears-Only Mode).
