@@ -188,7 +188,7 @@ export interface CommandResult {
   data?: any;
 }
 
-const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route'];
+const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt'];
 
 export interface MissionStatus {
   objectives: {
@@ -815,6 +815,74 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
       }
       output = lines.join('\n');
       break;
+    }
+    case 'md5sum': {
+       if (args.length < 1) {
+          output = 'usage: md5sum <file...>';
+       } else {
+          output = args.map(arg => {
+             // Handle wildcard expansion manually since shell doesn't do it globally yet
+             if (arg.includes('*')) {
+                 const dirPart = arg.substring(0, arg.lastIndexOf('/') + 1) || './';
+                 const pattern = arg.substring(arg.lastIndexOf('/') + 1);
+                 
+                 const dirPath = resolvePath(cwd, dirPart);
+                 const dirNode = getNode(dirPath);
+                 
+                 if (dirNode && dirNode.type === 'dir') {
+                     const regex = new RegExp('^' + pattern.replace(/\*/g, '.*') + '$');
+                     const matches = dirNode.children.filter(f => regex.test(f));
+                     
+                     if (matches.length === 0) return `md5sum: ${arg}: No such file or directory`;
+                     
+                     return matches.map(f => {
+                         const fullPath = dirPath === '/' ? `/${f}` : `${dirPath}/${f}`;
+                         const node = getNode(fullPath);
+                         if (node && node.type === 'file') {
+                             // Mock hashes based on filename/content
+                             let hash = '';
+                             if (f === 'dump_v2.bin') hash = 'e5d0979f87654321deadbeef00000000';
+                             else if (f === 'dump_v1.bin') hash = 'a1b2c3d4e5f67890123456789abcdef0';
+                             else if (f === 'dump_v3.bin') hash = 'f0e1d2c3b4a596877890abcdef123456';
+                             else {
+                                 // Simple hash of content length + name
+                                 hash = (node.content.length + f).split('').map(c => c.charCodeAt(0).toString(16)).join('').substring(0, 32).padEnd(32, '0');
+                             }
+                             return `${hash}  ${f}`;
+                         }
+                         return '';
+                     }).filter(Boolean).join('\n');
+                 }
+                 return `md5sum: ${arg}: No such file or directory`;
+             }
+
+             const path = resolvePath(cwd, arg);
+             const node = getNode(path);
+             if (!node) return `md5sum: ${arg}: No such file or directory`;
+             if (node.type === 'dir') return `md5sum: ${arg}: Is a directory`;
+             
+             const f = arg.split('/').pop() || arg;
+             let hash = '';
+             if (f === 'dump_v2.bin') hash = 'e5d0979f87654321deadbeef00000000';
+             else if (f === 'dump_v1.bin') hash = 'a1b2c3d4e5f67890123456789abcdef0';
+             else if (f === 'dump_v3.bin') hash = 'f0e1d2c3b4a596877890abcdef123456';
+             else {
+                 hash = (node.content.length + f).split('').map(c => c.charCodeAt(0).toString(16)).join('').substring(0, 32).padEnd(32, '0');
+             }
+             return `${hash}  ${arg}`;
+          }).join('\n');
+       }
+       break;
+    }
+    case 'void_crypt': {
+        const libPath = ENV_VARS['LD_LIBRARY_PATH'];
+        if (!libPath || !libPath.includes('/opt/libs')) {
+            output = 'void_crypt: error while loading shared libraries: libvoid.so: cannot open shared object file: No such file or directory';
+        } else {
+            output = 'Initializing Void Cryptography Engine...\n[LOADING] libvoid.so... OK\n[DECRYPTING] Payload verified.\n\nACCESS KEY: GHOST_ROOT{L1NK3R_P4TH_H4CK3R}';
+            VFS['/var/run/void_solved'] = { type: 'file', content: 'TRUE' };
+        }
+        break;
     }
     case 'sudo': {
       if (args.length < 1) {
@@ -2686,7 +2754,23 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
        break;
     }
     case 'curl': {
-      output = 'curl: (6) Could not resolve host';
+      // Basic argument parsing
+      const url = args.find(a => a.includes('http'));
+      if (!url) {
+        output = 'curl: try \'curl --help\' or \'curl --manual\' for more information';
+      } else {
+        if (url.includes('192.168.1.55') || url.includes('fl4g_server')) {
+             if (url.includes('auth=GHOST_TOKEN_777')) {
+                 output = `[DEPLOY] Connecting to payload delivery system...\n[UPLOAD] Sending agent binary... 100%\n[RESPONSE] HTTP 200 OK\n{\n  "status": "deployed",\n  "target": "covert_asset_v2",\n  "message": "Asset active. Standby for instructions.",\n  "flag": "GHOST_ROOT{D3BUG_MAST3R}"\n}`;
+             } else {
+                 output = `[DEPLOY] Connecting...\n[ERROR] HTTP 401 Unauthorized. Missing or invalid auth token.`;
+             }
+        } else if (url.includes('google.com')) {
+             output = '<HTML><HEAD><meta http-equiv="content-type" content="text/html;charset=utf-8">\n<TITLE>301 Moved</TITLE></HEAD><BODY>\n<H1>301 Moved</H1>\nThe document has moved\n<A HREF="http://www.google.com/">here</A>.\n</BODY></HTML>';
+        } else {
+             output = `curl: (6) Could not resolve host: ${url}`;
+        }
+      }
       break;
     }
     case 'crontab': {

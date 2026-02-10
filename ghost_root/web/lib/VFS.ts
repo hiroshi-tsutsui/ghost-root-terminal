@@ -39,7 +39,7 @@ const VFS: Record<string, VFSNode> = {
   },
   '/usr/bin': {
     type: 'dir',
-    children: ['gcc', 'net-bridge']
+    children: ['gcc', 'net-bridge', 'void_crypt']
   },
   '/usr/bin/net-bridge': {
     type: 'file',
@@ -61,6 +61,37 @@ echo "Initiating handshake with $TARGET..."
 # [CORRUPTION DETECTED AT OFFSET 0x4A]
 # [MANUAL OVERRIDE REQUIRED: Connect via 'nc']
 `
+  },
+  '/usr/bin/deploy_agent': {
+    type: 'file',
+    content: `#!/bin/bash
+# DEPLOY_AGENT_V2
+# Auto-deployment to covert asset.
+
+# TARGET_SERVER="192.168.1.55"
+TARGET_SERVER="fl4g_server" # TODO: Update DNS
+AUTH_TOKEN="GHOST_TOKEN_777"
+
+echo "Deploying to $TARGET_SERVER..."
+curl -s "http://$TARGET_SERVER/api/deploy?auth=$AUTH_TOKEN"
+# ERROR: Could not resolve host
+`
+  },
+  '/usr/bin/void_crypt': {
+    type: 'file',
+    content: '[BINARY_ELF_X86_64]\n[DEPENDENCY: libvoid.so]\n[USAGE: ./void_crypt <input>]'
+  },
+  '/opt': {
+    type: 'dir',
+    children: ['libs']
+  },
+  '/opt/libs': {
+    type: 'dir',
+    children: ['libvoid.so']
+  },
+  '/opt/libs/libvoid.so': {
+    type: 'file',
+    content: '[ELF_SHARED_OBJECT]\n[EXPORT: void_encrypt, void_decrypt]'
   },
   '/usr/src': {
     type: 'dir',
@@ -342,7 +373,27 @@ COMMIT
   },
   '/var/data': {
     type: 'dir',
-    children: []
+    children: ['dump_v1.bin', 'dump_v2.bin', 'dump_v3.bin', 'checksum.md5', 'README.txt']
+  },
+  '/var/data/README.txt': {
+    type: 'file',
+    content: 'CRITICAL DATA RECOVERY\n----------------------\nWe managed to salvage 3 fragments from the crash site.\nOnly one is the original data structure. The others are corrupted.\nUse the checksum to verify integrity before proceeding.\n\nRequired Checksum: e5d0979f... (check the .md5 file)'
+  },
+  '/var/data/checksum.md5': {
+    type: 'file',
+    content: 'e5d0979f87654321deadbeef00000000  dump_v2.bin'
+  },
+  '/var/data/dump_v1.bin': {
+    type: 'file',
+    content: '[CORRUPTED BLOCK 0x01]\nFATAL ERROR: CRC Mismatch.\nData unreadable.'
+  },
+  '/var/data/dump_v2.bin': {
+    type: 'file',
+    content: '[DATA_RECOVERED]\nACCESS_CODE: GHOST_ROOT{1NTEGR1TY_V3R1F13D}\n\nCongratulations. The data is intact.\nProceed to the next sector.'
+  },
+  '/var/data/dump_v3.bin': {
+    type: 'file',
+    content: '[CORRUPTED BLOCK 0xFF]\nFATAL ERROR: Null pointer exception.\nData lost.'
   },
   '/var/backups': {
       type: 'dir',

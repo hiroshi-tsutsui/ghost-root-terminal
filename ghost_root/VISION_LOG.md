@@ -77,3 +77,23 @@ This file tracks the development cycles of the `ghost_root` project under the ne
 > LORE: A secure node (`vault-node.local`) is rejecting connections. The DNS entry is missing, but the IP is in the logs.
 > SOLUTION: `cat /var/log/syslog` (find 192.168.1.200) -> `ping vault-node.local` (fails) -> `echo "192.168.1.200 vault-node.local" >> /etc/hosts` -> `ssh vault-node.local` -> Access Granted.
 
+[2026-02-11 06:00]
+> CHANGES: ghost_root/web/lib/Shell.ts, ghost_root/web/lib/VFS.ts
+> PUZZLE ADDED: "The Integrity Check" (Data Recovery / MD5 Checksum).
+> MECHANICS: Added `md5sum` command (mocked). Added `/var/data` dump files and `checksum.md5`.
+> LORE: Three data fragments recovered. Only one is valid. Checksum verification required.
+> SOLUTION: `cat /var/data/checksum.md5` -> `md5sum /var/data/dump_*.bin` -> Identify matching hash (`dump_v2.bin`) -> `cat /var/data/dump_v2.bin` -> Integrity Verified.
+
+[2026-02-11 06:30]
+> CHANGES: ghost_root/web/lib/Shell.ts, ghost_root/web/lib/VFS.ts
+> PUZZLE ADDED: "The Missing Library" (Shared Objects / LD_LIBRARY_PATH).
+> MECHANICS: Added `void_crypt` binary and `libvoid.so`. Implemented `LD_LIBRARY_PATH` check in Shell.
+> LORE: The decryption engine (`void_crypt`) fails to run because it can't find its shared library.
+> SOLUTION: `void_crypt` (fails) -> `find / -name libvoid.so` (finds /opt/libs/libvoid.so) -> `export LD_LIBRARY_PATH=/opt/libs` -> `void_crypt` (success).
+
+[2026-02-11 07:00]
+> CHANGES: ghost_root/web/lib/VFS.ts, ghost_root/web/lib/Shell.ts
+> PUZZLE ADDED: "The Legacy Script" (Broken Deploy / Manual Execution).
+> MECHANICS: Added `/usr/bin/deploy_agent` script. Updated `curl` to handle specific flags and payload delivery.
+> LORE: An automated deployment script is failing due to a DNS error ("fl4g_server"). The user must read the script comments to find the real IP.
+> SOLUTION: `cat /usr/bin/deploy_agent` -> Note IP (192.168.1.55) and Token -> `curl "http://192.168.1.55/api/deploy?auth=GHOST_TOKEN_777"` -> Payload Delivered.
