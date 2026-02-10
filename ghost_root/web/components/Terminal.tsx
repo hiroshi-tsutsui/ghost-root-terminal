@@ -40,7 +40,38 @@ const WebTerminal = () => {
   const isEditingRef = useRef(false);
   const isTopModeRef = useRef(false);
   const editorStateRef = useRef({ content: '', path: '', buffer: '' });
+  const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
   const [mission, setMission] = React.useState<MissionStatus | null>(null);
+  
+  const playBeep = (freq = 440, type: any = 'sine', duration = 0.1) => {
+    try {
+        const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+        if (!AudioContext) return;
+        const ctx = new AudioContext();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+        gain.gain.setValueAtTime(0.1, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + duration);
+    } catch (e) { console.error(e); }
+  };
+
+  const prevProgressRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (mission) {
+        if (prevProgressRef.current !== null && mission.progress > prevProgressRef.current) {
+            playBeep(880, 'square', 0.15);
+            setTimeout(() => playBeep(1100, 'square', 0.3), 150);
+        }
+        prevProgressRef.current = mission.progress;
+    }
+  }, [mission]);
 
   useEffect(() => {
     if (!terminalContainerRef.current) return;
@@ -59,6 +90,16 @@ const WebTerminal = () => {
 
     // Initial mission status
     setMission(getMissionStatus());
+    
+    // Sound effect on progress
+    const prevProgress = useRef(0);
+    useEffect(() => {
+        if (mission && mission.progress > prevProgress.current) {
+            playBeep(880, 'square', 0.15);
+            setTimeout(() => playBeep(1100, 'square', 0.3), 150);
+            prevProgress.current = mission.progress;
+        }
+    }, [mission]);
 
     const fitAddon = new FitAddon();
     term.loadAddon(fitAddon);
@@ -1886,10 +1927,27 @@ const WebTerminal = () => {
   );
 
   return (
-    <div className="flex w-full h-screen bg-black text-green-500 font-mono">
+    <div className="flex w-full h-screen bg-black text-green-500 font-mono relative">
       <div className="flex-grow h-full" ref={terminalContainerRef} />
+      
+      {/* Mobile Sidebar Toggle */}
       {mission && (
-        <div className="w-80 border-l border-green-900 p-4 hidden md:flex flex-col overflow-y-auto bg-black bg-opacity-90">
+        <button 
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          className="fixed top-4 right-4 md:hidden z-50 text-green-500 border border-green-500 p-2 bg-black bg-opacity-80 hover:bg-green-900/30 transition-colors"
+          aria-label="Toggle Mission Status"
+        >
+          {isSidebarOpen ? 'CLOSE' : 'STATUS'}
+        </button>
+      )}
+
+      {mission && (
+        <div className={`
+          w-80 border-l border-green-900 p-4 flex-col overflow-y-auto bg-black bg-opacity-95 
+          transition-transform duration-300 ease-in-out
+          fixed md:relative right-0 top-0 bottom-0 z-40
+          ${isSidebarOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'}
+        `}>
           <h2 className="text-lg font-bold mb-4 border-b border-green-900 pb-2 tracking-wider text-green-400">MISSION STATUS</h2>
           
           <div className="mb-6">
