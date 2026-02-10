@@ -112,7 +112,6 @@ const addChild = (parentPath: string, childName: string) => {
 };
 
 const MOUNTED_DEVICES: Record<string, string> = {}; // device -> mountPoint
-const LOADED_MODULES: string[] = [];
 
 
 const tokenize = (cmd: string): string[] => {
