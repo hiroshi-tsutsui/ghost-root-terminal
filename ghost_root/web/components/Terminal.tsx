@@ -26,7 +26,7 @@ const WARNING_MESSAGE = [
   "",
 ];
 
-const HINT_MESSAGE = "\x1b[1;33mType 'help' for recovery options.\x1b[0m";
+const HINT_MESSAGE = "\x1b[1;33mType 'help' for commands. Type 'status' for objectives.\x1b[0m";
 
 const WebTerminal = () => {
   const terminalContainerRef = useRef<HTMLDivElement>(null);
@@ -66,9 +66,26 @@ const WebTerminal = () => {
 
   useEffect(() => {
     if (mission) {
+        // Update Prompt based on Rank
+        const rank = mission.rank.toLowerCase();
+        promptRef.current = `\x1b[1;32mghost@${rank}\x1b[0m`;
+
         if (prevProgressRef.current !== null && mission.progress > prevProgressRef.current) {
             playBeep(880, 'square', 0.15);
             setTimeout(() => playBeep(1100, 'square', 0.3), 150);
+            
+            const msg = `OBJECTIVE COMPLETE. RANK: ${mission.rank.toUpperCase()}`;
+            setToast({ message: msg, visible: true });
+            setTimeout(() => setToast(t => ({ ...t, visible: false })), 4000);
+            
+            // Write to terminal for persistence
+            if (termRef.current) {
+                termRef.current.writeln('');
+                termRef.current.writeln(`\x1b[1;32m[SYSTEM] ${msg}\x1b[0m`);
+                termRef.current.writeln(`\x1b[1;36m[HINT] Type 'status' for updated directives.\x1b[0m`);
+                termRef.current.writeln('');
+                termRef.current.scrollToBottom();
+            }
         }
         prevProgressRef.current = mission.progress;
     }
@@ -91,31 +108,7 @@ const WebTerminal = () => {
 
     // Initial mission status
     setMission(getMissionStatus());
-    
-    // Sound effect on progress
-    const prevProgress = useRef(0);
-    useEffect(() => {
-        if (mission && mission.progress > prevProgress.current) {
-            playBeep(880, 'square', 0.15);
-            setTimeout(() => playBeep(1100, 'square', 0.3), 150);
-            
-            const msg = `OBJECTIVE COMPLETE. RANK: ${mission.rank.toUpperCase()}`;
-            setToast({ message: msg, visible: true });
-            setTimeout(() => setToast(t => ({ ...t, visible: false })), 4000);
-            
-            // Write to terminal for persistence
-            if (termRef.current) {
-                termRef.current.writeln('');
-                termRef.current.writeln(`\x1b[1;32m[SYSTEM] ${msg}\x1b[0m`);
-                termRef.current.writeln(`\x1b[1;36m[HINT] Type 'status' for updated directives.\x1b[0m`);
-                termRef.current.writeln('');
-                // Scroll to bottom
-                termRef.current.scrollToBottom();
-            }
-            
-            prevProgress.current = mission.progress;
-        }
-    }, [mission]);
+    // (Moved to top-level useEffect)
 
     const fitAddon = new FitAddon();
     term.loadAddon(fitAddon);
