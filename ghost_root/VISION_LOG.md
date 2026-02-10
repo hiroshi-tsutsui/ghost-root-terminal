@@ -97,3 +97,17 @@ This file tracks the development cycles of the `ghost_root` project under the ne
 > MECHANICS: Added `/usr/bin/deploy_agent` script. Updated `curl` to handle specific flags and payload delivery.
 > LORE: An automated deployment script is failing due to a DNS error ("fl4g_server"). The user must read the script comments to find the real IP.
 > SOLUTION: `cat /usr/bin/deploy_agent` -> Note IP (192.168.1.55) and Token -> `curl "http://192.168.1.55/api/deploy?auth=GHOST_TOKEN_777"` -> Payload Delivered.
+
+[2026-02-11 07:35]
+> CHANGES: ghost_root/web/lib/VFS.ts, ghost_root/web/lib/Shell.ts
+> PUZZLE ADDED: "The Scheduled Task" (Cron Job / Conditional Execution).
+> MECHANICS: Added `/etc/cron.daily/maintenance`. Implemented execution logic in Shell that checks for `/var/run/maintenance.mode`.
+> LORE: A daily maintenance script has a hidden backup function that only runs in "maintenance mode".
+> SOLUTION: `ls /etc/cron.daily` -> `cat maintenance` (see condition) -> `touch /var/run/maintenance.mode` -> `./etc/cron.daily/maintenance` -> Backup created.
+
+[2026-02-11 08:04]
+> CHANGES: ghost_root/web/lib/Shell.ts
+> PUZZLE ADDED: "The Port Conflict" (Systemd / Netstat / Process Management).
+> MECHANICS: Added 'ghost_relay.service' to systemctl. Added 'xmrig' miner (PID 4444) on port 8080.
+> LORE: The relay service fails to start because a crypto-miner is squatting on the port.
+> SOLUTION: 'systemctl start ghost_relay' (fail) -> 'netstat' (find PID 4444) -> 'kill 4444' -> 'systemctl start ghost_relay' (success).

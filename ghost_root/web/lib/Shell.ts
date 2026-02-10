@@ -41,13 +41,14 @@ interface Process {
   stat: string;
 }
 
-const PROCESSES: Process[] = [
+let PROCESSES: Process[] = [
   { pid: 1, user: 'root', cpu: 0.1, mem: 0.4, time: '12:34', command: '/sbin/init', tty: '?', stat: 'Ss' },
   { pid: 2, user: 'root', cpu: 0.0, mem: 0.0, time: '0:00', command: '[kthreadd]', tty: '?', stat: 'S' },
   { pid: 404, user: 'root', cpu: 0.0, mem: 0.8, time: '0:05', command: '/usr/sbin/sshd -D', tty: '?', stat: 'Ss' },
   { pid: 666, user: 'root', cpu: 13.3, mem: 66.6, time: '66:66', command: '[spectre_kernel]', tty: '?', stat: 'R' },
   { pid: 1337, user: 'ghost', cpu: 0.5, mem: 1.2, time: '0:01', command: '-bash', tty: 'pts/0', stat: 'Ss' },
   { pid: 2024, user: 'root', cpu: 0.0, mem: 0.2, time: '0:02', command: '/usr/sbin/cron -f', tty: '?', stat: 'Ss' },
+  { pid: 4444, user: 'root', cpu: 85.0, mem: 40.0, time: '102:00', command: './xmrig --donate-level 1', tty: '?', stat: 'R' },
   { pid: 8888, user: 'root', cpu: 1.5, mem: 2.1, time: '1:23', command: '/usr/bin/watcher --silent', tty: '?', stat: 'Sl' },
   { pid: 9999, user: 'unknown', cpu: 45.2, mem: 12.8, time: '9:59', command: './hydra -l admin -P pass.txt 192.168.1.99', tty: 'pts/1', stat: 'R+' },
   { pid: 31337, user: 'root', cpu: 99.9, mem: 50.0, time: '23:59', command: '/usr/bin/watcher_d --lock', tty: '?', stat: 'Z' }
@@ -476,6 +477,39 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
                       output = `[ERROR] No valid key found in signal stream. (Did you restore the correct file?)`;
                   }
                   return { output, newCwd, action: 'delay' };
+              }
+              if (fileName.endsWith('maintenance')) {
+                  const checkPath = '/var/run/maintenance.mode';
+                  const checkNode = getNode(checkPath);
+                  
+                  if (!checkNode) {
+                      output = `[MAINTENANCE] System normal. Skipping backup.\n(Hint: Enable maintenance mode)`;
+                      return { output, newCwd, action: 'delay' };
+                  } else {
+                      output = `[MAINTENANCE] Maintenance mode detected.\n[BACKUP] Compressing secure data...\n[SUCCESS] Backup created at /tmp/secure_backup.tar.gz`;
+                      
+                      // Create the backup file
+                      VFS['/tmp/secure_backup.tar.gz'] = { 
+                          type: 'file', 
+                          content: 'TAR_GZ:{payload.bin:P4sB7X...}' // Simplified
+                      };
+                      const tmpDir = getNode('/tmp');
+                      if (tmpDir && tmpDir.type === 'dir' && !tmpDir.children.includes('secure_backup.tar.gz')) {
+                          tmpDir.children.push('secure_backup.tar.gz');
+                      }
+                      
+                      // Mission Update: Create flag if not present
+                      if (!VFS['/var/run/cron_solved']) {
+                          VFS['/var/run/cron_solved'] = { type: 'file', content: 'TRUE' };
+                          const runDir = getNode('/var/run');
+                          if (runDir && runDir.type === 'dir' && !runDir.children.includes('cron_solved')) {
+                              runDir.children.push('cron_solved');
+                          }
+                          output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: CRON JOB EXPLOITED.\x1b[0m`;
+                      }
+                      
+                      return { output, newCwd, action: 'delay' };
+                  }
               }
               output = `Executing script ${fileName}...\n` + node.content;
           } else {
@@ -2050,6 +2084,10 @@ ${host}.		300	IN	A	${ip}
            dynamicConnections.push({ proto: 'tcp', recv: 0, send: 0, local: '127.0.0.1:5432', remote: '0.0.0.0:*', state: 'LISTEN', pid: '5432/postgres' });
        }
        
+       if (PROCESSES.find(p => p.pid === 4444)) {
+           dynamicConnections.push({ proto: 'tcp', recv: 0, send: 0, local: '0.0.0.0:8080', remote: '0.0.0.0:*', state: 'LISTEN', pid: '4444/xmrig' });
+       }
+       
        // Add some random established connections if networking is up
        if (activePids.includes('networking')) {
            dynamicConnections.push({ proto: 'tcp', recv: 0, send: 0, local: '192.168.1.105:22', remote: '192.168.1.5:54322', state: 'ESTABLISHED', pid: '404/sshd' });
@@ -3226,7 +3264,7 @@ The key's randomart image is:
            const cmd = args[0];
            const unit = args[1];
            
-           const validUnits = ['sshd', 'tor', 'apache2', 'postgresql', 'cron', 'networking', 'bluetooth'];
+           const validUnits = ['sshd', 'tor', 'apache2', 'postgresql', 'cron', 'networking', 'bluetooth', 'ghost_relay'];
            const runDir = '/var/run';
            if (!VFS[runDir]) VFS[runDir] = { type: 'dir', children: [] };
            
@@ -3280,6 +3318,26 @@ ${validUnits.length} loaded units listed.`;
                } else if (!validUnits.includes(unit)) {
                    output = `Failed to start ${unit}.service: Unit ${unit}.service not found.`;
                } else {
+                   if (unit === 'ghost_relay') {
+                       if (PROCESSES.find(p => p.pid === 4444)) {
+                           output = `Job for ghost_relay.service failed because the control process exited with error code.\nSee "systemctl status ghost_relay.service" and "journalctl -xe" for details.`;
+                           const log = getNode('/var/log/syslog');
+                           if (log && log.type === 'file') {
+                               log.content += `\n${new Date().toUTCString()} ghost_relay[9001]: Error: listen tcp 0.0.0.0:8080: bind: address already in use`;
+                           }
+                           return { output, newCwd };
+                       } else {
+                           if (!VFS['/var/run/relay_active']) {
+                                VFS['/var/run/relay_active'] = { type: 'file', content: 'TRUE' };
+                                const rdNode = VFS[runDir];
+                                if (rdNode && rdNode.type === 'dir' && !rdNode.children.includes('relay_active')) {
+                                    rdNode.children.push('relay_active');
+                                }
+                           }
+                           output = 'Starting Ghost Relay Service...\n[OK] Started Ghost Relay Service.\n\x1b[1;32m[MISSION UPDATE] Objective Complete: RELAY ONLINE.\x1b[0m';
+                       }
+                   }
+
                    if (unit === 'networking') {
                        // Do nothing special visual
                    }
