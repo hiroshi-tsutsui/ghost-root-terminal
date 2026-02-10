@@ -294,11 +294,13 @@ The package has been delivered to your home directory.
 It is hidden within 'evidence.jpg'.
 
 To extract it, you'll need the passphrase.
-I hid it on the internal backup server (192.168.1.5) under the user 'backup'.
+I wrote down the location in your journal (entry_02.enc), but it's encrypted.
 
-I can't remember the password, but it's one of the standard ones in your wordlist.
-You'll need to run a dictionary attack to recover it.
-Use 'hydra' to crack the account.
+The decryption key for the journal is the old admin password.
+I think there's a backup of the old system logs in '/var/backups'.
+The password might be in there.
+
+Good luck.
 
 - A
 ---
