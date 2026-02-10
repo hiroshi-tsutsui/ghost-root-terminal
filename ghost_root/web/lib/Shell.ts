@@ -166,7 +166,7 @@ export interface CommandResult {
   output?: string;
   newCwd?: string;
   newPrompt?: string;
-  action?: 'delay' | 'crack_sim' | 'scan_sim' | 'top_sim' | 'kernel_panic' | 'edit_file' | 'wifi_scan_sim' | 'clear_history' | 'matrix_sim' | 'trace_sim' | 'netmap_sim' | 'theme_change' | 'sat_sim' | 'radio_sim' | 'tcpdump_sim' | 'sqlmap_sim' | 'irc_sim' | 'tor_sim' | 'camsnap_sim' | 'drone_sim' | 'call_sim' | 'intercept_sim' | 'medscan_sim';
+  action?: 'delay' | 'crack_sim' | 'scan_sim' | 'top_sim' | 'kernel_panic' | 'edit_file' | 'wifi_scan_sim' | 'clear_history' | 'matrix_sim' | 'trace_sim' | 'netmap_sim' | 'theme_change' | 'sat_sim' | 'radio_sim' | 'tcpdump_sim' | 'sqlmap_sim' | 'irc_sim' | 'tor_sim' | 'camsnap_sim' | 'drone_sim' | 'call_sim' | 'intercept_sim' | 'medscan_sim' | 'win_sim';
   data?: any;
 }
 
@@ -415,8 +415,13 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
           output = `cat: ${fileTarget}: No such file or directory`;
         } else if (fileNode.type === 'dir') {
           output = `cat: ${fileTarget}: Is a directory`;
+        } else if (filePath.startsWith('/root') && !VFS['/tmp/.root_session']) {
+          output = `cat: ${fileTarget}: Permission denied`;
         } else {
           output = fileNode.content;
+          if (filePath === '/root/flag.txt') {
+            return { output, newCwd, action: 'win_sim' };
+          }
         }
       }
       break;
@@ -719,6 +724,11 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
       const flags = args.filter(arg => arg.startsWith('-'));
       const paths = args.filter(arg => !arg.startsWith('-'));
       const targetPath = paths[0] ? resolvePath(cwd, paths[0]) : cwd;
+
+      if (targetPath.startsWith('/root') && !VFS['/tmp/.root_session']) {
+          output = `ls: cannot open directory '${targetPath}': Permission denied`;
+          break;
+      }
       
       const showHidden = flags.some(f => f.includes('a'));
       const longFormat = flags.some(f => f.includes('l'));
@@ -766,13 +776,20 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
       break;
     }
     case 'cd': {
-      const target = args[0] || '/'; 
-      const potentialPath = resolvePath(cwd, target);
+      const target = args[0] || '/';
+      let potentialPath = resolvePath(cwd, target);
+      
+      // Handle ~
+      if (target === '~') potentialPath = '/home/ghost';
+      
       const targetNode = getNode(potentialPath);
+      
       if (!targetNode) {
         output = `bash: cd: ${target}: No such file or directory`;
       } else if (targetNode.type !== 'dir') {
         output = `bash: cd: ${target}: Not a directory`;
+      } else if (potentialPath.startsWith('/root') && !VFS['/tmp/.root_session']) {
+        output = `bash: cd: ${target}: Permission denied`;
       } else {
         newCwd = potentialPath;
       }
@@ -1271,9 +1288,8 @@ Type "man <command>" for more information.`;
                  return { output, newCwd, action: 'delay' };
              }
         } else if (target.includes('admin-pc')) {
-             output = `Connecting to ${target}...\nWarning: Unauthorized access detected.`;
-             newCwd = '/remote/admin-pc/home/admin';
-             return { output, newCwd, newPrompt: 'admin@admin-pc', action: 'delay' };
+             output = `Connecting to ${target}...\nPermission denied (publickey).\n(Hint: Try cracking the 'backup' user)`;
+             return { output, newCwd, action: 'delay' };
         } else {
              output = `ssh: connect to host ${target} port 22: Connection timed out`;
              return { output, newCwd, action: 'delay' };
@@ -1904,6 +1920,62 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
         }
         break;
     }
+    case 'steghide': {
+       const hasExtract = args.includes('extract') || args.includes('-sf');
+       const hasInfo = args.includes('info');
+       
+       if (!hasExtract && !hasInfo) {
+           output = 'steghide: usage: steghide extract -sf <file> -p <passphrase>';
+       } else {
+           // Extract
+           let fileTarget: string | undefined;
+           const sfIndex = args.indexOf('-sf');
+           if (sfIndex !== -1 && args[sfIndex + 1]) {
+               fileTarget = args[sfIndex + 1];
+           } else {
+               fileTarget = args.find(a => a.endsWith('.jpg'));
+           }
+
+           if (!fileTarget) {
+               output = 'steghide: argument "-sf <filename>" missing';
+           } else {
+               const filePath = resolvePath(cwd, fileTarget);
+               const fileNode = getNode(filePath);
+
+               if (!fileNode || fileNode.type !== 'file') {
+                   output = `steghide: could not open "${fileTarget}".`;
+               } else {
+                   const pIndex = args.indexOf('-p');
+                   const passphrase = (pIndex !== -1 && args[pIndex + 1]) ? args[pIndex + 1] : null;
+
+                   if (!passphrase) {
+                       output = 'steghide: passphrase required (use -p <passphrase>)';
+                   } else if (passphrase === 'kirov_reporting') {
+                       // Success
+                       const payloadName = 'payload.txt';
+                       const payloadPath = cwd === '/' ? `/${payloadName}` : `${cwd}/${payloadName}`;
+                       
+                       // Write file
+                       VFS[payloadPath] = { 
+                           type: 'file', 
+                           content: 'CAUTION: CLASSIFIED MATERIAL\n\nAccess Code: black_widow_protocol_init\n\nUse this to gain root privileges via "su root".' 
+                       };
+                       
+                       // Add to parent
+                       const parentNode = getNode(cwd);
+                       if (parentNode && parentNode.type === 'dir' && !parentNode.children!.includes(payloadName)) {
+                           parentNode.children!.push(payloadName);
+                       }
+                       
+                       output = `wrote extracted data to "${payloadName}".`;
+                   } else {
+                       output = `steghide: could not extract data: invalid passphrase "${passphrase}"`;
+                   }
+               }
+           }
+       }
+       break;
+    }
     case 'crack': {
       output = 'Cracking...';
       return { output, newCwd, action: 'crack_sim', data: { target: args[0], user: args[1], success: false } };
@@ -2175,6 +2247,11 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
                    if (user === 'root' && passList === 'rockyou.txt') {
                        success = true;
                        password = 'black_widow_protocol_init';
+                   }
+               } else if (target === '192.168.1.5' || target.includes('admin-pc')) {
+                   if (user === 'backup') {
+                       success = true;
+                       password = 'SPECTRE_EVE';
                    }
                }
                

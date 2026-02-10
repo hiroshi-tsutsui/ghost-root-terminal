@@ -135,7 +135,7 @@ KEY_ID: GHOST_PROTOCOL_INIT_V2
   },
   '/home/ghost/wordlist.txt': {
     type: 'file',
-    content: 'password\n123456\nadmin\nghost\nspectre'
+    content: 'password\n123456\nadmin\nghost\nspectre\nkirov\nreporting\nred_ledger\nSPECTRE_EVE\nhunter2\ncorrect_horse_battery_staple'
   },
   '/home/ghost/drone_manual.txt': {
     type: 'file',
@@ -178,7 +178,7 @@ I'm going to start encrypting my logs.
   },
   '/home/ghost/journal/entry_02.enc': {
     type: 'file',
-    content: `RU5DUllQVEVEIEpPVVJOQUwgRU5UUlkgMjMKClRoZXkgZm91bmQgbWUuClRoZSB3YXRjaGVycy4KVGhleSdyZSBpbiB0aGUgbmV0d29yay4KSSBoaWQgdGhlIGtleSBpbiB0aGUgY2FtZXJhIGZlZWQuCkNhbWVyYSAwMy4gVGhlIHBhc3N3b3JkIGlzIFNQRUNUUkVfRVZFLg==`
+    content: `VGhleSBhcmUgdHJhY2tpbmcgbWUuIEkgaGlkIHRoZSBldmlkZW5jZSBwYXNzcGhyYXNlIG9uIHRoZSBhZG1pbiBiYWNrdXAgc2VydmVyICgxOTIuMTY4LjEuNSkuIFRoZSB1c2VyIGlzICdiYWNrdXAnLiBZb3UnbGwgbmVlZCB0byBicnV0ZSBmb3JjZSBpdC4=`
   },
   '/home/ghost/journal/entry_03.txt': {
     type: 'file',
@@ -268,7 +268,9 @@ COMMIT
       type: 'file',
       content: `Oct 23 10:00:00 ghost-root sshd[404]: Accepted publickey for root from 192.168.1.5
 Oct 23 11:15:22 ghost-root camsnap[888]: Camera 03 access granted. Token used: SPECTRE_EYE
-Oct 23 11:16:00 ghost-root camsnap[888]: Session closed.`
+Oct 23 11:16:00 ghost-root camsnap[888]: Session closed.
+Oct 23 12:15:32 ghost-root sshd[404]: Failed password for invalid user kirov_reporting from 192.168.1.5 port 54322 ssh2
+Oct 23 12:15:35 ghost-root sshd[404]: Failed password for invalid user kirov_reporting from 192.168.1.5 port 54322 ssh2`
   },
   '/var/log/trace.log': {
       type: 'file',
@@ -282,7 +284,25 @@ Oct 23 11:16:00 ghost-root camsnap[888]: Session closed.`
   },
   '/var/mail/ghost': {
       type: 'file',
-      content: `From: sysadmin@local
+      content: `From: The Architect <architect@omega.net>
+Subject: Phase 2 Instructions
+Date: Oct 23 09:00:00 2024
+
+Agent,
+
+The package has been delivered to your home directory. 
+It is hidden within 'evidence.jpg'.
+
+To extract it, you'll need the passphrase.
+I hid it on the internal backup server (192.168.1.5) under the user 'backup'.
+
+I can't remember the password, but it's one of the standard ones in your wordlist.
+You'll need to run a dictionary attack to recover it.
+Use 'hydra' to crack the account.
+
+- A
+---
+From: sysadmin@local
 Subject: Welcome to GHOST_ROOT
 Date: Oct 20 09:00
 

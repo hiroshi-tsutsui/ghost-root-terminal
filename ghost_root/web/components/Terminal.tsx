@@ -939,6 +939,136 @@ const WebTerminal = () => {
              term.clear();
           }
 
+          if (result.action === 'win_sim') {
+             isTopModeRef.current = true;
+             term.clear();
+             term.write('\x1b[?25l'); // Hide cursor
+
+             const duration = 5000;
+             const startTime = Date.now();
+             const colors = ['\x1b[32m', '\x1b[37m', '\x1b[92m'];
+             
+             const winArt = [
+                 "   _____ __  __  _____ _______ ______ __  __ ",
+                 "  / ____|  \\/  |/ ____|__   __|  ____|  \\/  |",
+                 " | (___ | \\  / | (___    | |  | |__  | \\  / |",
+                 "  \\___ \\| |\\/| |\\___ \\   | |  |  __| | |\\/| |",
+                 "  ____) | |  | |____) |  | |  | |____| |  | |",
+                 " |_____/|_|  |_|_____/   |_|  |______|_|  |_|",
+                 "                                             ",
+                 "      L I B E R A T E D   P R O T O C O L     "
+             ];
+             
+             // Animation Loop
+             while (isTopModeRef.current && Date.now() - startTime < duration) {
+                 // Random Glitch Effect
+                 const row = Math.floor(Math.random() * term.rows);
+                 const col = Math.floor(Math.random() * term.cols);
+                 const char = (Math.random() > 0.5 ? '1' : '0');
+                 const color = colors[Math.floor(Math.random() * colors.length)];
+                 term.write(`\x1b[${row};${col}H${color}${char}\x1b[0m`);
+                 
+                 // Keep Art Visible
+                 const startRow = Math.floor(term.rows / 2) - 4;
+                 const startCol = Math.max(0, Math.floor(term.cols / 2) - 25);
+                 for (let i = 0; i < winArt.length; i++) {
+                     if (startRow + i < term.rows && startRow + i >= 0) {
+                         term.write(`\x1b[${startRow + i};${startCol}H\x1b[1;37;40m${winArt[i]}\x1b[0m`);
+                     }
+                 }
+                 await new Promise(r => setTimeout(r, 50));
+             }
+             
+             term.clear();
+             term.write('\x1b[H'); // Home
+             
+             // Final Static Screen
+             for (let i = 0; i < winArt.length; i++) {
+                 term.writeln(`\x1b[1;32m${winArt[i]}\x1b[0m`);
+             }
+             term.writeln('');
+             term.writeln('\x1b[1;37mCONGRATULATIONS, AGENT.\x1b[0m');
+             term.writeln('\x1b[1;37mYou have successfully rooted the system and exposed the Ghost Protocol.\x1b[0m');
+             term.writeln('');
+             term.writeln('\x1b[1;34m[MISSION ACCOMPLISHED]\x1b[0m');
+             term.writeln('');
+             term.writeln('System rebooting in 5 seconds...');
+             
+             await new Promise(r => setTimeout(r, 5000));
+             
+             // Reboot
+             window.location.reload();
+             return;
+          }
+
+          if (result.action === 'medscan_sim') {
+             isTopModeRef.current = true;
+             term.clear();
+             term.write('\x1b[?25l'); // Hide cursor
+             
+             const duration = 10000;
+             const startTime = Date.now();
+             
+             while (isTopModeRef.current && Date.now() - startTime < duration) {
+                 term.write('\x1b[H'); // Home
+                 
+                 const hr = Math.floor(60 + Math.random() * 10);
+                 const spo2 = Math.floor(95 + Math.random() * 4);
+                 const temp = (36.5 + Math.random() * 0.2).toFixed(1);
+                 
+                 term.writeln(`\x1b[1;36m[ BIOMETRIC MONITORING SYSTEM v4.2 ]\x1b[0m`);
+                 term.writeln(`Subject: UNKNOWN_MALE_01`);
+                 term.writeln(`Status:  \x1b[1;32mSTABLE\x1b[0m`);
+                 term.writeln('');
+                 
+                 // Heart Rate Graph
+                 let graph = '';
+                 const width = 40;
+                 for (let i = 0; i < width; i++) {
+                     // Simple EKG pulse simulation
+                     const tick = (Date.now() / 100 + i) % 20;
+                     if (tick > 18) graph += '^'; // P wave
+                     else if (tick < 2) graph += '|'; // QRS complex (tall)
+                     else if (tick > 3 && tick < 6) graph += 'v'; // T wave
+                     else graph += '_'; // Baseline
+                 }
+                 
+                 term.writeln(`HR:   [ ${hr} bpm ]  \x1b[1;32m${graph}\x1b[0m`);
+                 term.writeln(`SpO2: [ ${spo2} % ]    (Oxygen Saturation)`);
+                 term.writeln(`TEMP: [ ${temp} °C ]`);
+                 term.writeln('');
+                 
+                 // Neural Sync (Lore)
+                 const sync = (Math.random() * 100).toFixed(1);
+                 term.writeln(`NEURAL_INTERFACE_LINK: \x1b[1;33m${sync}%\x1b[0m`);
+                 
+                 if (Math.random() > 0.95) {
+                     term.writeln(`\x1b[1;31m[WARNING] Adrenaline spike detected.\x1b[0m`);
+                 } else {
+                     term.writeln(`\x1b[2mScanning...\x1b[0m`);
+                 }
+                 
+                 term.writeln('');
+                 const timeLeft = Math.max(0, Math.floor((duration - (Date.now() - startTime)) / 1000));
+                 term.writeln(`Auto-disconnect in ${timeLeft}s...`);
+                 
+                 await new Promise(r => setTimeout(r, 100));
+             }
+             
+             isTopModeRef.current = false;
+             term.write('\x1b[?25h');
+             term.clear();
+             term.writeln('Biometric scan complete. Data logged to /var/log/med_scan.log');
+             
+             // Log to file
+             const logPath = '/var/log/med_scan.log';
+             if (!VFS[logPath]) VFS[logPath] = { type: 'file', content: `SCAN_DATE: ${new Date().toISOString()}\nHR: 72\nBP: 120/80\nNOTES: Subject appears to be hallucinating.` };
+             const logDir = VFS['/var/log'];
+             if (logDir.type === 'dir' && !logDir.children.includes('med_scan.log')) {
+                 logDir.children.push('med_scan.log');
+             }
+          }
+
           if (result.action === 'kernel_panic') {
              term.write('\r\n\x1b[1;31mKERNEL PANIC: CRITICAL PROCESS TERMINATED\x1b[0m');
              term.write('\r\n\x1b[1;31mSystem halted.\x1b[0m');

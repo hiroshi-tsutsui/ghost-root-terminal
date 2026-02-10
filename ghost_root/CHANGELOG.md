@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## [Released] - 2026-02-10 (Vision Update - 2)
+### Added
+- Implemented `passwd` command (Interactive password change simulation).
+- Implemented `useradd` command (User creation simulation).
+- Added `/etc/shadow` file with a crackable hash (`red_ledger`).
+
 ## [Released] - 2026-02-10 (Vision Update)
 ### Added
 - Implemented `gobuster` command (Directory brute-forcing simulation).
