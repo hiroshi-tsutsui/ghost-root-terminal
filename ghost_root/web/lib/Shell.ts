@@ -163,14 +163,14 @@ const splitPipeline = (cmd: string): string[] => {
 };
 
 export interface CommandResult {
-  output: string;
+  output?: string;
   newCwd?: string;
   newPrompt?: string;
-  action?: 'delay' | 'crack_sim' | 'scan_sim' | 'top_sim' | 'kernel_panic' | 'edit_file' | 'wifi_scan_sim' | 'clear_history' | 'matrix_sim' | 'trace_sim' | 'netmap_sim' | 'theme_change' | 'sat_sim' | 'radio_sim' | 'tcpdump_sim' | 'sqlmap_sim' | 'irc_sim' | 'tor_sim' | 'camsnap_sim' | 'drone_sim' | 'call_sim' | 'intercept_sim';
+  action?: 'delay' | 'crack_sim' | 'scan_sim' | 'top_sim' | 'kernel_panic' | 'edit_file' | 'wifi_scan_sim' | 'clear_history' | 'matrix_sim' | 'trace_sim' | 'netmap_sim' | 'theme_change' | 'sat_sim' | 'radio_sim' | 'tcpdump_sim' | 'sqlmap_sim' | 'irc_sim' | 'tor_sim' | 'camsnap_sim' | 'drone_sim' | 'call_sim' | 'intercept_sim' | 'medscan_sim';
   data?: any;
 }
 
-const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod'];
+const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon'];
 
 export const tabCompletion = (cwd: string, inputBuffer: string): { matches: string[], completed: string } => {
   const parts = inputBuffer.split(' '); 
@@ -236,7 +236,7 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
           const segment = segments[i];
           const input = i === 0 ? stdin : currentOutput;
           const res = processCommand(cwd, segment, input);
-          currentOutput = res.output;
+          currentOutput = res.output || '';
           if (i === segments.length - 1) {
               finalResult = res;
           }
@@ -322,6 +322,48 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
   }
 
   switch (command) {
+    case 'passwd': {
+        const isRoot = !!getNode('/tmp/.root_session');
+        const user = args[0] || 'ghost';
+        
+        if (user === 'root' && !isRoot) {
+            output = 'passwd: You may not view or modify password information for root.';
+        } else {
+            // Mock interactive password change
+            return { output: `Changing password for ${user}.\n(current) UNIX password:`, newCwd, action: 'delay' };
+        }
+        break;
+    }
+    case 'useradd': {
+        const isRoot = !!getNode('/tmp/.root_session');
+        if (!isRoot) {
+            output = 'useradd: Permission denied.\nuseradd: cannot lock /etc/passwd; try again later.';
+        } else {
+            if (args.length < 1) {
+                output = 'usage: useradd <username>';
+            } else {
+                const newUser = args[0];
+                const passwdNode = getNode('/etc/passwd');
+                if (passwdNode && passwdNode.type === 'file') {
+                    if (passwdNode.content.includes(`${newUser}:`)) {
+                        output = `useradd: user '${newUser}' already exists`;
+                    } else {
+                        passwdNode.content += `\n${newUser}:x:1002:1002::/home/${newUser}:/bin/bash`;
+                        
+                        // Create home dir
+                        VFS[`/home/${newUser}`] = { type: 'dir', children: [] };
+                        const homeNode = getNode('/home');
+                        if (homeNode && homeNode.type === 'dir') homeNode.children.push(newUser);
+                        
+                        output = ''; // Silent success
+                    }
+                } else {
+                    output = 'useradd: /etc/passwd not found';
+                }
+            }
+        }
+        break;
+    }
     case 'grep': {
        let pattern = '';
        let content = '';
@@ -961,7 +1003,7 @@ Security Tools:
   crack, analyze, decrypt, steghide, hydra, camsnap, whois, sqlmap, binwalk
 
 System Tools:
-  ps, kill, top, dmesg, mount, umount, reboot, shutdown, uptime, w, date, systemctl, journal, journalctl, lsof
+  ps, kill, top, dmesg, mount, umount, reboot, shutdown, uptime, w, date, systemctl, journal, journalctl, lsof, passwd, useradd
 
 Misc:
   zip, unzip, neofetch, weather, matrix, radio, alias, env, history, calc
@@ -1287,8 +1329,8 @@ Type "man <command>" for more information.`;
               if (args[1] === 'red_ledger') output = `Decrypting...\n${atob(fileNode.content)}`;
               else output = 'Error: Invalid password.';
           } else if (filePath.includes('entry_02.enc')) {
-              if (args[1] === 'black_widow') output = `Decrypting...\n${atob(fileNode.content)}`;
-              else output = 'Error: Invalid password. (Hint: Check the evidence)';
+              if (args[1] === 'hunter2') output = `Decrypting...\n${atob(fileNode.content)}`;
+              else output = 'Error: Invalid password. (Hint: Check the logs)';
           } else if (filePath.includes('KEYS.enc')) {
               if (args[1] === 'Spectre' || args[1] === 'spectre') output = `Decrypting...\n${atob(fileNode.content)}`;
               else output = 'Error: Invalid password. (Hint: Check satellite logs)';
@@ -3324,6 +3366,48 @@ Offset             Proto    Local Address                  Foreign Address      
            }
        }
        break;
+    }
+    case 'lsblk': {
+       const isMounted = !!MOUNTED_DEVICES['/dev/sdb1'];
+       output = `NAME   MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
+sda      8:0    0    64G  0 disk 
+└─sda1   8:1    0    64G  0 part /
+sdb      8:16   1    32G  0 disk 
+└─sdb1   8:17   1    32G  0 part ${isMounted ? MOUNTED_DEVICES['/dev/sdb1'] : ''}
+loop0    7:0    0   128M  0 loop /snap/core/1
+loop1    7:1    0    64M  0 loop /snap/gtk-common-themes/15`;
+       break;
+    }
+    case 'fdisk': {
+       if (args.includes('-l')) {
+           output = `Disk /dev/sda: 64 GiB, 68719476736 bytes, 134217728 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disklabel type: gpt
+Disk identifier: A1B2C3D4-E5F6-7890-1234-567890ABCDEF
+
+Device     Start       End   Sectors Size Type
+/dev/sda1   2048 134217694 134215647  64G Linux filesystem
+
+Disk /dev/sdb: 32 GiB, 34359738368 bytes, 67108864 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disklabel type: dos
+Disk identifier: 0xdeadbeef
+
+Device     Boot Start      End  Sectors Size Id Type
+/dev/sdb1        2048 67108863 67106816  32G 83 Linux`;
+       } else {
+           output = 'fdisk: permission denied (try -l to list partition tables)';
+       }
+       break;
+    }
+    case 'medscan':
+    case 'biomon': {
+        output = 'Initializing biometric sensors...';
+        return { output, newCwd, action: 'medscan_sim' };
     }
     default:
       output = `bash: ${command}: command not found`;
