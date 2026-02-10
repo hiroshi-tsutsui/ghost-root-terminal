@@ -142,10 +142,11 @@
 - [x] Update Ghost Root: Implemented `status` Command v2.0 (Progress Bar + "Next Directive" Hint). (Status: PUSHED).
 - [x] Update Ghost Root: Added `[MISSION UPDATE]` feedback to 6 core actions. (Status: PUSHED).
 - [x] Update Ghost Root: Implemented Mission Tracker Sidebar (Persistent UI) & enhanced `status`. (Status: DEPLOYED - Commit `74164eb`).
-- [ ] Update Ghost Root: Polish mobile experience & add sound effects for milestones. (In Progress - Sidebar Hidden by Default).
-- [ ] Monitor Batch Sweep V6 (`sweep-v6-*`). (Pending - No active jobs found).
-- [ ] Investigate Batch Image (`batch-custom-image` vs `yolo:latest`). (Pending - Image Rebuild Required).
-  - [ ] Action: Rebuild image with `ultralytics`, `torch`, `torchvision`.
+- [x] Update Ghost Root: Polish mobile experience & add sound effects for milestones. (Status: PUSHED - Commit `6c1754f`).
+- [x] Update Ghost Root: Implemented Visual Progression Feedback System (Rank, Toasts, Sidebar). (Status: DEPLOYED - Commit `af332f1`).
+- [x] Monitor Batch Sweep V6 (`sweep-v6-*`). (Checked: No active jobs found).
+- [x] Investigate Batch Image (`batch-custom-image` vs `yolo:latest`). (Status: FOUND - `us-central1-docker.pkg.dev/dev-dotsfty/rf/rf:latest`).
+  - [ ] Action: Rebuild image with `ultralytics`, `torch`, `torchvision`. (Pending - Dockerfile search failed).
 - [x] Monitor Batch Sweep V4 (`sweep-v4-*`). (Status: COMPLETE/MISSING - Jobs cleared from list. Data for 01-08 secured. V4-1 series finished?).
   - [x] Action: Verified `sweep-v4-exp-01` through `08` results.
   - [x] Action: Downloaded available results to `~/Downloads/yolo-gcp/eagle/infer/output/sweep_v4/`.
@@ -159,3 +160,4 @@
   - [x] Action: Download FP Results.
   - [x] Action: Download TP Results.
   - [x] Action: Analyze Results (`exp_06` Winner: 18m / 3.0s / α=0.2).
+- [x] Update Ghost Root: Implemented Visual Objective Tracker (Status + In-Terminal Feedback). (Status: DEPLOYED).

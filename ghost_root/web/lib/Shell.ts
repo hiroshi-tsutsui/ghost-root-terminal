@@ -199,14 +199,14 @@ export const getMissionStatus = (): MissionStatus => {
   const hasLaunchReady = !!getNode('/var/run/launch_ready');
 
   let nextStep = 'Check manual pages (man) or list files (ls).';
-  if (!hasNet) nextStep = 'Connect to a network. Try "wifi scan".';
-  else if (!hasScan) nextStep = 'Scan the network for targets. Try "nmap" or "netmap".';
-  else if (decryptCount < 3) nextStep = `Find encrypted files and decrypt them (${decryptCount}/3). Check "journal".`;
-  else if (!isRoot) nextStep = 'Escalate privileges. You need root access. Check "steghide" or "hydra".';
-  else if (!hasBlackSite) nextStep = 'Infiltrate the Black Site. Use "ssh" with the key you found.';
-  else if (!hasPayload) nextStep = 'Acquire the launch codes. Use "sat" to download from orbit.';
-  else if (!hasLaunchReady) nextStep = 'Decrypt the launch codes to initiate protocol.';
-  else nextStep = 'EXECUTE THE LAUNCH PROTOCOL. RUN THE BINARY.';
+  if (!hasNet) nextStep = 'Connect to a network. Try "wifi scan" then "wifi connect".';
+  else if (!hasScan) nextStep = 'Scan the network for targets. Try "nmap 192.168.1.0/24" or "netmap".';
+  else if (decryptCount < 3) nextStep = `Find encrypted files and decrypt them (${decryptCount}/3). Check "journal" entries or "ls -R /home".`;
+  else if (!isRoot) nextStep = 'Escalate privileges to root. Try "steghide extract" on images or "hydra" to crack passwords.';
+  else if (!hasBlackSite) nextStep = 'Infiltrate the Black Site. Use "ssh -i <key> root@192.168.1.99".';
+  else if (!hasPayload) nextStep = 'Acquire the launch codes. Use "sat connect OMEG" to download from orbit.';
+  else if (!hasLaunchReady) nextStep = 'Decrypt "launch_codes.bin". The key is hidden in the "firmware.bin" (use binwalk) or elsewhere.';
+  else nextStep = 'EXECUTE THE LAUNCH PROTOCOL. RUN "./launch_codes.bin".';
 
   const steps = [hasNet, hasScan, decryptCount >= 3, isRoot, hasBlackSite, hasPayload, hasLaunchReady];
   const progress = Math.round((steps.filter(s => s).length / steps.length) * 100);
@@ -1069,7 +1069,10 @@ ACCEPT     all  --  anywhere             anywhere`;
       break;
     }
     case 'help':
-      output = `GHOST_ROOT Recovery Shell v0.9 (Pipes Enabled)
+      output = `GHOST_ROOT Recovery Shell v1.0 (Pipes Enabled)
+
+\x1b[1;33mSTATUS\x1b[0m
+  status  - View current objectives, rank, and hints.
 
 Standard Commands:
   ls, cd, cat, pwd, clear, exit, man, mkdir, touch, rm, cp, mv
@@ -1089,7 +1092,8 @@ System Tools:
 Misc:
   zip, unzip, neofetch, weather, matrix, radio, alias, env, history, calc
 
-Type "man <command>" for more information.`;
+Type "man <command>" for more information.
+Type "status" for mission objectives.`;
       break;
     case 'man': {
       if (args.length < 1) {

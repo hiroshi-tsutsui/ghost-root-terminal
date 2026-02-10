@@ -103,8 +103,15 @@ const WebTerminal = () => {
             setToast({ message: msg, visible: true });
             setTimeout(() => setToast(t => ({ ...t, visible: false })), 4000);
             
-            // Flash sidebar on desktop or open on mobile? 
-            // Let's just rely on the toast for now.
+            // Write to terminal for persistence
+            if (termRef.current) {
+                termRef.current.writeln('');
+                termRef.current.writeln(`\x1b[1;32m[SYSTEM] ${msg}\x1b[0m`);
+                termRef.current.writeln(`\x1b[1;36m[HINT] Type 'status' for updated directives.\x1b[0m`);
+                termRef.current.writeln('');
+                // Scroll to bottom
+                termRef.current.scrollToBottom();
+            }
             
             prevProgress.current = mission.progress;
         }
