@@ -184,6 +184,7 @@ export interface MissionStatus {
     hasLaunchReady: boolean;
   };
   progress: number;
+  rank: string;
   nextStep: string;
 }
 
@@ -210,6 +211,13 @@ export const getMissionStatus = (): MissionStatus => {
   const steps = [hasNet, hasScan, decryptCount >= 3, isRoot, hasBlackSite, hasPayload, hasLaunchReady];
   const progress = Math.round((steps.filter(s => s).length / steps.length) * 100);
 
+  let rank = 'Initiate';
+  if (progress >= 100) rank = 'Ghost';
+  else if (progress >= 80) rank = 'Elite';
+  else if (progress >= 60) rank = 'Operator';
+  else if (progress >= 40) rank = 'Hacker';
+  else if (progress >= 20) rank = 'Scout';
+
   return {
     objectives: {
       hasNet,
@@ -222,6 +230,7 @@ export const getMissionStatus = (): MissionStatus => {
       hasLaunchReady
     },
     progress,
+    rank,
     nextStep
   };
 };

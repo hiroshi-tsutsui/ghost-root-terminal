@@ -42,6 +42,7 @@ const WebTerminal = () => {
   const editorStateRef = useRef({ content: '', path: '', buffer: '' });
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
   const [mission, setMission] = React.useState<MissionStatus | null>(null);
+  const [toast, setToast] = React.useState<{ message: string, visible: boolean }>({ message: '', visible: false });
   
   const playBeep = (freq = 440, type: any = 'sine', duration = 0.1) => {
     try {
@@ -97,6 +98,14 @@ const WebTerminal = () => {
         if (mission && mission.progress > prevProgress.current) {
             playBeep(880, 'square', 0.15);
             setTimeout(() => playBeep(1100, 'square', 0.3), 150);
+            
+            const msg = `OBJECTIVE COMPLETE. RANK: ${mission.rank.toUpperCase()}`;
+            setToast({ message: msg, visible: true });
+            setTimeout(() => setToast(t => ({ ...t, visible: false })), 4000);
+            
+            // Flash sidebar on desktop or open on mobile? 
+            // Let's just rely on the toast for now.
+            
             prevProgress.current = mission.progress;
         }
     }, [mission]);
@@ -1930,6 +1939,14 @@ const WebTerminal = () => {
     <div className="flex w-full h-screen bg-black text-green-500 font-mono relative">
       <div className="flex-grow h-full" ref={terminalContainerRef} />
       
+      {/* Toast Notification */}
+      <div className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-50 transition-all duration-500 ${toast.visible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 pointer-events-none'}`}>
+          <div className="bg-green-900/90 border border-green-500 text-green-100 px-6 py-3 rounded shadow-[0_0_15px_rgba(0,255,0,0.3)] font-mono text-sm tracking-wide">
+              <span className="font-bold mr-2">[MISSION UPDATE]</span>
+              {toast.message}
+          </div>
+      </div>
+
       {/* Mobile Sidebar Toggle */}
       {mission && (
         <button 
@@ -1954,6 +1971,10 @@ const WebTerminal = () => {
              <div className="flex justify-between mb-1 text-xs text-green-600">
                <span>PROGRESS</span>
                <span>{mission.progress}%</span>
+             </div>
+             <div className="flex justify-between mb-2 text-xs text-green-400 font-bold">
+               <span>RANK</span>
+               <span>{mission.rank}</span>
              </div>
              <div className="w-full bg-green-900/30 h-1.5 border border-green-900/50">
                <div className="bg-green-500 h-full transition-all duration-500" style={{ width: `${mission.progress}%` }}></div>
