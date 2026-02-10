@@ -144,9 +144,10 @@
 - [x] Update Ghost Root: Implemented Mission Tracker Sidebar (Persistent UI) & enhanced `status`. (Status: DEPLOYED - Commit `74164eb`).
 - [x] Update Ghost Root: Polish mobile experience & add sound effects for milestones. (Status: PUSHED - Commit `6c1754f`).
 - [x] Update Ghost Root: Implemented Visual Progression Feedback System (Rank, Toasts, Sidebar). (Status: DEPLOYED - Commit `af332f1`).
+- [x] Update Ghost Root: Implemented "System Feedback Protocol" v2.0 (Terminal Feedback, Hints, Discovery). (Status: DEPLOYED - Commit `a2ebad8`).
 - [x] Monitor Batch Sweep V6 (`sweep-v6-*`). (Checked: No active jobs found).
 - [x] Investigate Batch Image (`batch-custom-image` vs `yolo:latest`). (Status: FOUND - `us-central1-docker.pkg.dev/dev-dotsfty/rf/rf:latest`).
-  - [ ] Action: Rebuild image with `ultralytics`, `torch`, `torchvision`. (Pending - Dockerfile search failed).
+  - [ ] Action: Rebuild image with `ultralytics`, `torch`, `torchvision`. (Dockerfile found at `.../dotsfty-hub/dot-sfty-core-analytics/Dockerfile`).
 - [x] Monitor Batch Sweep V4 (`sweep-v4-*`). (Status: COMPLETE/MISSING - Jobs cleared from list. Data for 01-08 secured. V4-1 series finished?).
   - [x] Action: Verified `sweep-v4-exp-01` through `08` results.
   - [x] Action: Downloaded available results to `~/Downloads/yolo-gcp/eagle/infer/output/sweep_v4/`.
@@ -161,3 +162,7 @@
   - [x] Action: Download TP Results.
   - [x] Action: Analyze Results (`exp_06` Winner: 18m / 3.0s / α=0.2).
 - [x] Update Ghost Root: Implemented Visual Objective Tracker (Status + In-Terminal Feedback). (Status: DEPLOYED).
+- [x] Update Ghost Root: Implemented Dynamic Prompt & Startup Hints. (Status: DEPLOYED - Commit `3e4acc2`).
+- [x] Update Ghost Root: Enhanced "Mission Update" Feedback (Toasts) & Polished Terminal UI (Fixed ESLint errors). (Status: STAGED - Pending Deployment).
+- [x] Update Ghost Root: Verify mobile responsiveness and "Win State" animation. (Status: STAGED - Polished).
+- [ ] Deploy Ghost Root Updates (Pending Vercel Limit Reset @ 11:10 PM).

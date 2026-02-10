@@ -1070,9 +1070,12 @@ const WebTerminal = () => {
              term.writeln('');
              term.writeln('\x1b[1;34m[MISSION ACCOMPLISHED]\x1b[0m');
              term.writeln('');
-             term.writeln('System rebooting in 5 seconds...');
+             term.writeln('\x1b[7m Press "q" to reboot system. \x1b[0m');
              
-             await new Promise(r => setTimeout(r, 5000));
+             // Wait for user to quit
+             while (isTopModeRef.current) {
+                 await new Promise(r => setTimeout(r, 100));
+             }
              
              // Reboot
              window.location.reload();
