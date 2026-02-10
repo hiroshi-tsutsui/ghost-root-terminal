@@ -33,7 +33,7 @@ const WARNING_MESSAGE = [
   "",
 ];
 
-const HINT_MESSAGE = "\x1b[1;33mType 'help' for commands. Type 'status' for objectives.\x1b[0m";
+const HINT_MESSAGE = "\x1b[1;33mType 'help' for commands. Type 'status' for current objectives.\x1b[0m";
 
 const WebTerminal = () => {
   const terminalContainerRef = useRef<HTMLDivElement>(null);
@@ -2000,10 +2000,10 @@ const WebTerminal = () => {
           <div className="space-y-3 text-xs flex-grow">
             <ObjectiveItem label="Establish Uplink" done={mission.objectives.hasNet} />
             <ObjectiveItem label="Network Recon" done={mission.objectives.hasScan} />
-            <ObjectiveItem label={`Recover Intel (${mission.objectives.decryptCount}/3)`} done={mission.objectives.hasIntel} />
             <ObjectiveItem label="Root Access" done={mission.objectives.isRoot} />
             <ObjectiveItem label="Breach Black Site" done={mission.objectives.hasBlackSite} />
             <ObjectiveItem label="Acquire Payload" done={mission.objectives.hasPayload} />
+            <ObjectiveItem label={`Decrypt Keys (${mission.objectives.decryptCount}/3)`} done={mission.objectives.hasIntel} />
             <ObjectiveItem label="System Liberation" done={mission.objectives.hasLaunchReady} />
           </div>
 

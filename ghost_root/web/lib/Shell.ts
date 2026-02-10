@@ -49,7 +49,8 @@ const PROCESSES: Process[] = [
   { pid: 1337, user: 'ghost', cpu: 0.5, mem: 1.2, time: '0:01', command: '-bash', tty: 'pts/0', stat: 'Ss' },
   { pid: 2024, user: 'root', cpu: 0.0, mem: 0.2, time: '0:02', command: '/usr/sbin/cron -f', tty: '?', stat: 'Ss' },
   { pid: 8888, user: 'root', cpu: 1.5, mem: 2.1, time: '1:23', command: '/usr/bin/watcher --silent', tty: '?', stat: 'Sl' },
-  { pid: 9999, user: 'unknown', cpu: 45.2, mem: 12.8, time: '9:59', command: './hydra -l admin -P pass.txt 192.168.1.99', tty: 'pts/1', stat: 'R+' }
+  { pid: 9999, user: 'unknown', cpu: 45.2, mem: 12.8, time: '9:59', command: './hydra -l admin -P pass.txt 192.168.1.99', tty: 'pts/1', stat: 'R+' },
+  { pid: 31337, user: 'root', cpu: 99.9, mem: 50.0, time: '23:59', command: '/usr/bin/watcher_d --lock', tty: '?', stat: 'Z' }
 ];
 
 // Mock Network Connections
@@ -388,6 +389,15 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
       } else if (node.type === 'dir') {
           return finalize(`bash: ${command}: Is a directory`, newCwd);
       } else {
+          // Permission Check
+          if ((node as any).permissions) {
+              const mode = (node as any).permissions;
+              const owner = parseInt(mode[0], 10);
+              if (!(owner & 1)) {
+                  return finalize(`bash: ${command}: Permission denied`, newCwd);
+              }
+          }
+
           if (node.content.includes('[BINARY_ELF_X86_64]') || node.content.includes('BINARY_PAYLOAD') || node.content.includes('DOOMSDAY_PROTOCOL')) {
               if (fileName === 'overflow' || fileName === 'exploit') {
                   output = `[SYSTEM] Buffer Overflow Triggered at 0xBF800000...\n[SYSTEM] EIP overwritten with 0x08048000\n[SYSTEM] Spawning root shell...\n\n# whoami\nroot`;
@@ -399,6 +409,52 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
                   output = `bash: ${command}: Permission denied (Missing execute bit or corrupt header)`;
               }
           } else if (node.content.startsWith('#!/bin/bash')) {
+              if (fileName === 'net-bridge') {
+                 output = `[SYSTEM] Executing net-bridge...\n[ERROR] SEGMENTATION FAULT (core dumped)\n[HINT] View source code to debug.`;
+                 return { output: output, newCwd: newCwd, action: 'delay' };
+              }
+              if (fileName.endsWith('signal_decoder.sh')) {
+                  const inputPath = '/var/data/raw_signal.dat';
+                  const inputNode = getNode(inputPath);
+                  if (!inputNode) {
+                      output = `Error: Input file ${inputPath} not found.\nPlease restore from backup if missing.`;
+                      return { output, newCwd, action: 'delay' };
+                  }
+                  // Decode and Grep Logic
+                  const raw = inputNode.content;
+                  // Base64 decode
+                  let decoded = '';
+                  try {
+                      // Attempt decode. If fails (e.g. user wrote plain text), keep raw.
+                      decoded = atob(raw);
+                  } catch (e) {
+                      decoded = raw; 
+                  }
+                  
+                  // If raw content was already decoded (user manually decoded it?), handle that.
+                  // But the puzzle is cat | base64 -d. So the file should be encoded.
+                  // If decoding fails or produces garbage, grep might fail.
+                  
+                  // Grep for KEY
+                  const lines = decoded.split('\n');
+                  const matches = lines.filter(l => l.includes('KEY'));
+                  if (matches.length > 0) {
+                      output = matches.join('\n');
+                      output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SIGNAL DECODED.\x1b[0m`;
+                      
+                      // Mission Update: Create flag
+                      if (!VFS['/var/run/signal_decoded']) {
+                          VFS['/var/run/signal_decoded'] = { type: 'file', content: 'TRUE' };
+                          const runDir = getNode('/var/run');
+                          if (runDir && runDir.type === 'dir' && !runDir.children.includes('signal_decoded')) {
+                              runDir.children.push('signal_decoded');
+                          }
+                      }
+                  } else {
+                      output = `[ERROR] No valid key found in signal stream. (Did you restore the correct file?)`;
+                  }
+                  return { output, newCwd, action: 'delay' };
+              }
               output = `Executing script ${fileName}...\n` + node.content;
           } else {
               output = `bash: ${command}: Permission denied`;
@@ -839,15 +895,22 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
              const itemPath = targetPath === '/' ? `/${item}` : `${targetPath}/${item}`;
              const itemNode = getNode(itemPath);
              const isDir = itemNode?.type === 'dir';
-             const perms = isDir ? 'drwxr-xr-x' : '-rw-r--r--';
-             const size = isDir ? 4096 : (itemNode?.content?.length || 0); // Safe due to optional chaining on content if it existed, but better check type
-             // NOTE: itemNode can be FileNode or DirNode. 
-             // content exists only on FileNode.
-             // (itemNode as any).content is a hack or we check type.
+             
+             // Permission Logic
+             let mode = (itemNode as any).permissions;
+             if (!mode) mode = isDir ? '755' : '644';
+             
+             const rwx = (m: string) => {
+                 const n = parseInt(m, 10);
+                 return (n & 4 ? 'r' : '-') + (n & 2 ? 'w' : '-') + (n & 1 ? 'x' : '-');
+             };
+             
+             const pStr = (isDir ? 'd' : '-') + rwx(mode[0]) + rwx(mode[1]) + rwx(mode[2]);
+             
              const realSize = (itemNode && itemNode.type === 'file') ? itemNode.content.length : 4096;
              const date = 'Oct 23 14:02'; 
              const name = isDir ? `${C_BLUE}${item}${C_RESET}` : item;
-             return `${perms} 1 ghost ghost ${String(realSize).padStart(5)} ${date} ${name}`;
+             return `${pStr} 1 ghost ghost ${String(realSize).padStart(5)} ${date} ${name}`;
           }).join('\n');
         } else {
           output = items.map(item => {
@@ -1064,7 +1127,34 @@ ACCEPT     all  --  anywhere             anywhere`;
        if (args.length < 2) {
           output = 'usage: chmod <mode> <file>';
        } else {
-          output = "chmod: changing permissions of '" + args[1] + "': Operation not permitted\n(Read-only filesystem mounted)";
+          const mode = args[0];
+          const target = args[1];
+          const path = resolvePath(cwd, target);
+          const node = getNode(path);
+
+          if (!node) {
+              output = `chmod: cannot access '${target}': No such file or directory`;
+          } else {
+              // Basic numeric mode validation (e.g., 755, 644, 400)
+              if (/^[0-7]{3}$/.test(mode)) {
+                  // In a real system, only owner can chmod. Here we assume ghost owns everything in /home/ghost,
+                  // but maybe we simulate permission error for system files.
+                  const isSystemFile = path.startsWith('/bin') || path.startsWith('/usr') || path.startsWith('/etc') || path === '/';
+                  const isRoot = !!getNode('/tmp/.root_session');
+
+                  if (isSystemFile && !isRoot) {
+                      output = `chmod: changing permissions of '${target}': Operation not permitted`;
+                  } else {
+                      // Apply permission
+                      // We need to cast node to any because we just added permissions to the interface in VFS.ts
+                      // but Shell.ts imports might need refresh or we just use it.
+                      (node as any).permissions = mode;
+                      output = ''; // Silent success
+                  }
+              } else {
+                  output = `chmod: invalid mode: '${mode}'`;
+              }
+          }
        }
        break;
     }
@@ -1383,6 +1473,26 @@ Type "status" for mission objectives.`;
       if (!target) {
         output = 'usage: ssh [-i identity_file] user@host';
       } else {
+        // PERMISSION CHECK LOGIC
+        if (identityFile) {
+            const keyPath = resolvePath(cwd, identityFile);
+            const keyNode = getNode(keyPath);
+            if (!keyNode || keyNode.type !== 'file') {
+                output = `Warning: Identity file ${identityFile} not accessible: No such file or directory.`;
+                return { output, newCwd, action: 'delay' };
+            }
+
+            // Check permissions (default to 644 if missing, which fails)
+            const perms = (keyNode as any).permissions || '644';
+            const group = parseInt(perms[1], 10);
+            const other = parseInt(perms[2], 10);
+
+            if (group > 0 || other > 0) {
+                output = `Permissions 0${perms} for '${identityFile}' are too open.\nIt is required that your private key files are NOT accessible by others.\nThis private key will be ignored.\nLoad key "${identityFile}": bad permissions`;
+                return { output, newCwd, action: 'delay' };
+            }
+        }
+
         if (target.includes('black-site') || target.includes('192.168.1.99')) {
              const firewallFlushed = !!getNode('/var/run/firewall_flushed');
              if (!firewallFlushed) {
@@ -1409,6 +1519,23 @@ Type "status" for mission objectives.`;
                  return { output, newCwd, action: 'delay', newPrompt: 'root@black-site#' };
              } else {
                  output = `Connecting to ${target}...\nPermission denied (publickey).\n(Hint: You need a valid key file.)`;
+                 return { output, newCwd, action: 'delay' };
+             }
+        } else if (target.includes('192.168.1.50') || target.includes('backup-server')) {
+             let hasKey = false;
+             if (identityFile) {
+                 const keyPath = resolvePath(cwd, identityFile);
+                 const keyNode = getNode(keyPath);
+                 if (keyNode && keyNode.type === 'file' && keyNode.content.includes('KEY_ID: ADMIN_BACKUP_V1')) {
+                     hasKey = true;
+                 }
+             }
+             if (hasKey) {
+                 output = `Connecting to backup-server (192.168.1.50)...\nWelcome to Ubuntu 20.04.2 LTS (GNU/Linux 5.4.0-72-generic x86_64)\n\n * Documentation:  https://help.ubuntu.com\n * Management:     https://landscape.canonical.com\n * Support:        https://ubuntu.com/advantage\n\nLast login: Tue Feb 10 03:00:01 2026 from 192.168.1.5`;
+                 newCwd = '/remote/backup-server/home'; 
+                 return { output, newCwd, action: 'delay', newPrompt: 'backup@server:~$ ' };
+             } else {
+                 output = `Connecting to ${target}...\nPermission denied (publickey).`;
                  return { output, newCwd, action: 'delay' };
              }
         } else if (target.includes('admin-pc')) {
@@ -2025,6 +2152,8 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
                    } else {
                         output = `(UNKNOWN) [${host}] ${p} (?) : Connection refused`;
                    }
+               } else if (host === '10.10.10.10') {
+                    output = `(UNKNOWN) [10.10.10.10] 4444 (?) open\n[DATA RECEIVED] Key: BRIDGE_SECURE_KEY_X9\n[DATA RECEIVED] Message: The Black Site is heavily monitored. Proceed with caution.\n`;
                } else if (host === 'localhost' || host === '127.0.0.1') {
                    if (p === '1337') {
                        output = `localhost [127.0.0.1] 1337 (?): open\n[BACKDOOR_LISTENER_V2]\n> Awaiting Payload...`;
@@ -2259,12 +2388,16 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
       if (args.length < 1) {
           output = 'kill: usage: kill [-s signal|-p] [-a] <pid>...';
       } else {
-          // Ignore signals for now, just extract PID
-          const pidStr = args[args.length - 1];
-          const pid = parseInt(pidStr, 10);
+          // Check for signals (e.g., -9, -SIGKILL)
+          const signal = args.find(a => a.startsWith('-'));
+          const isSigKill = signal === '-9' || signal === '-SIGKILL';
+          
+          // Extract PID (last argument that isn't a flag)
+          const pidStr = args.filter(a => !a.startsWith('-')).pop();
+          const pid = pidStr ? parseInt(pidStr, 10) : NaN;
           
           if (isNaN(pid)) {
-              output = `kill: ${pidStr}: arguments must be process or job IDs`;
+              output = `kill: arguments must be process or job IDs`;
           } else {
               const idx = PROCESSES.findIndex(p => p.pid === pid);
               if (idx === -1) {
@@ -2276,10 +2409,24 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
                       return { output, newCwd, action: 'kernel_panic' };
                   } else if (pid === 666) {
                       output = `bash: kill: (${pid}) - Operation not permitted\n[SYSTEM] Warning: Do not disturb the spectre kernel.`;
-                      // Maybe modify it slightly to show it reacted? No, just deny.
                   } else if (pid === 1337) {
                       output = 'Terminating shell...';
-                      return { output, newCwd, action: 'kernel_panic' }; // Or just exit
+                      return { output, newCwd, action: 'kernel_panic' };
+                  } else if (pid === 31337) {
+                      if (isSigKill) {
+                          PROCESSES.splice(idx, 1);
+                          // Remove lock file
+                          if (VFS['/var/lock/watcher.lock']) {
+                              delete VFS['/var/lock/watcher.lock'];
+                              const lockDir = getNode('/var/lock');
+                              if (lockDir && lockDir.type === 'dir') {
+                                  lockDir.children = lockDir.children.filter(c => c !== 'watcher.lock');
+                              }
+                          }
+                          output = `[31337] Killed (SIGKILL).\n[SYSTEM] Watcher Daemon terminated. Lock released.`;
+                      } else {
+                          output = `kill: (${pid}) - Process is a zombie (defunct). Use SIGKILL (-9) to force termination.`;
+                      }
                   } else {
                       PROCESSES.splice(idx, 1);
                       output = `[${pid}] Terminated.`;
@@ -2912,6 +3059,19 @@ ${validUnits.length} loaded units listed.`;
                    if (unit === 'networking') {
                        // Do nothing special visual
                    }
+                   
+                   if (unit === 'tor') {
+                       const torrc = getNode('/etc/tor/torrc');
+                       if (!torrc || torrc.type !== 'file' || torrc.content.includes('InvalidPort')) {
+                           output = `Job for tor.service failed because the control process exited with error code.\nSee "systemctl status tor.service" and "journalctl -xe" for details.`;
+                           const log = getNode('/var/log/syslog');
+                           if (log && log.type === 'file') {
+                               log.content += `\n${new Date().toUTCString()} systemd[1]: Failed to start Anonymizing overlay network for TCP.\n${new Date().toUTCString()} tor[6666]: [err] Parsing config file /etc/tor/torrc failed: Syntax error: "InvalidPort" is not a valid option.`;
+                           }
+                           return { output, newCwd };
+                       }
+                   }
+
                    const pidFile = `${unit}.pid`;
                    const rdNode = VFS[runDir];
                    if (rdNode && rdNode.type === 'dir' && !rdNode.children.includes(pidFile)) {
@@ -2963,41 +3123,64 @@ ${validUnits.length} loaded units listed.`;
     }
     case 'sed': {
        if (args.length < 1) {
-           output = 'usage: sed <expression> [file]';
+           output = 'usage: sed [-i] <expression> [file]';
        } else {
-           let expression = args[0];
-           if ((expression.startsWith("'") && expression.endsWith("'")) || (expression.startsWith('"') && expression.endsWith('"'))) {
-               expression = expression.slice(1, -1);
-           }
+           const inPlace = args.includes('-i');
+           // Remove -i from args to find expression and file
+           const cleanArgs = args.filter(a => a !== '-i');
+           
+           if (cleanArgs.length < 1) {
+               output = 'usage: sed [-i] <expression> [file]';
+           } else {
+               let expression = cleanArgs[0];
+               if ((expression.startsWith("'") && expression.endsWith("'")) || (expression.startsWith('"') && expression.endsWith('"'))) {
+                   expression = expression.slice(1, -1);
+               }
 
-           let content = '';
-           if (args.length > 1) {
-               const node = getNode(resolvePath(cwd, args[1]));
-               if (node && node.type === 'file') content = node.content;
-           } else if (stdin !== undefined) {
-               content = stdin;
-           }
+               let content = '';
+               let targetNode: any = null;
+               
+               if (cleanArgs.length > 1) {
+                   const node = getNode(resolvePath(cwd, cleanArgs[1]));
+                   if (node && node.type === 'file') {
+                       content = node.content;
+                       targetNode = node;
+                   } else {
+                       output = `sed: cannot read ${cleanArgs[1]}: No such file`;
+                       return { output, newCwd };
+                   }
+               } else if (stdin !== undefined) {
+                   content = stdin;
+               }
 
-           // Support s/find/replace/g
-           if (expression.startsWith('s/')) {
-               const parts = expression.split('/');
-               // s/find/replace/flags -> ['', 'find', 'replace', 'flags']
-               if (parts.length >= 3) {
-                   const find = parts[1];
-                   const replace = parts[2];
-                   const flags = parts[3] || '';
-                   
-                   try {
-                       const regex = new RegExp(find, flags.includes('g') ? 'g' : '');
-                       output = content.replace(regex, replace);
-                   } catch (e) {
-                       output = 'sed: invalid regex';
+               // Support s/find/replace/g
+               if (expression.startsWith('s/')) {
+                   const parts = expression.split('/');
+                   // s/find/replace/flags -> ['', 'find', 'replace', 'flags']
+                   if (parts.length >= 3) {
+                       const find = parts[1];
+                       const replace = parts[2];
+                       const flags = parts[3] || '';
+                       
+                       try {
+                           const regex = new RegExp(find, flags.includes('g') ? 'g' : '');
+                           const result = content.replace(regex, replace);
+                           
+                           if (inPlace && targetNode) {
+                               targetNode.content = result;
+                               output = ''; // Silent success
+                           } else {
+                               output = result;
+                           }
+                       } catch (e) {
+                           output = 'sed: invalid regex';
+                       }
+                   } else {
+                       output = 'sed: invalid expression';
                    }
                } else {
-                   output = 'sed: invalid expression';
+                   output = 'sed: only s/find/replace/ is supported in simulation';
                }
-           } else {
-               output = 'sed: only s/find/replace/ is supported in simulation';
            }
        }
        break;
@@ -3244,6 +3427,17 @@ ${validUnits.length} loaded units listed.`;
                if (isRunning) {
                    output = 'Tor is already running.';
                } else {
+                   // Check config first (systemctl mirror)
+                   const torrc = getNode('/etc/tor/torrc');
+                   if (!torrc || torrc.type !== 'file' || torrc.content.includes('InvalidPort')) {
+                       output = '[ERROR] Tor failed to start. Configuration error in /etc/tor/torrc.\nSee "journalctl -xe" for details.';
+                       const log = getNode('/var/log/syslog');
+                       if (log && log.type === 'file') {
+                           log.content += `\n${new Date().toUTCString()} tor[6666]: [err] Parsing config file /etc/tor/torrc failed: Syntax error: "InvalidPort" is not a valid option.`;
+                       }
+                       return { output, newCwd };
+                   }
+
                    // Start via systemctl logic equivalent
                    if (runDir && runDir.type === 'dir') {
                        VFS['/var/run/tor.pid'] = { type: 'file', content: '6666' };

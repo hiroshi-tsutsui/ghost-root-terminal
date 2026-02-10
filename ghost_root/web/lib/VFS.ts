@@ -4,11 +4,13 @@
 export interface FileNode {
   type: 'file';
   content: string;
+  permissions?: string;
 }
 
 export interface DirNode {
   type: 'dir';
   children: string[];
+  permissions?: string;
 }
 
 export type VFSNode = FileNode | DirNode;
@@ -16,7 +18,8 @@ export type VFSNode = FileNode | DirNode;
 const VFS: Record<string, VFSNode> = {
   '/': {
     type: 'dir',
-    children: ['home', 'etc', 'var', 'archive', 'usr', 'root']
+    children: ['home', 'etc', 'var', 'archive', 'usr', 'root'],
+    permissions: '755'
   },
   '/root': {
     type: 'dir',
@@ -36,7 +39,28 @@ const VFS: Record<string, VFSNode> = {
   },
   '/usr/bin': {
     type: 'dir',
-    children: ['gcc']
+    children: ['gcc', 'net-bridge']
+  },
+  '/usr/bin/net-bridge': {
+    type: 'file',
+    content: `#!/bin/bash
+# NET-BRIDGE v1.0
+# ESTABLISH UPLINK TO SECRET RELAY
+
+# AUTOMATED TARGET ACQUISITION
+# Scans logs for the daily bridge target IP
+TARGET=$(grep "BRIDGE_TARGET" /var/log/syslog | awk '{print $NF}')
+
+if [ -z "$TARGET" ]; then
+  echo "Error: Target IP not found."
+  exit 1
+fi
+
+echo "Initiating handshake with $TARGET..."
+# [FATAL ERROR] SEGMENTATION FAULT
+# [CORRUPTION DETECTED AT OFFSET 0x4A]
+# [MANUAL OVERRIDE REQUIRED: Connect via 'nc']
+`
   },
   '/usr/src': {
     type: 'dir',
@@ -125,7 +149,30 @@ KEY_ID: GHOST_PROTOCOL_INIT_V2
   },
   '/home/ghost': {
     type: 'dir',
-    children: ['secrets', '.bash_history', 'wifi_note.txt', 'journal', 'evidence.jpg', 'tools.zip', 'capture.cap', 'drone_manual.txt', 'hashes.txt', 'wordlist.txt']
+    children: ['secrets', '.bash_history', 'wifi_note.txt', 'journal', 'evidence.jpg', 'tools', 'tools.zip', 'capture.cap', 'drone_manual.txt', 'hashes.txt', 'wordlist.txt']
+  },
+  '/home/ghost/tools': {
+    type: 'dir',
+    children: ['signal_decoder.sh']
+  },
+  '/home/ghost/tools/signal_decoder.sh': {
+    type: 'file',
+    content: `#!/bin/bash
+# SIGNAL_DECODER_V1
+# PURPOSE: Decrypt raw signal data from the uplink.
+
+# Check input file
+if [ ! -f "/var/data/raw_signal.dat" ]; then
+  echo "Error: Input file /var/data/raw_signal.dat not found."
+  echo "Please restore from backup if missing."
+  exit 1
+fi
+
+echo "Decoding signal stream..."
+# The pipeline is: cat file | decode | filter key
+cat /var/data/raw_signal.dat | base64 -d | grep "KEY"
+`,
+    permissions: '000'
   },
   '/home/ghost/hashes.txt': {
     type: 'file',
@@ -219,7 +266,15 @@ exit`
   },
   '/etc': {
     type: 'dir',
-    children: ['passwd', 'shadow', 'hosts', 'iptables.rules']
+    children: ['passwd', 'shadow', 'hosts', 'iptables.rules', 'tor']
+  },
+  '/etc/tor': {
+    type: 'dir',
+    children: ['torrc']
+  },
+  '/etc/tor/torrc': {
+    type: 'file',
+    content: 'HiddenServiceDir /var/lib/tor/hidden_service/\nInvalidPort 80 127.0.0.1:80'
   },
   '/etc/passwd': {
       type: 'file',
@@ -247,11 +302,63 @@ COMMIT
   },
   '/var': {
     type: 'dir',
-    children: ['log', 'mail']
+    children: ['log', 'mail', 'backups', 'lib', 'lock', 'opt', 'run']
+  },
+  '/var/lock': {
+    type: 'dir',
+    children: ['watcher.lock']
+  },
+  '/var/lock/watcher.lock': {
+    type: 'file',
+    content: '31337'
+  },
+  '/var/opt': {
+    type: 'dir',
+    children: ['watcher']
+  },
+  '/var/opt/watcher': {
+    type: 'dir',
+    children: ['config.json', 'secret.txt']
+  },
+  '/var/opt/watcher/config.json': {
+    type: 'file',
+    content: '{\n  "daemon": true,\n  "lock_file": "/var/lock/watcher.lock",\n  "target": "all"\n}'
+  },
+  '/var/opt/watcher/secret.txt': {
+    type: 'file',
+    content: 'AUTH_TOKEN: GHOST_ROOT{Z0MB1E_PR0CESS_K1LL3D}\nACCESS_LEVEL: 5'
+  },
+  '/var/run': {
+    type: 'dir',
+    children: ['net_status', 'scan_complete', 'decrypt_count', 'firewall_flushed']
+  },
+  '/var/data': {
+    type: 'dir',
+    children: []
   },
   '/var/backups': {
       type: 'dir',
-      children: ['logs.tar']
+      children: ['logs.tar', 'lost+found', 'signal_log.enc'],
+      permissions: '755'
+  },
+  '/var/backups/signal_log.enc': {
+      type: 'file',
+      content: 'W0xPRyBTVEFSVF0KLi4uCihub2lzZSkKLi4uClRBUkdFVF9DT09SRElOQVRFUzogNDUuMTIsIC05My4yMQpLRVk6IE9NRUdBLTEyMwouLi4KW0xPRyBFTkRdCg=='
+  },
+  '/var/backups/lost+found': {
+      type: 'dir',
+      children: ['id_rsa.backup', 'README.txt'],
+      permissions: '700'
+  },
+  '/var/backups/lost+found/id_rsa.backup': {
+      type: 'file',
+      content: '-----BEGIN RSA PRIVATE KEY-----\nMIIEowIBAAKCAQEA3... (BACKUP KEY)\nKEY_ID: ADMIN_BACKUP_V1\n-----END RSA PRIVATE KEY-----',
+      permissions: '644'
+  },
+  '/var/backups/lost+found/README.txt': {
+      type: 'file',
+      content: 'Found this key in the old server rack. Not sure if it works on the new backup server (192.168.1.50).\n- J',
+      permissions: '644'
   },
   '/var/backups/logs.tar': {
       type: 'file',
@@ -358,7 +465,11 @@ Click here to claim your prize!
   },
   '/var/lib': {
       type: 'dir',
-      children: ['cams']
+      children: ['cams', 'tor']
+  },
+  '/var/lib/tor': {
+      type: 'dir',
+      children: []
   },
   '/var/lib/cams': {
       type: 'dir',
@@ -424,6 +535,7 @@ Oct 23 15:00:00 ghost-root shadow[666]: User Romanoff: red_ledger authentication
 Oct 23 15:30:00 ghost-root systemd[1]: Reloading OpenClaw Agent Service.
 Oct 23 15:30:01 ghost-root openclaw[1337]: Agent "Vision" reporting status: ONLINE.
 Oct 23 15:45:00 ghost-root kernel: [ 4000.000000] RADIO: Strong FM interference detected on 89.9 MHz.
+Oct 23 16:00:00 ghost-root network[500]: BRIDGE_TARGET initiated at 10.10.10.10
 `
     },
     '/var/log/connections.log': {
@@ -441,6 +553,18 @@ Oct 23 15:45:00 ghost-root kernel: [ 4000.000000] RADIO: Strong FM interference 
   '/remote/admin-pc': {
     type: 'dir',
     children: ['home', 'var']
+  },
+  '/remote/backup-server': {
+    type: 'dir',
+    children: ['home']
+  },
+  '/remote/backup-server/home': {
+    type: 'dir',
+    children: ['admin_hash.txt']
+  },
+  '/remote/backup-server/home/admin_hash.txt': {
+    type: 'file',
+    content: 'User: admin\nHash: $1$spectre$456789 (MD5)\nHint: It is a color.'
   },
   '/remote/admin-pc/home': {
     type: 'dir',
