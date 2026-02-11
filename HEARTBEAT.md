@@ -199,7 +199,9 @@
   - [x] Cycle 30: "The Hidden Binary" (Reverse Engineering / Strings).
   - [x] Cycle 31: "The Encrypted Transmission" (OpenSSL Decryption).
   - [x] Cycle 32: "The System Log" (Log Analysis / Grep).
-  - [ ] Cycle 33: (Pending).
+  - [x] Cycle 33: "The Background Beacon" (Background Process / Netcat).
+  - [x] Cycle 34: "The Corrupt File System" (fsck / fsck.ext4 / Recovery).
+  - [ ] Cycle 35: (Pending).
   - [x] Fix: Restored `vercel` CLI (Global Install) & Fixed TypeScript Error in `Shell.ts`. (Status: DEPLOYED).
   - [x] Fix: Repaired "MISSION STATUS" UI layout (Added `flex` to sidebar). (Status: DEPLOYED).
   - [x] Fix: Prevent horizontal scrolling (Added `overflow-hidden` to main container). (Status: DEPLOYED).

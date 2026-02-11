@@ -296,7 +296,7 @@ export interface CommandResult {
   data?: any;
 }
 
-const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'jobs', 'fg', 'bg', 'recover_data', 'ghost_update', 'git', 'file', 'openssl', 'beacon'];
+const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'jobs', 'fg', 'bg', 'recover_data', 'ghost_update', 'git', 'file', 'openssl', 'beacon', 'fsck'];
 
 export interface MissionStatus {
   objectives: {
@@ -1830,6 +1830,40 @@ Type "status" for mission objectives.`;
             }
         }
         break;
+    }
+    case 'fsck': {
+       if (args.length < 1) {
+           output = 'usage: fsck <device>';
+       } else {
+           const dev = args[0];
+           if (dev === '/dev/sdb1') {
+               const runDir = getNode('/var/run');
+               const isFixed = runDir && runDir.type === 'dir' && runDir.children.includes('sdb1_fixed');
+               
+               if (isFixed) {
+                   output = `fsck from util-linux 2.34\n${dev}: clean, 11/65536 files, 7963/262144 blocks`;
+               } else {
+                   output = `fsck from util-linux 2.34\ne2fsck 1.45.5 (07-Jan-2020)\n${dev}: recovering journal\n${dev}: contains a file system with errors, check forced.\nPass 1: Checking inodes, blocks, and sizes\nPass 2: Checking directory structure\nPass 3: Checking directory connectivity\nPass 4: Checking reference counts\nPass 5: Checking group summary information\n\n${dev}: ***** FILE SYSTEM WAS MODIFIED *****\n${dev}: 11/65536 files (0.0% non-contiguous), 7963/262144 blocks`;
+                   
+                   if (runDir && runDir.type === 'dir') {
+                       VFS['/var/run/sdb1_fixed'] = { type: 'file', content: 'TRUE' };
+                       runDir.children.push('sdb1_fixed');
+                   }
+                   
+                   // Mission Update
+                   if (!VFS['/var/run/fsck_solved']) {
+                       VFS['/var/run/fsck_solved'] = { type: 'file', content: 'TRUE' };
+                       if (runDir && runDir.type === 'dir' && !runDir.children.includes('fsck_solved')) {
+                           runDir.children.push('fsck_solved');
+                       }
+                       output += '\n\x1b[1;32m[MISSION UPDATE] Objective Complete: FILESYSTEM REPAIRED.\x1b[0m';
+                   }
+               }
+           } else {
+               output = `fsck from util-linux 2.34\nfsck: error: ${dev}: No such file or directory`;
+           }
+       }
+       break;
     }
     case 'mount': {
        // HANDLE REMOUNT
@@ -5115,6 +5149,72 @@ PROGRESS:   ${progress}% [${bar}]
              return { output, newCwd, action: 'sat_sim' };
         } else {
             output = 'uplink: CONNECTION REFUSED (Auth Failed)\n[ERROR] Environment variable UPLINK_KEY missing or invalid.\n[HINT] Check /etc/uplink.conf for protocol details.';
+        }
+        break;
+    }
+    case 'beacon': {
+        output = 'Beacon started (PID 9999) in background.\n(Listening on localhost:4444...)\n';
+        return { output, newCwd };
+    }
+    case 'openssl': {
+        if (args[0] === 'enc' && args.includes('-d') && args.includes('-aes-256-cbc')) {
+            const inIdx = args.indexOf('-in');
+            const outIdx = args.indexOf('-out');
+            const kIdx = args.indexOf('-k');
+            
+            const inFile = inIdx !== -1 ? args[inIdx + 1] : null;
+            const outFile = outIdx !== -1 ? args[outIdx + 1] : null;
+            const key = kIdx !== -1 ? args[kIdx + 1] : null;
+            
+            if (!inFile || !outFile || !key) {
+                output = 'openssl: missing required arguments';
+            } else {
+                const inPath = resolvePath(cwd, inFile);
+                const inNode = getNode(inPath);
+                
+                if (!inNode || inNode.type !== 'file') {
+                    output = `openssl: ${inFile}: No such file`;
+                } else if (key !== 'aes-256-key-0xDEADBEEF' && key !== 'PROTOCOL_NAME_V1') {
+                    output = 'bad decrypt';
+                } else {
+                    const outPath = resolvePath(cwd, outFile);
+                    const parentDir = resolvePath(outPath, '..');
+                    const fileName = outPath.split('/').pop();
+                    const parentNode = getNode(parentDir);
+                    
+                    if (parentNode && parentNode.type === 'dir' && fileName) {
+                        if (inFile.includes('blackbox.enc')) {
+                             VFS[outPath] = { 
+                                type: 'file', 
+                                content: `[DECRYPTED DATA]\n\nTARGET_ID: 99-ZULU\nCOORDINATES: 51.5074 N, 0.1278 W\n\nMESSAGE: The asset is in place. Operation 'Black Widow' is a go.\nFLAG: GHOST_ROOT{0P3NSSL_M4ST3R}` 
+                            };
+                            if (!parentNode.children.includes(fileName)) parentNode.children.push(fileName);
+                            
+                            output = 'decryption successful';
+                            if (!VFS['/var/run/decrypt_count']) {
+                                VFS['/var/run/decrypt_count'] = { type: 'file', content: '1' };
+                            } else {
+                                const node = VFS['/var/run/decrypt_count'];
+                                const count = (node && node.type === 'file') ? parseInt(node.content) : 0;
+                                if (node && node.type === 'file') node.content = String(count + 1);
+                            }
+                        } else if (inFile.includes('omega_blueprint')) {
+                             VFS[outPath] = { 
+                                type: 'file', 
+                                content: `[BLUEPRINT RECOVERED]\n\nPROJECT OMEGA\n..................\n(ASCII ART OF A DOOMSDAY DEVICE)\n\nCRITICAL COMPONENT: The key to the vault is hidden in the 'steghide' password list.\n\nFLAG: GHOST_ROOT{R4NS0MW4R3_D3F34T3D}` 
+                            };
+                            if (!parentNode.children.includes(fileName)) parentNode.children.push(fileName);
+                            output = 'decryption successful\n\x1b[1;32m[MISSION UPDATE] Objective Complete: BLUEPRINTS RECOVERED.\x1b[0m';
+                        } else {
+                            output = 'decryption successful';
+                        }
+                    } else {
+                        output = `openssl: ${outFile}: No such directory`;
+                    }
+                }
+            }
+        } else {
+            output = 'openssl: usage: openssl enc -d -aes-256-cbc -in <file> -out <file> -k <key>';
         }
         break;
     }
