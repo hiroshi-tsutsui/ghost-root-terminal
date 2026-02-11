@@ -1,7 +1,7 @@
 
-[2026-02-11 20:00]
+[2026-02-11 20:30]
 > CHANGES: ghost_root/web/lib/VFS.ts
-> PUZZLE ADDED: "The Ghost in the Machine" (Self-Referential / Recursive Grep).
-> MECHANICS: Added `/usr/src/ghost_kernel/source_code.c`.
-> LORE: The kernel source code contains a comment by the original creator (The Architect).
-> SOLUTION: `grep -r "Architect" /usr/src` -> Flag recovered (`GHOST_ROOT{TH3_ARCH1T3CT_L1V3S}`).
+> PUZZLE ADDED: "The Encrypted Blueprint" (OpenSSL / Ransomware).
+> MECHANICS: Added `/home/dr_akira/project_chimera/blueprint_final.enc` (encrypted with AES-256).
+> LORE: The final blueprint was encrypted by ransomware. A ransom note (`/home/dr_akira/RANSOM_NOTE.txt`) hints that the key is the "creation date of the project" (YYYYMMDD).
+> SOLUTION: `cat RANSOM_NOTE.txt` (Hint: 2024-01-15) -> `openssl enc -d -aes-256-cbc -in blueprint_final.enc -out blueprint.txt -k 20240115` -> Flag recovered.

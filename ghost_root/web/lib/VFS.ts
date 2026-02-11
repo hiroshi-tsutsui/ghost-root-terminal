@@ -997,6 +997,14 @@ Do not attempt to fix it unless the alert level is 0.
 [DATA_LOST]
 (Try 'hexdump' to analyze structure)`
   },
+  '/home/dr_akira/project_chimera/blueprint_final.enc': {
+    type: 'file',
+    content: 'U2FsdGVkX1/...' // Encrypted content
+  },
+  '/home/dr_akira/RANSOM_NOTE.txt': {
+    type: 'file',
+    content: 'YOUR FILES HAVE BEEN ENCRYPTED.\n\nTo decrypt, you need the creation date of Project Chimera (YYYYMMDD).\nHint: Check the project logs or metadata.\n(Date: 2024-01-15)'
+  },
 };
 
 export const initialVFS = JSON.parse(JSON.stringify(VFS)); // Deep copy for reset

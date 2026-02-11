@@ -1854,7 +1854,7 @@ Type "status" for mission objectives.`;
                    if (!VFS['/var/run/fsck_solved']) {
                        VFS['/var/run/fsck_solved'] = { type: 'file', content: 'TRUE' };
                        if (runDir && runDir.type === 'dir' && !runDir.children.includes('fsck_solved')) {
-                           runDir.children.push('fsck_solved');
+                           (runDir as any).children.push('fsck_solved');
                        }
                        output += '\n\x1b[1;32m[MISSION UPDATE] Objective Complete: FILESYSTEM REPAIRED.\x1b[0m';
                    }
@@ -3978,8 +3978,12 @@ The key's randomart image is:
                     }
                     
                     if (password) {
-                        if (password === 'GHOST_PROTOCOL_V1') {
-                            const decryptedContent = 'COORDINATES: 51.5074 N, 0.1278 W\nTARGET: MI6_HQ\nFLAG: GHOST_ROOT{0P3NSSL_M4ST3R}';
+                        if (password === 'GHOST_PROTOCOL_V1' || password === '20240115') {
+                            let decryptedContent = 'COORDINATES: 51.5074 N, 0.1278 W\nTARGET: MI6_HQ\nFLAG: GHOST_ROOT{0P3NSSL_M4ST3R}';
+                            if (password === '20240115') {
+                                decryptedContent = 'PROJECT CHIMERA BLUEPRINT (FINAL)\n\n[SYSTEM ARCHITECTURE]\n- Neural Core: Quantum-v4\n- Uplink: Satellite OMEGA\n- Failsafe: DETONATION_PROTOCOL\n\nFLAG: GHOST_ROOT{R4NS0MW4R3_D3CRYPT3D}';
+                            }
+                            
                             if (outFileIdx !== -1 && args[outFileIdx + 1]) {
                                 const outFile = args[outFileIdx + 1];
                                 const outPath = resolvePath(cwd, outFile);
