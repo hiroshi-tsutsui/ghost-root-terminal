@@ -160,3 +160,10 @@ This file tracks the development cycles of the `ghost_root` project under the ne
 > MECHANICS: Added `mount` with `-o remount,rw` support. Added `/mnt/data` (read-only) and `recover_data` script.
 > LORE: Data corruption requires manual recovery, but the backup partition is mounted Read-Only.
 > SOLUTION: `recover_data` (fails) -> `mount` (shows /mnt/data ro) -> `mount -o remount,rw /mnt/data` -> `recover_data` (success).
+
+[2026-02-11 13:30]
+> CHANGES: ghost_root/web/lib/Shell.ts
+> PUZZLE ADDED: "The Partition Table" (Disk Discovery / Fdisk / Hidden Volume).
+> MECHANICS: Updated `dmesg` to hint at `/dev/sdb`. Updated `mount` to trigger mission objective.
+> LORE: A hidden partition (`/dev/sdb1`) is detected by the kernel but not mounted.
+> SOLUTION: `dmesg` (find sdb) -> `fdisk -l` (find sdb1) -> `mkdir /mnt/secret` -> `mount /dev/sdb1 /mnt/secret` -> Key recovered.

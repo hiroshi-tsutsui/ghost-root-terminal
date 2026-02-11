@@ -230,21 +230,23 @@ export const getMissionStatus = (): MissionStatus => {
   const decryptCount = decryptNode && decryptNode.type === 'file' ? parseInt(decryptNode.content) : 0;
   const hasBlackSite = !!getNode('/remote/black-site/root/FLAG.txt');
   const hasPayload = !!getNode('/home/ghost/launch_codes.bin') || !!getNode('/launch_codes.bin');
+  const hasHiddenVol = !!getNode('/var/run/hidden_vol_mounted');
   const hasLaunchReady = !!getNode('/var/run/launch_ready');
 
   let nextStep = 'Check manual pages (man) or list files (ls).';
   
-  // Logic Flow: Net -> Scan -> Root -> BlackSite -> Payload -> Decrypt Keys -> Launch
+  // Logic Flow: Net -> Scan -> Root -> BlackSite -> HiddenVol -> Payload -> Decrypt Keys -> Launch
   if (!hasNet) nextStep = 'Connect to a network. Try "wifi scan" then "wifi connect".';
   else if (!hasScan) nextStep = 'Scan the network for targets. Try "nmap 192.168.1.0/24" or "netmap".';
   else if (!isRoot) nextStep = 'Escalate privileges to root. Try "steghide extract" on evidence.jpg (check EXIF data/tor for password) or "hydra".';
   else if (!hasBlackSite) nextStep = 'Infiltrate the Black Site. Use "ssh -i <key> root@192.168.1.99". Key is hidden in steganography payload.';
+  else if (!hasHiddenVol) nextStep = 'Investigate storage devices. Use "fdisk -l" to find partitions, then "mount" the hidden volume.';
   else if (!hasPayload) nextStep = 'Acquire the launch codes. Use "sat connect OMEG" to download from orbit.';
   else if (decryptCount < 3) nextStep = 'Decrypt "KEYS.enc" (found on Sat COSM). Password is the owner\'s name (check logs).';
   else if (!hasLaunchReady) nextStep = 'Decrypt "launch_codes.bin" using the key from KEYS.enc.';
   else nextStep = 'EXECUTE THE LAUNCH PROTOCOL. RUN "./launch_codes.bin".';
 
-  const steps = [hasNet, hasScan, isRoot, hasBlackSite, hasPayload, decryptCount >= 3, hasLaunchReady];
+  const steps = [hasNet, hasScan, isRoot, hasBlackSite, hasHiddenVol, hasPayload, decryptCount >= 3, hasLaunchReady];
   const progress = Math.round((steps.filter(s => s).length / steps.length) * 100);
 
   let rank = 'Initiate';
@@ -264,6 +266,7 @@ export const getMissionStatus = (): MissionStatus => {
       decryptCount,
       isRoot,
       hasBlackSite,
+      hasHiddenVol,
       hasPayload,
       hasLaunchReady
     },
@@ -274,20 +277,44 @@ export const getMissionStatus = (): MissionStatus => {
 };
 
 export const tabCompletion = (cwd: string, inputBuffer: string): { matches: string[], completed: string } => {
-  const parts = inputBuffer.split(' '); 
-  if (!inputBuffer) return { matches: [], completed: inputBuffer };
+  // If buffer is empty, don't show anything (or maybe show contents of CWD?)
+  // Bash behavior: empty tab -> list CWD
+  if (!inputBuffer) {
+      const dirNode = getNode(cwd);
+      if (dirNode && dirNode.type === 'dir') {
+          return { matches: dirNode.children, completed: inputBuffer };
+      }
+      return { matches: [], completed: inputBuffer };
+  }
 
+  const parts = inputBuffer.split(' '); 
   const lastTokenIndex = parts.length - 1;
   const lastToken = parts[lastTokenIndex];
 
-  if (lastTokenIndex === 0) {
+  // Command Completion (if first token)
+  if (lastTokenIndex === 0 && !lastToken.includes('/')) {
     const matches = COMMANDS.filter(cmd => cmd.startsWith(lastToken));
     if (matches.length === 1) {
       return { matches, completed: matches[0] + ' ' }; 
     }
-    return { matches, completed: inputBuffer }; 
+    // Ambiguous command match
+    if (matches.length > 1) {
+        // Find common prefix
+        let commonPrefix = matches[0];
+        for (let i = 1; i < matches.length; i++) {
+            while (!matches[i].startsWith(commonPrefix)) {
+                commonPrefix = commonPrefix.slice(0, -1);
+            }
+        }
+        if (commonPrefix.length > lastToken.length) {
+             return { matches, completed: commonPrefix };
+        }
+        return { matches, completed: inputBuffer }; 
+    }
+    // No matches, try file completion (e.g. ./script)
   }
 
+  // File/Directory Completion
   let dirToSearch = cwd;
   let partialName = lastToken;
   let prefix = '';
@@ -321,6 +348,25 @@ export const tabCompletion = (cwd: string, inputBuffer: string): { matches: stri
       
       parts[lastTokenIndex] = prefix + match + suffix;
       return { matches: candidates, completed: parts.join(' ') };
+  }
+  
+  if (candidates.length > 1) {
+      // Find common prefix among candidates
+      let commonPrefix = candidates[0];
+      for (let i = 1; i < candidates.length; i++) {
+          while (!candidates[i].startsWith(commonPrefix)) {
+              commonPrefix = commonPrefix.slice(0, -1);
+          }
+      }
+      
+      // If common prefix is longer than what we typed, extend it
+      if (commonPrefix.length > partialName.length) {
+          parts[lastTokenIndex] = prefix + commonPrefix;
+          return { matches: candidates, completed: parts.join(' ') };
+      }
+      
+      // Otherwise just return candidates list
+      return { matches: candidates, completed: inputBuffer };
   }
   
   return { matches: candidates, completed: inputBuffer };
@@ -1734,6 +1780,17 @@ Type "status" for mission objectives.`;
                addChild(target, 'README.txt');
                addChild(target, 'payload.exe');
                addChild(target, 'key.txt');
+               
+               if (!VFS['/var/run/hidden_vol_mounted']) {
+                   VFS['/var/run/hidden_vol_mounted'] = { type: 'file', content: 'TRUE' };
+                   const runDir = getNode('/var/run');
+                   if (runDir && runDir.type === 'dir' && !runDir.children.includes('hidden_vol_mounted')) {
+                       runDir.children.push('hidden_vol_mounted');
+                   }
+                   output = `mount: /dev/sdb1 mounted on ${target}.\n\x1b[1;32m[MISSION UPDATE] Objective Complete: HIDDEN VOLUME MOUNTED.\x1b[0m`;
+               } else {
+                   output = `mount: /dev/sdb1 mounted on ${target}.`;
+               }
            } else if (source === '/dev/vault') {
                if (LOADED_MODULES.includes('cryptex')) {
                    MOUNTED_DEVICES[source] = target;
@@ -2753,7 +2810,7 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
       return { output, newCwd, action: 'crack_sim', data: { target: args[0], user: args[1], success: false } };
     }
     case 'dmesg':
-      output = '[    0.000000] Linux version 5.4.0-ghost...';
+      output = '[    0.000000] Linux version 5.4.0-ghost (root@mainframe) (gcc version 9.3.0)\n[    0.420000] pci 0000:00:1f.2: [sda] 134217728 512-byte logical blocks: (68.7 GB/64.0 GiB)\n[    0.420420] pci 0000:00:1f.3: [sdb] Attached SCSI disk (Hidden)\n[    0.420666] sdb: sdb1\n[    1.337000] EXT4-fs (sdb1): mounted filesystem with ordered data mode. Opts: (null)';
       break;
     case 'top':
       return { output: '', newCwd, action: 'top_sim' };
