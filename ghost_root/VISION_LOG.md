@@ -189,3 +189,10 @@ This file tracks the development cycles of the `ghost_root` project under the ne
 > CAUSE: Content was erroneously assigned to `/etc/cron.hourly` in VFS definition.
 > SOLUTION: Restored `/etc/tor/torrc` node with correct content. Cleaned up `/etc/cron.hourly`.
 > STATUS: DEPLOYED.
+
+[2026-02-11 15:30]
+> CHANGES: ghost_root/web/lib/VFS.ts, ghost_root/web/lib/Shell.ts
+> PUZZLE ADDED: "The Stuck Lock" (Package Manager / Lock File / Cleanup).
+> MECHANICS: Added `/usr/bin/ghost_update` and `/var/lib/dpkg/lock-frontend`.
+> LORE: A previous update crashed, leaving a stale lock file that prevents new updates.
+> SOLUTION: `ghost_update` (fails: locked) -> `rm /var/lib/dpkg/lock-frontend` -> `ghost_update` (success) -> Flag recovered.

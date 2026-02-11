@@ -190,7 +190,10 @@
   - [x] Cycle 21: "The Stopped Job" (Job Control).
   - [x] Cycle 22: "The Read-Only Mount" (Filesystem Protection).
   - [x] Cycle 23: "The Partition Table" (Disk Discovery / Hidden Volume).
-  - [ ] Cycle 24: (Pending).
+  - [x] Cycle 24: "The Deleted File" (File Descriptors / ProcFS).
+  - [x] Cycle 25: "The Environment Variable" (env / export).
+  - [x] Cycle 26: "The Stuck Lock" (Package Manager / Lock File).
+  - [ ] Cycle 27: (Pending).
   - [x] Fix: Restored `vercel` CLI (Global Install) & Fixed TypeScript Error in `Shell.ts`. (Status: DEPLOYED).
   - [x] Fix: Repaired "MISSION STATUS" UI layout (Added `flex` to sidebar). (Status: DEPLOYED).
   - [x] Fix: Prevent horizontal scrolling (Added `overflow-hidden` to main container). (Status: DEPLOYED).

@@ -45,7 +45,27 @@ const VFS: Record<string, VFSNode> = {
   },
   '/usr/bin': {
     type: 'dir',
-    children: ['gcc', 'net-bridge', 'void_crypt', 'deploy_agent', 'otp_gen', 'recover_data']
+    children: ['gcc', 'net-bridge', 'void_crypt', 'deploy_agent', 'otp_gen', 'recover_data', 'ghost_update']
+  },
+  '/usr/bin/ghost_update': {
+    type: 'file',
+    content: `#!/bin/bash
+# GHOST_UPDATE_V1
+# Updates system packages and security definitions.
+
+echo "Checking for updates..."
+# [LOCK CHECK]
+if [ -f "/var/lib/dpkg/lock-frontend" ]; then
+  echo "E: Could not get lock /var/lib/dpkg/lock-frontend. It is held by process 1234 (unattended-upgr)."
+  echo "E: Unable to acquire the dpkg frontend lock (/var/lib/dpkg/lock-frontend), is another process using it?"
+  exit 1
+fi
+
+echo "Hit:1 http://security.ghost.network/ghost-bionic InRelease"
+echo "Fetching updates... [100%]"
+echo "Update Complete."
+echo "FLAG: GHOST_ROOT{L0CK_F1L3_R3M0V3D}"
+`
   },
   '/usr/bin/recover_data': {
     type: 'file',
@@ -658,7 +678,15 @@ Click here to claim your prize!
   },
   '/var/lib': {
       type: 'dir',
-      children: ['cams', 'tor', 'modules']
+      children: ['cams', 'tor', 'modules', 'dpkg']
+  },
+  '/var/lib/dpkg': {
+      type: 'dir',
+      children: ['lock-frontend']
+  },
+  '/var/lib/dpkg/lock-frontend': {
+      type: 'file',
+      content: '1234'
   },
   '/lib': {
       type: 'dir',
