@@ -355,6 +355,10 @@ exit`
     type: 'file',
     content: '#include <stdio.h>\n\nint main() {\n  printf("Project Alpha v1.0\\n");\n  return 0;\n}'
   },
+  '/home/ghost/memory_analysis.txt': {
+    type: 'file',
+    content: 'INCIDENT REPORT #99\n\nSystem crashed at 14:45.\nA memory dump was captured at /tmp/core.dump.\n\nSuspect process: phantom_process\nTool required: volatility\n\nTask: Extract the process command line arguments.\nUsage: volatility -f <dump> cmdline'
+  },
   '/home/ghost/secrets': {
     type: 'dir',
     children: ['operation_blackout.enc']

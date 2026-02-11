@@ -193,8 +193,9 @@
   - [x] Cycle 24: "The Deleted File" (File Descriptors / ProcFS).
   - [x] Cycle 25: "The Environment Variable" (env / export).
   - [x] Cycle 26: "The Stuck Lock" (Package Manager / Lock File).
-  - [ ] Cycle 27: "The Buried Commit" (Git History / Checkout).
-  - [ ] Cycle 28: (Pending).
+  - [x] Cycle 27: "The Buried Commit" (Git History / Checkout).
+  - [x] Cycle 28: "The Memory Leak" (Volatility / Memory Forensics).
+  - [ ] Cycle 29: (Pending).
   - [x] Fix: Restored `vercel` CLI (Global Install) & Fixed TypeScript Error in `Shell.ts`. (Status: DEPLOYED).
   - [x] Fix: Repaired "MISSION STATUS" UI layout (Added `flex` to sidebar). (Status: DEPLOYED).
   - [x] Fix: Prevent horizontal scrolling (Added `overflow-hidden` to main container). (Status: DEPLOYED).
