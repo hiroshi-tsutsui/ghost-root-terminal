@@ -236,7 +236,7 @@ KEY_ID: GHOST_PROTOCOL_INIT_V2
   },
   '/home/ghost': {
     type: 'dir',
-    children: ['project_alpha', 'secrets', '.bash_history', 'wifi_note.txt', 'journal', 'evidence.jpg', 'surveillance.jpg', 'tools', 'tools.zip', 'capture.cap', 'drone_manual.txt', 'hashes.txt', 'wordlist.txt', 'operations']
+    children: ['project_alpha', 'secrets', '.bash_history', 'wifi_note.txt', 'journal', 'evidence.jpg', 'surveillance.jpg', 'tools', 'tools.zip', 'capture.cap', 'drone_manual.txt', 'beacon_protocol.txt', 'hashes.txt', 'wordlist.txt', 'operations']
   },
   '/home/ghost/operations': {
     type: 'dir',
@@ -249,6 +249,10 @@ KEY_ID: GHOST_PROTOCOL_INIT_V2
   '/home/ghost/operations/README.txt': {
     type: 'file',
     content: 'INTERCEPTED TRANSMISSION\n------------------------\nSource: Unknown\nEncryption: AES-256-CBC\n\nWe managed to get the file, but it is encrypted.\nIntel suggests the password is the name of our protocol (uppercase) followed by version 1.\nExample: PROTOCOL_NAME_V1\n\nUse: openssl enc -d -aes-256-cbc -in blackbox.enc -out decrypted.txt -k <password>'
+  },
+  '/home/ghost/beacon_protocol.txt': {
+    type: 'file',
+    content: 'BEACON PROTOCOL v1.0\n--------------------\nOur field agents use a "dead drop" signal to transmit data safely.\nThe binary is \'/bin/beacon\' (simulated, just type "beacon").\n\nINSTRUCTIONS:\n1. The beacon transmits to localhost port 4444.\n2. It retries indefinitely until a connection is made.\n3. You must set up a listener (\'nc -l 4444\') to catch the payload.\n\nWARNING: The beacon process must be active while you listen.\n(Hint: Use \'&\' to run it in the background).'
   },
   '/home/ghost/tools': {
     type: 'dir',

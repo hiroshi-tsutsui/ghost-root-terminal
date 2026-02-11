@@ -296,7 +296,7 @@ export interface CommandResult {
   data?: any;
 }
 
-const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'jobs', 'fg', 'bg', 'recover_data', 'ghost_update', 'git'];
+const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'jobs', 'fg', 'bg', 'recover_data', 'ghost_update', 'git', 'file', 'openssl', 'beacon'];
 
 export interface MissionStatus {
   objectives: {
@@ -510,6 +510,13 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
       const aliasParts = tokenize(aliasBody);
       parts = [...aliasParts, ...parts.slice(1)];
       command = parts[0];
+  }
+
+  // Handle Background Jobs (&)
+  let isBackground = false;
+  if (parts[parts.length - 1] === '&') {
+      isBackground = true;
+      parts.pop(); // Remove '&' from parts
   }
 
   const args = parts.slice(1);
@@ -1675,6 +1682,7 @@ Type "status" for mission objectives.`;
           case 'camsnap': output = 'NAME\n\tcamsnap - CCTV/Webcam Interface\n\nSYNOPSIS\n\tcamsnap [-l] [-c <id> [-p <pass>]]\n\nDESCRIPTION\n\tConnects to unsecured video feeds on the local network.\n\nOPTIONS\n\t-l\tList available feeds\n\t-c <id>\tConnect to feed ID\n\t-p <pass>\tProvide authentication token'; break;
           case 'hydra': output = 'NAME\n\thydra - Network Logon Cracker\n\nSYNOPSIS\n\thydra -l <user> -P <passlist> <target>\n\nDESCRIPTION\n\tA very fast network logon cracker which supports many different services.'; break;
           case 'hashcat': output = 'NAME\n\thashcat - Advanced Password Recovery\n\nSYNOPSIS\n\thashcat -m <mode> <hashfile> <wordlist>\n\nDESCRIPTION\n\tWorld\'s fastest password recovery tool.\n\nMODES\n\t0\tMD5\n\t1000\tNTLM\n\t1800\tsha512crypt'; break;
+          case 'beacon': output = 'NAME\n\tbeacon - Automated Dead Drop Signal\n\nSYNOPSIS\n\tbeacon [&]\n\nDESCRIPTION\n\tContinuously attempts to connect to a listening post on localhost:4444 to deliver a payload.\n\nUSAGE\n\tRun "beacon" to start foreground process (will block).\n\tRun "beacon &" to start in background.'; break;
           default: output = `No manual entry for ${page}`;
         }
       }
@@ -2794,6 +2802,19 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
     case 'ifconfig':
        output = 'eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>...';
        break;
+    case 'beacon': {
+       if (isBackground) {
+           const pid = Math.floor(Math.random() * 30000) + 2000;
+           const jobId = JOBS.length + 1;
+           JOBS.push({ id: jobId, command: 'beacon', status: 'Running', pid });
+           
+           // Background Output format: [JOB_ID] PID
+           output = `[${jobId}] ${pid}\n[SYSTEM] Beacon active (PID ${pid}). Attempting connection to localhost:4444...`;
+       } else {
+           output = 'Beacon active...\n[ERROR] Connection refused (No listener on port 4444).\n[HINT] Try running this in the background (&) and start a listener.';
+       }
+       break;
+    }
     case 'nc': {
        const isListen = args.includes('-l');
        const verbose = args.includes('-v');
@@ -2808,6 +2829,23 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
        if (isListen) {
            if (!port) {
                output = 'nc: usage: nc -l -p <port>';
+           } else if (port === '4444') {
+               const beaconJob = JOBS.find(j => j.command.startsWith('beacon') && j.status === 'Running');
+               if (beaconJob) {
+                   output = `Listening on [0.0.0.0] (family 0, port ${port})\nConnection from localhost [127.0.0.1] 34567\n[BEACON] Connection Established.\n[PAYLOAD] Generating Flag...\n\nFLAG: GHOST_ROOT{B4CKGR0UND_PR0C3SS_K1NG}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: BACKGROUND JOB EXPLOITED.\x1b[0m`;
+                   
+                   // Mission Update
+                   if (!VFS['/var/run/bg_solved']) {
+                       VFS['/var/run/bg_solved'] = { type: 'file', content: 'TRUE' };
+                       const runDir = getNode('/var/run');
+                       if (runDir && runDir.type === 'dir' && !runDir.children.includes('bg_solved')) {
+                           runDir.children.push('bg_solved');
+                       }
+                   }
+               } else {
+                   output = `Listening on [0.0.0.0] (family 0, port ${port})\n(No connection received. Is the beacon active?)`;
+                   return { output, newCwd, action: 'delay' };
+               }
            } else {
                output = `Listening on [0.0.0.0] (family 0, port ${port})\n...`;
                return { output, newCwd, action: 'delay' }; 
@@ -3515,6 +3553,18 @@ tmpfs             815276    1184    814092   1% /run
                                    parent.children.push(fname);
                                }
                                output += `  inflating: ${fname}\n`;
+
+                               // Mission Update for payload.txt
+                               if (fname === 'payload.txt' && fcontent.includes('GHOST_ROOT{')) {
+                                   if (!VFS['/var/run/archive_recovered']) {
+                                       VFS['/var/run/archive_recovered'] = { type: 'file', content: 'TRUE' };
+                                       const runDir = getNode('/var/run');
+                                       if (runDir && runDir.type === 'dir' && !runDir.children.includes('archive_recovered')) {
+                                           runDir.children.push('archive_recovered');
+                                       }
+                                       output += `\x1b[1;32m[MISSION UPDATE] Objective Complete: ARCHIVE RECOVERED.\x1b[0m\n`;
+                                   }
+                               }
                            }
                        }
                    }
@@ -3524,6 +3574,46 @@ tmpfs             815276    1184    814092   1% /run
            }
        }
        break;
+    }
+    case 'file': {
+      if (args.length < 1) {
+        output = 'usage: file <file>';
+      } else {
+        const target = args[0];
+        const path = resolvePath(cwd, target);
+        const node = getNode(path);
+        
+        if (!node) {
+          output = `${target}: cannot open \`${target}' (No such file or directory)`;
+        } else if (node.type === 'dir') {
+          output = `${target}: directory`;
+        } else if (node.type === 'symlink') {
+          const targetPath = (node as any).target;
+          output = `${target}: symbolic link to ${targetPath}`;
+        } else {
+          const content = (node as any).content || '';
+          if (content.startsWith('PK_SIM_V1:')) {
+            output = `${target}: Zip archive data, at least v2.0 to extract`;
+          } else if (content.startsWith('GZIP_V1:')) {
+             output = `${target}: gzip compressed data, was "payload", last modified: 2026-02-11`;
+          } else if (content.startsWith('TAR_V1:')) {
+             output = `${target}: POSIX tar archive (GNU)`;
+          } else if (content.startsWith('7z')) {
+             output = `${target}: 7-zip archive data, version 0.4`;
+          } else if (content.startsWith('MZ') || content.includes('BINARY_ELF')) {
+             output = `${target}: ELF 64-bit LSB executable, x86-64, version 1 (SYSV)`;
+          } else if (content.startsWith('-----BEGIN OPENSSH PRIVATE KEY-----')) {
+             output = `${target}: OpenSSH private key`;
+          } else if (content.startsWith('-----BEGIN CERTIFICATE-----')) {
+             output = `${target}: PEM certificate`;
+          } else if (/^[A-Za-z0-9+/=]+$/.test(content.replace(/\s/g, '')) && content.length > 20) {
+             output = `${target}: ASCII text, with very long lines (Base64 encoded?)`;
+          } else {
+             output = `${target}: ASCII text`;
+          }
+        }
+      }
+      break;
     }
     case 'diff': {
        if (args.length < 2) {
@@ -3797,6 +3887,66 @@ The key's randomart image is:
            }
        }
        break;
+    }
+    case 'openssl': {
+        const subcmd = args[0];
+        if (!subcmd || args.includes('help')) {
+            output = 'OpenSSL 1.1.1f  31 Mar 2020\nusage: openssl command [command-opts] [command-args]\n\nStandard commands\nenc\nreq\nx509\ngenrsa';
+        } else if (subcmd === 'enc') {
+            const hasDecrypt = args.includes('-d');
+            const cipher = args.find(a => a.startsWith('-aes-') || a === '-bf');
+            const inFileIdx = args.indexOf('-in');
+            const outFileIdx = args.indexOf('-out');
+            const passIdx = args.indexOf('-k');
+            
+            if (inFileIdx === -1 || !args[inFileIdx + 1]) {
+                output = 'enc: input file required (-in)';
+            } else {
+                const inFile = args[inFileIdx + 1];
+                const inPath = resolvePath(cwd, inFile);
+                const inNode = getNode(inPath);
+                
+                if (!inNode || inNode.type !== 'file') {
+                    output = `enc: ${inFile}: No such file or directory`;
+                } else if (!hasDecrypt) {
+                    output = 'enc: encryption not supported in simulation (decrypt only)';
+                } else {
+                    let password = '';
+                    if (passIdx !== -1 && args[passIdx + 1]) {
+                        password = args[passIdx + 1];
+                    } else {
+                        output = 'enc: password required (-k)';
+                    }
+                    
+                    if (password) {
+                        if (password === 'GHOST_PROTOCOL_V1') {
+                            const decryptedContent = 'COORDINATES: 51.5074 N, 0.1278 W\nTARGET: MI6_HQ\nFLAG: GHOST_ROOT{0P3NSSL_M4ST3R}';
+                            if (outFileIdx !== -1 && args[outFileIdx + 1]) {
+                                const outFile = args[outFileIdx + 1];
+                                const outPath = resolvePath(cwd, outFile);
+                                const parent = outPath.substring(0, outPath.lastIndexOf('/'));
+                                const pNode = getNode(parent);
+                                if (pNode && pNode.type === 'dir') {
+                                    const fName = outPath.substring(outPath.lastIndexOf('/') + 1);
+                                    VFS[outPath] = { type: 'file', content: decryptedContent };
+                                    if (!pNode.children.includes(fName)) pNode.children.push(fName);
+                                    output = ''; // Silent success
+                                } else {
+                                    output = `enc: ${outFile}: No such file or directory (path check)`;
+                                }
+                            } else {
+                                output = decryptedContent;
+                            }
+                        } else {
+                            output = 'bad decrypt';
+                        }
+                    }
+                }
+            }
+        } else {
+            output = `openssl:Error: '${subcmd}' is an invalid command.`;
+        }
+        break;
     }
     case 'zcat': {
        if (args.length < 1) {
