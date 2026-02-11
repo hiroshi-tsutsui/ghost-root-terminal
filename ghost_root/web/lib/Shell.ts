@@ -4102,7 +4102,7 @@ ${validUnits.length} loaded units listed.`;
                output = `/usr/bin/python3: can't find '__main__' module in '${fileName}'`;
            } else {
                // Simple mock interpreter
-               const content = node.content;
+               const content = (node as any).content;
                if (content.includes('import os') || content.includes('system(')) {
                    output = 'RuntimeError: Restricted environment. System calls disabled.';
                } else if (content.includes('print("This is a fake exploit.")')) {
