@@ -1880,10 +1880,12 @@ const WebTerminal = () => {
         if (isBootingRef.current) return;
         
         // Delegate to handleKeyDown for search/special logic
+        /*
         if (isSearchingRef.current || (domEvent.ctrlKey && domEvent.key === 'r')) {
             handleKeyDown(domEvent);
             return;
         }
+        */
 
         const e = key; // Use the raw key string from xterm
 
@@ -1976,6 +1978,7 @@ const WebTerminal = () => {
 
     // Start boot sequence
     runBootSequence();
+  }, []);
 
     // Handle resize
   const handleKeyDown = (e: KeyboardEvent) => {
@@ -2131,47 +2134,7 @@ const WebTerminal = () => {
         </button>
       )}
 
-      {mission && (
-        <div className={`
-          w-80 border-l border-green-900 p-4 flex flex-col overflow-y-auto bg-black bg-opacity-95 
-          transition-transform duration-300 ease-in-out
-          fixed md:relative right-0 top-0 bottom-0 z-40
-          ${isSidebarOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'}
-        `}>
-          <h2 className="text-lg font-bold mb-4 border-b border-green-900 pb-2 tracking-wider text-green-400">MISSION STATUS</h2>
-          
-          <div className="mb-6">
-             <div className="flex justify-between mb-1 text-xs text-green-600">
-               <span>PROGRESS</span>
-               <span>{mission.progress}%</span>
-             </div>
-             <div className="flex justify-between mb-2 text-xs text-green-400 font-bold">
-               <span>RANK</span>
-               <span>{mission.rank}</span>
-             </div>
-             <div className="w-full bg-green-900/30 h-1.5 border border-green-900/50">
-               <div className="bg-green-500 h-full transition-all duration-500" style={{ width: `${mission.progress}%` }}></div>
-             </div>
-          </div>
-          
-          <div className="space-y-3 text-xs flex-grow">
-            <ObjectiveItem label="Establish Uplink" done={mission.objectives.hasNet} />
-            <ObjectiveItem label="Network Recon" done={mission.objectives.hasScan} />
-            <ObjectiveItem label="Root Access" done={mission.objectives.isRoot} />
-            <ObjectiveItem label="Breach Black Site" done={mission.objectives.hasBlackSite} />
-            <ObjectiveItem label="Acquire Payload" done={mission.objectives.hasPayload} />
-            <ObjectiveItem label={`Decrypt Keys (${mission.objectives.decryptCount}/3)`} done={mission.objectives.hasIntel} />
-            <ObjectiveItem label="System Liberation" done={mission.objectives.hasLaunchReady} />
-          </div>
-
-          <div className="mt-auto pt-4 border-t border-green-900/50">
-            <h3 className="font-bold mb-2 text-yellow-600 text-xs tracking-wider">NEXT DIRECTIVE:</h3>
-            <p className="text-xs text-green-300 opacity-90 leading-relaxed blink-cursor">
-              {mission.nextStep}
-            </p>
-          </div>
-        </div>
-      )}
+      {/* Sidebar temporarily disabled for debugging */}
     </div>
   );
 };
