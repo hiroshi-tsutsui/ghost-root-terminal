@@ -3650,7 +3650,10 @@ tmpfs             815276    1184    814092   1% /run
                    const match = content.match(/\[HIDDEN_STEG_DATA:([^\]]+)\]/);
                    if (match) {
                        const password = pIndex !== -1 ? args[pIndex + 1] : '';
-                       if (['spectre', 'admin', 'ghost', '0xDEADBEEF', 'SPECTRE_EVE', '0451'].includes(password)) {
+                       // Relaxed password check (trim whitespace)
+                       const cleanPass = password ? password.trim() : '';
+                       
+                       if (['spectre', 'admin', 'ghost', '0xDEADBEEF', 'SPECTRE_EVE', '0451'].includes(cleanPass)) {
                            const hiddenData = atob(match[1]);
                            const outFile = 'steg_result.txt';
                            const outPath = resolvePath(cwd, outFile);
