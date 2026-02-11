@@ -65,7 +65,8 @@ let PROCESSES: Process[] = [
   { pid: 4444, user: 'root', cpu: 85.0, mem: 40.0, time: '102:00', command: './xmrig --donate-level 1', tty: '?', stat: 'R' },
   { pid: 8888, user: 'root', cpu: 1.5, mem: 2.1, time: '1:23', command: '/usr/bin/watcher --silent', tty: '?', stat: 'Sl' },
   { pid: 9999, user: 'unknown', cpu: 45.2, mem: 12.8, time: '9:59', command: './hydra -l admin -P pass.txt 192.168.1.99', tty: 'pts/1', stat: 'R+' },
-  { pid: 31337, user: 'root', cpu: 99.9, mem: 50.0, time: '23:59', command: '/usr/bin/watcher_d --lock', tty: '?', stat: 'Z' }
+  { pid: 31337, user: 'root', cpu: 99.9, mem: 50.0, time: '23:59', command: '/usr/bin/watcher_d --lock', tty: '?', stat: 'Z' },
+  { pid: 555, user: 'ghost', cpu: 12.5, mem: 4.2, time: '2:15', command: './data_miner --silent', tty: '?', stat: 'R' }
 ];
 
 // Mock Network Connections
@@ -2607,6 +2608,8 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
                  outputLines.push(`${cmd.padEnd(9)} ${String(p.pid).padStart(5)} ${p.user.padEnd(5)}    3u  IPv4  99999      0t0  TCP 192.168.1.105:31337->192.168.1.99:443 (SYN_SENT)`);
              } else if (p.pid === 1337) {
                  outputLines.push(`${cmd.padEnd(9)} ${String(p.pid).padStart(5)} ${p.user.padEnd(5)}  255u   CHR  136,0      0t0    3 /dev/pts/0`);
+             } else if (p.pid === 555) {
+                 outputLines.push(`${cmd.padEnd(9)} ${String(p.pid).padStart(5)} ${p.user.padEnd(5)}    3w   REG  253,0    1024  42 /var/log/miner.log (deleted)`);
              }
         });
         

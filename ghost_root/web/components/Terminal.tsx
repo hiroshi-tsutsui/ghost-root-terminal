@@ -46,6 +46,8 @@ const WebTerminal = () => {
   const isBootingRef = useRef(true);
   const isEditingRef = useRef(false);
   const isTopModeRef = useRef(false);
+  const isSearchingRef = useRef(false);
+  const searchQueryRef = useRef('');
   const editorStateRef = useRef({ content: '', path: '', buffer: '' });
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
   const [mission, setMission] = React.useState<MissionStatus | null>(null);
@@ -104,6 +106,20 @@ const WebTerminal = () => {
     }
   }, [mission]);
 
+  const renderSearch = () => {
+      const term = termRef.current;
+      if (!term) return;
+      
+      const query = searchQueryRef.current;
+      const match = historyRef.current[historyIndexRef.current] || '';
+      
+      // (reverse-i-search)`query': match
+      const output = `\r(reverse-i-search)\`\x1b[1m${query}\x1b[0m': ${match}`;
+      
+      term.write('\x1b[2K\r'); // Clear line
+      term.write(output);
+  };
+
   useEffect(() => {
     if (!terminalContainerRef.current) return;
 
@@ -123,7 +139,20 @@ const WebTerminal = () => {
     term.loadAddon(fitAddon);
     
     term.open(terminalContainerRef.current);
+    
+    // Fit immediately and after a short delay to ensure container is ready
     fitAddon.fit();
+    setTimeout(() => fitAddon.fit(), 100);
+
+    // Use ResizeObserver for robust resizing
+    const resizeObserver = new ResizeObserver(() => {
+        fitAddon.fit();
+    });
+    
+    if (terminalContainerRef.current) {
+        resizeObserver.observe(terminalContainerRef.current);
+    }
+
     termRef.current = term;
 
     // Load History from VFS
@@ -137,13 +166,6 @@ const WebTerminal = () => {
         const cwd = cwdRef.current;
         const p = promptRef.current;
         term.write(`\r\n${p}:\x1b[1;34m${cwd}\x1b[0m$ `);
-    };
-
-    const clearLine = () => {
-        term.write('\x1b[2K\r');
-        const cwd = cwdRef.current;
-        const p = promptRef.current;
-        term.write(`${p}:\x1b[1;34m${cwd}\x1b[0m$ `);
     };
 
     const renderEditor = (content: string, path: string, buffer: string) => {
@@ -1853,104 +1875,239 @@ const WebTerminal = () => {
     };
 
     // Handle input
-    term.onData(e => {
-      // Block input during boot
-      if (isBootingRef.current) return;
+    term.onKey(({ key, domEvent }) => {
+        // Block input during boot
+        if (isBootingRef.current) return;
+        
+        // Delegate to handleKeyDown for search/special logic
+        if (isSearchingRef.current || (domEvent.ctrlKey && domEvent.key === 'r')) {
+            handleKeyDown(domEvent);
+            return;
+        }
 
-      if (isTopModeRef.current) {
-          if (e === 'q' || e === '\x03') { // q or Ctrl+C
-              isTopModeRef.current = false;
-          }
-          return;
-      }
+        const e = key; // Use the raw key string from xterm
 
-      if (isEditingRef.current) {
-          // Pass raw key to editor handler
-          // Since e might be a sequence, we handle first char or full sequence if needed
-          // For simplicity, handle char by char or special keys
-          handleEditorInput(e);
-          return;
-      }
+        if (isTopModeRef.current) {
+            if (e === 'q' || e === '\x03') { // q or Ctrl+C
+                isTopModeRef.current = false;
+            }
+            return;
+        }
 
-      switch (e) {
-        case '\r': // Enter
-          handleCommand();
-          break;
-        case '\x1b[A': // Up Arrow
-          if (historyRef.current.length > 0) {
-             if (historyIndexRef.current > 0) {
-                 historyIndexRef.current--;
-             } else if (historyIndexRef.current === -1) {
-                 historyIndexRef.current = historyRef.current.length - 1;
-             }
-             
-             const cmd = historyRef.current[historyIndexRef.current];
-             if (cmd !== undefined) {
-                 inputBufferRef.current = cmd;
+        if (isEditingRef.current) {
+            handleEditorInput(e);
+            return;
+        }
+
+        switch (e) {
+          case '\r': // Enter
+            handleCommand();
+            break;
+          case '\x1b[A': // Up Arrow
+            if (historyRef.current.length > 0) {
+                if (historyIndexRef.current === -1) {
+                    historyIndexRef.current = historyRef.current.length - 1;
+                } else if (historyIndexRef.current > 0) {
+                    historyIndexRef.current--;
+                }
+                
+                const cmd = historyRef.current[historyIndexRef.current];
+                if (cmd !== undefined) {
+                    inputBufferRef.current = cmd;
+                    // Clear line and rewrite
+                    term.write('\x1b[2K\r'); 
+                    const p = promptRef.current;
+                    const cwd = cwdRef.current;
+                    term.write(`${p}:\x1b[1;34m${cwd}\x1b[0m$ ${cmd}`);
+                }
+            }
+            break;
+          case '\x1b[B': // Down Arrow
+             if (historyIndexRef.current !== -1) {
+                 if (historyIndexRef.current < historyRef.current.length - 1) {
+                     historyIndexRef.current++;
+                     const cmd = historyRef.current[historyIndexRef.current];
+                     inputBufferRef.current = cmd;
+                 } else {
+                     historyIndexRef.current = -1;
+                     inputBufferRef.current = '';
+                 }
                  // Clear line and rewrite
                  term.write('\x1b[2K\r'); 
                  const p = promptRef.current;
                  const cwd = cwdRef.current;
-                 term.write(`${p}:\x1b[1;34m${cwd}\x1b[0m$ ${cmd}`);
+                 term.write(`${p}:\x1b[1;34m${cwd}\x1b[0m$ ${inputBufferRef.current}`);
              }
-          }
-          break;
-        case '\x1b[B': // Down Arrow
-          if (historyIndexRef.current < historyRef.current.length) {
-             historyIndexRef.current++;
-             const cmd = historyRef.current[historyIndexRef.current] || '';
-             inputBufferRef.current = cmd;
-             // Clear line and rewrite
-             term.write('\x1b[2K\r'); 
-             const p = promptRef.current;
-             const cwd = cwdRef.current;
-             term.write(`${p}:\x1b[1;34m${cwd}\x1b[0m$ ${cmd}`);
-          }
-          break;
-        case '\t': // Tab
-          const { completed } = tabCompletion(cwdRef.current, inputBufferRef.current);
-          if (completed !== inputBufferRef.current) {
-             // Clear line and rewrite
-             term.write('\x1b[2K\r'); // Clear entire line, move to start
-             const p = promptRef.current;
-             const cwd = cwdRef.current;
-             term.write(`${p}:\x1b[1;34m${cwd}\x1b[0m$ ${completed}`);
-             inputBufferRef.current = completed;
-          }
-          break;
-        case '\u007F': // Backspace (DEL)
-        case '\b':     // Backspace (BS)
-          if (inputBufferRef.current.length > 0) {
-            term.write('\b \b');
-            inputBufferRef.current = inputBufferRef.current.slice(0, -1);
-          }
-          break;
-        default:
-          if (e >= String.fromCharCode(0x20) && e <= String.fromCharCode(0x7E)) {
-            inputBufferRef.current += e;
-            term.write(e);
-          }
-      }
+             break;
+          case '\t': // Tab
+            e.preventDefault(); // Prevent focus loss
+            const completion = tabCompletion(cwdRef.current, inputBufferRef.current);
+            if (completion.completed !== inputBufferRef.current) {
+               // Update buffer if changed
+               inputBufferRef.current = completion.completed;
+               // Clear line and rewrite
+               term.write('\x1b[2K\r'); // Clear entire line, move to start
+               const p = promptRef.current;
+               const cwd = cwdRef.current;
+               term.write(`${p}:\x1b[1;34m${cwd}\x1b[0m$ ${completion.completed}`);
+            } else if (completion.matches.length > 1) {
+               // Show candidates if ambiguous
+               term.writeln('');
+               term.writeln(completion.matches.join('  '));
+               const p = promptRef.current;
+               const cwd = cwdRef.current;
+               term.write(`${p}:\x1b[1;34m${cwd}\x1b[0m$ ${inputBufferRef.current}`);
+            }
+            break;
+          case '\u007F': // Backspace (DEL)
+          case '\b':     // Backspace (BS)
+            if (inputBufferRef.current.length > 0) {
+              term.write('\b \b');
+              inputBufferRef.current = inputBufferRef.current.slice(0, -1);
+            }
+            break;
+          default:
+            if (e.length === 1 && e.charCodeAt(0) >= 32) {
+              inputBufferRef.current += e;
+              term.write(e);
+            }
+        }
     });
 
     // Start boot sequence
     runBootSequence();
 
     // Handle resize
-    const handleResize = () => fitAddon.fit();
-    window.addEventListener('resize', handleResize);
+  const handleKeyDown = (e: KeyboardEvent) => {
+      // Ctrl+R for history search
+      if (e.ctrlKey && e.key === 'r') {
+          e.preventDefault();
+          if (!isSearchingRef.current) {
+              isSearchingRef.current = true;
+              searchQueryRef.current = '';
+              renderSearch();
+          } else {
+              // Rotate through history (reverse)
+              // If we already have a query, search for next match backwards
+              const query = searchQueryRef.current;
+              if (query) {
+                  let startIdx = historyIndexRef.current - 1;
+                  if (startIdx < 0) startIdx = historyRef.current.length - 1;
+                  
+                  // Simple linear search backwards
+                  let found = -1;
+                  // First, search from startIdx down to 0
+                  for (let i = startIdx; i >= 0; i--) {
+                      if (historyRef.current[i].includes(query)) {
+                          found = i;
+                          break;
+                      }
+                  }
+                  // If not found, wrap around
+                  if (found === -1) {
+                      for (let i = historyRef.current.length - 1; i > startIdx; i--) {
+                          if (historyRef.current[i].includes(query)) {
+                              found = i;
+                              break;
+                          }
+                      }
+                  }
+                  
+                  if (found !== -1) {
+                      historyIndexRef.current = found;
+                      renderSearch();
+                  }
+              }
+          }
+          return;
+      }
+      
+      // Cancel search with Esc or Ctrl+G
+      if ((isSearchingRef.current && e.key === 'Escape') || (e.ctrlKey && e.key === 'g')) {
+          isSearchingRef.current = false;
+          // Restore current input line (or empty)
+          termRef.current?.write('\x1b[2K\r');
+          const p = promptRef.current;
+          const cwd = cwdRef.current;
+          termRef.current?.write(`${p}:\x1b[1;34m${cwd}\x1b[0m$ ${inputBufferRef.current}`);
+          return;
+      }
 
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      term.dispose();
-    };
-  }, []);
+      if (isSearchingRef.current) {
+          // Handle typing in search mode
+          if (e.key === 'Enter') {
+              isSearchingRef.current = false;
+              // Execute the found command
+              const cmd = historyRef.current[historyIndexRef.current] || '';
+              inputBufferRef.current = cmd;
+              // Clear search line and print prompt with command
+              termRef.current?.write('\x1b[2K\r');
+              const p = promptRef.current;
+              const cwd = cwdRef.current;
+              termRef.current?.write(`${p}:\x1b[1;34m${cwd}\x1b[0m$ ${cmd}`);
+              // Trigger command execution immediately? Or just fill buffer? 
+              // Bash usually fills buffer. Zsh executes if enter. Let's execute.
+              handleCommand();
+              return;
+          } else if (e.key === 'Backspace') {
+              searchQueryRef.current = searchQueryRef.current.slice(0, -1);
+          } else if (e.key.length === 1 && !e.ctrlKey && !e.altKey && !e.metaKey) {
+              searchQueryRef.current += e.key;
+          }
+          
+          // Perform search on query update
+          if (searchQueryRef.current) {
+              let found = -1;
+              for (let i = historyRef.current.length - 1; i >= 0; i--) {
+                  if (historyRef.current[i].includes(searchQueryRef.current)) {
+                      found = i;
+                      break;
+                  }
+              }
+              if (found !== -1) {
+                  historyIndexRef.current = found;
+              }
+          }
+          
+          renderSearch();
+          e.preventDefault();
+          return;
+      }
+  };
 
+  const renderSearch = () => {
+      const term = termRef.current;
+      if (!term) return;
+      
+      const query = searchQueryRef.current;
+      const match = historyRef.current[historyIndexRef.current] || '';
+      
+      // (reverse-i-search)`query': match
+      const output = `\r(reverse-i-search)\`\x1b[1m${query}\x1b[0m': ${match}`;
+      
+      term.write('\x1b[2K\r'); // Clear line
+      term.write(output);
+  };
+  
   // Re-fit when sidebar toggles
   useEffect(() => {
      setTimeout(() => window.dispatchEvent(new Event('resize')), 100);
   }, [mission]);
 
+  // Handle global keyboard events for Ctrl+R
+  useEffect(() => {
+      const handleGlobalKeyDown = (e: KeyboardEvent) => {
+          if (e.ctrlKey && e.key === 'r') {
+             if (termRef.current) {
+                 termRef.current.focus();
+             }
+          }
+      };
+      
+      window.addEventListener('keydown', handleGlobalKeyDown);
+      return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+  }, []);
+  
   return (
     <div className="flex w-full h-screen bg-black text-green-500 font-mono relative overflow-hidden">
       <div className="flex-grow h-full" ref={terminalContainerRef} />

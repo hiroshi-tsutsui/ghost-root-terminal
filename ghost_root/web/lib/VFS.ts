@@ -611,6 +611,27 @@ Click here to claim your prize!
     type: 'file',
     content: 'GHOST_ROOT{N0THING_IS_TRU3}'
   },
+  '/proc': {
+    type: 'dir',
+    children: ['555', 'self']
+  },
+  '/proc/555': {
+    type: 'dir',
+    children: ['fd', 'cmdline', 'status']
+  },
+  '/proc/555/fd': {
+    type: 'dir',
+    children: ['0', '1', '2', '3']
+  },
+  '/proc/555/fd/0': { type: 'symlink', target: '/dev/null' },
+  '/proc/555/fd/1': { type: 'symlink', target: '/dev/null' },
+  '/proc/555/fd/2': { type: 'symlink', target: '/dev/null' },
+  '/proc/555/fd/3': { 
+      type: 'file', 
+      content: 'MINING_LOG_V1\n[WORKER_ID: 555]\n[HASH_RATE: 45 MH/s]\n[POOL: stratum+tcp://ghost.pool:3333]\n[USER: ghost]\n[PASS: x]\n[RESULT: ACCEPTED]\n[FLAG: GHOST_ROOT{PR0C_FS_R3COV3RY}]\n' 
+  },
+  '/proc/555/cmdline': { type: 'file', content: './data_miner --silent' },
+  '/proc/555/status': { type: 'file', content: 'Name:\tdata_miner\nState:\tR (running)\nPid:\t555\nPPid:\t1\nUid:\t1000\nGid:\t1000\n' },
   '/mnt': {
       type: 'dir',
       children: ['vault', 'data']

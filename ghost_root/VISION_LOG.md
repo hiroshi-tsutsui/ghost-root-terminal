@@ -167,3 +167,10 @@ This file tracks the development cycles of the `ghost_root` project under the ne
 > MECHANICS: Updated `dmesg` to hint at `/dev/sdb`. Updated `mount` to trigger mission objective.
 > LORE: A hidden partition (`/dev/sdb1`) is detected by the kernel but not mounted.
 > SOLUTION: `dmesg` (find sdb) -> `fdisk -l` (find sdb1) -> `mkdir /mnt/secret` -> `mount /dev/sdb1 /mnt/secret` -> Key recovered.
+
+[2026-02-11 14:15]
+> CHANGES: ghost_root/web/lib/Shell.ts, ghost_root/web/lib/VFS.ts
+> PUZZLE ADDED: "The Deleted File" (File Descriptors / ProcFS / lsof).
+> MECHANICS: Added `/proc` filesystem simulation. Added `data_miner` (PID 555) with open FD to deleted log. Updated `lsof` and `cp`.
+> LORE: A rogue miner is running, but its log file was deleted to hide tracks. The file descriptor is still open.
+> SOLUTION: `lsof` (find PID 555, FD 3 deleted) -> `cp /proc/555/fd/3 recovered.log` -> `cat recovered.log` -> Flag recovered.
