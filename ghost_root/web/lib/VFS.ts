@@ -45,7 +45,11 @@ const VFS: Record<string, VFSNode> = {
   },
   '/usr/bin': {
     type: 'dir',
-    children: ['gcc', 'net-bridge', 'void_crypt', 'deploy_agent', 'otp_gen', 'recover_data', 'ghost_update']
+    children: ['gcc', 'net-bridge', 'void_crypt', 'deploy_agent', 'otp_gen', 'recover_data', 'ghost_update', 'secure_vault']
+  },
+  '/usr/bin/secure_vault': {
+    type: 'file',
+    content: '[BINARY_ELF_X86_64]\n[SECURE_ACCESS_PROTOCOL]\nUsage: ./secure_vault\nNote: Requires exclusive lock on /var/lock/subsystem/vault.lock'
   },
   '/usr/bin/ghost_update': {
     type: 'file',
@@ -532,7 +536,15 @@ COMMIT
   },
   '/var/lock': {
     type: 'dir',
-    children: ['watcher.lock']
+    children: ['watcher.lock', 'subsystem']
+  },
+  '/var/lock/subsystem': {
+    type: 'dir',
+    children: ['vault.lock']
+  },
+  '/var/lock/subsystem/vault.lock': {
+    type: 'file',
+    content: '4001'
   },
   '/var/lock/watcher.lock': {
     type: 'file',

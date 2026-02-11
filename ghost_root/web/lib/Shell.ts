@@ -137,6 +137,7 @@ let JOBS: Job[] = [
 
 interface Process {
   pid: number;
+  ppid: number;
   user: string;
   cpu: number;
   mem: number;
@@ -147,17 +148,19 @@ interface Process {
 }
 
 let PROCESSES: Process[] = [
-  { pid: 1, user: 'root', cpu: 0.1, mem: 0.4, time: '12:34', command: '/sbin/init', tty: '?', stat: 'Ss' },
-  { pid: 2, user: 'root', cpu: 0.0, mem: 0.0, time: '0:00', command: '[kthreadd]', tty: '?', stat: 'S' },
-  { pid: 404, user: 'root', cpu: 0.0, mem: 0.8, time: '0:05', command: '/usr/sbin/sshd -D', tty: '?', stat: 'Ss' },
-  { pid: 666, user: 'root', cpu: 13.3, mem: 66.6, time: '66:66', command: '[spectre_kernel]', tty: '?', stat: 'R' },
-  { pid: 1337, user: 'ghost', cpu: 0.5, mem: 1.2, time: '0:01', command: '-bash', tty: 'pts/0', stat: 'Ss' },
-  { pid: 2024, user: 'root', cpu: 0.0, mem: 0.2, time: '0:02', command: '/usr/sbin/cron -f', tty: '?', stat: 'Ss' },
-  { pid: 4444, user: 'root', cpu: 85.0, mem: 40.0, time: '102:00', command: './xmrig --donate-level 1', tty: '?', stat: 'R' },
-  { pid: 8888, user: 'root', cpu: 1.5, mem: 2.1, time: '1:23', command: '/usr/bin/watcher --silent', tty: '?', stat: 'Sl' },
-  { pid: 9999, user: 'unknown', cpu: 45.2, mem: 12.8, time: '9:59', command: './hydra -l admin -P pass.txt 192.168.1.99', tty: 'pts/1', stat: 'R+' },
-  { pid: 31337, user: 'root', cpu: 99.9, mem: 50.0, time: '23:59', command: '/usr/bin/watcher_d --lock', tty: '?', stat: 'Z' },
-  { pid: 555, user: 'ghost', cpu: 12.5, mem: 4.2, time: '2:15', command: './data_miner --silent', tty: '?', stat: 'R' }
+  { pid: 1, ppid: 0, user: 'root', cpu: 0.1, mem: 0.4, time: '12:34', command: '/sbin/init', tty: '?', stat: 'Ss' },
+  { pid: 2, ppid: 0, user: 'root', cpu: 0.0, mem: 0.0, time: '0:00', command: '[kthreadd]', tty: '?', stat: 'S' },
+  { pid: 404, ppid: 1, user: 'root', cpu: 0.0, mem: 0.8, time: '0:05', command: '/usr/sbin/sshd -D', tty: '?', stat: 'Ss' },
+  { pid: 666, ppid: 1, user: 'root', cpu: 13.3, mem: 66.6, time: '66:66', command: '[spectre_kernel]', tty: '?', stat: 'R' },
+  { pid: 1337, ppid: 1, user: 'ghost', cpu: 0.5, mem: 1.2, time: '0:01', command: '-bash', tty: 'pts/0', stat: 'Ss' },
+  { pid: 2024, ppid: 1, user: 'root', cpu: 0.0, mem: 0.2, time: '0:02', command: '/usr/sbin/cron -f', tty: '?', stat: 'Ss' },
+  { pid: 4444, ppid: 1, user: 'root', cpu: 85.0, mem: 40.0, time: '102:00', command: './xmrig --donate-level 1', tty: '?', stat: 'R' },
+  { pid: 8888, ppid: 1, user: 'root', cpu: 1.5, mem: 2.1, time: '1:23', command: '/usr/bin/watcher --silent', tty: '?', stat: 'Sl' },
+  { pid: 9999, ppid: 1337, user: 'unknown', cpu: 45.2, mem: 12.8, time: '9:59', command: './hydra -l admin -P pass.txt 192.168.1.99', tty: 'pts/1', stat: 'R+' },
+  { pid: 31337, ppid: 1, user: 'root', cpu: 99.9, mem: 50.0, time: '23:59', command: '/usr/bin/watcher_d --lock', tty: '?', stat: 'Z' },
+  { pid: 555, ppid: 1, user: 'ghost', cpu: 12.5, mem: 4.2, time: '2:15', command: './data_miner --silent', tty: '?', stat: 'R' },
+  { pid: 4000, ppid: 1, user: 'root', cpu: 0.1, mem: 0.2, time: '1:00', command: '/usr/bin/vault_guardian', tty: '?', stat: 'Ss' },
+  { pid: 4001, ppid: 4000, user: 'root', cpu: 0.0, mem: 0.0, time: '0:00', command: '[vault_worker] <defunct>', tty: '?', stat: 'Z' }
 ];
 
 // Mock Network Connections
@@ -621,6 +624,22 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
               if (fileName === 'overflow' || fileName === 'exploit') {
                   output = `[SYSTEM] Buffer Overflow Triggered at 0xBF800000...\n[SYSTEM] EIP overwritten with 0x08048000\n[SYSTEM] Spawning root shell...\n\n# whoami\nroot`;
                   return { output, newCwd: '/root', newPrompt: 'root@ghost-root#', action: 'delay' };
+              } else if (fileName === 'secure_vault') {
+                  if (VFS['/var/lock/subsystem/vault.lock']) {
+                      output = `[ERROR] Secure Vault Locked.\n[REASON] Exclusive lock held by process (PID: 4001).\n[HINT] Check process table (ps -ef).`;
+                  } else {
+                      if (!VFS['/var/run/vault_unlocked']) {
+                          VFS['/var/run/vault_unlocked'] = { type: 'file', content: 'TRUE' };
+                          const runDir = getNode('/var/run');
+                          if (runDir && runDir.type === 'dir' && !runDir.children.includes('vault_unlocked')) {
+                              runDir.children.push('vault_unlocked');
+                          }
+                          output = `[SUCCESS] Vault Unlocked.\n[ACCESS] Level 5 Clearance Granted.\nFLAG: GHOST_ROOT{Z0MB13_R3AP3R}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: ZOMBIE PROCESS CLEARED.\x1b[0m`;
+                      } else {
+                          output = `[SUCCESS] Vault Unlocked.\nFLAG: GHOST_ROOT{Z0MB13_R3AP3R}`;
+                      }
+                  }
+                  return { output, newCwd, action: 'delay' };
               } else if (fileName === 'otp_gen' || fileName === 'auth_token') {
                   const now = Date.now() + SYSTEM_TIME_OFFSET;
                   const year = new Date(now).getFullYear();
@@ -3150,7 +3169,7 @@ tmpfs             815276    1184    814092   1% /run
       } else if (args.includes('-ef') || args.includes('ef')) {
           output = 'UID        PID  PPID  C STIME TTY          TIME CMD\n' +
           procs.map(p => {
-              const ppid = p.pid === 1 ? 0 : 1;
+              const ppid = p.ppid;
               return `${p.user.padEnd(8)} ${String(p.pid).padStart(5)} ${String(ppid).padStart(5)}  0 14:02 ${p.tty.padEnd(8)} ${p.time.padStart(8)} ${p.command}`;
           }).join('\n');
       } else {
@@ -3246,6 +3265,23 @@ tmpfs             815276    1184    814092   1% /run
                   } else if (pid === 1337) {
                       output = 'Terminating shell...';
                       return { output, newCwd, action: 'kernel_panic' };
+                  } else if (pid === 4001) {
+                      output = `kill: (${pid}) - Process is a zombie (defunct). You cannot kill a zombie. Kill its parent (PPID: 4000) to cleanup.`;
+                  } else if (pid === 4000) {
+                      // Kill parent and child
+                      PROCESSES.splice(idx, 1); // Kill 4000
+                      const childIdx = PROCESSES.findIndex(p => p.pid === 4001);
+                      if (childIdx !== -1) PROCESSES.splice(childIdx, 1); // Kill 4001
+                      
+                      // Remove lock
+                      if (VFS['/var/lock/subsystem/vault.lock']) {
+                          delete VFS['/var/lock/subsystem/vault.lock'];
+                          const lockDir = getNode('/var/lock/subsystem');
+                          if (lockDir && lockDir.type === 'dir') {
+                              lockDir.children = lockDir.children.filter(c => c !== 'vault.lock');
+                          }
+                      }
+                      output = `[${pid}] Terminated.\n[4001] Reaped (Zombie Cleanup).\n[SYSTEM] Vault Guardian terminated. Lock released.`;
                   } else if (pid === 31337) {
                       if (isSigKill) {
                           PROCESSES.splice(idx, 1);
