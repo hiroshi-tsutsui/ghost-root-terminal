@@ -329,7 +329,11 @@ exit`
   },
   '/etc': {
     type: 'dir',
-    children: ['passwd', 'shadow', 'hosts', 'iptables.rules', 'tor', 'cron.daily', 'ssl']
+    children: ['passwd', 'shadow', 'hosts', 'iptables.rules', 'tor', 'cron.daily', 'ssl', 'uplink.conf']
+  },
+  '/etc/uplink.conf': {
+    type: 'file',
+    content: '# UPLINK CONFIGURATION v2.0\n# --------------------------\n# SECURITY ALERT: HARDCODED KEYS REMOVED.\n#\n# To establish a connection, you must set the session environment variable:\n# export UPLINK_KEY=XJ9-SAT-442\n#\n# Then run: uplink_connect'
   },
   '/etc/tor': {
     type: 'dir',

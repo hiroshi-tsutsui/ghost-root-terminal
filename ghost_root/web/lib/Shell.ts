@@ -16,7 +16,7 @@ const ALIASES: Record<string, string> = {
   'objectives': 'status',
   'mission': 'status',
   'hint': 'status',
-  'uplink_connect': 'echo "uplink: CONNECTION REFUSED (Maintenance Mode)"'
+  'ping_sweep': 'nmap -sn 192.168.1.0/24'
 };
 
 const ENV_VARS: Record<string, string> = {
@@ -4760,16 +4760,21 @@ PROGRESS:   ${progress}% [${bar}]
         break;
     }
     case 'uplink_connect': {
-        output = `[UPLINK] Initiating connection to OMEGA-SAT-7...\n[STATUS] Handshake Complete.\n[DATA] Downloading payload...\n\nPayload: GHOST_ROOT{4L14S_BYP4SS_SUCC3SS}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: UPLINK ESTABLISHED.\x1b[0m`;
-        
-        if (!VFS['/var/run/uplink_established']) {
-            VFS['/var/run/uplink_established'] = { type: 'file', content: 'TRUE' };
-            const runDir = getNode('/var/run');
-            if (runDir && runDir.type === 'dir' && !runDir.children.includes('uplink_established')) {
-                runDir.children.push('uplink_established');
+        if (ENV_VARS['UPLINK_KEY'] === 'XJ9-SAT-442') {
+            output = `[UPLINK] Initiating connection to OMEGA-SAT-1...\n[STATUS] Handshake Complete (Key Verified).\n[DATA] Downloading payload...\n\nPayload: GHOST_ROOT{ENV_V4R_M4ST3R}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SATELLITE UPLINK SECURED.\x1b[0m`;
+            
+            if (!VFS['/var/run/uplink_established']) {
+                VFS['/var/run/uplink_established'] = { type: 'file', content: 'TRUE' };
+                const runDir = getNode('/var/run');
+                if (runDir && runDir.type === 'dir' && !runDir.children.includes('uplink_established')) {
+                    runDir.children.push('uplink_established');
+                }
             }
+             return { output, newCwd, action: 'sat_sim' };
+        } else {
+            output = 'uplink: CONNECTION REFUSED (Auth Failed)\n[ERROR] Environment variable UPLINK_KEY missing or invalid.\n[HINT] Check /etc/uplink.conf for protocol details.';
         }
-        return { output, newCwd, action: 'sat_sim' };
+        break;
     }
     default:
       output = `bash: ${command}: command not found`;
