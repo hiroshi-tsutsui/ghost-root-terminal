@@ -45,7 +45,28 @@ const VFS: Record<string, VFSNode> = {
   },
   '/usr/bin': {
     type: 'dir',
-    children: ['gcc', 'net-bridge', 'void_crypt']
+    children: ['gcc', 'net-bridge', 'void_crypt', 'deploy_agent', 'otp_gen', 'recover_data']
+  },
+  '/usr/bin/recover_data': {
+    type: 'file',
+    content: `#!/bin/bash
+# RECOVER_DATA_V1
+# RESTORES CRITICAL SYSTEM FILE: /mnt/data/secure_store.bin
+
+TARGET="/mnt/data/secure_store.bin"
+
+echo "[INFO] Initializing recovery sequence..."
+echo "[INFO] Target: $TARGET"
+
+# Payload Injection
+echo "GHOST_ROOT{M0UNT_RW_SUCC3SS}" > $TARGET
+
+if [ $? -eq 0 ]; then
+  echo "[SUCCESS] Data recovered."
+else
+  echo "[ERROR] Write failed. Check filesystem permissions or mount status."
+fi
+`
   },
   '/usr/bin/net-bridge': {
     type: 'file',
@@ -592,7 +613,15 @@ Click here to claim your prize!
   },
   '/mnt': {
       type: 'dir',
-      children: ['vault']
+      children: ['vault', 'data']
+  },
+  '/mnt/data': {
+      type: 'dir',
+      children: ['README.txt']
+  },
+  '/mnt/data/README.txt': {
+      type: 'file',
+      content: 'WARNING: STORAGE ARRAY DEGRADED. MOUNTED READ-ONLY.'
   },
   '/mnt/vault': {
       type: 'dir',

@@ -126,7 +126,8 @@ const addChild = (parentPath: string, childName: string) => {
   }
 };
 
-const MOUNTED_DEVICES: Record<string, string> = {}; // device -> mountPoint
+const MOUNTED_DEVICES: Record<string, string> = { '/dev/sdc1': '/mnt/data' };
+const MOUNT_OPTIONS: Record<string, string> = { '/mnt/data': 'ro,nosuid,nodev' };
 
 
 const tokenize = (cmd: string): string[] => {
@@ -203,7 +204,7 @@ export interface CommandResult {
   data?: any;
 }
 
-const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'jobs', 'fg', 'bg'];
+const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'jobs', 'fg', 'bg', 'recover_data'];
 
 export interface MissionStatus {
   objectives: {
@@ -387,6 +388,13 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
       if (redirectFile && out) {
           const filePath = resolvePath(cwd, redirectFile);
           
+          // READ-ONLY MOUNT SIMULATION
+          for (const [mp, opts] of Object.entries(MOUNT_OPTIONS)) {
+              if (filePath.startsWith(mp) && opts.includes('ro')) {
+                  return { output: `bash: ${redirectFile}: Read-only file system`, newCwd: nCwd, action: act, data: dat, newPrompt: prompt };
+              }
+          }
+
           // DISK FULL SIMULATION
           if (filePath.startsWith('/var') && !!getNode('/var/log/overflow.dmp')) {
              return { output: `bash: write error: No space left on device`, newCwd: nCwd, action: act, data: dat, newPrompt: prompt };
@@ -1674,11 +1682,43 @@ Type "status" for mission objectives.`;
         break;
     }
     case 'mount': {
-       if (args.length === 0) {
-           if (Object.keys(MOUNTED_DEVICES).length === 0) {
-               output = '/dev/sda1 on / type ext4 (rw,relatime)\nproc on /proc type proc (rw,nosuid,nodev,noexec,relatime)\nsysfs on /sys type sysfs (rw,nosuid,nodev,noexec,relatime)\ntmpfs on /run type tmpfs (rw,nosuid,nodev,noexec,relatime,size=815276k,mode=755)';
+       // HANDLE REMOUNT
+       if (args.includes('-o') && (args.includes('remount,rw') || args.includes('rw,remount'))) {
+           const target = args[args.length - 1];
+           const resolved = resolvePath(cwd, target);
+           let found = false;
+           // Check if it's a known mount point
+           for (const mp of Object.keys(MOUNT_OPTIONS)) {
+               if (mp === resolved || resolved.startsWith(mp)) {
+                   MOUNT_OPTIONS[mp] = 'rw,relatime';
+                   found = true;
+               }
+           }
+           
+           if (found) {
+               output = ''; // Silent success
            } else {
-               output = '/dev/sda1 on / type ext4 (rw,relatime)\n...\n' + Object.entries(MOUNTED_DEVICES).map(([dev, mp]) => `${dev} on ${mp} type vfat (rw)`).join('\n');
+               output = `mount: ${target}: mount point not found`;
+           }
+       } else if (args.length === 0) {
+           output = '/dev/sda1 on / type ext4 (rw,relatime)\nproc on /proc type proc (rw,nosuid,nodev,noexec,relatime)\nsysfs on /sys type sysfs (rw,nosuid,nodev,noexec,relatime)\ntmpfs on /run type tmpfs (rw,nosuid,nodev,noexec,relatime,size=815276k,mode=755)\n';
+           
+           // List tracked mounts
+           const printed = new Set<string>();
+           for (const [mp, opts] of Object.entries(MOUNT_OPTIONS)) {
+               let device = 'none';
+               for (const [d, m] of Object.entries(MOUNTED_DEVICES)) {
+                   if (m === mp) device = d;
+               }
+               output += `${device} on ${mp} type ext4 (${opts})\n`;
+               printed.add(mp);
+           }
+           
+           // List legacy mounts not in options
+           for (const [dev, mp] of Object.entries(MOUNTED_DEVICES)) {
+               if (!printed.has(mp)) {
+                   output += `${dev} on ${mp} type vfat (rw)\n`;
+               }
            }
        } else if (args.length < 2) {
            output = 'usage: mount <source> <target>';
@@ -1707,6 +1747,23 @@ Type "status" for mission objectives.`;
                }
            } else {
                output = `mount: ${source}: special device does not exist`;
+           }
+       }
+       break;
+    }
+    case 'recover_data': {
+       if (MOUNT_OPTIONS['/mnt/data'] && MOUNT_OPTIONS['/mnt/data'].includes('ro')) {
+           output = '[INFO] Initializing recovery sequence...\n[INFO] Target: /mnt/data/secure_store.bin\n[ERROR] Write failed. Check filesystem permissions or mount status.';
+       } else {
+           output = '[INFO] Initializing recovery sequence...\n[INFO] Target: /mnt/data/secure_store.bin\n[SUCCESS] Data recovered.\n\nGHOST_ROOT{M0UNT_RW_SUCC3SS}';
+           VFS['/mnt/data/secure_store.bin'] = { type: 'file', content: 'GHOST_ROOT{M0UNT_RW_SUCC3SS}' };
+           addChild('/mnt/data', 'secure_store.bin');
+           
+           // Mission Update: Flag
+           if (!VFS['/var/run/mount_solved']) {
+              VFS['/var/run/mount_solved'] = { type: 'file', content: 'TRUE' };
+              addChild('/var/run', 'mount_solved');
+              output += '\n\x1b[1;32m[MISSION UPDATE] Objective Complete: READ-ONLY MOUNT BYPASSED.\x1b[0m';
            }
        }
        break;
