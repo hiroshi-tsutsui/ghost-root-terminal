@@ -4100,9 +4100,9 @@ ${validUnits.length} loaded units listed.`;
                output = `python: can't open file '${fileName}': [Errno 2] No such file or directory`;
            } else if (node.type === 'dir') {
                output = `/usr/bin/python3: can't find '__main__' module in '${fileName}'`;
-           } else {
+           } else if (node.type === 'file') {
                // Simple mock interpreter
-               const content = (node as any).content;
+               const content = node.content;
                if (content.includes('import os') || content.includes('system(')) {
                    output = 'RuntimeError: Restricted environment. System calls disabled.';
                } else if (content.includes('print("This is a fake exploit.")')) {
@@ -4303,7 +4303,7 @@ wget: unable to resolve host address`;
                 if (match) {
                     const metadata = match[1].trim().split('\n');
                     output = `ExifTool Version Number         : 12.00\nFile Name                       : ${target}\nFile Size                       : ${content.length} bytes\nFile Permissions                : rw-r--r--\n` + 
-                             metadata.map(line => {
+                             metadata.map((line: string) => {
                                  const [key, val] = line.split(':');
                                  if (!val) return line;
                                  return `${key.trim().padEnd(32)}: ${val.trim()}`;
