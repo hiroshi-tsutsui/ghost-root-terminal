@@ -1,7 +1,7 @@
 
-[2026-02-11 17:30]
+[2026-02-11 18:00]
 > CHANGES: ghost_root/web/lib/VFS.ts
-> PUZZLE ADDED: "The Broken Archive" (Base64 Zip / File Recovery).
-> MECHANICS: Added `/home/ghost/backup.zip.b64` (corrupted/encoded).
-> LORE: A backup file was transferred as raw base64 but never decoded. It contains a "confidential" PDF.
-> SOLUTION: `base64 -d backup.zip.b64 > backup.zip` -> `unzip backup.zip` -> `cat confidential.txt`.
+> PUZZLE ADDED: "The Hidden Binary" (Reverse Engineering / Strings).
+> MECHANICS: Added `/usr/bin/strange_binary` (obfuscated content).
+> LORE: A strange binary was found in `/usr/bin`. It seems to check for a specific license key.
+> SOLUTION: `strings /usr/bin/strange_binary` -> Find flag `GHOST_ROOT{STR1NGS_R3V3AL_S3CR3TS}`.

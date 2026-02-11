@@ -67,6 +67,10 @@ echo "Update Complete."
 echo "FLAG: GHOST_ROOT{L0CK_F1L3_R3M0V3D}"
 `
   },
+  '/usr/bin/strange_binary': {
+    type: 'file',
+    content: '\x7fELF\x02\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x3e\x00\x01\x00\x00\x00\x30\x05\x40\x00\x00\x00\x00\x00@\x00\x00\x00\x00\x00\x00\x00LICENSE_KEY_CHECK\x00\x00GHOST_ROOT{STR1NGS_R3V3AL_S3CR3TS}\x00\x00ACCESS_DENIED\x00'
+  },
   '/usr/bin/recover_data': {
     type: 'file',
     content: `#!/bin/bash
