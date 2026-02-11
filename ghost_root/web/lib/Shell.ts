@@ -3209,8 +3209,10 @@ tmpfs             815276    1184    814092   1% /run
                output = `unzip: cannot find or open ${archiveName}.`;
            } else if (node.type === 'dir') {
                output = `unzip: ${archiveName}: Is a directory`;
+           } else if (node.type === 'symlink') {
+               output = `unzip: ${archiveName}: Is a symbolic link`;
            } else {
-               const content = node.content;
+               const content = (node as any).content;
                if (content.startsWith('PK_SIM_V1:')) {
                    output = `Archive:  ${archiveName}\n`;
                    const payload = content.substring(10);
