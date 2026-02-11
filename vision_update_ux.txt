@@ -1,0 +1,4 @@
+[Vision Update - UX]
+- **Feature:** Implemented Dynamic Prompt (Rank-based) & Startup Hints.
+- **Status:** Deployed (Commit `3e4acc2`).
+- **Next:** Monitor user feedback. The prompt now updates (`ghost@scout`, `ghost@hacker`) as they progress, giving constant feedback. Fixed a bug where toast notifications were duplicated or missing.

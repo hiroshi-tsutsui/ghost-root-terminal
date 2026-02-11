@@ -356,6 +356,9 @@ export const processCommand = (cwd: string, commandLine: string, currentUser: st
       } else {
         const page = args[0];
         switch (page) {
+          case 'steghide':
+            output = 'NAME\n\tsteghide - a steganography program\n\nSYNOPSIS\n\tsteghide extract -sf <file> [options]\n\nDESCRIPTION\n\tSteghide allows you to hide data in various kinds of image- and audio-files.';
+            break;
           case 'ls':
             output = 'NAME\n\tls - list directory contents\n\nSYNOPSIS\n\tls [OPTION]... [FILE]...\n\nDESCRIPTION\n\tList information about the FILEs (the current directory by default).\n\n\t-a, --all\n\t\tdo not ignore entries starting with .\n\n\t-l\n\t\tuse a long listing format';
             break;
@@ -653,6 +656,63 @@ export const processCommand = (cwd: string, commandLine: string, currentUser: st
       }
       break;
     }
+    case 'steghide': {
+       const hasExtract = args.includes('extract') || args.includes('-sf');
+       const hasInfo = args.includes('info');
+       
+       if (!hasExtract && !hasInfo) {
+           output = 'steghide: usage: steghide extract -sf <file> -p <passphrase>';
+       } else {
+           // Extract
+           let fileTarget: string | undefined;
+           const sfIndex = args.indexOf('-sf');
+           if (sfIndex !== -1 && args[sfIndex + 1]) {
+               fileTarget = args[sfIndex + 1];
+           } else {
+               // Try to find a file ending in .jpg
+               fileTarget = args.find(a => a.endsWith('.jpg'));
+           }
+
+           if (!fileTarget) {
+               output = 'steghide: argument "-sf <filename>" missing';
+           } else {
+               const filePath = resolvePath(cwd, fileTarget);
+               const fileNode = getNode(filePath);
+
+               if (!fileNode) {
+                   output = `steghide: could not open "${fileTarget}".`;
+               } else {
+                   const pIndex = args.indexOf('-p');
+                   const passphrase = (pIndex !== -1 && args[pIndex + 1]) ? args[pIndex + 1] : null;
+
+                   if (!passphrase) {
+                       output = 'steghide: passphrase required (use -p <passphrase>)';
+                   } else if (passphrase === 'kirov_reporting') {
+                       // Success
+                       const payloadName = 'payload.txt';
+                       const payloadPath = cwd === '/' ? `/${payloadName}` : `${cwd}/${payloadName}`;
+                       
+                       // Write file
+                       VFS[payloadPath] = { 
+                           type: 'file', 
+                           content: 'TARGET ACQUIRED:\n\nSystem: 192.168.1.5 (admin-pc)\nUser: admin\nPass: omega_protocol_override\n\nSSH Key: [ATTACHED]\n\nTask: Use credentials to access admin-pc and execute override.' 
+                       };
+                       
+                       // Add to parent
+                       const parentNode = getNode(cwd);
+                       if (parentNode && parentNode.type === 'dir' && !parentNode.children!.includes(payloadName)) {
+                           parentNode.children!.push(payloadName);
+                       }
+                       
+                       output = `wrote extracted data to "${payloadName}".`;
+                   } else {
+                       output = `steghide: could not extract data: invalid passphrase "${passphrase}"`;
+                   }
+               }
+           }
+       }
+       break;
+    }
     case 'crack': {
       if (args.length < 1) {
         output = 'usage: crack <target_ip> [user]';
@@ -802,59 +862,6 @@ export const processCommand = (cwd: string, commandLine: string, currentUser: st
             }
         }
         break;
-    }
-    case 'sqlmap': {
-       if (args.length < 1) {
-           output = 'usage: sqlmap -u <url> [options]';
-       } else {
-           const urlIdx = args.indexOf('-u');
-           if (urlIdx !== -1 && args[urlIdx + 1]) {
-               const url = args[urlIdx + 1];
-               if (url.includes('192.168.1.5') || url.includes('admin-pc')) {
-                   output = `        ___
-       __H__
- ___ ___[']_____ ___ ___  {1.5.2#stable}
-|_ -| . ["]     | .'| . |
-|___|_  ["]_|_|_|__,|  _|
-      |_|V...       |_|   http://sqlmap.org
-
-[*] starting at ${new Date().toISOString().split('T')[0]} 12:00:00
-
-[INFO] testing connection to the target URL
-[INFO] testing if the target URL content is stable
-[INFO] target URL content is stable
-[INFO] testing if GET parameter 'id' is dynamic
-[INFO] GET parameter 'id' appears to be dynamic
-[INFO] heuristic (basic) test shows that GET parameter 'id' might be injectable (possible DBMS: 'MySQL')
-[INFO] testing for SQL injection on GET parameter 'id'
-[INFO] GET parameter 'id' is 'MySQL >= 5.0.12 AND time-based blind (query SLEEP)' injectable 
-[INFO] retrieving database management system banner
-[INFO] the back-end DBMS is MySQL
-[INFO] fetching current database
-[INFO] fetching tables for database: 'ghost_admin'
-[INFO] fetching columns for table 'users'
-[INFO] fetching entries for table 'users'
-
-Database: ghost_admin
-Table: users
-[1 entry]
-+----+----------+--------------------------------------------------+
-| id | username | password                                         |
-+----+----------+--------------------------------------------------+
-| 1  | admin    | GHOST_ROOT{SQL_INJ3CT10N_M4ST3R}                 |
-+----+----------+--------------------------------------------------+
-
-[INFO] fetched data logged to text files under '/home/ghost/.sqlmap/output'
-[*] ending @ 12:00:42`;
-               } else {
-                   output = `[!] legal disclaimer: Usage of sqlmap for attacking targets without prior mutual consent is illegal.
-[CRITICAL] all tested parameters do not appear to be injectable.`;
-               }
-           } else {
-               output = 'sqlmap: missing -u argument';
-           }
-       }
-       break;
     }
     case 'sqlmap': {
        if (args.length < 1) {

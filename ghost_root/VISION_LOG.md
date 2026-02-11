@@ -68,7 +68,7 @@ This file tracks the development cycles of the `ghost_root` project under the ne
 > PUZZLE ADDED: "The Sealed Vault" (Kernel Modules / Insmod / Mount).
 > MECHANICS: Added `lsmod`, `insmod`, `rmmod` logic. Added `/lib/modules/.../cryptex.ko` and `/dev/vault`.
 > LORE: A secure partition (`/dev/vault`) is locked. The kernel module `cryptex.ko` must be loaded to mount it.
-> SOLUTION: `mount /dev/vault /mnt/vault` (fails) -> `find /lib -name *.ko` -> `insmod .../cryptex.ko` -> `mount /dev/vault /mnt/vault` -> `cat /mnt/vault/classified_intel.txt`.
+> SOLUTION: `mount /dev/vault /mnt/vault` (fails) -> `find / -name *.ko` -> `insmod .../cryptex.ko` -> `mount /dev/vault /mnt/vault` -> `cat /mnt/vault/classified_intel.txt`.
 
 [2026-02-11 05:30]
 > CHANGES: ghost_root/web/lib/Shell.ts, ghost_root/web/lib/VFS.ts
@@ -125,3 +125,38 @@ This file tracks the development cycles of the `ghost_root` project under the ne
 > MECHANICS: Added `df` and `du` commands. Implemented disk usage check in Shell.ts. Added `/var/log/overflow.dmp` (500MB).
 > LORE: The previous intruder flooded the logs, filling the `/var` partition. Write access is blocked.
 > SOLUTION: Write attempt fails ("No space left") -> `df -h` (shows /var 100%) -> `du -h /var` (finds overflow.dmp) -> `rm /var/log/overflow.dmp` -> Write access restored.
+
+[2026-02-11 09:51]
+> CHANGES: ghost_root/web/lib/VFS.ts, ghost_root/web/lib/Shell.ts
+> PUZZLE ADDED: "The Time Skew" (NTP / Date / Clock Drift).
+> MECHANICS: Added `date -s` (simulated block), `ntpdate` command, and `otp_gen` binary. Implemented global `SYSTEM_TIME_OFFSET` (Y2K glitch).
+> LORE: The authentication server (`otp_gen`) fails if the system clock is drifted (set to 1999).
+> SOLUTION: `./otp_gen` (fail: clock skew) -> `date` (shows 1999) -> `ntpdate time.ghost.network` -> `./otp_gen` (success).
+
+[2026-02-11 10:18]
+> CHANGES: ghost_root/web/lib/Shell.ts
+> PUZZLE ADDED: "The Alias Trap" (Unalias / Type / Command Shadowing).
+> MECHANICS: Added `alias` (shadowing), `unalias`, and `type` commands. Aliased `uplink_connect` to a fake error message.
+> LORE: The uplink connection is blocked by a local alias inserted by the intruder's script.
+> SOLUTION: `uplink_connect` (fails) -> `type uplink_connect` (shows alias) -> `unalias uplink_connect` -> `uplink_connect` (success).
+
+[2026-02-11 10:48]
+> CHANGES: ghost_root/web/lib/Shell.ts, ghost_root/web/lib/VFS.ts
+> PUZZLE ADDED: "The Broken Symlink" (ln / ls -F / readlink).
+> MECHANICS: Implemented `ln -s` command. Updated `ls -l` to show symlinks (`->`). Added `curl` SSL check that verifies `ca-certificates.crt`.
+> LORE: Secure connection blocked due to a missing SSL certificate bundle (symlink points to deleted file).
+> SOLUTION: `curl` (SSL error) -> `ls -l /etc/ssl/certs` (see broken link) -> `find / -name ca-certificates.crt` -> `ln -sf /usr/share/ca-certificates/mozilla/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt` -> `curl` success.
+
+[2026-02-11 11:32]
+> CHANGES: ghost_root/web/lib/Shell.ts
+> PUZZLE ADDED: "The Stopped Job" (Job Control / jobs / fg / bg).
+> MECHANICS: Added `jobs`, `fg`, `bg` commands. Introduced `JOBS` global to track background processes.
+> LORE: A decryption process (`./decrypt_chimera`) was paused by the previous user.
+> SOLUTION: `jobs` (shows stopped job) -> `fg %1` (resumes job) -> Decryption completes -> Flag recovered.
+
+[2026-02-11 12:45]
+> CHANGES: ghost_root/web/lib/Shell.ts, ghost_root/web/lib/VFS.ts
+> PUZZLE ADDED: "The Read-Only Mount" (Filesystem Protection / mount).
+> MECHANICS: Added `mount` with `-o remount,rw` support. Added `/mnt/data` (read-only) and `recover_data` script.
+> LORE: Data corruption requires manual recovery, but the backup partition is mounted Read-Only.
+> SOLUTION: `recover_data` (fails) -> `mount` (shows /mnt/data ro) -> `mount -o remount,rw /mnt/data` -> `recover_data` (success).

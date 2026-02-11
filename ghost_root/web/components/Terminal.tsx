@@ -1952,7 +1952,7 @@ const WebTerminal = () => {
   }, [mission]);
 
   return (
-    <div className="flex w-full h-screen bg-black text-green-500 font-mono relative">
+    <div className="flex w-full h-screen bg-black text-green-500 font-mono relative overflow-hidden">
       <div className="flex-grow h-full" ref={terminalContainerRef} />
       
       {/* Toast Notification */}
@@ -1976,7 +1976,7 @@ const WebTerminal = () => {
 
       {mission && (
         <div className={`
-          w-80 border-l border-green-900 p-4 flex-col overflow-y-auto bg-black bg-opacity-95 
+          w-80 border-l border-green-900 p-4 flex flex-col overflow-y-auto bg-black bg-opacity-95 
           transition-transform duration-300 ease-in-out
           fixed md:relative right-0 top-0 bottom-0 z-40
           ${isSidebarOpen ? 'translate-x-0' : 'translate-x-full md:translate-x-0'}

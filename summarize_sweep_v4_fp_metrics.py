@@ -1,0 +1,99 @@
+import os
+import json
+import glob
+
+def load_configs(job_files_pattern):
+    configs = {}
+    files = glob.glob(job_files_pattern)
+    for f in files:
+        basename = os.path.basename(f)
+        if "job_sweep_v4_1_" in basename:
+            exp_id = basename.replace("job_sweep_v4_1_tp_", "").replace("job_sweep_v4_1_", "").replace(".json", "")
+        else:
+            continue
+        try:
+            with open(f, 'r') as jf:
+                data = json.load(jf)
+                try:
+                    env_vars = data['taskGroups'][0]['taskSpec']['runnables'][0]['environment']['variables']
+                    config_str = env_vars.get('SWEEP_CONFIG', '{}')
+                    config = json.loads(config_str)
+                    if exp_id not in configs:
+                        configs[exp_id] = config
+                except (KeyError, IndexError, json.JSONDecodeError):
+                    pass
+        except Exception as e:
+            pass
+    return configs
+
+def load_results(base_dir, prefix):
+    results = {}
+    pattern = os.path.join(base_dir, f"{prefix}exp-*")
+    dirs = glob.glob(pattern)
+    
+    for d in dirs:
+        dirname = os.path.basename(d)
+        parts = dirname.split('-')
+        exp_num = parts[-1] 
+        exp_id = f"exp_{exp_num}"
+        
+        res_file = os.path.join(d, "result.json")
+        if os.path.exists(res_file):
+            try:
+                with open(res_file, 'r') as f:
+                    res = json.load(f)
+                    results[exp_id] = res
+            except Exception as e:
+                pass
+    return results
+
+def main():
+    # Use FP run configs
+    configs = load_configs("job_sweep_v4_1_exp_*.json")
+    
+    home = os.path.expanduser("~")
+    # Pointing to the FP dataset results as requested
+    fp_dir = os.path.join(home, "Downloads/yolo-gcp/eagle/infer/output/sweep_v4_1")
+    
+    fp_results = load_results(fp_dir, prefix="sweep-v4-1-")
+    
+    print("| Experiment | Danger (FP) | Positive (Warn+Recover) | Safe | Dist Danger (m) | Persistence (s) | Warn (m) |")
+    print("|:---|---:|---:|---:|---:|---:|---:|")
+    
+    all_keys = sorted(configs.keys())
+    rows = []
+    
+    for k in all_keys:
+        cfg = configs.get(k, {})
+        res = fp_results.get(k, {})
+        
+        # Extract fields directly from the FP result JSON
+        danger = res.get('danger', 0)
+        positive = res.get('positive', 0)
+        safe = res.get('safe', 0)
+        
+        dist = cfg.get('DIST_DANGER_M', 0)
+        persist = cfg.get('DANGER_PERSISTENCE_SEC', 0)
+        warn = cfg.get('DIST_WARN_M', 0)
+        
+        if danger == 0 and positive == 0 and safe == 0:
+             continue 
+
+        rows.append({
+            "k": k,
+            "danger": danger,
+            "positive": positive,
+            "safe": safe,
+            "dist": dist,
+            "persist": persist,
+            "warn": warn
+        })
+
+    # Sort by Danger (ascending)
+    rows.sort(key=lambda x: (x["danger"], -x["positive"]))
+    
+    for r in rows:
+        print(f"| {r['k']} | {r['danger']} | {r['positive']} | {r['safe']} | {r['dist']} | {r['persist']} | {r['warn']} |")
+
+if __name__ == "__main__":
+    main()
