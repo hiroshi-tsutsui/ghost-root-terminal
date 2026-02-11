@@ -179,7 +179,8 @@ let PROCESSES: Process[] = [
   { pid: 31337, ppid: 1, user: 'root', cpu: 99.9, mem: 50.0, time: '23:59', command: '/usr/bin/watcher_d --lock', tty: '?', stat: 'Z' },
   { pid: 555, ppid: 1, user: 'ghost', cpu: 12.5, mem: 4.2, time: '2:15', command: './data_miner --silent', tty: '?', stat: 'R' },
   { pid: 4000, ppid: 1, user: 'root', cpu: 0.1, mem: 0.2, time: '1:00', command: '/usr/bin/vault_guardian', tty: '?', stat: 'Ss' },
-  { pid: 4001, ppid: 4000, user: 'root', cpu: 0.0, mem: 0.0, time: '0:00', command: '[vault_worker] <defunct>', tty: '?', stat: 'Z' }
+  { pid: 4001, ppid: 4000, user: 'root', cpu: 0.0, mem: 0.0, time: '0:00', command: '[vault_worker] <defunct>', tty: '?', stat: 'Z' },
+  { pid: 6000, ppid: 1, user: 'root', cpu: 0.5, mem: 1.0, time: '0:10', command: '/usr/bin/overseer', tty: '?', stat: 'Ss' }
 ];
 
 // Mock Network Connections
@@ -536,6 +537,105 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
       }
   }
 
+  // Cycle 42 Init (Respawning Service)
+  if (!VFS['/etc/systemd/system/overseer.service']) {
+      // Create service file
+      if (!VFS['/etc/systemd/system']) {
+          // Ensure path exists
+          VFS['/etc/systemd/system'] = { type: 'dir', children: [] };
+          const etc = getNode('/etc');
+          if (etc && etc.type === 'dir' && !etc.children.includes('systemd')) etc.children.push('systemd');
+          const sysd = getNode('/etc/systemd');
+          if (sysd && sysd.type === 'dir' && !sysd.children.includes('system')) sysd.children.push('system');
+      }
+      VFS['/etc/systemd/system/overseer.service'] = {
+          type: 'file',
+          content: '[Unit]\nDescription=Overseer Monitoring Service\nConditionPathExists=/var/lock/overseer.lock\n\n[Service]\nExecStart=/usr/bin/overseer\nRestart=always\nRestartSec=1s'
+      };
+      const sysDir = getNode('/etc/systemd/system');
+      if (sysDir && sysDir.type === 'dir' && !sysDir.children.includes('overseer.service')) sysDir.children.push('overseer.service');
+      
+      // Create binary
+      VFS['/usr/bin/overseer'] = { type: 'file', content: '[BINARY_ELF_X86_64]' };
+      const binDir = getNode('/usr/bin');
+      if (binDir && binDir.type === 'dir' && !binDir.children.includes('overseer')) binDir.children.push('overseer');
+      
+      // Create Lock File
+      VFS['/var/lock/overseer.lock'] = { type: 'file', content: '6000' };
+      const lockDir = getNode('/var/lock');
+      if (lockDir && lockDir.type === 'dir' && !lockDir.children.includes('overseer.lock')) {
+          lockDir.children.push('overseer.lock');
+      }
+  }
+
+  // Cycle 43 Init (Packet Sniffer)
+  if (!VFS['/home/ghost/evidence']) {
+      VFS['/home/ghost/evidence'] = { type: 'dir', children: [] };
+      const home = getNode('/home/ghost');
+      if (home && home.type === 'dir' && !home.children.includes('evidence')) {
+          home.children.push('evidence');
+      }
+  }
+  if (!VFS['/home/ghost/evidence/capture.pcap']) {
+      VFS['/home/ghost/evidence/capture.pcap'] = { 
+          type: 'file', 
+          content: 'PCAP_V1:[HEADER]...[PACKET_001]...[PACKET_999]...[PAYLOAD: GHOST_ROOT{P4CK3T_M4ST3R} (Port 4444)]...' 
+      };
+      const evDir = getNode('/home/ghost/evidence');
+      if (evDir && evDir.type === 'dir' && !evDir.children.includes('capture.pcap')) {
+          evDir.children.push('capture.pcap');
+      }
+  }
+
+  // Cycle 44 Init (Git Stash)
+  if (!VFS['/home/ghost/dev']) {
+      VFS['/home/ghost/dev'] = { type: 'dir', children: [] };
+      const home = getNode('/home/ghost');
+      if (home && home.type === 'dir' && !home.children.includes('dev')) {
+          home.children.push('dev');
+      }
+  }
+  // Simulate .git directory
+  if (!VFS['/home/ghost/dev/.git']) {
+      VFS['/home/ghost/dev/.git'] = { type: 'dir', children: ['refs', 'HEAD', 'config'] };
+      const dev = getNode('/home/ghost/dev');
+      if (dev && dev.type === 'dir' && !dev.children.includes('.git')) {
+          dev.children.push('.git');
+      }
+      VFS['/home/ghost/dev/README.md'] = { type: 'file', content: '# Project Chimera\nAuthentication Module v2.0\n[STATUS] In Development.' };
+      if (dev && dev.type === 'dir' && !dev.children.includes('README.md')) dev.children.push('README.md');
+      
+      // Simulate stash logic via hidden file state
+      VFS['/home/ghost/dev/.git/stash'] = { 
+          type: 'file', 
+          content: 'stash@{0}: WIP on main: 4b3d123 Added auth bypass' 
+      };
+  }
+
+  // Cycle 45 Init (Setuid Binary)
+  if (!VFS['/home/ghost/tools/escalate']) {
+      // Create tools dir if missing
+      if (!VFS['/home/ghost/tools']) {
+          VFS['/home/ghost/tools'] = { type: 'dir', children: [] };
+          const homeGhost = getNode('/home/ghost');
+          if (homeGhost && homeGhost.type === 'dir' && !homeGhost.children.includes('tools')) {
+              homeGhost.children.push('tools');
+          }
+      }
+      
+      VFS['/home/ghost/tools/escalate'] = {
+          type: 'file',
+          content: '[BINARY_ELF_X86_64] [ROOT_ONLY] [SUID_CHECK_REQUIRED]'
+      };
+      // Explicitly set permissions to 0755 (no SUID) initially
+      (VFS['/home/ghost/tools/escalate'] as any).permissions = '0755';
+
+      const toolsDir = getNode('/home/ghost/tools');
+      if (toolsDir && toolsDir.type === 'dir' && !toolsDir.children.includes('escalate')) {
+          toolsDir.children.push('escalate');
+      }
+  }
+
   // 1. Handle Piping (|) recursively
   const segments = splitPipeline(commandLine);
   if (segments.length > 1) {
@@ -695,6 +795,32 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
                   output = `[EXPLOIT] Linking libbreaker.so... OK\n[EXPLOIT] Injecting Payload into Kernel... OK\n[EXPLOIT] Root Access Granted.\n\nFLAG: GHOST_ROOT{C0MP1L3R_M4ST3R}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PAYLOAD DELIVERED.\x1b[0m`;
                   if (!VFS['/var/run/payload_delivered']) {
                       VFS['/var/run/payload_delivered'] = { type: 'file', content: 'TRUE' };
+                  }
+                  return { output, newCwd, action: 'delay' };
+              } else if (fileName === 'escalate') {
+                  // Check SUID bit
+                  let mode = (fileNode as any).permissions || '0755';
+                  if (mode.length === 3) mode = '0' + mode;
+                  const special = parseInt(mode[0], 10);
+                  const isSetuid = !!(special & 4);
+                  
+                  if (isSetuid) {
+                      output = `[SYSTEM] Escalating privileges...
+[AUTH] SUID verified (Owner: root).
+[SUCCESS] Access Granted.
+FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
+
+\x1b[1;32m[MISSION UPDATE] Objective Complete: PRIVILEGE ESCALATION (SUID).\x1b[0m`;
+                      // Set flag
+                      if (!VFS['/var/run/suid_solved']) {
+                          VFS['/var/run/suid_solved'] = { type: 'file', content: 'TRUE' };
+                          const runDir = getNode('/var/run');
+                          if (runDir && runDir.type === 'dir' && !runDir.children.includes('suid_solved')) {
+                              runDir.children.push('suid_solved');
+                          }
+                      }
+                  } else {
+                      output = `[ERROR] This binary must be run as root (setuid bit missing).\n[HINT] Try 'chmod u+s' or 'chmod 4755'.`;
                   }
                   return { output, newCwd, action: 'delay' };
               } else if (fileName === 'secure_vault') {
@@ -1395,13 +1521,23 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
              if (!mode) mode = isDir ? '755' : '644';
              if (isLink) mode = '777';
              
-             const rwx = (m: string) => {
-                 const n = parseInt(m, 10);
-                 return (n & 4 ? 'r' : '-') + (n & 2 ? 'w' : '-') + (n & 1 ? 'x' : '-');
+             // Normalize to 4 digits (e.g., 755 -> 0755)
+             if (mode.length === 3) mode = '0' + mode;
+             
+             const special = parseInt(mode[0], 10);
+             const owner = parseInt(mode[1], 10);
+             const group = parseInt(mode[2], 10);
+             const other = parseInt(mode[3], 10);
+
+             const rwx = (n: number, s: boolean = false) => {
+                 return (n & 4 ? 'r' : '-') + (n & 2 ? 'w' : '-') + (s ? (n & 1 ? 's' : 'S') : (n & 1 ? 'x' : '-'));
              };
              
              const typeChar = isLink ? 'l' : (isDir ? 'd' : '-');
-             const pStr = typeChar + rwx(mode[0]) + rwx(mode[1]) + rwx(mode[2]);
+             const pStr = typeChar + 
+                          rwx(owner, !!(special & 4)) + 
+                          rwx(group, !!(special & 2)) + 
+                          rwx(other, false); // Sticky bit (1) not implemented for simplicity
              
              const realSize = (itemNode && itemNode.type === 'file') ? itemNode.content.length : (isLink ? 16 : 4096);
              const date = 'Oct 23 14:02'; 
@@ -1650,7 +1786,10 @@ ACCEPT     all  --  anywhere             anywhere`;
               output = `chmod: cannot access '${target}': No such file or directory`;
           } else {
               // Basic numeric mode validation (e.g., 755, 644, 400)
-              if (/^[0-7]{3}$/.test(mode)) {
+              if (/^[0-7]{3,4}$/.test(mode)) {
+                  let newMode = mode;
+                  if (mode.length === 3) newMode = '0' + mode;
+                  
                   // In a real system, only owner can chmod. Here we assume ghost owns everything in /home/ghost,
                   // but maybe we simulate permission error for system files.
                   const isSystemFile = path.startsWith('/bin') || path.startsWith('/usr') || path.startsWith('/etc') || path === '/';
@@ -1660,9 +1799,39 @@ ACCEPT     all  --  anywhere             anywhere`;
                       output = `chmod: changing permissions of '${target}': Operation not permitted`;
                   } else {
                       // Apply permission
-                      (node as any).permissions = mode;
+                      (node as any).permissions = newMode;
                       output = ''; // Silent success
                   }
+              } else if (mode === 'u+s' || mode === '+s') {
+                   let current = (node as any).permissions || ((node.type === 'dir') ? '0755' : '0644');
+                   if (current.length === 3) current = '0' + current;
+                   
+                   const isSystemFile = path.startsWith('/bin') || path.startsWith('/usr') || path.startsWith('/etc') || path === '/';
+                   const isRoot = !!getNode('/tmp/.root_session');
+                   
+                   if (isSystemFile && !isRoot) {
+                       output = `chmod: changing permissions of '${target}': Operation not permitted`;
+                   } else {
+                       let special = parseInt(current[0], 10);
+                       special |= 4; // Set SUID bit
+                       (node as any).permissions = special.toString() + current.slice(1);
+                       output = '';
+                   }
+              } else if (mode === 'u-s' || mode === '-s') {
+                   let current = (node as any).permissions || ((node.type === 'dir') ? '0755' : '0644');
+                   if (current.length === 3) current = '0' + current;
+                   
+                   const isSystemFile = path.startsWith('/bin') || path.startsWith('/usr') || path.startsWith('/etc') || path === '/';
+                   const isRoot = !!getNode('/tmp/.root_session');
+
+                   if (isSystemFile && !isRoot) {
+                       output = `chmod: changing permissions of '${target}': Operation not permitted`;
+                   } else {
+                       let special = parseInt(current[0], 10);
+                       special &= ~4; // Clear SUID bit
+                       (node as any).permissions = special.toString() + current.slice(1);
+                       output = '';
+                   }
               } else {
                   output = `chmod: invalid mode: '${mode}'`;
               }
@@ -2430,7 +2599,9 @@ Type "status" for mission objectives.`;
         } else {
             const subcmd = args[0];
             const gitDir = resolvePath(cwd, '.git');
-            const hasGit = getNode(gitDir) || (cwd.includes('project_alpha') || cwd.includes('repo'));
+            // Check for .git or fallback logic (e.g. parent dir has .git)
+            const parentGit = resolvePath(cwd, '../.git');
+            const hasGit = getNode(gitDir) || getNode(parentGit) || (cwd.includes('project_alpha') || cwd.includes('repo') || cwd.includes('dev'));
 
             if (!hasGit && subcmd !== 'clone' && subcmd !== 'init') {
                 output = 'fatal: not a git repository (or any of the parent directories): .git';
@@ -2444,7 +2615,7 @@ Type "status" for mission objectives.`;
                     if (hash && hash.startsWith('9876')) {
                         output = `commit 9876543210ab\nAuthor: Ghost <ghost@local>\nDate:   Yesterday\n\n    Remove hardcoded credentials from config.json\n\ndiff --git a/config.json b/config.json\nindex 832a...e12b 100644\n--- a/config.json\n+++ b/config.json\n@@ -2,3 +2,3 @@\n   "db_host": "localhost",\n-  "db_pass": "GHOST_ROOT{G1T_H1ST0RY_L34K}",\n+  "db_pass": "env_var_secure",\n   "debug": false`;
                         
-                        // Mission Update
+                        // Mission Update (Cycle 27)
                         if (!VFS['/var/run/git_solved']) {
                             VFS['/var/run/git_solved'] = { type: 'file', content: 'TRUE' };
                             const runDir = getNode('/var/run');
@@ -2457,6 +2628,61 @@ Type "status" for mission objectives.`;
                         output = `commit ${hash}\nAuthor: Ghost <ghost@local>\n\n    [Content hidden for simulation]`;
                     } else {
                         output = 'usage: git show <commit>';
+                    }
+                } else if (subcmd === 'stash') {
+                    const stashCmd = args[1] || 'list';
+                    // Check if we are in /home/ghost/dev (Cycle 44)
+                    const isDevRepo = cwd === '/home/ghost/dev' || cwd === '/home/ghost/dev/';
+                    
+                    if (stashCmd === 'list') {
+                        if (isDevRepo) {
+                             output = 'stash@{0}: WIP on main: 4b3d123 Added auth bypass logic';
+                        } else {
+                             output = ''; // Empty stash
+                        }
+                    } else if (stashCmd === 'pop' || stashCmd === 'apply' || (stashCmd === 'show' && args.includes('-p'))) {
+                        if (isDevRepo) {
+                            if (stashCmd === 'show' && args.includes('-p')) {
+                                output = `diff --git a/auth_bypass.py b/auth_bypass.py\nnew file mode 100644\nindex 0000000..e69de29\n--- /dev/null\n+++ b/auth_bypass.py\n@@ -0,0 +1,5 @@\n+def bypass_auth():\n+    # TODO: Remove this before prod\n+    secret_key = "GHOST_ROOT{ST4SH_0V3RFL0W}"\n+    return True`;
+                                
+                                // Mission Update (Cycle 44)
+                                if (!VFS['/var/run/stash_solved']) {
+                                    VFS['/var/run/stash_solved'] = { type: 'file', content: 'TRUE' };
+                                    const runDir = getNode('/var/run');
+                                    if (runDir && runDir.type === 'dir' && !runDir.children.includes('stash_solved')) {
+                                        runDir.children.push('stash_solved');
+                                    }
+                                    output += `\n\n\x1b[1;32m[MISSION UPDATE] Objective Complete: GIT STASH RECOVERED.\x1b[0m`;
+                                }
+                            } else {
+                                // pop/apply
+                                const fName = 'auth_bypass.py';
+                                const fPath = resolvePath(cwd, fName);
+                                VFS[fPath] = { 
+                                    type: 'file', 
+                                    content: 'def bypass_auth():\n    # TODO: Remove this before prod\n    secret_key = "GHOST_ROOT{ST4SH_0V3RFL0W}"\n    return True' 
+                                };
+                                const parent = getNode(cwd);
+                                if (parent && parent.type === 'dir' && !parent.children.includes(fName)) {
+                                    parent.children.push(fName);
+                                }
+                                output = `On branch master\nChanges to be committed:\n  (use "git restore --staged <file>..." to unstage)\n\tnew file:   auth_bypass.py\n\nDropped refs/stash@{0} (832a...e12b)`;
+
+                                // Mission Update (Cycle 44)
+                                if (!VFS['/var/run/stash_solved']) {
+                                    VFS['/var/run/stash_solved'] = { type: 'file', content: 'TRUE' };
+                                    const runDir = getNode('/var/run');
+                                    if (runDir && runDir.type === 'dir' && !runDir.children.includes('stash_solved')) {
+                                        runDir.children.push('stash_solved');
+                                    }
+                                    output += `\n\n\x1b[1;32m[MISSION UPDATE] Objective Complete: GIT STASH RECOVERED.\x1b[0m`;
+                                }
+                            }
+                        } else {
+                            output = 'No stash entries found.';
+                        }
+                    } else {
+                        output = `usage: git stash [list|pop|show]`;
                     }
                 } else {
                     output = `git: '${subcmd}' is not a git command.`;
@@ -2864,7 +3090,7 @@ ${host}.		300	IN	A	${ip}
                 output = `gcc: error: ${inputFile}: Is a directory`;
             } else {
                 // Cycle 41: Header Check for exploit.c
-                if (inputFile.endsWith('exploit.c') || node.content.includes('#include "libbreaker.h"')) {
+                if (inputFile.endsWith('exploit.c') || (node as any).content.includes('#include "libbreaker.h"')) {
                     const headerPath = resolvePath(cwd, 'libbreaker.h');
                     const headerNode = getNode(headerPath);
                     
@@ -3536,6 +3762,25 @@ tmpfs             815276    1184    814092   1% /run
                   } else if (pid === 1337) {
                       output = 'Terminating shell...';
                       return { output, newCwd, action: 'kernel_panic' };
+                  } else if (pid === 6000 || (proc.command === '/usr/bin/overseer')) {
+                      if (VFS['/var/lock/overseer.lock']) {
+                          // Respawn logic
+                          output = `[SYSTEM] Service 'overseer' (PID ${pid}) killed by SIGTERM.\n[SYSTEMD] Service 'overseer' auto-restarted. New PID: ${pid + 1}`;
+                          proc.pid = pid + 1; 
+                          // Update VFS lock
+                          VFS['/var/lock/overseer.lock'] = { type: 'file', content: String(pid + 1) };
+                      } else {
+                          PROCESSES.splice(idx, 1);
+                          output = `[SUCCESS] Overseer terminated.\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SYSTEM SERVICE NEUTRALIZED.\x1b[0m`;
+                           // Mission Update
+                           if (!VFS['/var/run/overseer_solved']) {
+                               VFS['/var/run/overseer_solved'] = { type: 'file', content: 'TRUE' };
+                               const runDir = getNode('/var/run');
+                               if (runDir && runDir.type === 'dir' && !runDir.children.includes('overseer_solved')) {
+                                   runDir.children.push('overseer_solved');
+                               }
+                           }
+                      }
                   } else if (pid === 4001) {
                       output = `kill: (${pid}) - Process is a zombie (defunct). You cannot kill a zombie. Kill its parent (PPID: 4000) to cleanup.`;
                   } else if (pid === 4000) {
@@ -4383,7 +4628,7 @@ The key's randomart image is:
            const cmd = args[0];
            const unit = args[1];
            
-           const validUnits = ['sshd', 'tor', 'apache2', 'postgresql', 'cron', 'networking', 'bluetooth', 'ghost_relay'];
+           const validUnits = ['sshd', 'tor', 'apache2', 'postgresql', 'cron', 'networking', 'bluetooth', 'ghost_relay', 'overseer'];
            const runDir = '/var/run';
            if (!VFS[runDir]) VFS[runDir] = { type: 'dir', children: [] };
            
@@ -4488,6 +4733,16 @@ ${validUnits.length} loaded units listed.`;
                } else if (!validUnits.includes(unit)) {
                    output = `Failed to stop ${unit}.service: Unit ${unit}.service not found.`;
                } else {
+                   if (unit === 'overseer') {
+                        if (VFS['/var/lock/overseer.lock']) {
+                            output = `Failed to stop overseer.service: Unit is locked by /var/lock/overseer.lock`;
+                            return { output, newCwd };
+                        } else {
+                            // Kill process
+                            const idx = PROCESSES.findIndex(p => p.command === '/usr/bin/overseer' || p.pid >= 6000);
+                            if (idx !== -1) PROCESSES.splice(idx, 1);
+                        }
+                   }
                    const pidFile = `${unit}.pid`;
                    const rdNode = VFS[runDir];
                    if (rdNode && rdNode.type === 'dir' && rdNode.children.includes(pidFile)) {
@@ -4712,10 +4967,51 @@ ${validUnits.length} loaded units listed.`;
       break;
     }
     case 'tcpdump': {
-       if (args.includes('--help') || args.includes('-h')) {
-           output = 'tcpdump version 4.9.3\nlibpcap version 1.9.1\nUsage: tcpdump [-i interface] [-w file] [expression]';
+       const fileIdx = args.indexOf('-r');
+       if (fileIdx !== -1 && args[fileIdx + 1]) {
+           const filename = args[fileIdx + 1];
+           const path = resolvePath(cwd, filename);
+           const node = getNode(path);
+           
+           if (!node || node.type !== 'file') {
+               output = `tcpdump: ${filename}: No such file or directory`;
+           } else {
+               if (filename.endsWith('.pcap') || node.content.startsWith('PCAP_V1')) {
+                   const restArgs = args.filter((a, i) => a !== '-r' && i !== fileIdx && i !== fileIdx + 1);
+                   const filterStr = restArgs.join(' ');
+                   
+                   if (filterStr.includes('port 4444') || filterStr.includes('host 10.10.10.10')) {
+                       output = `reading from file ${filename}, link-type EN10MB (Ethernet)
+14:02:05.123456 IP 10.10.10.10.4444 > 192.168.1.5.31337: Flags [P.], seq 1:42, ack 1, win 502, options [nop,nop,TS val 123456 ecr 123456], length 41
+    0x0000:  4500 005d 1a2b 4000 4006 a2c4 0a0a 0a0a  E..].+@.@.......
+    0x0010:  c0a8 0105 115c 7a69 82e1 3564 82e1 3569  .....\\zi..5d..5i
+    0x0020:  8018 01f6 6842 0000 0101 080a 026e 2460  ....hB.......n$\`
+    0x0030:  0019 1918 4748 4f53 545f 524f 4f54 7b50  ......GHOST_ROOT{P
+    0x0040:  3443 4b33 545f 4d34 5354 3352 7d0a       4CK3T_M4ST3R}..
+`;
+                        if (!VFS['/var/run/pcap_solved']) {
+                             VFS['/var/run/pcap_solved'] = { type: 'file', content: 'TRUE' };
+                             const runDir = getNode('/var/run');
+                             if (runDir && runDir.type === 'dir' && !runDir.children.includes('pcap_solved')) {
+                                 runDir.children.push('pcap_solved');
+                             }
+                             output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PACKET ANALYZED.\x1b[0m`;
+                        }
+                   } else {
+                       output = `reading from file ${filename}, link-type EN10MB (Ethernet)\n`;
+                       for(let i=0; i<15; i++) {
+                           output += `14:02:0${i}.${Math.floor(Math.random()*999999)} IP 192.168.1.${Math.floor(Math.random()*255)}.443 > 10.0.0.${Math.floor(Math.random()*255)}.553${i}: Flags [.], ack ${Math.floor(Math.random()*999999)}, win 501, length 0\n`;
+                       }
+                       output += `... (1542 packets captured)\n[INFO] Too many packets. Use a filter (e.g., 'port <num>', 'host <ip>')`;
+                   }
+               } else {
+                   output = `tcpdump: ${filename}: File format not recognized`;
+               }
+           }
+       } else if (args.includes('--help') || args.includes('-h')) {
+           output = 'tcpdump version 4.9.3\nlibpcap version 1.9.1\nUsage: tcpdump [-i interface] [-w file] [-r file] [expression]';
        } else {
-           output = '';
+           output = 'tcpdump: verbose output suppressed, use -v or -vv for full protocol decode\nlistening on eth0, link-type EN10MB (Ethernet), capture size 262144 bytes\n';
            return { output, newCwd, action: 'tcpdump_sim' };
        }
        break;
