@@ -111,3 +111,17 @@ This file tracks the development cycles of the `ghost_root` project under the ne
 > MECHANICS: Added 'ghost_relay.service' to systemctl. Added 'xmrig' miner (PID 4444) on port 8080.
 > LORE: The relay service fails to start because a crypto-miner is squatting on the port.
 > SOLUTION: 'systemctl start ghost_relay' (fail) -> 'netstat' (find PID 4444) -> 'kill 4444' -> 'systemctl start ghost_relay' (success).
+
+[2026-02-11 08:44]
+> CHANGES: ghost_root/web/lib/VFS.ts, ghost_root/web/lib/Shell.ts
+> PUZZLE ADDED: "The Log Rotation" (Zcat / Grep Work).
+> MECHANICS: Added `zcat` command. Updated `cat` and `grep` to handle simulated binary files (`GZIP_V1:`). Added `/var/log/syslog.2.gz`.
+> LORE: A crucial access code was logged in an old, rotated log file.
+> SOLUTION: `cat /var/log/syslog.2.gz` (fails: binary) -> `zcat /var/log/syslog.2.gz` -> Read code (`GHOST_ROOT{L0G_R0T4T10N_M4ST3R}`).
+
+[2026-02-11 09:12]
+> CHANGES: ghost_root/web/lib/VFS.ts, ghost_root/web/lib/Shell.ts
+> PUZZLE ADDED: "The Full Partition" (Disk Quota / DF / DU).
+> MECHANICS: Added `df` and `du` commands. Implemented disk usage check in Shell.ts. Added `/var/log/overflow.dmp` (500MB).
+> LORE: The previous intruder flooded the logs, filling the `/var` partition. Write access is blocked.
+> SOLUTION: Write attempt fails ("No space left") -> `df -h` (shows /var 100%) -> `du -h /var` (finds overflow.dmp) -> `rm /var/log/overflow.dmp` -> Write access restored.

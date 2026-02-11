@@ -297,13 +297,34 @@ exit`
   },
   '/etc': {
     type: 'dir',
-    children: ['passwd', 'shadow', 'hosts', 'iptables.rules', 'tor']
+    children: ['passwd', 'shadow', 'hosts', 'iptables.rules', 'tor', 'cron.daily']
   },
   '/etc/tor': {
     type: 'dir',
     children: ['torrc']
   },
-  '/etc/tor/torrc': {
+  '/etc/cron.daily': {
+    type: 'dir',
+    children: ['logrotate', 'maintenance', 'man-db']
+  },
+  '/etc/cron.daily/maintenance': {
+    type: 'file',
+    content: `#!/bin/bash
+# DAILY MAINTENANCE SCRIPT
+# Moves critical data to backup location if system is in maintenance mode.
+
+if [ -f "/var/run/maintenance.mode" ]; then
+  echo "Maintenance mode detected."
+  echo "Backing up secure data..."
+  tar -czf /tmp/secure_backup.tar.gz /root/secrets/payload.bin
+  echo "Backup complete: /tmp/secure_backup.tar.gz"
+else
+  echo "System is normal. Skipping backup."
+fi
+`,
+    permissions: '755'
+  },
+  '/etc/cron.hourly': {
     type: 'file',
     content: 'HiddenServiceDir /var/lib/tor/hidden_service/\nInvalidPort 80 127.0.0.1:80'
   },
@@ -426,7 +447,11 @@ COMMIT
   },
   '/var/log': {
       type: 'dir',
-      children: ['syslog', 'connections.log', 'trace.log', 'auth.log']
+      children: ['syslog', 'connections.log', 'trace.log', 'auth.log', 'overflow.dmp']
+  },
+  '/var/log/overflow.dmp': {
+      type: 'file',
+      content: 'SIMULATED_LARGE_FILE_DO_NOT_READ_DIRECTLY\n[SIZE: 500MB]\n[CONTENT: JUNK_DATA_FROM_PREVIOUS_INTRUSION]\n...'
   },
   '/var/log/auth.log': {
       type: 'file',
@@ -601,7 +626,7 @@ MIIEpQIBAAKCAQEA3...
     type: 'file',
     content: '\x7fELF\x02\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x3e\x00\x01\x00\x00\x00\x30\x05\x40\x00\x00\x00\x00\x00@\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00@\x00\x38\x00\x09\x00\x40\x00\x1c\x00\x1b\x00\x06\x00\x00\x00\x05\x00\x00\x00@\x00\x00\x00\x00\x00\x00\x00@\x00\x40\x00\x00\x00\x00\x00@\x00\x40\x00\x00\x00\x00\x00\xf8\x01\x00\x00\x00\x00\x00\x00\xf8\x01\x00\x00\x00\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x03\x00\x00\x00\x04\x00\x00\x00\x38\x02\x00\x00\x00\x00\x00\x00\x38\x02\x40\x00\x00\x00\x00\x00\x38\x02\x40\x00\x00\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00\x00\x1c\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\x05\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00password_db_connect\x00admin_user\x00GHOST_ROOT{M3M0RY_L34K_D3T3CT3D}\x00segmentation_fault\x00core_dumped\x00'
   },
-    '/var/log/syslog': {
+  '/var/log/syslog': {
         type: 'file',
         content: `Oct 23 09:00:01 ghost-root systemd[1]: Starting Rotate log files...
 Oct 23 09:00:01 ghost-root systemd[1]: Started Rotate log files.
@@ -629,6 +654,10 @@ Oct 23 15:45:00 ghost-root kernel: [ 4000.000000] RADIO: Strong FM interference 
 Oct 23 16:00:00 ghost-root network[500]: BRIDGE_TARGET initiated at 10.10.10.10
 Oct 23 16:20:00 ghost-root kernel: [ 4200.000000] VAULT_NODE: Connection refused from 192.168.1.200 (vault-node.local).
 `
+    },
+    '/var/log/syslog.2.gz': {
+        type: 'file',
+        content: 'GZIP_V1:{Oct 21 03:00:01 ghost-root sshd[999]: Accepted publickey for user ghost from 192.168.1.105 port 55555 ssh2\nOct 21 03:00:05 ghost-root sshd[999]: pam_unix(sshd:session): session opened for user ghost by (uid=0)\nOct 21 04:00:00 ghost-root CRON[111]: (root) CMD (echo "Log rotation complete")\nOct 21 04:20:00 ghost-root kernel: [ 1000.000000] ACCESS_CODE_RECOVERY: GHOST_ROOT{L0G_R0T4T10N_M4ST3R}}'
     },
     '/var/log/connections.log': {
         type: 'file',

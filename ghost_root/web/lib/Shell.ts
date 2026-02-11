@@ -189,7 +189,7 @@ export interface CommandResult {
   data?: any;
 }
 
-const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt'];
+const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'df', 'du'];
 
 export interface MissionStatus {
   objectives: {
@@ -372,6 +372,12 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
   const finalize = (out: string, nCwd: string, act?: any, dat?: any, prompt?: string): CommandResult => {
       if (redirectFile && out) {
           const filePath = resolvePath(cwd, redirectFile);
+          
+          // DISK FULL SIMULATION
+          if (filePath.startsWith('/var') && !!getNode('/var/log/overflow.dmp')) {
+             return { output: `bash: write error: No space left on device`, newCwd: nCwd, action: act, data: dat, newPrompt: prompt };
+          }
+
           const parentPath = filePath.substring(0, filePath.lastIndexOf('/')) || '/';
           const fileName = filePath.substring(filePath.lastIndexOf('/') + 1);
           const parentNode = getNode(parentPath);
@@ -582,6 +588,10 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
                    return finalize(output, newCwd);
                }
                content = fileNode.content;
+               if (content.startsWith('GZIP_V1:')) {
+                   output = `Binary file ${fileTarget} matches`;
+                   return finalize(output, newCwd);
+               }
            } else if (stdin !== undefined) {
                // Pipe input
                content = stdin;
@@ -616,8 +626,11 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
         } else if ((filePath.startsWith('/root') || filePath.startsWith('/home/dr_akira')) && !VFS['/tmp/.root_session']) {
           output = `cat: ${fileTarget}: Permission denied`;
         } else {
-          output = fileNode.content;
-          // Legacy win trigger removed. Now requires launch codes.
+          if (fileNode.content.startsWith('GZIP_V1:')) {
+             output = `(standard input): binary file matches`;
+          } else {
+             output = fileNode.content;
+          }
         }
       }
       break;
@@ -2420,14 +2433,19 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
       } else {
         const target = args[0];
         const path = resolvePath(cwd, target);
-        const parentPath = path.substring(0, path.lastIndexOf('/')) || '/';
-        const fileName = path.substring(path.lastIndexOf('/') + 1);
-        const parentNode = getNode(parentPath);
-        if (parentNode && parentNode.type === 'dir') {
-          if (!getNode(path)) {
-             VFS[path] = { type: 'file', content: '' };
-             parentNode.children.push(fileName);
-          }
+        
+        if (path.startsWith('/var') && !!getNode('/var/log/overflow.dmp')) {
+            output = `touch: cannot touch '${target}': No space left on device`;
+        } else {
+            const parentPath = path.substring(0, path.lastIndexOf('/')) || '/';
+            const fileName = path.substring(path.lastIndexOf('/') + 1);
+            const parentNode = getNode(parentPath);
+            if (parentNode && parentNode.type === 'dir') {
+              if (!getNode(path)) {
+                 VFS[path] = { type: 'file', content: '' };
+                 parentNode.children.push(fileName);
+              }
+            }
         }
       }
       break;
@@ -2549,6 +2567,64 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
       break;
     case 'top':
       return { output: '', newCwd, action: 'top_sim' };
+    case 'df': {
+      const overflow = !!getNode('/var/log/overflow.dmp');
+      const varUsage = overflow ? '100%' : '12%';
+      const varAvail = overflow ? '0' : '440M';
+      
+      if (args.includes('-h') || args.includes('-H')) {
+          output = `Filesystem      Size  Used Avail Use% Mounted on
+udev            3.9G     0  3.9G   0% /dev
+tmpfs           797M  1.2M  796M   1% /run
+/dev/sda1        30G   12G   17G  42% /
+tmpfs           3.9G     0  3.9G   0% /dev/shm
+tmpfs           5.0M  4.0K  5.0M   1% /run/lock
+/dev/sdb1       500M  ${overflow ? '500M' : '60M'}  ${varAvail}  ${varUsage} /var`;
+      } else {
+          output = `Filesystem     1K-blocks    Used Available Use% Mounted on
+udev             4060028       0   4060028   0% /dev
+tmpfs             815276    1184    814092   1% /run
+/dev/sda1       30832548 12345678 16893324  42% /
+/dev/sdb1         512000  ${overflow ? '512000' : '61440'}    ${overflow ? '0' : '450560'}  ${varUsage} /var`;
+      }
+      break;
+    }
+    case 'du': {
+      const overflow = !!getNode('/var/log/overflow.dmp');
+      let targetPath = cwd;
+      if (args.length > 0 && !args[0].startsWith('-')) {
+          targetPath = resolvePath(cwd, args[0]);
+      } else if (args.length > 1 && !args[1].startsWith('-')) {
+          targetPath = resolvePath(cwd, args[1]);
+      }
+      
+      const human = args.includes('-h') || args.includes('-sh');
+      
+      if (targetPath === '/var' || targetPath.startsWith('/var')) {
+          if (targetPath === '/var/log' || targetPath === '/var') {
+              let out = '';
+              if (human) {
+                  if (overflow) out += `500M\t/var/log/overflow.dmp\n`;
+                  out += `4.0K\t/var/log/syslog\n`;
+                  out += `8.0K\t/var/log/auth.log\n`;
+                  out += `${overflow ? '501M' : '60K'}\t/var/log\n`;
+                  if (targetPath === '/var') out += `${overflow ? '501M' : '1.2M'}\t/var\n`;
+              } else {
+                  if (overflow) out += `512000\t/var/log/overflow.dmp\n`;
+                  out += `4\t/var/log/syslog\n`;
+                  out += `8\t/var/log/auth.log\n`;
+                  out += `${overflow ? '512040' : '60'}\t/var/log\n`;
+                  if (targetPath === '/var') out += `${overflow ? '512100' : '1200'}\t/var\n`;
+              }
+              output = out.trim();
+          } else {
+              output = human ? `4.0K\t${targetPath}` : `4\t${targetPath}`;
+          }
+      } else {
+          output = human ? `24K\t${targetPath}` : `24\t${targetPath}`;
+      }
+      break;
+    }
     case 'ps': {
       let procs = [...PROCESSES];
       if (LOADED_MODULES.includes('rootkit')) {
@@ -2686,8 +2762,11 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
       if (args.length < 2) output = 'usage: cp <source> <dest>';
       else {
           const srcNode = getNode(resolvePath(cwd, args[0]));
-          if (srcNode) {
-              const destPath = resolvePath(cwd, args[1]);
+          const destPath = resolvePath(cwd, args[1]);
+          
+          if (destPath.startsWith('/var') && !!getNode('/var/log/overflow.dmp')) {
+              output = `cp: error writing '${args[1]}': No space left on device`;
+          } else if (srcNode) {
               const parent = getNode(destPath.substring(0, destPath.lastIndexOf('/')));
               if (parent && parent.type === 'dir') {
                   // Simplified: doesn't handle cp dir to dir
@@ -2879,37 +2958,41 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
        } else {
            const archiveName = args[0];
            const archivePath = resolvePath(cwd, archiveName);
-           const files = args.slice(1);
            
-           let zipContent = 'PK_SIM_V1:';
-           let packedCount = 0;
-           
-           for (const f of files) {
-               const fPath = resolvePath(cwd, f);
-               const node = getNode(fPath);
-               if (node && node.type === 'file') {
-                   // Store as {filename:content_b64}
-                   const fName = fPath.substring(fPath.lastIndexOf('/') + 1);
-                   zipContent += `{${fName}:${btoa(node.content)}}`;
-                   packedCount++;
-               }
-           }
-           
-           if (packedCount > 0) {
-               const parentPath = archivePath.substring(0, archivePath.lastIndexOf('/')) || '/';
-               const parentNode = getNode(parentPath);
-               if (parentNode && parentNode.type === 'dir') {
-                   const fName = archivePath.substring(archivePath.lastIndexOf('/') + 1);
-                   VFS[archivePath] = { type: 'file', content: zipContent };
-                   if (!parentNode.children.includes(fName)) {
-                       parentNode.children.push(fName);
-                   }
-                   output = `  adding: ${files.join(' ')} (deflated 0%)`;
-               } else {
-                   output = `zip: ${parentPath}: No such directory`;
-               }
+           if (archivePath.startsWith('/var') && !!getNode('/var/log/overflow.dmp')) {
+               output = `zip: error writing '${archiveName}': No space left on device`;
            } else {
-               output = 'zip: warning: name not matched: ' + files[0];
+               const files = args.slice(1);
+               let zipContent = 'PK_SIM_V1:';
+               let packedCount = 0;
+               
+               for (const f of files) {
+                   const fPath = resolvePath(cwd, f);
+                   const node = getNode(fPath);
+                   if (node && node.type === 'file') {
+                       // Store as {filename:content_b64}
+                       const fName = fPath.substring(fPath.lastIndexOf('/') + 1);
+                       zipContent += `{${fName}:${btoa(node.content)}}`;
+                       packedCount++;
+                   }
+               }
+               
+               if (packedCount > 0) {
+                   const parentPath = archivePath.substring(0, archivePath.lastIndexOf('/')) || '/';
+                   const parentNode = getNode(parentPath);
+                   if (parentNode && parentNode.type === 'dir') {
+                       const fName = archivePath.substring(archivePath.lastIndexOf('/') + 1);
+                       VFS[archivePath] = { type: 'file', content: zipContent };
+                       if (!parentNode.children.includes(fName)) {
+                           parentNode.children.push(fName);
+                       }
+                       output = `  adding: ${files.join(' ')} (deflated 0%)`;
+                   } else {
+                       output = `zip: ${parentPath}: No such directory`;
+                   }
+               } else {
+                   output = 'zip: warning: name not matched: ' + files[0];
+               }
            }
        }
        break;
@@ -3225,6 +3308,34 @@ The key's randomart image is:
                }
            } else {
                output = `tar: Unknown flag or not implemented: ${flags}`;
+           }
+       }
+       break;
+    }
+    case 'zcat': {
+       if (args.length < 1) {
+           output = 'usage: zcat [file...]';
+       } else {
+           const file = args[0];
+           const fPath = resolvePath(cwd, file);
+           const node = getNode(fPath);
+
+           if (!node) {
+               output = `zcat: ${file}: No such file or directory`;
+           } else if (node.type === 'dir') {
+               output = `zcat: ${file}: Is a directory`;
+           } else {
+               const content = node.content;
+               if (content.startsWith('GZIP_V1:')) {
+                   const payload = content.substring(8);
+                   if (payload.startsWith('{') && payload.endsWith('}')) {
+                        output = payload.substring(1, payload.length - 1);
+                   } else {
+                        output = payload;
+                   }
+               } else {
+                   output = `zcat: ${file}: not in gzip format`;
+               }
            }
        }
        break;
