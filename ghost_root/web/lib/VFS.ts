@@ -232,7 +232,7 @@ KEY_ID: GHOST_PROTOCOL_INIT_V2
   },
   '/home/ghost': {
     type: 'dir',
-    children: ['project_alpha', 'secrets', '.bash_history', 'wifi_note.txt', 'journal', 'evidence.jpg', 'tools', 'tools.zip', 'capture.cap', 'drone_manual.txt', 'hashes.txt', 'wordlist.txt']
+    children: ['project_alpha', 'secrets', '.bash_history', 'wifi_note.txt', 'journal', 'evidence.jpg', 'surveillance.jpg', 'tools', 'tools.zip', 'capture.cap', 'drone_manual.txt', 'hashes.txt', 'wordlist.txt']
   },
   '/home/ghost/tools': {
     type: 'dir',
