@@ -4482,7 +4482,9 @@ wget: unable to resolve host address`;
                     const metadata = match[1].trim().split('\n');
                     output = `ExifTool Version Number         : 12.00\nFile Name                       : ${target}\nFile Size                       : ${content.length} bytes\nFile Permissions                : rw-r--r--\n` + 
                              metadata.map((line: string) => {
-                                 const [key, val] = line.split(':');
+                                 // Handle "UserComment" specially to support newlines or long text if needed
+                                 const [key, ...valParts] = line.split(':');
+                                 const val = valParts.join(':');
                                  if (!val) return line;
                                  return `${key.trim().padEnd(32)}: ${val.trim()}`;
                              }).join('\n');
