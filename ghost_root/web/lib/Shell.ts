@@ -3528,8 +3528,10 @@ The key's randomart image is:
                output = `zcat: ${file}: No such file or directory`;
            } else if (node.type === 'dir') {
                output = `zcat: ${file}: Is a directory`;
+           } else if (node.type === 'symlink') {
+               output = `zcat: ${file}: Is a symbolic link`;
            } else {
-               const content = node.content;
+               const content = (node as any).content;
                if (content.startsWith('GZIP_V1:')) {
                    const payload = content.substring(8);
                    if (payload.startsWith('{') && payload.endsWith('}')) {
@@ -4174,12 +4176,12 @@ wget: unable to resolve host address`;
 24554         0x5FEA          gzip compressed data, maximum compression, from Unix, last modified: 2026-01-15
 88291         0x158E3         Squashfs filesystem, little endian, version 4.0, compression:gzip, size: 102422 bytes`;
 
-               if (fNode.content.includes('PK_SIM_V1')) {
+               if ((fNode as any).content.includes('PK_SIM_V1')) {
                     output += `\n1048576       0x100000        Zip archive data, at least v2.0 to extract, compressed size: 412, uncompressed size: 1024, name: _hidden_key`;
                }
 
                if (extract) {
-                   if (fNode.content.includes('PK_SIM_V1')) {
+                   if ((fNode as any).content.includes('PK_SIM_V1')) {
                        output += `\n\n[INFO] Extraction initiated...
 [+] Zip archive data found at 0x100000
 [+] Extracting to '_${targetFile}.extracted/'...
@@ -4347,7 +4349,7 @@ Error                           : Unknown file type`;
                    output = `aircrack-ng: ${fileTarget}: No such file`;
                } else {
                    // Check signature (mock)
-                   if (node.content.includes('HANDSHAKE') || fileTarget.endsWith('.cap')) {
+                   if ((node as any).content.includes('HANDSHAKE') || fileTarget.endsWith('.cap')) {
                        if (wordlist) {
                            output = `Opening ${fileTarget}...\nReading wordlist ${wordlist}...`;
                            return { 
@@ -4441,7 +4443,7 @@ ISP:          Generic ISP Node
                    output = `volatility: ${dumpFile}: No such file or directory`;
                } else {
                    // Check for magic header
-                   if (node.content.startsWith('\x7fELF') || dumpFile.endsWith('.dump') || dumpFile.endsWith('.dmp')) {
+                   if ((node as any).content.startsWith('\x7fELF') || dumpFile.endsWith('.dump') || dumpFile.endsWith('.dmp')) {
                        if (plugin === 'imageinfo') {
                            output = `Volatility Foundation Volatility Framework 2.6
 INFO    : volatility.debug    : Determining profile based on KDBG search...
