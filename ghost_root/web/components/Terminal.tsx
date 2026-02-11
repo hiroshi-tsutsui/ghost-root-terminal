@@ -41,6 +41,7 @@ const WebTerminal = () => {
   const cwdRef = useRef('/home/recovery');
   const promptRef = useRef('\x1b[1;32mghost@root\x1b[0m');
   const inputBufferRef = useRef('');
+  const cursorIndexRef = useRef(0); // Add cursor index state
   const historyRef = useRef<string[]>([]);
   const historyIndexRef = useRef(-1);
   const isBootingRef = useRef(true);
@@ -168,6 +169,26 @@ const WebTerminal = () => {
         const cwd = cwdRef.current;
         const p = promptRef.current;
         term.write(`\r\n${p}:\x1b[1;34m${cwd}\x1b[0m$ `);
+        cursorIndexRef.current = 0; // Reset cursor on new prompt
+    };
+
+    const refreshLine = () => {
+        const cwd = cwdRef.current;
+        const p = promptRef.current;
+        const buffer = inputBufferRef.current;
+        const cursor = cursorIndexRef.current;
+
+        // Clear line
+        term.write('\x1b[2K\r');
+        
+        // Write prompt + buffer
+        term.write(`${p}:\x1b[1;34m${cwd}\x1b[0m$ ${buffer}`);
+        
+        // Move cursor back if needed
+        const moveLeft = buffer.length - cursor;
+        if (moveLeft > 0) {
+            term.write(`\x1b[${moveLeft}D`);
+        }
     };
 
     const renderEditor = (content: string, path: string, buffer: string) => {
@@ -1836,6 +1857,7 @@ const WebTerminal = () => {
       for (const char of text) {
         term.write(char);
         inputBufferRef.current += char;
+        cursorIndexRef.current++;
         await new Promise(r => setTimeout(r, 100 + Math.random() * 50));
       }
       await new Promise(r => setTimeout(r, 600));
@@ -1918,11 +1940,8 @@ const WebTerminal = () => {
                 const cmd = historyRef.current[historyIndexRef.current];
                 if (cmd !== undefined) {
                     inputBufferRef.current = cmd;
-                    // Clear line and rewrite
-                    term.write('\x1b[2K\r'); 
-                    const p = promptRef.current;
-                    const cwd = cwdRef.current;
-                    term.write(`${p}:\x1b[1;34m${cwd}\x1b[0m$ ${cmd}`);
+                    cursorIndexRef.current = cmd.length;
+                    refreshLine();
                 }
             }
             break;
@@ -1932,48 +1951,74 @@ const WebTerminal = () => {
                      historyIndexRef.current++;
                      const cmd = historyRef.current[historyIndexRef.current];
                      inputBufferRef.current = cmd;
+                     cursorIndexRef.current = cmd.length;
                  } else {
                      historyIndexRef.current = -1;
                      inputBufferRef.current = '';
+                     cursorIndexRef.current = 0;
                  }
-                 // Clear line and rewrite
-                 term.write('\x1b[2K\r'); 
-                 const p = promptRef.current;
-                 const cwd = cwdRef.current;
-                 term.write(`${p}:\x1b[1;34m${cwd}\x1b[0m$ ${inputBufferRef.current}`);
+                 refreshLine();
+             }
+             break;
+          case '\x1b[D': // Left Arrow
+             if (cursorIndexRef.current > 0) {
+                 cursorIndexRef.current--;
+                 term.write('\x1b[D');
+             }
+             break;
+          case '\x1b[C': // Right Arrow
+             if (cursorIndexRef.current < inputBufferRef.current.length) {
+                 cursorIndexRef.current++;
+                 term.write('\x1b[C');
              }
              break;
           case '\t': // Tab
             domEvent.preventDefault(); // Prevent focus loss
             const completion = tabCompletion(cwdRef.current, inputBufferRef.current);
             if (completion.completed !== inputBufferRef.current) {
-               // Update buffer if changed
                inputBufferRef.current = completion.completed;
-               // Clear line and rewrite
-               term.write('\x1b[2K\r'); // Clear entire line, move to start
-               const p = promptRef.current;
-               const cwd = cwdRef.current;
-               term.write(`${p}:\x1b[1;34m${cwd}\x1b[0m$ ${completion.completed}`);
+               cursorIndexRef.current = completion.completed.length;
+               refreshLine();
             } else if (completion.matches.length > 1) {
-               // Show candidates if ambiguous
                term.writeln('');
                term.writeln(completion.matches.join('  '));
                const p = promptRef.current;
                const cwd = cwdRef.current;
+               // Don't reset cursor, just reprint
                term.write(`${p}:\x1b[1;34m${cwd}\x1b[0m$ ${inputBufferRef.current}`);
+               // But cursor might be wrong visual place now? 
+               // Actually xterm handles cursor pos after write. 
+               // We should probably refreshLine() to be safe or re-calculate.
+               // Simple hack:
+               const moveLeft = inputBufferRef.current.length - cursorIndexRef.current;
+               if (moveLeft > 0) term.write(`\x1b[${moveLeft}D`);
             }
             break;
           case '\u007F': // Backspace (DEL)
           case '\b':     // Backspace (BS)
-            if (inputBufferRef.current.length > 0) {
-              term.write('\b \b');
-              inputBufferRef.current = inputBufferRef.current.slice(0, -1);
+            if (cursorIndexRef.current > 0) {
+              const buffer = inputBufferRef.current;
+              const cursor = cursorIndexRef.current;
+              inputBufferRef.current = buffer.slice(0, cursor - 1) + buffer.slice(cursor);
+              cursorIndexRef.current--;
+              refreshLine();
             }
             break;
+          case '\x1b[3~': // Delete Key
+             if (cursorIndexRef.current < inputBufferRef.current.length) {
+                 const buffer = inputBufferRef.current;
+                 const cursor = cursorIndexRef.current;
+                 inputBufferRef.current = buffer.slice(0, cursor) + buffer.slice(cursor + 1);
+                 refreshLine();
+             }
+             break;
           default:
             if (e.length === 1 && e.charCodeAt(0) >= 32) {
-              inputBufferRef.current += e;
-              term.write(e);
+              const buffer = inputBufferRef.current;
+              const cursor = cursorIndexRef.current;
+              inputBufferRef.current = buffer.slice(0, cursor) + e + buffer.slice(cursor);
+              cursorIndexRef.current++;
+              refreshLine();
             }
         }
     });
