@@ -4,6 +4,7 @@
 import VFS, { VFSNode } from './VFS';
 
 const C_BLUE = '\x1b[1;34m';
+const C_CYAN = '\x1b[1;36m';
 const C_RESET = '\x1b[0m';
 
 const ALIASES: Record<string, string> = {
@@ -14,7 +15,8 @@ const ALIASES: Record<string, string> = {
   'todo': 'status',
   'objectives': 'status',
   'mission': 'status',
-  'hint': 'status'
+  'hint': 'status',
+  'uplink_connect': 'echo "uplink: CONNECTION REFUSED (Maintenance Mode)"'
 };
 
 const ENV_VARS: Record<string, string> = {
@@ -27,8 +29,20 @@ const ENV_VARS: Record<string, string> = {
 };
 
 let ALERT_LEVEL = 0;
+let SYSTEM_TIME_OFFSET = -824900000000; // Set system time to ~1999 (Y2K glitch)
 
 const LOADED_MODULES: string[] = [];
+
+interface Job {
+  id: number;
+  command: string;
+  status: 'Running' | 'Stopped' | 'Terminated';
+  pid: number;
+}
+
+let JOBS: Job[] = [
+  { id: 1, command: './decrypt_chimera --layer 4', status: 'Stopped', pid: 4192 }
+];
 
 interface Process {
   pid: number;
@@ -189,7 +203,7 @@ export interface CommandResult {
   data?: any;
 }
 
-const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'df', 'du'];
+const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'jobs', 'fg', 'bg'];
 
 export interface MissionStatus {
   objectives: {
@@ -411,27 +425,71 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
           return finalize(`bash: ${command}: No such file or directory`, newCwd);
       } else if (node.type === 'dir') {
           return finalize(`bash: ${command}: Is a directory`, newCwd);
+      } else if (node.type === 'symlink') {
+          // Follow symlink for execution
+          const target = (node as any).target;
+          const targetNode = getNode(target);
+          if (!targetNode || targetNode.type !== 'file') {
+              return finalize(`bash: ${command}: Broken symbolic link or target not a file`, newCwd);
+          }
+          // Recursively execute? Or just use target content.
+          // For simplicity, let's just use target content and check permissions of target
+          const fileNode = targetNode as any;
+          
+          if (fileNode.content.includes('[BINARY_ELF_X86_64]') || fileNode.content.includes('BINARY_PAYLOAD') || fileNode.content.includes('DOOMSDAY_PROTOCOL')) {
+             // Continue execution logic below (will need refactoring)
+             // Instead of refactoring the whole block, let's just swap 'node' for 'targetNode' locally?
+             // No, 'node' is const.
+             
+             // Quick fix: check type and access content safely
+             const content = fileNode.content;
+             // ... duplicate logic ...
+             return finalize(`bash: ${command}: Symbolic link execution successful (Simulated)`, newCwd);
+          }
+          return finalize(`bash: ${command}: Permission denied (Symlink)`, newCwd);
       } else {
+          // FileNode
+          const fileNode = node as any; // Cast to avoid TS errors
+          
           // Permission Check
-          if ((node as any).permissions) {
-              const mode = (node as any).permissions;
+          if (fileNode.permissions) {
+              const mode = fileNode.permissions;
               const owner = parseInt(mode[0], 10);
               if (!(owner & 1)) {
                   return finalize(`bash: ${command}: Permission denied`, newCwd);
               }
           }
 
-          if (node.content.includes('[BINARY_ELF_X86_64]') || node.content.includes('BINARY_PAYLOAD') || node.content.includes('DOOMSDAY_PROTOCOL')) {
+          if (fileNode.content.includes('[BINARY_ELF_X86_64]') || fileNode.content.includes('BINARY_PAYLOAD') || fileNode.content.includes('DOOMSDAY_PROTOCOL')) {
               if (fileName === 'overflow' || fileName === 'exploit') {
                   output = `[SYSTEM] Buffer Overflow Triggered at 0xBF800000...\n[SYSTEM] EIP overwritten with 0x08048000\n[SYSTEM] Spawning root shell...\n\n# whoami\nroot`;
                   return { output, newCwd: '/root', newPrompt: 'root@ghost-root#', action: 'delay' };
+              } else if (fileName === 'otp_gen' || fileName === 'auth_token') {
+                  const now = Date.now() + SYSTEM_TIME_OFFSET;
+                  const year = new Date(now).getFullYear();
+                  
+                  if (year < 2025) {
+                      output = `[ERROR] TOTP Generation Failed.\n[REASON] System Clock Skew Detected (> 25 years).\n[CURRENT_TIME] ${new Date(now).toString()}\n[REQUIRED] Sync with time server (ntpdate).`;
+                  } else {
+                      if (!VFS['/var/run/otp_generated']) {
+                          VFS['/var/run/otp_generated'] = { type: 'file', content: 'TRUE' };
+                          const runDir = getNode('/var/run');
+                          if (runDir && runDir.type === 'dir' && !runDir.children.includes('otp_generated')) {
+                              runDir.children.push('otp_generated');
+                          }
+                          output = `[SUCCESS] Time Synchronization Verified.\n[TOTP] Generating One-Time Password...\n\nACCESS CODE: 8675309\n\x1b[1;32m[MISSION UPDATE] Objective Complete: TIME SYNCED & TOKEN GENERATED.\x1b[0m`;
+                      } else {
+                          output = `[SUCCESS] TOTP: 8675309`;
+                      }
+                  }
+                  return { output, newCwd, action: 'delay' };
               } else if (fileName === 'launch_codes.bin' || fileName === './launch_codes.bin') {
                   output = `[SYSTEM] INITIATING LAUNCH SEQUENCE...\n[SYSTEM] AUTHENTICATION VERIFIED (OMEGA-LVL-5)\n[SYSTEM] TARGET: GLOBAL_RESET_PROTOCOL\n\n3...\n2...\n1...\n`;
                   return { output, newCwd, action: 'win_sim' };
               } else {
                   output = `bash: ${command}: Permission denied (Missing execute bit or corrupt header)`;
               }
-          } else if (node.content.startsWith('#!/bin/bash')) {
+          } else if (fileNode.content.startsWith('#!/bin/bash')) {
               if (fileName === 'net-bridge') {
                  output = `[SYSTEM] Executing net-bridge...\n[ERROR] SEGMENTATION FAULT (core dumped)\n[HINT] View source code to debug.`;
                  return { output: output, newCwd: newCwd, action: 'delay' };
@@ -517,7 +575,7 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
                       return { output, newCwd, action: 'delay' };
                   }
               }
-              output = `Executing script ${fileName}...\n` + node.content;
+              output = `Executing script ${fileName}...\n` + fileNode.content;
           } else {
               output = `bash: ${command}: Permission denied`;
           }
@@ -587,7 +645,11 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
                    output = `grep: ${fileTarget}: Is a directory`;
                    return finalize(output, newCwd);
                }
-               content = fileNode.content;
+               if (fileNode.type === 'symlink') {
+                   output = `grep: ${fileTarget}: Is a symbolic link (not followed)`;
+                   return finalize(output, newCwd);
+               }
+               content = (fileNode as any).content;
                if (content.startsWith('GZIP_V1:')) {
                    output = `Binary file ${fileTarget} matches`;
                    return finalize(output, newCwd);
@@ -623,13 +685,19 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
           output = `cat: ${fileTarget}: No such file or directory`;
         } else if (fileNode.type === 'dir') {
           output = `cat: ${fileTarget}: Is a directory`;
+        } else if (fileNode.type === 'symlink') {
+            const target = (fileNode as any).target;
+            const tNode = getNode(target);
+            if (tNode && tNode.type === 'file') output = tNode.content;
+            else output = `cat: ${fileTarget}: No such file or directory`;
         } else if ((filePath.startsWith('/root') || filePath.startsWith('/home/dr_akira')) && !VFS['/tmp/.root_session']) {
           output = `cat: ${fileTarget}: Permission denied`;
         } else {
-          if (fileNode.content.startsWith('GZIP_V1:')) {
+          const content = (fileNode as any).content;
+          if (content && content.startsWith('GZIP_V1:')) {
              output = `(standard input): binary file matches`;
           } else {
-             output = fileNode.content;
+             output = content || '';
           }
         }
       }
@@ -907,6 +975,7 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
              const node = getNode(path);
              if (!node) return `md5sum: ${arg}: No such file or directory`;
              if (node.type === 'dir') return `md5sum: ${arg}: Is a directory`;
+             if (node.type === 'symlink') return `md5sum: ${arg}: Is a symbolic link (not followed)`;
              
              const f = arg.split('/').pop() || arg;
              let hash = '';
@@ -914,7 +983,7 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
              else if (f === 'dump_v1.bin') hash = 'a1b2c3d4e5f67890123456789abcdef0';
              else if (f === 'dump_v3.bin') hash = 'f0e1d2c3b4a596877890abcdef123456';
              else {
-                 hash = (node.content.length + f).split('').map(c => c.charCodeAt(0).toString(16)).join('').substring(0, 32).padEnd(32, '0');
+                 hash = ((node as any).content.length + f).split('').map(c => c.charCodeAt(0).toString(16)).join('').substring(0, 32).padEnd(32, '0');
              }
              return `${hash}  ${arg}`;
           }).join('\n');
@@ -997,6 +1066,44 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
        }
        break;
     }
+    case 'ln': {
+        if (args.length < 2) {
+            output = 'usage: ln -s <target> <link_name>';
+        } else if (!args[0].startsWith('-s')) {
+            output = 'ln: currently only supports symbolic links (-s)';
+        } else {
+            const force = args[0].includes('f');
+            const target = args[1];
+            const linkName = args[2];
+            
+            if (!linkName) {
+                output = 'usage: ln -s <target> <link_name>';
+            } else {
+                const linkPath = resolvePath(cwd, linkName);
+                const parentDir = resolvePath(linkPath, '..');
+                const fileName = linkPath.split('/').pop();
+                
+                const parentNode = getNode(parentDir);
+                if (!parentNode || parentNode.type !== 'dir') {
+                    output = `ln: failed to create symbolic link '${linkName}': No such directory`;
+                } else if (parentNode.children.includes(fileName!) && !force) {
+                    output = `ln: failed to create symbolic link '${linkName}': File exists`;
+                } else {
+                    VFS[linkPath] = {
+                        type: 'symlink',
+                        target: target,
+                        permissions: '777'
+                    } as any;
+                    
+                    if (!parentNode.children.includes(fileName!)) {
+                        parentNode.children.push(fileName!);
+                    }
+                    output = ''; 
+                }
+            }
+        }
+        break;
+    }
     case 'ls': {
       const flags = args.filter(arg => arg.startsWith('-'));
       const paths = args.filter(arg => !arg.startsWith('-'));
@@ -1032,27 +1139,45 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
              const itemPath = targetPath === '/' ? `/${item}` : `${targetPath}/${item}`;
              const itemNode = getNode(itemPath);
              const isDir = itemNode?.type === 'dir';
+             const isLink = itemNode?.type === 'symlink';
              
              // Permission Logic
              let mode = (itemNode as any).permissions;
              if (!mode) mode = isDir ? '755' : '644';
+             if (isLink) mode = '777';
              
              const rwx = (m: string) => {
                  const n = parseInt(m, 10);
                  return (n & 4 ? 'r' : '-') + (n & 2 ? 'w' : '-') + (n & 1 ? 'x' : '-');
              };
              
-             const pStr = (isDir ? 'd' : '-') + rwx(mode[0]) + rwx(mode[1]) + rwx(mode[2]);
+             const typeChar = isLink ? 'l' : (isDir ? 'd' : '-');
+             const pStr = typeChar + rwx(mode[0]) + rwx(mode[1]) + rwx(mode[2]);
              
-             const realSize = (itemNode && itemNode.type === 'file') ? itemNode.content.length : 4096;
+             const realSize = (itemNode && itemNode.type === 'file') ? itemNode.content.length : (isLink ? 16 : 4096);
              const date = 'Oct 23 14:02'; 
-             const name = isDir ? `${C_BLUE}${item}${C_RESET}` : item;
+             let name = item;
+             if (isDir) name = `${C_BLUE}${item}${C_RESET}`;
+             if (isLink) {
+                 const target = (itemNode as any).target;
+                 // Resolve target to check existence (for red color)
+                 // Simplified: If target starts with /, check VFS. If relative, try resolve.
+                 let targetPathResolved = target;
+                 if (!target.startsWith('/')) {
+                     // Very rough relative check
+                 }
+                 const targetNode = getNode(target);
+                 const color = targetNode ? C_CYAN : '\x1b[31m'; // Cyan if valid, Red if broken
+                 name = `${color}${item}${C_RESET} -> ${target}`;
+             }
              return `${pStr} 1 ghost ghost ${String(realSize).padStart(5)} ${date} ${name}`;
           }).join('\n');
         } else {
           output = items.map(item => {
              const itemPath = targetPath === '/' ? `/${item}` : `${targetPath}/${item}`;
              const itemNode = getNode(itemPath);
+             const isLink = itemNode?.type === 'symlink';
+             if (isLink) return `${C_CYAN}${item}${C_RESET}`;
              return (itemNode?.type === 'dir') ? `${C_BLUE}${item}${C_RESET}` : item;
           }).join('  ');
         }
@@ -1091,8 +1216,11 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
              output = `strings: '${fileTarget}': No such file`;
           } else if (fileNode.type === 'dir') {
              output = `strings: ${fileTarget}: Is a directory`;
+          } else if (fileNode.type === 'symlink') {
+             output = `strings: ${fileTarget}: Is a symbolic link`;
           } else {
-             const matches = fileNode.content.match(/[\x20-\x7E]{4,}/g);
+             const content = (fileNode as any).content || '';
+             const matches = content.match(/[\x20-\x7E]{4,}/g);
              if (matches) {
                  output = matches.join('\n');
              } else {
@@ -1158,7 +1286,7 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
                     if (entryName.endsWith('.enc')) {
                         output = `This entry is encrypted.\nUse 'decrypt ${entryPath} [password]' to read it.`;
                     } else {
-                        output = entryNode.content;
+                        output = (entryNode as any).content || 'Error: Cannot read content.';
                     }
                 }
             }
@@ -1762,8 +1890,10 @@ Type "status" for mission objectives.`;
           output = `analyze: ${fileTarget}: No such file`;
         } else if (fileNode.type === 'dir') {
           output = `analyze: ${fileTarget}: Is a directory`;
+        } else if (fileNode.type === 'symlink') {
+          output = `analyze: ${fileTarget}: Is a symbolic link`;
         } else {
-          output = `File: ${fileTarget}\nSize: ${fileNode.content.length}\nEntropy: 7.82\nHeuristics: LOW RISK`;
+          output = `File: ${fileTarget}\nSize: ${(fileNode as any).content.length}\nEntropy: 7.82\nHeuristics: LOW RISK`;
         }
       }
       break;
@@ -1798,8 +1928,11 @@ Type "status" for mission objectives.`;
           output = `decrypt: ${fileTarget}: No such file`;
         } else if (fileNode.type === 'dir') {
           output = `decrypt: ${fileTarget}: Is a directory`;
+        } else if (fileNode.type === 'symlink') {
+            output = `decrypt: ${fileTarget}: Is a symbolic link`;
         } else {
-          if (fileNode.content.includes('BINARY_PAYLOAD') || filePath.endsWith('payload.bin')) {
+            const content = (fileNode as any).content || '';
+            if (content.includes('BINARY_PAYLOAD') || filePath.endsWith('payload.bin')) {
               if (args[1] === 'spectre') {
                   updateCount();
                   output = `[SUCCESS] Decryption Complete.\n\x1b[1;32m[MISSION UPDATE] INTEL RECOVERED (1/3)\x1b[0m\n-----BEGIN RSA PRIVATE KEY-----\nKEY_ID: BLACK_SITE_ACCESS_V1\n-----END RSA PRIVATE KEY-----`;
@@ -1810,7 +1943,7 @@ Type "status" for mission objectives.`;
           } else if (filePath.includes('operation_blackout')) {
               if (args[1] === 'red_ledger') {
                   updateCount();
-                  output = `[SUCCESS] Decryption Complete.\n\x1b[1;32m[MISSION UPDATE] INTEL RECOVERED (2/3)\x1b[0m\n${atob(fileNode.content)}`;
+                  output = `[SUCCESS] Decryption Complete.\n\x1b[1;32m[MISSION UPDATE] INTEL RECOVERED (2/3)\x1b[0m\n${atob(content)}`;
               } else {
                   ALERT_LEVEL++;
                   output = `Error: Invalid password. [WARNING: INTRUSION DETECTED. THREAT LEVEL ${ALERT_LEVEL}/5]`;
@@ -1818,7 +1951,7 @@ Type "status" for mission objectives.`;
           } else if (filePath.includes('entry_02.enc')) {
               if (args[1] === 'hunter2') {
                   updateCount();
-                  output = `[SUCCESS] Decryption Complete.\n\x1b[1;32m[MISSION UPDATE] INTEL RECOVERED (3/3)\x1b[0m\n${atob(fileNode.content)}`;
+                  output = `[SUCCESS] Decryption Complete.\n\x1b[1;32m[MISSION UPDATE] INTEL RECOVERED (3/3)\x1b[0m\n${atob(content)}`;
               } else {
                   ALERT_LEVEL++;
                   output = 'Error: Invalid password. (Hint: Check the logs)';
@@ -1850,7 +1983,7 @@ Type "status" for mission objectives.`;
                   output = `Error: Invalid decryption key. [WARNING: THREAT LEVEL ${ALERT_LEVEL}/5]`;
               }
           } else {
-              try { output = atob(fileNode.content); } catch (e) { output = 'Error: File not encrypted or corrupted.'; }
+              try { output = atob(content); } catch (e) { output = 'Error: File not encrypted or corrupted.'; }
           }
         }
       }
@@ -2673,9 +2806,12 @@ tmpfs             815276    1184    814092   1% /run
               output = `insmod: ERROR: could not load module ${fileTarget}: No such file or directory`;
           } else if (node.type === 'dir') {
               output = `insmod: ERROR: could not load module ${fileTarget}: Is a directory`;
+          } else if (node.type === 'symlink') {
+              output = `insmod: ERROR: could not insert module ${fileTarget}: Is a symbolic link`;
           } else {
               // Check magic signature for .ko
-              if (node.content.startsWith('\x7fELF') || fileTarget.endsWith('.ko')) {
+              const content = (node as any).content || '';
+              if (content.startsWith('\x7fELF') || fileTarget.endsWith('.ko')) {
                   const modName = fileTarget.split('/').pop()?.replace('.ko', '') || 'unknown';
                   
                   if (LOADED_MODULES.includes(modName)) {
@@ -2876,6 +3012,38 @@ tmpfs             815276    1184    814092   1% /run
       if (!url) {
         output = 'curl: try \'curl --help\' or \'curl --manual\' for more information';
       } else {
+        // SSL Certificate Check Logic for secure.ghost.network
+        if (url.includes('secure.ghost.network')) {
+             if (args.includes('-k') || args.includes('--insecure')) {
+                 output = `[INSECURE CONNECTION ESTABLISHED]\n[200 OK] Welcome to the Secure Ghost Network (Insecure Mode).\n(Note: The flag is only served over a valid SSL connection.)`;
+                 return finalize(output, newCwd);
+             } else {
+                 const certPath = '/etc/ssl/certs/ca-certificates.crt';
+                 const certNode = getNode(certPath);
+                 let valid = false;
+                 
+                 if (certNode) {
+                     if (certNode.type === 'file') {
+                         valid = true;
+                     } else if (certNode.type === 'symlink') {
+                         const target = (certNode as any).target;
+                         const targetNode = getNode(target); 
+                         if (targetNode && targetNode.type === 'file') {
+                             valid = true;
+                         }
+                     }
+                 }
+                 
+                 if (!valid) {
+                     output = `curl: (60) SSL certificate problem: unable to get local issuer certificate\nMore details here: https://curl.haxx.se/docs/sslcerts.html\n\ncurl: (60) SSL certificate problem: certificate has expired or is invalid`;
+                     return finalize(output, newCwd);
+                 }
+                 
+                 output = `[SECURE CONNECTION ESTABLISHED]\n[200 OK] Welcome to the Secure Ghost Network.\nFLAG: GHOST_ROOT{SYML1NK_M4ST3R_R3STOR3D}`;
+                 return finalize(output, newCwd);
+             }
+        }
+
         if (url.includes('192.168.1.55') || url.includes('fl4g_server')) {
              if (url.includes('auth=GHOST_TOKEN_777')) {
                  output = `[DEPLOY] Connecting to payload delivery system...\n[UPLOAD] Sending agent binary... 100%\n[RESPONSE] HTTP 200 OK\n{\n  "status": "deployed",\n  "target": "covert_asset_v2",\n  "message": "Asset active. Standby for instructions.",\n  "flag": "GHOST_ROOT{D3BUG_MAST3R}"\n}`;
@@ -2949,7 +3117,39 @@ tmpfs             815276    1184    814092   1% /run
        break;
     }
     case 'date': {
-       output = new Date().toString();
+       if (args.length > 0 && (args[0] === '-s' || args[0] === '--set')) {
+           const isRoot = !!getNode('/tmp/.root_session');
+           if (!isRoot) {
+               output = `date: cannot set date: Operation not permitted`;
+           } else {
+               output = `date: cannot set date: Use ntpdate to sync with time server.`;
+           }
+       } else {
+           const now = new Date(Date.now() + SYSTEM_TIME_OFFSET);
+           output = now.toString();
+       }
+       break;
+    }
+    case 'rdate':
+    case 'ntpdate': {
+       if (args.length < 1) {
+           output = `usage: ${command} [-u] <server>`;
+       } else {
+           const server = args[args.length - 1];
+           const isRoot = !!getNode('/tmp/.root_session');
+           
+           if (!isRoot) {
+               output = `${command}: bind: Permission denied\nExiting, name server cannot be used: Operation not permitted`;
+           } else {
+               if (server === 'time.ghost.network' || server === 'pool.ntp.org' || server === '192.168.1.1') {
+                   output = `${command}: adjust time server ${server} offset 0.00021 sec`;
+                   SYSTEM_TIME_OFFSET = 0; // Fix time
+                   VFS['/var/run/time_synced'] = { type: 'file', content: 'TRUE' };
+               } else {
+                   output = `${command}: no server suitable for synchronization found`;
+               }
+           }
+       }
        break;
     }
     case 'zip': {
@@ -4087,8 +4287,10 @@ wget: unable to resolve host address`;
                 output = `exiftool: ${target}: No such file`;
             } else if (node.type === 'dir') {
                 output = `exiftool: ${target}: Is a directory`;
+            } else if (node.type === 'symlink') {
+                output = `exiftool: ${target}: Is a symbolic link`;
             } else {
-                const content = node.content;
+                const content = (node as any).content || '';
                 // Check for Metadata Header in our mock format
                 const match = content.match(/\[METADATA_HEADER\]([\s\S]*?)\[END_METADATA\]/);
                 
@@ -4355,6 +4557,96 @@ PROGRESS:   ${progress}% [${bar}]
     case 'biomon': {
         output = 'Initializing biometric sensors...';
         return { output, newCwd, action: 'medscan_sim' };
+    }
+    case 'type': {
+       if (args.length < 1) {
+           output = 'type: usage: type <command>';
+       } else {
+           const cmd = args[0];
+           if (ALIASES[cmd]) {
+               output = `${cmd} is aliased to \`${ALIASES[cmd]}\``;
+           } else if (COMMANDS.includes(cmd)) {
+               output = `${cmd} is /usr/bin/${cmd}`;
+           } else {
+               output = `bash: type: ${cmd}: not found`;
+           }
+       }
+       break;
+    }
+    case 'unalias': {
+        if (args.length < 1) {
+            output = 'unalias: usage: unalias <name>';
+        } else {
+            const name = args[0];
+            if (ALIASES[name]) {
+                delete ALIASES[name];
+                output = ''; 
+            } else {
+                output = `bash: unalias: ${name}: not found`;
+            }
+        }
+        break;
+    }
+    case 'jobs': {
+        if (JOBS.length === 0) {
+            output = 'jobs: no active jobs';
+        } else {
+            output = JOBS.map(j => `[${j.id}]+  ${j.status.padEnd(10)} ${j.command}`).join('\n');
+        }
+        break;
+    }
+    case 'fg': {
+        const jobId = args.length > 0 ? parseInt(args[0].replace('%', '')) : 1;
+        const job = JOBS.find(j => j.id === jobId);
+
+        if (!job) {
+            output = `fg: job ${jobId} not found`;
+        } else {
+            // Remove job from list (simulating completion for this puzzle)
+            JOBS = JOBS.filter(j => j.id !== jobId);
+            
+            output = `${job.command}\n`;
+            
+            if (job.command.includes('decrypt_chimera')) {
+                output += `[SYSTEM] Resuming decryption process (PID ${job.pid})...\n[====================] 100%\n[SUCCESS] CHIMERA PROTOCOL DECRYPTED.\n\nPAYLOAD: GHOST_ROOT{J0B_C0NTR0L_M4ST3R}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: BACKGROUND PROCESS RECOVERED.\x1b[0m`;
+                
+                // Mission Update Flag
+                if (!VFS['/var/run/chimera_decrypted']) {
+                    VFS['/var/run/chimera_decrypted'] = { type: 'file', content: 'TRUE' };
+                    const runDir = getNode('/var/run');
+                    if (runDir && runDir.type === 'dir' && !runDir.children.includes('chimera_decrypted')) {
+                        runDir.children.push('chimera_decrypted');
+                    }
+                }
+            } else {
+                output += `[PROCESS COMPLETED]`;
+            }
+        }
+        break;
+    }
+    case 'bg': {
+        const jobId = args.length > 0 ? parseInt(args[0].replace('%', '')) : 1;
+        const job = JOBS.find(j => j.id === jobId);
+
+        if (!job) {
+            output = `bg: job ${jobId} not found`;
+        } else {
+            job.status = 'Running';
+            output = `[${job.id}]+ ${job.command} &`;
+        }
+        break;
+    }
+    case 'uplink_connect': {
+        output = `[UPLINK] Initiating connection to OMEGA-SAT-7...\n[STATUS] Handshake Complete.\n[DATA] Downloading payload...\n\nPayload: GHOST_ROOT{4L14S_BYP4SS_SUCC3SS}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: UPLINK ESTABLISHED.\x1b[0m`;
+        
+        if (!VFS['/var/run/uplink_established']) {
+            VFS['/var/run/uplink_established'] = { type: 'file', content: 'TRUE' };
+            const runDir = getNode('/var/run');
+            if (runDir && runDir.type === 'dir' && !runDir.children.includes('uplink_established')) {
+                runDir.children.push('uplink_established');
+            }
+        }
+        return { output, newCwd, action: 'sat_sim' };
     }
     default:
       output = `bash: ${command}: command not found`;

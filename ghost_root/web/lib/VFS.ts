@@ -13,12 +13,18 @@ export interface DirNode {
   permissions?: string;
 }
 
-export type VFSNode = FileNode | DirNode;
+export interface SymlinkNode {
+  type: 'symlink';
+  target: string;
+  permissions?: string;
+}
+
+export type VFSNode = FileNode | DirNode | SymlinkNode;
 
 const VFS: Record<string, VFSNode> = {
   '/': {
     type: 'dir',
-    children: ['home', 'etc', 'var', 'archive', 'usr', 'root'],
+    children: ['home', 'etc', 'var', 'archive', 'usr', 'root', 'tmp', 'dev', 'lib', 'mnt', 'opt', 'remote'],
     permissions: '755'
   },
   '/root': {
@@ -35,7 +41,7 @@ const VFS: Record<string, VFSNode> = {
   },
   '/usr': {
     type: 'dir',
-    children: ['src', 'bin']
+    children: ['src', 'bin', 'share']
   },
   '/usr/bin': {
     type: 'dir',
@@ -76,6 +82,11 @@ echo "Deploying to $TARGET_SERVER..."
 curl -s "http://$TARGET_SERVER/api/deploy?auth=$AUTH_TOKEN"
 # ERROR: Could not resolve host
 `
+  },
+  '/usr/bin/otp_gen': {
+    type: 'file',
+    content: '[BINARY_ELF_X86_64]\n[DEPENDENCY: ntpdate]\n[USAGE: ./otp_gen]',
+    permissions: '755'
   },
   '/usr/bin/void_crypt': {
     type: 'file',
@@ -297,7 +308,7 @@ exit`
   },
   '/etc': {
     type: 'dir',
-    children: ['passwd', 'shadow', 'hosts', 'iptables.rules', 'tor', 'cron.daily']
+    children: ['passwd', 'shadow', 'hosts', 'iptables.rules', 'tor', 'cron.daily', 'ssl']
   },
   '/etc/tor': {
     type: 'dir',
@@ -336,6 +347,10 @@ fi
       type: 'file',
       content: 'root:$6$5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8:18550:0:99999:7:::\nghost:$6$randomsalt$encryptedhash:18550:0:99999:7:::'
   },
+  '/etc/ntp.conf': {
+      type: 'file',
+      content: '# Network Time Protocol (NTP) Configuration\n\nserver 0.pool.ntp.org\nserver 1.pool.ntp.org\nserver time.ghost.network\n\n# Access Control\nrestrict default kod nomodify notrap nopeer noquery'
+  },
   '/etc/hosts': {
       type: 'file',
       content: '127.0.0.1 localhost\n192.168.1.5 admin-pc\n10.0.0.1 uplink-router\n10.10.99.1 black-site.remote'
@@ -359,6 +374,34 @@ fi
 -A INPUT -s 10.10.99.1/32 -p icmp -j DROP
 COMMIT
 # Completed on Oct 23 09:00:00`
+  },
+  '/etc/ssl': {
+    type: 'dir',
+    children: ['certs']
+  },
+  '/etc/ssl/certs': {
+    type: 'dir',
+    children: ['ca-certificates.crt']
+  },
+  '/etc/ssl/certs/ca-certificates.crt': {
+    type: 'symlink',
+    target: '/tmp/build/certs.crt'
+  },
+  '/usr/share': {
+    type: 'dir',
+    children: ['ca-certificates']
+  },
+  '/usr/share/ca-certificates': {
+    type: 'dir',
+    children: ['mozilla']
+  },
+  '/usr/share/ca-certificates/mozilla': {
+    type: 'dir',
+    children: ['ca-certificates.crt']
+  },
+  '/usr/share/ca-certificates/mozilla/ca-certificates.crt': {
+    type: 'file',
+    content: '[CERTIFICATE_BUNDLE_V2]\nIssuer: Ghost Root CA\nSubject: *.ghost.network\nValid Until: 2030-01-01\n-----BEGIN CERTIFICATE-----\nMIIEowIBAAKCAQEA...\n-----END CERTIFICATE-----'
   },
   '/var': {
     type: 'dir',
