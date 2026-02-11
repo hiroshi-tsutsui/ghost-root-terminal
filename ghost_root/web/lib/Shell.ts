@@ -2486,6 +2486,24 @@ ${host}.		300	IN	A	${ip}
        output = `traceroute to ${args[0]} (TCP), 30 hops max, 60 byte packets`;
        return { output, newCwd, action: 'trace_sim', data: { target: args[0] } };
     }
+    case 'beacon': {
+       if (isBackground) {
+           const job = { id: 2, command: 'beacon --silent', status: 'Running', pid: 9000 } as Job;
+           JOBS.push(job);
+           
+           // Auto-terminate after 10 seconds
+           setTimeout(() => {
+               const idx = JOBS.findIndex(j => j.id === 2);
+               if (idx !== -1) JOBS.splice(idx, 1);
+           }, 10000);
+           
+           output = '[2] 9000';
+       } else {
+           output = 'Beacon Active. (Press Ctrl+C to stop - not implemented in fg mode yet, use &)';
+           return { output, newCwd, action: 'delay' };
+       }
+       break;
+    }
     case 'netstat': {
        const runDir = '/var/run';
        if (!VFS[runDir]) VFS[runDir] = { type: 'dir', children: [] };
@@ -2529,6 +2547,10 @@ ${host}.		300	IN	A	${ip}
            if (activePids.includes('tor')) {
                dynamicConnections.push({ proto: 'tcp', recv: 0, send: 0, local: '127.0.0.1:9050', remote: '127.0.0.1:54321', state: 'ESTABLISHED', pid: '6666/tor' });
            }
+       }
+
+       if (JOBS.find(j => j.command.includes('beacon'))) {
+           dynamicConnections.push({ proto: 'udp', recv: 0, send: 0, local: '0.0.0.0:1337', remote: '10.10.10.99:53', state: 'ESTABLISHED', pid: '9000/beacon' });
        }
 
        const header = 'Active Internet connections (servers and established)';
