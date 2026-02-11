@@ -1,7 +1,7 @@
 
-[2026-02-11 17:00]
+[2026-02-11 17:30]
 > CHANGES: ghost_root/web/lib/VFS.ts
-> PUZZLE ADDED: "The Memory Leak" (Volatility / Memory Forensics).
-> MECHANICS: Added `/home/ghost/memory_analysis.txt` hint. `volatility` command already supported.
-> LORE: A system crash dump (`/tmp/core.dump`) contains the command line arguments of a rogue process.
-> SOLUTION: `cat memory_analysis.txt` -> `volatility -f /tmp/core.dump cmdline` -> Flag recovered (`GHOST_ROOT{M3M0RY_L34K_D3T3CT3D}`).
+> PUZZLE ADDED: "The Broken Archive" (Base64 Zip / File Recovery).
+> MECHANICS: Added `/home/ghost/backup.zip.b64` (corrupted/encoded).
+> LORE: A backup file was transferred as raw base64 but never decoded. It contains a "confidential" PDF.
+> SOLUTION: `base64 -d backup.zip.b64 > backup.zip` -> `unzip backup.zip` -> `cat confidential.txt`.

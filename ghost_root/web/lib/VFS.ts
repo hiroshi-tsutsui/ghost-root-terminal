@@ -359,6 +359,12 @@ exit`
     type: 'file',
     content: 'INCIDENT REPORT #99\n\nSystem crashed at 14:45.\nA memory dump was captured at /tmp/core.dump.\n\nSuspect process: phantom_process\nTool required: volatility\n\nTask: Extract the process command line arguments.\nUsage: volatility -f <dump> cmdline'
   },
+  '/home/ghost/backup.zip.b64': {
+    type: 'file',
+    // PK_SIM_V1:{confidential.txt:R0hPU1RfUk9PVHtCNFNFNjRfWjFQX1IzQ09WM1JZfQ==}
+    // Base64 encoded: UEtfU0lNX1YxOntjb25maWRlbnRpYWwudHh0OlIwaFBVMVJmVWk5UFZUdENORk5GTmpSZlcmpRWDFJelEwOTNNMUpaZVE9PX0=
+    content: 'UEtfU0lNX1YxOntjb25maWRlbnRpYWwudHh0OlIwaFBVMVJmVWk5UFZUdENORk5GTmpSZlcmpRWDFJelEwOTNNMUpaZVE9PX0='
+  },
   '/home/ghost/secrets': {
     type: 'dir',
     children: ['operation_blackout.enc']
@@ -534,8 +540,16 @@ COMMIT
   },
   '/var/backups': {
       type: 'dir',
-      children: ['logs.tar', 'lost+found', 'signal_log.enc'],
+      children: ['logs.tar', 'lost+found', 'signal_log.enc', 'mystery.dat', 'README.txt'],
       permissions: '755'
+  },
+  '/var/backups/mystery.dat': {
+      type: 'file',
+      content: 'UEtfU0lNX1YxOntwYXlsb2FkLnR4dDpSMGhQVTFSZlVrOVBWSHROTkVjeFExOUNXVlF6VTE5U00wTXdWak5TTTBSOX0='
+  },
+  '/var/backups/README.txt': {
+      type: 'file',
+      content: 'ERROR: Corrupted archive detected.\nHeader mismatch? Try converting to standard format.'
   },
   '/var/backups/signal_log.enc': {
       type: 'file',
