@@ -2346,6 +2346,99 @@ Type "status" for mission objectives.`;
         }
         break;
     }
+    case 'docker': {
+        const subcmd = args[0];
+        if (!subcmd || subcmd === 'help') {
+            output = 'Usage: docker [OPTIONS] COMMAND\n\nCommands:\n  ps          List containers\n  logs        Fetch logs of a container\n  inspect     Return low-level information on a container\n  stop        Stop one or more running containers\n  images      List images';
+        } else if (subcmd === 'ps') {
+            output = 'CONTAINER ID   IMAGE          COMMAND                  CREATED        STATUS          PORTS                    NAMES\n' +
+                     'a1b2c3d4e5f6   secure-vault   "/entrypoint.sh"         2 hours ago    Up 2 hours      0.0.0.0:8080->80/tcp     secure-vault\n' +
+                     '9876543210ab   database       "docker-entrypoint.s…"   5 hours ago    Up 5 hours      5432/tcp                 db-prod';
+        } else if (subcmd === 'images') {
+             output = 'REPOSITORY     TAG       IMAGE ID       CREATED        SIZE\n' +
+                      'secure-vault   latest    e5d0979f8765   2 days ago     156MB\n' +
+                      'database       v14.2     a1b2c3d4e5f6   2 weeks ago    350MB\n' +
+                      'alpine         latest    9876543210ab   1 month ago    5.6MB';
+        } else if (subcmd === 'stop') {
+             if (args.length < 2) output = 'docker stop: missing container id';
+             else {
+                 const id = args[1];
+                 if (id.startsWith('a1b') || id === 'secure-vault') {
+                     output = `${id}`;
+                     // Mission Update? Maybe later.
+                 } else if (id.startsWith('987') || id === 'db-prod') {
+                     output = 'Error response from daemon: cannot stop container: db-prod: permission denied';
+                 } else {
+                     output = `Error response from daemon: No such container: ${id}`;
+                 }
+             }
+        } else if (subcmd === 'logs') {
+             if (args.length < 2) output = 'docker logs: missing container id';
+             else {
+                 const id = args[1];
+                 if (id.startsWith('a1b') || id === 'secure-vault') {
+                     output = `[ENTRYPOINT] Starting Vault Service v2.0...
+[INFO] Loading configuration...
+[WARN] Environment variable 'VAULT_KEY' is set in plain text.
+[INFO] Listening on port 80...
+[ACCESS] Connection from 172.17.0.1 accepted.`;
+                 } else {
+                     output = `Error: No such container: ${id}`;
+                 }
+             }
+        } else if (subcmd === 'inspect') {
+             if (args.length < 2) output = 'docker inspect: missing container id';
+             else {
+                 const id = args[1];
+                 if (id.startsWith('a1b') || id === 'secure-vault') {
+                     output = `[
+    {
+        "Id": "a1b2c3d4e5f6...",
+        "Created": "2026-02-11T10:00:00.000Z",
+        "Path": "/entrypoint.sh",
+        "Args": [],
+        "State": {
+            "Status": "running",
+            "Running": true,
+            "Pid": 12345
+        },
+        "Config": {
+            "Hostname": "a1b2c3d4e5f6",
+            "Domainname": "",
+            "User": "",
+            "Env": [
+                "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "VAULT_KEY=GHOST_ROOT{D0CK3R_3NV_L34K}",
+                "DB_HOST=db-prod"
+            ],
+            "Cmd": [
+                "/entrypoint.sh"
+            ],
+            "Image": "secure-vault:latest"
+        },
+        "NetworkSettings": {
+            "IPAddress": "172.17.0.2"
+        }
+    }
+]`;
+                     // Mission Update
+                     if (!VFS['/var/run/docker_solved']) {
+                         VFS['/var/run/docker_solved'] = { type: 'file', content: 'TRUE' };
+                         const runDir = getNode('/var/run');
+                         if (runDir && runDir.type === 'dir' && !runDir.children.includes('docker_solved')) {
+                             runDir.children.push('docker_solved');
+                         }
+                         output += '\n\x1b[1;32m[MISSION UPDATE] Objective Complete: CONTAINER ESCAPE.\x1b[0m';
+                     }
+                 } else {
+                     output = `Error: No such object: ${id}`;
+                 }
+             }
+        } else {
+            output = `docker: '${subcmd}' is not a docker command.`;
+        }
+        break;
+    }
     case 'exit':
         output = 'Logout.';
         break;
