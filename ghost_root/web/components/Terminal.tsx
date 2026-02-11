@@ -1942,7 +1942,7 @@ const WebTerminal = () => {
              }
              break;
           case '\t': // Tab
-            e.preventDefault(); // Prevent focus loss
+            domEvent.preventDefault(); // Prevent focus loss
             const completion = tabCompletion(cwdRef.current, inputBufferRef.current);
             if (completion.completed !== inputBufferRef.current) {
                // Update buffer if changed
@@ -1978,7 +1978,6 @@ const WebTerminal = () => {
 
     // Start boot sequence
     runBootSequence();
-  }, []);
 
     // Handle resize
   const handleKeyDown = (e: KeyboardEvent) => {
@@ -2077,20 +2076,8 @@ const WebTerminal = () => {
           return;
       }
   };
+  }, []);
 
-  const renderSearch = () => {
-      const term = termRef.current;
-      if (!term) return;
-      
-      const query = searchQueryRef.current;
-      const match = historyRef.current[historyIndexRef.current] || '';
-      
-      // (reverse-i-search)`query': match
-      const output = `\r(reverse-i-search)\`\x1b[1m${query}\x1b[0m': ${match}`;
-      
-      term.write('\x1b[2K\r'); // Clear line
-      term.write(output);
-  };
   
   // Re-fit when sidebar toggles
   useEffect(() => {

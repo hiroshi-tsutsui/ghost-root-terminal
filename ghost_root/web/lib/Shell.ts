@@ -215,6 +215,7 @@ export interface MissionStatus {
     decryptCount: number;
     isRoot: boolean;
     hasBlackSite: boolean;
+    hasHiddenVol: boolean;
     hasPayload: boolean;
     hasLaunchReady: boolean;
   };
