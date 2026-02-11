@@ -299,7 +299,7 @@ export interface CommandResult {
   data?: any;
 }
 
-const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'jobs', 'fg', 'bg', 'recover_data', 'ghost_update', 'git', 'file', 'openssl', 'beacon', 'fsck'];
+const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'jobs', 'fg', 'bg', 'recover_data', 'ghost_update', 'git', 'file', 'openssl', 'beacon', 'fsck', 'docker'];
 
 export interface MissionStatus {
   objectives: {
@@ -1702,6 +1702,7 @@ Type "status" for mission objectives.`;
           case 'hydra': output = 'NAME\n\thydra - Network Logon Cracker\n\nSYNOPSIS\n\thydra -l <user> -P <passlist> <target>\n\nDESCRIPTION\n\tA very fast network logon cracker which supports many different services.'; break;
           case 'hashcat': output = 'NAME\n\thashcat - Advanced Password Recovery\n\nSYNOPSIS\n\thashcat -m <mode> <hashfile> <wordlist>\n\nDESCRIPTION\n\tWorld\'s fastest password recovery tool.\n\nMODES\n\t0\tMD5\n\t1000\tNTLM\n\t1800\tsha512crypt'; break;
           case 'beacon': output = 'NAME\n\tbeacon - Automated Dead Drop Signal\n\nSYNOPSIS\n\tbeacon [&]\n\nDESCRIPTION\n\tContinuously attempts to connect to a listening post on localhost:4444 to deliver a payload.\n\nUSAGE\n\tRun "beacon" to start foreground process (will block).\n\tRun "beacon &" to start in background.'; break;
+          case 'docker': output = 'NAME\n\tdocker - Docker container management\n\nSYNOPSIS\n\tdocker [OPTIONS] COMMAND\n\nDESCRIPTION\n\tManage containers, images, and volumes.\n\nCOMMANDS\n\tps\tList containers\n\tinspect\tReturn low-level information on Docker objects\n\tlogs\tFetch the logs of a container\n\tstop\tStop one or more running containers'; break;
           default: output = `No manual entry for ${page}`;
         }
       }
@@ -5255,6 +5256,116 @@ PROGRESS:   ${progress}% [${bar}]
             }
         } else {
             output = 'openssl: usage: openssl enc -d -aes-256-cbc -in <file> -out <file> -k <key>';
+        }
+        break;
+    }
+    case 'docker': {
+        const subcmd = args[0];
+        if (args.length < 1) {
+             output = `Usage: docker [OPTIONS] COMMAND\n\nCommands:\n  ps          List containers\n  run         Run a command in a new container\n  stop        Stop one or more running containers\n  rm          Remove one or more containers\n  inspect     Return low-level information on Docker objects\n  logs        Fetch the logs of a container`;
+        } else if (subcmd === 'ps') {
+             output = `CONTAINER ID   IMAGE                 COMMAND                  CREATED        STATUS          PORTS                    NAMES
+a1b2c3d4e5f6   ghost-relay:latest    "/bin/sh -c 'while..."   2 hours ago    Up 2 hours      0.0.0.0:8080->80/tcp     ghost-relay
+f9e8d7c6b5a4   secure-vault:v1.2     "/vault/keeper"          4 days ago     Up 4 days       0.0.0.0:9000->9000/tcp   secure-vault
+1234567890ab   postgres:14-alpine    "docker-entrypoint..."   5 days ago     Exited (0)                               db-primary`;
+        } else if (subcmd === 'images') {
+             output = `REPOSITORY          TAG       IMAGE ID       CREATED        SIZE
+ghost-relay         latest    a1b2c3d4e5f6   2 hours ago    156MB
+secure-vault        v1.2      f9e8d7c6b5a4   4 days ago     89MB
+postgres            14-alpine 1234567890ab   5 days ago     214MB`;
+        } else if (subcmd === 'inspect') {
+             if (args.length < 2) {
+                 output = 'docker inspect: requires at least 1 argument.';
+             } else {
+                 const id = args[1];
+                 if (id.startsWith('f9e8') || id === 'secure-vault') {
+                      output = `[
+    {
+        "Id": "f9e8d7c6b5a4...",
+        "Created": "2026-02-05T12:00:00.000000000Z",
+        "Path": "/vault/keeper",
+        "Args": [],
+        "State": {
+            "Status": "running",
+            "Running": true,
+            "Pid": 4001
+        },
+        "Image": "sha256:f9e8d7c6b5a4...",
+        "Name": "/secure-vault",
+        "Config": {
+            "Hostname": "f9e8d7c6b5a4",
+            "Domainname": "",
+            "User": "",
+            "Env": [
+                "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "VAULT_MODE=locked",
+                "VAULT_KEY=GHOST_ROOT{C0NT41N3R_3SC4P3}",
+                "MAX_RETRIES=3"
+            ],
+            "Cmd": [
+                "/vault/keeper"
+            ]
+        }
+    }
+]`;
+                      // Mission update: Found Flag
+                      if (!VFS['/var/run/docker_flag']) {
+                          VFS['/var/run/docker_flag'] = { type: 'file', content: 'TRUE' };
+                          const runDir = getNode('/var/run');
+                          if (runDir && runDir.type === 'dir' && !runDir.children.includes('docker_flag')) {
+                              runDir.children.push('docker_flag');
+                          }
+                          output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: CONTAINER INSPECTED.\x1b[0m`;
+                      }
+
+                 } else if (id.startsWith('a1b2') || id === 'ghost-relay') {
+                      output = `[
+    {
+        "Id": "a1b2c3d4e5f6...",
+        "Name": "/ghost-relay",
+        "Config": {
+            "Env": [
+                "RELAY_HOST=192.168.1.99"
+            ]
+        }
+    }
+]`;
+                 } else {
+                      output = `Error: No such object: ${id}`;
+                 }
+             }
+        } else if (subcmd === 'logs') {
+             const id = args[1];
+             if (!id) {
+                 output = 'docker logs: requires exactly 1 argument.';
+             } else if (id.startsWith('f9e8') || id === 'secure-vault') {
+                 output = `[VAULT] Starting service version 1.2
+[VAULT] Loading configuration from ENV...
+[VAULT] Warning: VAULT_KEY is exposed in environment variables.
+[VAULT] Service listening on port 9000
+[VAULT] Access attempt from 172.17.0.1: Denied.`;
+             } else if (id.startsWith('a1b2') || id === 'ghost-relay') {
+                 output = `[RELAY] Initializing secure connection...
+[RELAY] Connection established to 192.168.1.99
+[RELAY] Heartbeat sent.`;
+             } else {
+                 output = `Error: No such container: ${id}`;
+             }
+        } else if (subcmd === 'stop') {
+             const id = args[1];
+             if (!id) {
+                 output = 'docker stop: requires at least 1 argument.';
+             } else if (id.startsWith('a1b2') || id === 'ghost-relay') {
+                 output = `${id}`;
+             } else if (id.startsWith('f9e8') || id === 'secure-vault') {
+                 output = `Error response from daemon: cannot stop container: ${id}: permission denied`;
+             } else {
+                 output = `Error: No such container: ${id}`;
+             }
+        } else if (subcmd === 'run') {
+             output = 'docker: Error response from daemon: Resource quota exceeded.';
+        } else {
+             output = `docker: '${subcmd}' is not a docker command.`;
         }
         break;
     }
