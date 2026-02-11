@@ -166,7 +166,7 @@
 - [x] Update Ghost Root: Enhanced "Mission Update" Feedback (Toasts) & Polished Terminal UI (Fixed ESLint errors). (Status: STAGED - Pending Deployment).
 - [x] Update Ghost Root: Verify mobile responsiveness and "Win State" animation. (Status: STAGED - Polished).
 - [x] Update Ghost Root: Initialize Vision Mission Profile (Adversarial Design) & `VISION_LOG.md`. (Status: DONE).
-- [x] Monitor Vision (Adversarial Design) Progress. (Phase 4.1 Active - Cycle 7 Complete).
+- [x] Monitor Vision (Adversarial Design) Progress. (Phase 4.1 Active - Cycle 49 Complete).
   - [x] Cycle 1: "The Watcher" (Intrusion Detection).
   - [x] Cycle 2: "The Forgotten User" (Root Access).
   - [x] Cycle 3: "The Network Bridge" (Corrupted Binary).
@@ -206,10 +206,29 @@
   - [x] Cycle 37: "The Zombie Process" (Process Management / PPID).
   - [x] Cycle 38: "The Infinite Loop" (Script Debugging).
   - [x] Cycle 39: "The Docker Escape" (Container Security).
-  - [ ] Cycle 40: (Pending).
+  - [x] Cycle 40: "The Immutable Attribute" (chattr +i).
+  - [x] Cycle 41: "The Compiler Error" (GCC / Library Path).
+  - [x] Cycle 42: "The Respawning Service" (Systemd / Lock Files).
+  - [x] Cycle 43: "The Packet Sniffer" (Tcpdump).
+  - [x] Cycle 44: "The Stashed Change" (Git Stash).
+  - [x] Cycle 45: "The Setuid Binary" (SUID Bit).
+  - [x] Cycle 46: "The SSL Handshake" (OpenSSL / Certificate Expiry).
+  - [x] Cycle 47: "The Docker Escape" (Privilege Escalation / Volume Mount).
+  - [x] Cycle 48: "The Shared Library Hijack" (LD_LIBRARY_PATH).
+  - [x] Cycle 49: "The Insecure Wildcard" (Tar Wildcard Injection).
+  - [x] Cycle 50: "The Buffer Overflow" (Stack Smashing / GDB).
+  - [x] Cycle 51: "The Kernel Module" (lsmod / insmod).
+  - [x] Cycle 52: "The Alternate Data Stream" (xattr / NTFS).
+  - [x] Cycle 53: "The Signal Handler" (Trap / Kill Signals).
+  - [x] Cycle 54: "The Named Pipe" (mkfifo).
+  - [x] Cycle 55: "The Unreachable Network" (Route / Gateway).
+  - [x] Cycle 56: "The DNS Spoof" (Hosts File / DNS Poisoning).
+  - [ ] Cycle 57: "The Hidden Archive" (Steganography / Wav File).
   - [x] Fix: Restored `vercel` CLI (Global Install) & Fixed TypeScript Error in `Shell.ts`. (Status: DEPLOYED).
   - [x] Fix: Repaired "MISSION STATUS" UI layout (Added `flex` to sidebar). (Status: DEPLOYED).
   - [x] Fix: Prevent horizontal scrolling (Added `overflow-hidden` to main container). (Status: DEPLOYED).
   - [x] Fix: Implemented ResizeObserver for xterm.js fit (Status: DEPLOYED).
   - [x] Fix: Resolved build errors in `Terminal.tsx` (useEffect scope, duplicates, handleKeyDown visibility) & `Shell.ts` (Interface). (Status: DEPLOYED).
   - [x] Fix: Added `0451` to `steghide` password list. (Status: DEPLOYED).
+  - [x] Fix: `.ssh` directory visibility (localStorage persistence bug). (Status: DEPLOYED).
+  - [x] Fix: SSH connection to `192.168.1.99` (Routing/Mapping issue). (Status: DEPLOYED).

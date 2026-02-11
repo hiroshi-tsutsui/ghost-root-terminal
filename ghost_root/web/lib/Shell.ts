@@ -935,6 +935,62 @@ int main(int argc, char* argv[]) {
       }
   }
 
+  // Cycle 56 Init (The DNS Spoof)
+  if (!VFS['/etc/hosts']) {
+      // Ensure /etc exists
+      if (!VFS['/etc']) {
+          VFS['/etc'] = { type: 'dir', children: [] };
+          const root = getNode('/');
+          if (root && root.type === 'dir' && !root.children.includes('etc')) root.children.push('etc');
+      }
+      
+      VFS['/etc/hosts'] = {
+          type: 'file',
+          content: '127.0.0.1\tlocalhost\n::1\t\tlocalhost ip6-localhost ip6-loopback\n'
+      };
+      (VFS['/etc/hosts'] as any).permissions = '0644';
+      
+      const etcDir = getNode('/etc');
+      if (etcDir && etcDir.type === 'dir' && !etcDir.children.includes('hosts')) {
+          etcDir.children.push('hosts');
+      }
+      
+      // Add a hint file
+      if (!VFS['/home/ghost/network_config.txt']) {
+          VFS['/home/ghost/network_config.txt'] = {
+              type: 'file',
+              content: 'TARGET: omega-control.net\nIP_ADDRESS: 192.168.1.99\nACTION: Override DNS for local access.\nMETHOD: /etc/hosts modification required.'
+          };
+          const home = getNode('/home/ghost');
+          if (home && home.type === 'dir' && !home.children.includes('network_config.txt')) {
+              home.children.push('network_config.txt');
+          }
+      }
+  }
+
+  // Cycle 57 Init (The Hidden Archive / Wav Steganography)
+  if (!VFS['/home/ghost/evidence/transmission.wav']) {
+      // Ensure /home/ghost/evidence exists
+      if (!VFS['/home/ghost/evidence']) {
+          VFS['/home/ghost/evidence'] = { type: 'dir', children: [] };
+          const home = getNode('/home/ghost');
+          if (home && home.type === 'dir' && !home.children.includes('evidence')) {
+              home.children.push('evidence');
+          }
+      }
+      
+      VFS['/home/ghost/evidence/transmission.wav'] = {
+          type: 'file',
+          content: '[RIFF_WAVE_HEADER] [AUDIO_DATA_ENCRYPTED] [STEGO_CONTAINER_DETECTED]',
+          permissions: '0644'
+      };
+      
+      const evDir = getNode('/home/ghost/evidence');
+      if (evDir && evDir.type === 'dir' && !evDir.children.includes('transmission.wav')) {
+          evDir.children.push('transmission.wav');
+      }
+  }
+
   // 1. Handle Piping (|) recursively
   const segments = splitPipeline(commandLine);
   if (segments.length > 1) {
@@ -1432,6 +1488,10 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
        } else {
            output = 'usage: grep <pattern> [file]';
        }
+       break;
+    }
+    case 'echo': {
+       output = args.join(' ');
        break;
     }
     case 'cat': {
@@ -3462,9 +3522,25 @@ ${extraRoute}`;
            const ip = hosts[host] || (host.match(/^\d+\.\d+\.\d+\.\d+$/) ? host : null);
            
            if (ip) {
-               // Route Check for Black Site
-               if (ip === '10.10.99.1' && !routeAdded) {
+               // Cycle 56: DNS Spoof Check
+               if (host === 'omega-control.net' && ip === '192.168.1.99') {
+                   if (!VFS['/var/run/dns_spoofed']) {
+                       VFS['/var/run/dns_spoofed'] = { type: 'file', content: 'TRUE' };
+                       const runDir = getNode('/var/run');
+                       if (runDir && runDir.type === 'dir' && !runDir.children.includes('dns_spoofed')) {
+                           runDir.children.push('dns_spoofed');
+                       }
+                       output = `PING ${host} (${ip}) 56(84) bytes of data.\n64 bytes from ${ip}: icmp_seq=1 ttl=64 time=0.4 ms\n\n[SUCCESS] DNS Override Confirmed.\n[SYSTEM] Target Acquired.\nFLAG: GHOST_ROOT{H0STS_F1L3_H4CK}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: DNS SPOOFING.\x1b[0m`;
+                   } else {
+                       output = `PING ${host} (${ip}) 56(84) bytes of data.\n64 bytes from ${ip}: icmp_seq=1 ttl=64 time=0.4 ms`;
+                   }
+                   return { output, newCwd, action: 'delay' };
+               }
+
+               // Route Check for Black Site (Cycle 55 dependency)
+               if (ip.startsWith('10.10.99.') && !VFS['/var/run/route_fixed']) {
                    output = `ping: connect: Network is unreachable`;
+                   return { output, newCwd };
                } else {
                    const seqs = [1, 2, 3, 4];
                    output = `PING ${host} (${ip}) 56(84) bytes of data.\n` + 
@@ -4124,7 +4200,7 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
            if (sfIndex !== -1 && args[sfIndex + 1]) {
                fileTarget = args[sfIndex + 1];
            } else {
-               fileTarget = args.find(a => a.endsWith('.jpg'));
+               fileTarget = args.find(a => a.endsWith('.jpg') || a.endsWith('.wav'));
            }
 
            if (!fileTarget) {
@@ -4141,8 +4217,8 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
 
                    if (!passphrase) {
                        output = 'steghide: passphrase required (use -p <passphrase>)';
-                   } else if (passphrase === 'kirov_reporting') {
-                       // Success
+                   } else if (fileTarget.endsWith('evidence.jpg') && passphrase === 'kirov_reporting' || passphrase === '0451') {
+                       // Success (Cycle ??)
                        const payloadName = 'payload.txt';
                        const payloadPath = cwd === '/' ? `/${payloadName}` : `${cwd}/${payloadName}`;
                        
@@ -4159,6 +4235,30 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
                        }
                        
                        output = `wrote extracted data to "${payloadName}".`;
+                   } else if (fileTarget.endsWith('transmission.wav') && passphrase === 'frequency') {
+                       // Success (Cycle 57)
+                       const payloadName = 'coordinates.txt';
+                       const payloadPath = cwd === '/' ? `/${payloadName}` : `${cwd}/${payloadName}`;
+                       
+                       if (!VFS['/var/run/wav_decoded']) {
+                           VFS['/var/run/wav_decoded'] = { type: 'file', content: 'TRUE' };
+                           const runDir = getNode('/var/run');
+                           if (runDir && runDir.type === 'dir' && !runDir.children.includes('wav_decoded')) {
+                               runDir.children.push('wav_decoded');
+                           }
+                           output = `wrote extracted data to "${payloadName}".\n[SUCCESS] Audio Steganography Decoded.\nFLAG: GHOST_ROOT{ST3G_W4V_H1DD3N_D4T4}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: AUDIO STEGANOGRAPHY.\x1b[0m`;
+                       } else {
+                           output = `wrote extracted data to "${payloadName}".`;
+                       }
+
+                       VFS[payloadPath] = {
+                           type: 'file',
+                           content: 'TARGET COORDINATES: 34.0522° N, 118.2437° W\nDROP POINT: SECTOR 7\n'
+                       };
+                       const parentNode = getNode(cwd);
+                       if (parentNode && parentNode.type === 'dir' && !parentNode.children!.includes(payloadName)) {
+                           parentNode.children!.push(payloadName);
+                       }
                    } else {
                        output = `steghide: could not extract data: invalid passphrase "${passphrase}"`;
                    }
@@ -5493,6 +5593,47 @@ ${validUnits.length} loaded units listed.`;
            }
        }
        break;
+    }
+    case 'route': {
+        const subCmd = args[0];
+        if (!subCmd || subCmd === '-n') {
+            let table = `Kernel IP routing table\nDestination     Gateway         Genmask         Flags Metric Ref    Use Iface\n0.0.0.0         0.0.0.0         0.0.0.0         U     0      0        0 eth0\n192.168.1.0     0.0.0.0         255.255.255.0   U     0      0        0 eth0`;
+            
+            if (VFS['/var/run/route_fixed']) {
+                 table += `\n10.10.99.0      192.168.1.1     255.255.255.0   UG    0      0        0 eth0`;
+            }
+            output = table;
+        } else if (subCmd === 'add') {
+            // route add -net 10.10.99.0 netmask 255.255.255.0 gw 192.168.1.1
+            // route add default gw 192.168.1.1
+            
+            const isDefault = args.includes('default');
+            const isNet = args.includes('-net') || args.includes('10.10.99.0') || args.includes('10.10.99.0/24');
+            const gwIndex = args.indexOf('gw');
+            const gw = gwIndex !== -1 ? args[gwIndex + 1] : null;
+
+            if (gw === '192.168.1.1') {
+                if (isNet || isDefault) {
+                    if (!VFS['/var/run/route_fixed']) {
+                        VFS['/var/run/route_fixed'] = { type: 'file', content: 'TRUE' };
+                        const runDir = getNode('/var/run');
+                        if (runDir && runDir.type === 'dir' && !runDir.children.includes('route_fixed')) {
+                            runDir.children.push('route_fixed');
+                        }
+                        output = `[SUCCESS] Route added.\n[NETWORK] Connectivity to Black Site Uplink (10.10.99.0/24) restored.\nFLAG: GHOST_ROOT{R0UT1NG_T4BL3_F1X3D}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: NETWORK ROUTING.\x1b[0m`;
+                    } else {
+                        output = `SIOCADDRT: File exists`;
+                    }
+                } else {
+                     output = `route: invalid destination`;
+                }
+            } else {
+                output = `SIOCADDRT: Network is unreachable`;
+            }
+        } else {
+            output = `Usage: route [-n] [add] [-net|-host] target [gw Gw] [netmask Nm]`;
+        }
+        break;
     }
     case 'sed': {
        if (args.length < 1) {

@@ -5,6 +5,7 @@ export interface FileNode {
   type: 'file';
   content: string;
   permissions?: string;
+  xattrs?: Record<string, string>;
 }
 
 export interface DirNode {
