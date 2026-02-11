@@ -236,7 +236,19 @@ KEY_ID: GHOST_PROTOCOL_INIT_V2
   },
   '/home/ghost': {
     type: 'dir',
-    children: ['project_alpha', 'secrets', '.bash_history', 'wifi_note.txt', 'journal', 'evidence.jpg', 'surveillance.jpg', 'tools', 'tools.zip', 'capture.cap', 'drone_manual.txt', 'hashes.txt', 'wordlist.txt']
+    children: ['project_alpha', 'secrets', '.bash_history', 'wifi_note.txt', 'journal', 'evidence.jpg', 'surveillance.jpg', 'tools', 'tools.zip', 'capture.cap', 'drone_manual.txt', 'hashes.txt', 'wordlist.txt', 'operations']
+  },
+  '/home/ghost/operations': {
+    type: 'dir',
+    children: ['blackbox.enc', 'README.txt']
+  },
+  '/home/ghost/operations/blackbox.enc': {
+    type: 'file',
+    content: 'Salted__\x00\x00\x00\x00\x00\x00\x00\x00[ENCRYPTED_DATA_AES_256_CBC]'
+  },
+  '/home/ghost/operations/README.txt': {
+    type: 'file',
+    content: 'INTERCEPTED TRANSMISSION\n------------------------\nSource: Unknown\nEncryption: AES-256-CBC\n\nWe managed to get the file, but it is encrypted.\nIntel suggests the password is the name of our protocol (uppercase) followed by version 1.\nExample: PROTOCOL_NAME_V1\n\nUse: openssl enc -d -aes-256-cbc -in blackbox.enc -out decrypted.txt -k <password>'
   },
   '/home/ghost/tools': {
     type: 'dir',
@@ -753,6 +765,10 @@ Click here to claim your prize!
   '/lib/modules/5.15.0/kernel/drivers/cryptex.ko': {
       type: 'file',
       content: '\x7fELF\x02\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x3e\x00\x01\x00\x00\x00\x30\x05\x40\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00[MODULE_LICENSE: GPL]\n[MODULE_AUTHOR: Ghost]\n[MODULE_DESCRIPTION: Encrypted Vault Filesystem Driver]\n'
+  },
+  '/var/log/kernel.log': {
+    type: 'file',
+    content: '[    0.000000] Linux version 5.4.0-ghost (root@mainframe)\n[    0.123456] Command line: BOOT_IMAGE=/boot/vmlinuz root=/dev/sda1 ro\n[    1.234567] KERNEL_PANIC: VFS_MOUNT_ERROR_CODE_777\n[    1.234568] CPU: 0 PID: 1 Comm: init Not tainted 5.4.0-ghost #1\n'
   },
   '/var/lib/tor': {
       type: 'dir',

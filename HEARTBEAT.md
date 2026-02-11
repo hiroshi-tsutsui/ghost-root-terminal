@@ -197,7 +197,9 @@
   - [x] Cycle 28: "The Memory Leak" (Volatility / Memory Forensics).
   - [x] Cycle 29: "The Broken Archive" (Base64 Zip / File Recovery).
   - [x] Cycle 30: "The Hidden Binary" (Reverse Engineering / Strings).
-  - [ ] Cycle 31: (Pending).
+  - [x] Cycle 31: "The Encrypted Transmission" (OpenSSL Decryption).
+  - [x] Cycle 32: "The System Log" (Log Analysis / Grep).
+  - [ ] Cycle 33: (Pending).
   - [x] Fix: Restored `vercel` CLI (Global Install) & Fixed TypeScript Error in `Shell.ts`. (Status: DEPLOYED).
   - [x] Fix: Repaired "MISSION STATUS" UI layout (Added `flex` to sidebar). (Status: DEPLOYED).
   - [x] Fix: Prevent horizontal scrolling (Added `overflow-hidden` to main container). (Status: DEPLOYED).
