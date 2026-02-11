@@ -319,7 +319,7 @@ export interface CommandResult {
   data?: any;
 }
 
-const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'jobs', 'fg', 'bg', 'recover_data', 'ghost_update', 'git', 'file', 'openssl', 'beacon', 'fsck', 'docker', 'lsattr', 'chattr'];
+const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'jobs', 'fg', 'bg', 'recover_data', 'ghost_update', 'git', 'file', 'openssl', 'beacon', 'fsck', 'docker', 'lsattr', 'chattr', 'backup_service'];
 
 export interface MissionStatus {
   objectives: {
@@ -489,6 +489,16 @@ export const tabCompletion = (cwd: string, inputBuffer: string): { matches: stri
 };
 
 export const processCommand = (cwd: string, commandLine: string, stdin?: string): CommandResult => {
+  // Fix: Ensure .ssh is visible in home directory if it exists (Fixes localStorage persistence issue)
+  const ghostHome = getNode('/home/ghost');
+  if (ghostHome && ghostHome.type === 'dir' && !ghostHome.children.includes('.ssh')) {
+      if (VFS['/home/ghost/.ssh']) {
+          ghostHome.children.push('.ssh');
+          // Force save to persist the fix
+          saveSystemState();
+      }
+  }
+
   // Cycle 40 Init (Self-Healing)
   if (!VFS['/var/log/surveillance.log']) {
       VFS['/var/log/surveillance.log'] = { type: 'file', content: '[VIDEO FEED 09:12] Subject 452 accessed secure terminal.\n[AUDIO LOG] "They will never find the key in the .cache folder."\n[METADATA] ENCRYPTED_V2' };
@@ -663,6 +673,197 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
       };
       const certsDir = getNode('/etc/ssl/certs');
       if (certsDir && certsDir.type === 'dir' && !certsDir.children.includes('satellite.crt')) certsDir.children.push('satellite.crt');
+  }
+
+  // Cycle 47 Init (Docker Escape)
+  if (!VFS['/root/shadow_config.yml']) {
+      // Ensure /root exists
+      if (!VFS['/root']) {
+          VFS['/root'] = { type: 'dir', children: [] };
+          // Set restricted permissions
+          if (typeof window !== 'undefined') (VFS['/root'] as any).permissions = '0700'; 
+          else (VFS['/root'] as any).permissions = '0700';
+      }
+      // Create the target file
+      VFS['/root/shadow_config.yml'] = {
+          type: 'file',
+          content: 'SYSTEM_CONFIG_V2:\n  AUTH_BYPASS: DISABLED\n  ROOT_KEY: GHOST_ROOT{D0CK3R_PR1V_ESC}\n  DOOMSDAY_TIMER: ACTIVE'
+      };
+      const rootDir = getNode('/root');
+      if (rootDir && rootDir.type === 'dir' && !rootDir.children.includes('shadow_config.yml')) {
+          rootDir.children.push('shadow_config.yml');
+      }
+      // Ensure permissions on the file
+      (VFS['/root/shadow_config.yml'] as any).permissions = '0600';
+  }
+
+  // Cycle 48 Init (Shared Library Hijack)
+  if (!VFS['/opt/secret_libs/libcrypto.so.3']) {
+      // Create /opt/secret_libs
+      if (!VFS['/opt']) {
+          VFS['/opt'] = { type: 'dir', children: ['secret_libs'] };
+          const root = getNode('/');
+          if (root && root.type === 'dir' && !root.children.includes('opt')) root.children.push('opt');
+      } else {
+          const opt = getNode('/opt');
+          if (opt && opt.type === 'dir' && !opt.children.includes('secret_libs')) opt.children.push('secret_libs');
+      }
+      if (!VFS['/opt/secret_libs']) VFS['/opt/secret_libs'] = { type: 'dir', children: [] };
+
+      // Create Library
+      VFS['/opt/secret_libs/libcrypto.so.3'] = { type: 'file', content: '[ELF_SHARED_OBJ_V3]' };
+      const libDir = getNode('/opt/secret_libs');
+      if (libDir && libDir.type === 'dir' && !libDir.children.includes('libcrypto.so.3')) {
+          libDir.children.push('libcrypto.so.3');
+      }
+
+      // Create Binary
+      VFS['/usr/local/bin/decipher_v2'] = { 
+          type: 'file', 
+          content: '[BINARY_ELF_X86_64]\nDEPENDENCIES: libcrypto.so.3\nRPATH: $ORIGIN/../lib' 
+      };
+      const binDir = getNode('/usr/local/bin');
+      if (binDir && binDir.type === 'dir' && !binDir.children.includes('decipher_v2')) {
+          binDir.children.push('decipher_v2');
+      }
+  }
+
+  // Cycle 49 Init (Tar Wildcard Injection)
+  if (!VFS['/usr/local/bin/backup_service']) {
+      // Create backup directory
+      if (!VFS['/var/backups']) {
+          VFS['/var/backups'] = { type: 'dir', children: ['incoming'] };
+          const varNode = getNode('/var');
+          if (varNode && varNode.type === 'dir' && !varNode.children.includes('backups')) {
+              varNode.children.push('backups');
+          }
+      }
+      if (!VFS['/var/backups/incoming']) {
+          VFS['/var/backups/incoming'] = { type: 'dir', children: ['README.md'] };
+      }
+      
+      VFS['/var/backups/incoming/README.md'] = {
+          type: 'file',
+          content: 'BACKUP PROTOCOL V3\n------------------\nWARNING: All files in this directory are archived every minute.\nCOMMAND: cd /var/backups/incoming && tar -cf /dev/null *'
+      };
+
+      // Create Binary
+      VFS['/usr/local/bin/backup_service'] = {
+          type: 'file',
+          content: '[BINARY_ELF_X86_64] [ROOT_SUID]'
+      };
+      // Type casting for permissions
+      (VFS['/usr/local/bin/backup_service'] as any).permissions = '4755'; 
+
+      const binDir = getNode('/usr/local/bin');
+      if (binDir && binDir.type === 'dir' && !binDir.children.includes('backup_service')) {
+          binDir.children.push('backup_service');
+      }
+
+      // Create Flag
+      VFS['/root/wildcard_flag.txt'] = {
+          type: 'file',
+          content: 'GHOST_ROOT{W1LDC4RD_1NJ3CT10N_M4ST3R}'
+      };
+      (VFS['/root/wildcard_flag.txt'] as any).permissions = '0600';
+      const rootDir = getNode('/root');
+      if (rootDir && rootDir.type === 'dir' && !rootDir.children.includes('wildcard_flag.txt')) {
+          rootDir.children.push('wildcard_flag.txt');
+      }
+  }
+
+  // Cycle 50 Init (Buffer Overflow)
+  if (!VFS['/usr/bin/auth_daemon']) {
+      // Create binary
+      VFS['/usr/bin/auth_daemon'] = {
+          type: 'file',
+          content: '[BINARY_ELF_I386] [LEGACY_MODE] [VULNERABLE]'
+      };
+      (VFS['/usr/bin/auth_daemon'] as any).permissions = '0755';
+      const binDir = getNode('/usr/bin');
+      if (binDir && binDir.type === 'dir' && !binDir.children.includes('auth_daemon')) {
+          binDir.children.push('auth_daemon');
+      }
+
+      // Create Source Code
+      if (!VFS['/usr/src/legacy']) {
+          // ensure /usr/src exists
+           const usr = getNode('/usr');
+           if (usr && usr.type === 'dir' && !usr.children.includes('src')) {
+               usr.children.push('src');
+               if (!VFS['/usr/src']) VFS['/usr/src'] = { type: 'dir', children: [] };
+           }
+           
+           if (!VFS['/usr/src/legacy']) VFS['/usr/src/legacy'] = { type: 'dir', children: [] };
+           const src = getNode('/usr/src');
+           if (src && src.type === 'dir' && !src.children.includes('legacy')) src.children.push('legacy');
+      }
+      
+      VFS['/usr/src/legacy/auth_daemon.c'] = {
+          type: 'file',
+          content: `#include <stdio.h>
+#include <string.h>
+
+// LEGACY AUTHENTICATION MODULE (v1.0 - 1999)
+// DO NOT MODIFY WITHOUT AUTHORIZATION
+
+int main(int argc, char* argv[]) {
+    int admin_flag = 0;
+    char buffer[16];
+
+    printf("Enter password: ");
+    gets(buffer); // TODO: Replace with fgets
+
+    if (admin_flag != 0) {
+        printf("Access Granted! Flag: [REDACTED]\\n");
+        system("/bin/sh");
+    } else {
+        printf("Access Denied.\\n");
+    }
+    return 0;
+}`
+      };
+      const legDir = getNode('/usr/src/legacy');
+      if (legDir && legDir.type === 'dir' && !legDir.children.includes('auth_daemon.c')) {
+          legDir.children.push('auth_daemon.c');
+      }
+  }
+
+  // Cycle 51 Init (Kernel Module)
+  if (!VFS['/lib/modules/3.14.15/kernel/drivers/misc/backdoor.ko']) {
+      // Ensure /lib/modules path structure
+      const ensureDir = (p: string) => {
+          if (!VFS[p]) VFS[p] = { type: 'dir', children: [] };
+      };
+      ensureDir('/lib');
+      ensureDir('/lib/modules');
+      ensureDir('/lib/modules/3.14.15');
+      ensureDir('/lib/modules/3.14.15/kernel');
+      ensureDir('/lib/modules/3.14.15/kernel/drivers');
+      ensureDir('/lib/modules/3.14.15/kernel/drivers/misc');
+
+      // Link directories
+      const link = (p: string, c: string) => {
+          const n = getNode(p);
+          if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c);
+      };
+      link('/', 'lib');
+      link('/lib', 'modules');
+      link('/lib/modules', '3.14.15');
+      link('/lib/modules/3.14.15', 'kernel');
+      link('/lib/modules/3.14.15/kernel', 'drivers');
+      link('/lib/modules/3.14.15/kernel/drivers', 'misc');
+
+      // Create Module
+      VFS['/lib/modules/3.14.15/kernel/drivers/misc/backdoor.ko'] = {
+          type: 'file',
+          content: '[ELF_LKM_X86_64] [HIDDEN_MODULE] AUTHOR: GHOST_ROOT'
+      };
+      link('/lib/modules/3.14.15/kernel/drivers/misc', 'backdoor.ko');
+      
+      // Ensure /proc exists
+      ensureDir('/proc');
+      link('/', 'proc');
   }
 
   // 1. Handle Piping (|) recursively
@@ -868,6 +1069,23 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
                       }
                   }
                   return { output, newCwd, action: 'delay' };
+              } else if (fileName === 'auth_daemon') {
+                  if (stdin && stdin.length > 16) {
+                     output = `Enter password: ${stdin}\n[MEMORY CORRUPTION DETECTED]\n[DEBUG] admin_flag overwritten: 0x${Math.floor(Math.random()*0xFFFFFFFF).toString(16)}\n\nAccess Granted! Flag: GHOST_ROOT{B0F_OV3RFL0W_K1NG}\n\n[SHELL] Spawning root shell...\n#`;
+                     if (!VFS['/var/run/bof_solved']) {
+                         VFS['/var/run/bof_solved'] = { type: 'file', content: 'TRUE' };
+                         const runDir = getNode('/var/run');
+                         if (runDir && runDir.type === 'dir' && !runDir.children.includes('bof_solved')) {
+                             runDir.children.push('bof_solved');
+                         }
+                         output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: BUFFER OVERFLOW EXPLOITED.\x1b[0m`;
+                     }
+                     return { output, newCwd: '/root', newPrompt: 'root@ghost-root#', action: 'delay' };
+                  } else {
+                     output = `Enter password: ${stdin || ''}\nAccess Denied.`;
+                     if (!stdin) output += `\n(Hint: Program expects input via pipe or redirection)`;
+                     return { output, newCwd, action: 'delay' };
+                  }
               } else if (fileName === 'otp_gen' || fileName === 'auth_token') {
                   const now = Date.now() + SYSTEM_TIME_OFFSET;
                   const year = new Date(now).getFullYear();
@@ -988,6 +1206,33 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
   }
 
   switch (command) {
+    case 'auth_daemon': {
+        if (stdin && stdin.length > 16) {
+           output = `Enter password: ${stdin}\n[MEMORY CORRUPTION DETECTED]\n[DEBUG] admin_flag overwritten: 0x${Math.floor(Math.random()*0xFFFFFFFF).toString(16)}\n\nAccess Granted! Flag: GHOST_ROOT{B0F_OV3RFL0W_K1NG}\n\n[SHELL] Spawning root shell...\n#`;
+           if (!VFS['/var/run/bof_solved']) {
+               VFS['/var/run/bof_solved'] = { type: 'file', content: 'TRUE' };
+               const runDir = getNode('/var/run');
+               if (runDir && runDir.type === 'dir' && !runDir.children.includes('bof_solved')) {
+                   runDir.children.push('bof_solved');
+               }
+               output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: BUFFER OVERFLOW EXPLOITED.\x1b[0m`;
+           }
+           return { output, newCwd: '/root', newPrompt: 'root@ghost-root#', action: 'delay' };
+        } else {
+           output = `Enter password: ${stdin || ''}\nAccess Denied.`;
+           if (!stdin) output += `\n(Hint: Program expects input via pipe or redirection)`;
+           return { output, newCwd, action: 'delay' };
+        }
+        break;
+    }
+    case 'gcc': {
+        if (args.length < 1) {
+            output = 'gcc: fatal error: no input files\ncompilation terminated.';
+        } else {
+            output = `gcc: ${args.join(' ')}: Linker error (missing libraries). Simulation mode: Binary already exists.`;
+        }
+        break;
+    }
     case 'passwd': {
         const isRoot = !!getNode('/tmp/.root_session');
         const user = args[0] || 'ghost';
@@ -1432,6 +1677,59 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
           output = `Shutdown scheduled for ${date.toUTCString()}, use 'shutdown -c' to cancel.`;
       }
       break;
+    }
+    case 'export': {
+        if (args.length === 0) {
+            output = Object.entries(ENV_VARS).map(([k, v]) => `declare -x ${k}="${v}"`).join('\n');
+        } else {
+            const fullArg = args.join(' ');
+            if (fullArg.includes('=')) {
+                const eqIndex = fullArg.indexOf('=');
+                const key = fullArg.substring(0, eqIndex).trim();
+                let val = fullArg.substring(eqIndex + 1).trim();
+                
+                // Remove quotes
+                if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+                    val = val.slice(1, -1);
+                }
+                
+                ENV_VARS[key] = val;
+                output = ''; // Silent success
+            } else {
+                // export VAR (promotes local var to env - simplified: just ignore or set empty)
+                // For now, assume user meant VAR=
+            }
+        }
+        break;
+    }
+    case 'env':
+    case 'printenv': {
+        if (args.length > 0 && command === 'printenv') {
+            const key = args[0];
+            output = ENV_VARS[key] || '';
+        } else {
+            output = Object.entries(ENV_VARS).map(([k, v]) => `${k}=${v}`).join('\n');
+        }
+        break;
+    }
+    case 'decipher_v2': {
+        // Cycle 48 Puzzle: Shared Library Hijack
+        const ldPath = ENV_VARS['LD_LIBRARY_PATH'] || '';
+        if (ldPath.includes('/opt/secret_libs')) {
+             if (!VFS['/var/run/ld_path_solved']) {
+                 VFS['/var/run/ld_path_solved'] = { type: 'file', content: 'TRUE' };
+                 const runDir = getNode('/var/run');
+                 if (runDir && runDir.type === 'dir' && !runDir.children.includes('ld_path_solved')) {
+                     runDir.children.push('ld_path_solved');
+                 }
+                 output = `[DECIPHER_V2] Loading libraries... OK\n[DECIPHER_V2] Key Found: libcrypto.so.3\n[DECIPHER_V2] Decrypting Payload...\n\nFLAG: GHOST_ROOT{LD_PR3L0AD_M4ST3R}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SHARED LIBRARY HIJACKED.\x1b[0m`;
+             } else {
+                 output = `[DECIPHER_V2] Loading libraries... OK\nFLAG: GHOST_ROOT{LD_PR3L0AD_M4ST3R}`;
+             }
+        } else {
+             output = `decipher_v2: error while loading shared libraries: libcrypto.so.3: cannot open shared object file: No such file or directory`;
+        }
+        break;
     }
     case 'alias': {
         if (args.length === 0) {
@@ -1926,6 +2224,64 @@ ACCEPT     all  --  anywhere             anywhere`;
         }
         break;
     }
+    case 'backup_service': {
+        output = '[SYSTEM] Starting Backup Service (PID: 7777)...\n[BACKUP] Processing /var/backups/incoming...\n';
+        
+        const incomingPath = '/var/backups/incoming';
+        const incomingNode = getNode(incomingPath);
+        
+        if (!incomingNode || incomingNode.type !== 'dir') {
+            output += '[ERROR] Backup directory missing.';
+            return { output, newCwd, action: 'delay' };
+        }
+
+        const files = incomingNode.children;
+        output += `[BACKUP] Found ${files.length} files.\n`;
+        
+        // Check for Wildcard Injection
+        // We look for strict filenames that tar interprets as flags
+        const checkpoint = files.find(f => f === '--checkpoint=1');
+        const actionFile = files.find(f => f.startsWith('--checkpoint-action=exec='));
+        
+        if (checkpoint && actionFile) {
+            output += `[TAR] --checkpoint=1 detected.\n`;
+            const cmd = actionFile.split('=')[2]; // exec=sh exploit.sh -> sh exploit.sh
+            output += `[TAR] Executing checkpoint action: ${cmd}\n`;
+            
+            if (cmd.startsWith('sh')) {
+                const scriptName = cmd.split(' ')[1];
+                if (files.includes(scriptName)) {
+                     const scriptNode = getNode(`${incomingPath}/${scriptName}`);
+                     if (scriptNode && scriptNode.type === 'file') {
+                         output += `[SHELL] Executing ${scriptName}...\n`;
+                         const scriptContent = scriptNode.content;
+                         
+                         // Check if the script attempts to read the flag
+                         if (scriptContent.includes('cat /root/wildcard_flag.txt') || scriptContent.includes('cp /root/wildcard_flag.txt')) {
+                             output += `[OUTPUT] GHOST_ROOT{W1LDC4RD_1NJ3CT10N_M4ST3R}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: WILDCARD INJECTION.\x1b[0m`;
+                             
+                             if (!VFS['/var/run/wildcard_solved']) {
+                                 VFS['/var/run/wildcard_solved'] = { type: 'file', content: 'TRUE' };
+                                 const runDir = getNode('/var/run');
+                                 if (runDir && runDir.type === 'dir' && !runDir.children.includes('wildcard_solved')) {
+                                     runDir.children.push('wildcard_solved');
+                                 }
+                             }
+                         } else {
+                             output += `[OUTPUT] (Script executed but did not target the flag. Check path: /root/wildcard_flag.txt)`;
+                         }
+                     }
+                } else {
+                    output += `[ERROR] Script ${scriptName} not found.`;
+                }
+            } else {
+                 output += `[ERROR] Checkpoint action must use 'sh'.`;
+            }
+        } else {
+            output += `[BACKUP] Archiving to /dev/null... Done.`;
+        }
+        return { output, newCwd, action: 'delay' };
+    }
     case 'export': {
         if (args.length < 1) {
             output = 'usage: export VAR=VALUE';
@@ -2380,6 +2736,7 @@ Type "status" for mission objectives.`;
         const hosts: Record<string, string> = {
             'black-site.remote': '10.10.99.1',
             '10.10.99.1': '10.10.99.1',
+            '192.168.1.99': '10.10.99.1', // Redirect to Black Site logic
             'admin-pc': '192.168.1.5',
             '192.168.1.5': '192.168.1.5',
             'backup-server': '192.168.1.50',
@@ -6074,9 +6431,142 @@ postgres            14-alpine 1234567890ab   5 days ago     214MB`;
                  output = `Error: No such container: ${id}`;
              }
         } else if (subcmd === 'run') {
-             output = 'docker: Error response from daemon: Resource quota exceeded.';
+             // docker run -v /:/mnt -it alpine cat /mnt/root/shadow_config.yml
+            const vIndex = args.indexOf('-v');
+            const imageIndex = args.findIndex(a => ['alpine', 'ubuntu', 'secure-vault', 'busybox', 'ghost-relay'].some(img => a.includes(img)));
+            
+            if (imageIndex === -1) {
+                output = 'docker run: requires a valid image (alpine, ubuntu, secure-vault, ghost-relay)';
+            } else {
+                let mountSource = '';
+                let mountTarget = '';
+                
+                if (vIndex !== -1 && args[vIndex + 1]) {
+                    const mountParts = args[vIndex + 1].split(':');
+                    if (mountParts.length >= 2) {
+                        mountSource = mountParts[0];
+                        mountTarget = mountParts[1];
+                    }
+                }
+
+                const commandToRun = args.slice(imageIndex + 1);
+                
+                if (commandToRun.length > 0) {
+                    const cmd = commandToRun[0];
+                    const cmdArgs = commandToRun.slice(1);
+                    
+                    if (cmd === 'cat') {
+                        const targetFile = cmdArgs[0];
+                        let resolvedPath = targetFile;
+                        
+                        // Volume Mapping Logic
+                        if (mountSource === '/' && targetFile.startsWith(mountTarget)) {
+                            // Strip mount target prefix to get host path
+                            const relativePath = targetFile.substring(mountTarget.length);
+                            resolvedPath = relativePath.startsWith('/') ? relativePath : '/' + relativePath;
+                            
+                            // Check host VFS
+                            const node = getNode(resolvedPath);
+                            if (node && node.type === 'file') {
+                                output = node.content;
+                                
+                                // Specific Puzzle Flag
+                                if (resolvedPath === '/root/shadow_config.yml') {
+                                     if (!VFS['/var/run/docker_esc_solved']) {
+                                         VFS['/var/run/docker_esc_solved'] = { type: 'file', content: 'TRUE' };
+                                         const runDir = getNode('/var/run');
+                                         if (runDir && runDir.type === 'dir' && !runDir.children.includes('docker_esc_solved')) {
+                                             runDir.children.push('docker_esc_solved');
+                                         }
+                                         output += '\n\x1b[1;32m[MISSION UPDATE] Objective Complete: DOCKER ESCAPE (PRIVILEGE ESCALATION).\x1b[0m';
+                                     }
+                                }
+                            } else {
+                                output = `cat: ${targetFile}: No such file or directory`;
+                            }
+                        } else {
+                            output = `cat: ${targetFile}: No such file or directory (Container FS is empty)`;
+                        }
+                    } else if (['/bin/bash', '/bin/sh', 'bash', 'sh'].includes(cmd)) {
+                         output = `root@container:/# `;
+                         return { output, newCwd: '/', newPrompt: 'root@container:/# ', action: 'delay' };
+                    } else {
+                         output = `docker: executable file not found in $PATH: ${cmd}`;
+                    }
+                } else {
+                    // Interactive Shell Default
+                    output = `root@container:/# `;
+                    return { output, newCwd: '/', newPrompt: 'root@container:/# ', action: 'delay' };
+                }
+            }
         } else {
              output = `docker: '${subcmd}' is not a docker command.`;
+        }
+        break;
+    }
+    case 'lsmod': {
+        let out = 'Module                  Size  Used by\n';
+        out += 'iptable_filter         12810  1\n';
+        out += 'ip_tables              27126  1 iptable_filter\n';
+        out += 'x_tables               29641  1 ip_tables\n';
+        if (VFS['/proc/backdoor']) {
+            out += 'backdoor               13370  0\n';
+        }
+        output = out;
+        break;
+    }
+    case 'insmod': {
+        if (args.length < 1) {
+            output = 'insmod: usage: insmod <module_file>';
+        } else {
+            const fileTarget = args[0];
+            const filePath = resolvePath(cwd, fileTarget);
+            const node = getNode(filePath);
+            
+            if (!node) {
+                output = `insmod: ERROR: could not insert module ${fileTarget}: No such file or directory`;
+            } else if (node.type !== 'file') {
+                 output = `insmod: ERROR: could not insert module ${fileTarget}: Not a file`;
+            } else if (!filePath.endsWith('.ko')) {
+                 output = `insmod: ERROR: could not insert module ${fileTarget}: Invalid module format`;
+            } else if (filePath.includes('backdoor.ko')) {
+                 if (VFS['/proc/backdoor']) {
+                     output = `insmod: ERROR: could not insert module ${fileTarget}: Module already loaded`;
+                 } else {
+                     VFS['/proc/backdoor'] = { type: 'file', content: 'GHOST_ROOT{K3RN3L_M0DUL3_H4CK}\n' };
+                     const proc = getNode('/proc');
+                     if (proc && proc.type === 'dir' && !proc.children.includes('backdoor')) {
+                         proc.children.push('backdoor');
+                     }
+                     output = '\n\x1b[1;32m[MISSION UPDATE] Objective Complete: KERNEL MODULE BACKDOOR.\x1b[0m';
+                 }
+            } else {
+                 output = `insmod: ERROR: could not insert module ${fileTarget}: Operation not permitted`;
+            }
+        }
+        break;
+    }
+    case 'rmmod': {
+        if (args.length < 1) {
+            output = 'rmmod: usage: rmmod <module_name>';
+        } else {
+            const modName = args[0];
+            if (modName === 'backdoor') {
+                if (VFS['/proc/backdoor']) {
+                    delete VFS['/proc/backdoor'];
+                    const proc = getNode('/proc');
+                    if (proc && proc.type === 'dir') {
+                        proc.children = proc.children.filter(c => c !== 'backdoor');
+                    }
+                    output = ''; // Silent success
+                } else {
+                    output = `rmmod: ERROR: Module ${modName} is not currently loaded`;
+                }
+            } else if (['iptable_filter', 'ip_tables', 'x_tables'].includes(modName)) {
+                output = `rmmod: ERROR: Module ${modName} is in use`;
+            } else {
+                output = `rmmod: ERROR: Module ${modName} is not currently loaded`;
+            }
         }
         break;
     }
