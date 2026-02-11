@@ -3475,8 +3475,10 @@ The key's randomart image is:
                    output = `tar: ${archiveName}: Cannot open: No such file or directory`;
                } else if (node.type === 'dir') {
                    output = `tar: ${archiveName}: Is a directory`;
+               } else if (node.type === 'symlink') {
+                   output = `tar: ${archiveName}: Is a symbolic link`;
                } else {
-                   const content = node.content;
+                   const content = (node as any).content;
                    if (content.startsWith('TAR_V1:')) {
                        const payload = content.substring(7);
                        const matches = payload.match(/\{([^:]+):([^}]+)\}/g);
