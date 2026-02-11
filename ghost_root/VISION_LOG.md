@@ -175,10 +175,17 @@ This file tracks the development cycles of the `ghost_root` project under the ne
 > LORE: A rogue miner is running, but its log file was deleted to hide tracks. The file descriptor is still open.
 > SOLUTION: `lsof` (find PID 555, FD 3 deleted) -> `cp /proc/555/fd/3 recovered.log` -> `cat recovered.log` -> Flag recovered.
 
-
 [2026-02-11 14:45]
 > CHANGES: ghost_root/web/lib/Shell.ts, ghost_root/web/lib/VFS.ts
 > PUZZLE ADDED: "The Environment Variable" (env / export / printenv).
 > MECHANICS: Added `uplink_connect` command that checks `ENV_VARS`. Added `/etc/uplink.conf` hint file.
 > LORE: The satellite uplink protocol requires a session key (`UPLINK_KEY`) to be set in the environment, preventing accidental transmission.
 > SOLUTION: `uplink_connect` (fails) -> `cat /etc/uplink.conf` (read instructions) -> `export UPLINK_KEY=XJ9-SAT-442` -> `uplink_connect` (success).
+
+[2026-02-11 15:00]
+> CHANGES: ghost_root/web/lib/VFS.ts
+> FIX: "The Hidden Service" Bug (Missing VFS Node).
+> PROBLEM: User reported `/etc/tor/torrc` was listed in directory but unreadable (node missing).
+> CAUSE: Content was erroneously assigned to `/etc/cron.hourly` in VFS definition.
+> SOLUTION: Restored `/etc/tor/torrc` node with correct content. Cleaned up `/etc/cron.hourly`.
+> STATUS: DEPLOYED.

@@ -339,6 +339,10 @@ exit`
     type: 'dir',
     children: ['torrc']
   },
+  '/etc/tor/torrc': {
+    type: 'file',
+    content: 'HiddenServiceDir /var/lib/tor/hidden_service/\nInvalidPort 80 127.0.0.1:80'
+  },
   '/etc/cron.daily': {
     type: 'dir',
     children: ['logrotate', 'maintenance', 'man-db']
@@ -362,7 +366,7 @@ fi
   },
   '/etc/cron.hourly': {
     type: 'file',
-    content: 'HiddenServiceDir /var/lib/tor/hidden_service/\nInvalidPort 80 127.0.0.1:80'
+    content: '# Hourly cron jobs placeholder\n# This file is intentionally empty.\n'
   },
   '/etc/passwd': {
       type: 'file',
