@@ -266,6 +266,11 @@ KEY_ID: GHOST_PROTOCOL_INIT_V2
     type: 'file',
     content: 'BEACON PROTOCOL v1.0\n--------------------\nOur field agents use a "dead drop" signal to transmit data safely.\nThe binary is \'/bin/beacon\' (simulated, just type "beacon").\n\nINSTRUCTIONS:\n1. The beacon transmits to localhost port 4444.\n2. It retries indefinitely until a connection is made.\n3. You must set up a listener (\'nc -l 4444\') to catch the payload.\n\nWARNING: The beacon process must be active while you listen.\n(Hint: Use \'&\' to run it in the background).'
   },
+  '/home/ghost/run_loop.sh': {
+    type: 'file',
+    content: '#!/bin/bash\n\nwhile true; do\n  echo "Running..."\n  sleep 1\ndone',
+    permissions: '755'
+  },
   '/home/ghost/tools': {
     type: 'dir',
     children: ['signal_decoder.sh']

@@ -1,7 +1,8 @@
 
-[2026-02-11 20:30]
+[2026-02-11 21:00]
 > CHANGES: ghost_root/web/lib/VFS.ts
-> PUZZLE ADDED: "The Encrypted Blueprint" (OpenSSL / Ransomware).
-> MECHANICS: Added `/home/dr_akira/project_chimera/blueprint_final.enc` (encrypted with AES-256).
-> LORE: The final blueprint was encrypted by ransomware. A ransom note (`/home/dr_akira/RANSOM_NOTE.txt`) hints that the key is the "creation date of the project" (YYYYMMDD).
-> SOLUTION: `cat RANSOM_NOTE.txt` (Hint: 2024-01-15) -> `openssl enc -d -aes-256-cbc -in blueprint_final.enc -out blueprint.txt -k 20240115` -> Flag recovered.
+> PUZZLE ADDED: "The Infinite Loop" (Script Debugging / Kill).
+> MECHANICS: Added `/home/ghost/run_loop.sh`.
+> LORE: A script is stuck in an infinite loop, consuming CPU.
+> SOLUTION: `./run_loop.sh` (hangs) -> `Ctrl+C` -> `sed` to fix logic or just `rm`.
+> NOTE: Since we can't easily simulate Ctrl+C interrupting a blocking JS function in this architecture, we'll make it a background job that respawns unless the source is fixed.
