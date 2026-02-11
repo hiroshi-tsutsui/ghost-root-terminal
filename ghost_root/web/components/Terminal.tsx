@@ -3,7 +3,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Terminal } from '@xterm/xterm';
 import { FitAddon } from '@xterm/addon-fit';
-import { processCommand, tabCompletion, getMissionStatus, MissionStatus } from '../lib/Shell';
+import { processCommand, tabCompletion, getMissionStatus, MissionStatus, loadSystemState } from '../lib/Shell';
 import VFS from '../lib/VFS';
 import '@xterm/xterm/css/xterm.css';
 
@@ -74,6 +74,8 @@ const WebTerminal = () => {
   const prevProgressRef = useRef<number | null>(null);
 
   useEffect(() => {
+      // Hydrate state from localStorage
+      loadSystemState();
       setMission(getMissionStatus());
   }, []);
 

@@ -937,4 +937,6 @@ Do not attempt to fix it unless the alert level is 0.
   },
 };
 
+export const initialVFS = JSON.parse(JSON.stringify(VFS)); // Deep copy for reset
+
 export default VFS;

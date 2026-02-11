@@ -1,11 +1,15 @@
 // Shell.ts - Command processing logic
 // Decoupled from Ink/React for reusability
 
-import VFS, { VFSNode } from './VFS';
+import VFS, { VFSNode, initialVFS } from './VFS';
 
 const C_BLUE = '\x1b[1;34m';
 const C_CYAN = '\x1b[1;36m';
 const C_RESET = '\x1b[0m';
+
+// Persistence Keys
+const STORAGE_KEY_VFS = 'ghost_root_vfs_v1';
+const STORAGE_KEY_SHELL = 'ghost_root_shell_v1';
 
 const ALIASES: Record<string, string> = {
   'l': 'ls -la',
@@ -32,6 +36,93 @@ let ALERT_LEVEL = 0;
 let SYSTEM_TIME_OFFSET = -824900000000; // Set system time to ~1999 (Y2K glitch)
 
 const LOADED_MODULES: string[] = [];
+
+// ... [Existing Job/Process interfaces and initial arrays] ...
+
+// Helper to save state
+export const saveSystemState = () => {
+    if (typeof window === 'undefined') return;
+    
+    // Save VFS
+    try {
+        localStorage.setItem(STORAGE_KEY_VFS, JSON.stringify(VFS));
+    } catch (e) {
+        console.error('Failed to save VFS', e);
+    }
+
+    // Save Shell State
+    const shellState = {
+        ALIASES,
+        ENV_VARS,
+        ALERT_LEVEL,
+        SYSTEM_TIME_OFFSET,
+        LOADED_MODULES,
+        // Processes and Jobs are volatile (memory only), so we don't save them.
+        // History is saved separately in VFS (.bash_history)
+    };
+    try {
+        localStorage.setItem(STORAGE_KEY_SHELL, JSON.stringify(shellState));
+    } catch (e) {
+        console.error('Failed to save Shell State', e);
+    }
+};
+
+// Helper to load state
+export const loadSystemState = () => {
+    if (typeof window === 'undefined') return;
+
+    // Load VFS
+    const savedVFS = localStorage.getItem(STORAGE_KEY_VFS);
+    if (savedVFS) {
+        try {
+            const parsed = JSON.parse(savedVFS);
+            // Clear current VFS keys
+            for (const key in VFS) delete VFS[key];
+            // Apply saved keys
+            Object.assign(VFS, parsed);
+        } catch (e) {
+            console.error('Failed to load VFS', e);
+        }
+    }
+
+    // Load Shell State
+    const savedShell = localStorage.getItem(STORAGE_KEY_SHELL);
+    if (savedShell) {
+        try {
+            const parsed = JSON.parse(savedShell);
+            if (parsed.ALIASES) Object.assign(ALIASES, parsed.ALIASES);
+            if (parsed.ENV_VARS) Object.assign(ENV_VARS, parsed.ENV_VARS);
+            if (parsed.ALERT_LEVEL !== undefined) ALERT_LEVEL = parsed.ALERT_LEVEL;
+            if (parsed.SYSTEM_TIME_OFFSET !== undefined) SYSTEM_TIME_OFFSET = parsed.SYSTEM_TIME_OFFSET;
+            if (parsed.LOADED_MODULES) {
+                LOADED_MODULES.length = 0;
+                LOADED_MODULES.push(...parsed.LOADED_MODULES);
+            }
+        } catch (e) {
+            console.error('Failed to load Shell State', e);
+        }
+    }
+};
+
+// Helper to reset state
+export const resetSystemState = () => {
+    if (typeof window === 'undefined') return;
+    
+    localStorage.removeItem(STORAGE_KEY_VFS);
+    localStorage.removeItem(STORAGE_KEY_SHELL);
+    
+    // Reset VFS to initial
+    for (const key in VFS) delete VFS[key];
+    Object.assign(VFS, JSON.parse(JSON.stringify(initialVFS)));
+    
+    // Reset Shell variables (simplified, ideally we'd have initial consts for these too)
+    ALERT_LEVEL = 0;
+    SYSTEM_TIME_OFFSET = -824900000000;
+    LOADED_MODULES.length = 0;
+    // ENV_VARS and ALIASES could be reset if we stored their initial copies, 
+    // but for now reloading the page after clearing localStorage is easiest.
+    window.location.reload();
+};
 
 interface Job {
   id: number;
@@ -433,6 +524,9 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
   }
 
   const finalize = (out: string, nCwd: string, act?: any, dat?: any, prompt?: string): CommandResult => {
+      // Auto-save on every command completion
+      saveSystemState();
+
       if (redirectFile && out) {
           const filePath = resolvePath(cwd, redirectFile);
           
@@ -2177,6 +2271,16 @@ Type "status" for mission objectives.`;
                     output = `git: '${subcmd}' is not a git command.`;
                 }
             }
+        }
+        break;
+    }
+    case 'reset': {
+        if (args[0] === '--hard') {
+            output = 'System Factory Reset Initiated...\nClearing persistence...\nRebooting...';
+            resetSystemState();
+            return { output, newCwd, action: 'kernel_panic' };
+        } else {
+            output = 'usage: reset --hard\n(WARNING: This will wipe all progress and files)';
         }
         break;
     }
