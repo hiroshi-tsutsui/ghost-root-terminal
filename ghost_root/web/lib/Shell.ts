@@ -636,6 +636,35 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
       }
   }
 
+  // Cycle 46 Init (SSL Certificate Expiry)
+  if (!VFS['/etc/ssl/private/satellite.key']) {
+      // Create dirs
+      if (!VFS['/etc/ssl']) {
+          VFS['/etc/ssl'] = { type: 'dir', children: ['private', 'certs'] };
+          const etc = getNode('/etc');
+          if (etc && etc.type === 'dir' && !etc.children.includes('ssl')) etc.children.push('ssl');
+      }
+      if (!VFS['/etc/ssl/private']) VFS['/etc/ssl/private'] = { type: 'dir', children: [] };
+      if (!VFS['/etc/ssl/certs']) VFS['/etc/ssl/certs'] = { type: 'dir', children: [] };
+
+      // Create Key
+      VFS['/etc/ssl/private/satellite.key'] = { 
+          type: 'file', 
+          content: '-----BEGIN RSA PRIVATE KEY-----\nKEY_ID: OMEGA_SAT_LINK\n-----END RSA PRIVATE KEY-----' 
+      };
+      (VFS['/etc/ssl/private/satellite.key'] as any).permissions = '0600';
+      const privDir = getNode('/etc/ssl/private');
+      if (privDir && privDir.type === 'dir' && !privDir.children.includes('satellite.key')) privDir.children.push('satellite.key');
+
+      // Create Expired Cert
+      VFS['/etc/ssl/certs/satellite.crt'] = { 
+          type: 'file', 
+          content: '[CERT] ISSUER: OMEGA | EXPIRY: 1999-12-31 | [EXPIRED]' 
+      };
+      const certsDir = getNode('/etc/ssl/certs');
+      if (certsDir && certsDir.type === 'dir' && !certsDir.children.includes('satellite.crt')) certsDir.children.push('satellite.crt');
+  }
+
   // 1. Handle Piping (|) recursively
   const segments = splitPipeline(commandLine);
   if (segments.length > 1) {
@@ -4503,6 +4532,110 @@ The key's randomart image is:
         const subcmd = args[0];
         if (!subcmd || args.includes('help')) {
             output = 'OpenSSL 1.1.1f  31 Mar 2020\nusage: openssl command [command-opts] [command-args]\n\nStandard commands\nenc\nreq\nx509\ngenrsa';
+        } else if (subcmd === 'req') {
+            if (args.includes('-new') && args.includes('-key') && args.includes('-out')) {
+                const keyIndex = args.indexOf('-key') + 1;
+                const outIndex = args.indexOf('-out') + 1;
+                const keyFile = args[keyIndex];
+                const outFile = args[outIndex];
+                
+                const keyNode = getNode(resolvePath(cwd, keyFile));
+                if (!keyNode) {
+                    output = `openssl: ${keyFile}: No such file or directory`;
+                } else if (keyNode.type !== 'file' || !keyNode.content.includes('RSA PRIVATE KEY')) {
+                    output = `openssl: ${keyFile}: Not a valid private key`;
+                } else {
+                    // Check permissions (just warn)
+                    const perms = (keyNode as any).permissions || '0644';
+                    if (perms !== '0600') {
+                        // Warn but proceed? No, let's just proceed.
+                    }
+                    
+                    // Generate CSR
+                    output = `Generating a 2048 bit RSA private key...
+................................+++
+................+++
+writing new private key to '${keyFile}'
+-----
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+-----
+Country Name (2 letter code) [AU]: JP
+State or Province Name (full name) [Some-State]: Tokyo
+Locality Name (eg, city) []: Shibuya
+Organization Name (eg, company) [Internet Widgits Pty Ltd]: Project Omega
+Organizational Unit Name (eg, section) []: SatOps
+Common Name (e.g. server FQDN or YOUR name) []: satellite.omega.net
+Email Address []: admin@omega.net
+
+Please enter the following 'extra' attributes
+to be sent with your certificate request
+A challenge password []: 
+An optional company name []: 
+`;
+                    const outPath = resolvePath(cwd, outFile);
+                    const parent = getNode(cwd);
+                    if (parent && parent.type === 'dir') {
+                        VFS[outPath] = {
+                            type: 'file',
+                            content: `CSR_V1:[REQUEST_DATA]...[SIGNATURE]...`
+                        };
+                        const fName = outPath.substring(outPath.lastIndexOf('/') + 1);
+                        if (!parent.children.includes(fName)) parent.children.push(fName);
+                    }
+                }
+            } else {
+                output = 'usage: openssl req -new -key <keyfile> -out <output>';
+            }
+        } else if (subcmd === 'x509') {
+            if (args.includes('-req') && args.includes('-in') && args.includes('-signkey') && args.includes('-out')) {
+                const inIndex = args.indexOf('-in') + 1;
+                const keyIndex = args.indexOf('-signkey') + 1;
+                const outIndex = args.indexOf('-out') + 1;
+                
+                const inFile = args[inIndex];
+                const keyFile = args[keyIndex];
+                const outFile = args[outIndex];
+                
+                const csrNode = getNode(resolvePath(cwd, inFile));
+                const keyNode = getNode(resolvePath(cwd, keyFile));
+                
+                if (!csrNode || !keyNode) {
+                    output = `openssl: Error opening input files`;
+                } else {
+                    output = `Signature ok\nsubject=/C=JP/ST=Tokyo/L=Shibuya/O=Project Omega/OU=SatOps/CN=satellite.omega.net/emailAddress=admin@omega.net\nGetting Private key`;
+                    
+                    const outPath = resolvePath(cwd, outFile);
+                    const parent = getNode(outPath.substring(0, outPath.lastIndexOf('/')) || '/');
+                    
+                    if (parent && parent.type === 'dir') {
+                        VFS[outPath] = {
+                            type: 'file',
+                            content: '[CERT] ISSUER: OMEGA | EXPIRY: 2030-12-31 | [VALID]'
+                        };
+                        const fName = outPath.substring(outPath.lastIndexOf('/') + 1);
+                        if (!parent.children.includes(fName)) parent.children.push(fName);
+
+                        // Mission Update (Cycle 46)
+                        if (!VFS['/var/run/ssl_solved']) {
+                            VFS['/var/run/ssl_solved'] = { type: 'file', content: 'TRUE' };
+                            const runDir = getNode('/var/run');
+                            if (runDir && runDir.type === 'dir' && !runDir.children.includes('ssl_solved')) {
+                                runDir.children.push('ssl_solved');
+                            }
+                            output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SSL CERTIFICATE RENEWED.\x1b[0m`;
+                        }
+                    } else {
+                        output = `openssl: ${outFile}: No such file or directory`;
+                    }
+                }
+            } else {
+                output = 'usage: openssl x509 -req -in <csrfile> -signkey <keyfile> -out <crtfile>';
+            }
         } else if (subcmd === 'enc') {
             const hasDecrypt = args.includes('-d');
             const cipher = args.find(a => a.startsWith('-aes-') || a === '-bf');
@@ -4883,6 +5016,18 @@ ${validUnits.length} loaded units listed.`;
                   output = 'usage: sat connect <id>';
               } else {
                   const id = args[1];
+                  
+                  // SSL Check for OMEG (Cycle 46)
+                  if (id === 'OMEG') {
+                      const certPath = '/etc/ssl/certs/satellite.crt';
+                      const certNode = getNode(certPath);
+                      
+                      if (!certNode || certNode.type !== 'file' || certNode.content.includes('[EXPIRED]')) {
+                          output = `[ERROR] SAT_LINK_V4: SSL Handshake Failed.\n[REASON] Certificate Expired (Issuer: OMEGA | Expiry: 1999-12-31).\n[HINT] Renew certificate using 'openssl req' and 'openssl x509'.`;
+                          return { output, newCwd, action: 'delay' };
+                      }
+                  }
+
                   if (['KH-11', 'COSM', 'BLK', 'OMEG'].includes(id)) {
                       if (runDir && runDir.type === 'dir') {
                           VFS['/var/run/sat_link.pid'] = { type: 'file', content: id };
