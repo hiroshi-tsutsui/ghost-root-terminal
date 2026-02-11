@@ -205,7 +205,7 @@ export interface CommandResult {
   data?: any;
 }
 
-const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'jobs', 'fg', 'bg', 'recover_data', 'ghost_update'];
+const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'jobs', 'fg', 'bg', 'recover_data', 'ghost_update', 'git'];
 
 export interface MissionStatus {
   objectives: {
@@ -2138,6 +2138,47 @@ Type "status" for mission objectives.`;
            }
        }
        break;
+    }
+    case 'git': {
+        if (args.length < 1) {
+            output = 'usage: git <command> [<args>]';
+        } else {
+            const subcmd = args[0];
+            const gitDir = resolvePath(cwd, '.git');
+            const hasGit = getNode(gitDir) || (cwd.includes('project_alpha') || cwd.includes('repo'));
+
+            if (!hasGit && subcmd !== 'clone' && subcmd !== 'init') {
+                output = 'fatal: not a git repository (or any of the parent directories): .git';
+            } else {
+                if (subcmd === 'status') {
+                    output = `On branch master\nYour branch is up to date with 'origin/master'.\n\nworking tree clean`;
+                } else if (subcmd === 'log') {
+                    output = `commit a1b2c3d4e5f6 (HEAD -> master)\nAuthor: Ghost <ghost@local>\nDate:   ${new Date().toDateString()}\n\n    Update project structure\n\ncommit 9876543210ab\nAuthor: Ghost <ghost@local>\nDate:   Yesterday\n\n    Remove hardcoded credentials from config.json\n\ncommit 1234567890cd\nAuthor: Ghost <ghost@local>\nDate:   2 days ago\n\n    Initial commit`;
+                } else if (subcmd === 'show') {
+                    const hash = args[1];
+                    if (hash && hash.startsWith('9876')) {
+                        output = `commit 9876543210ab\nAuthor: Ghost <ghost@local>\nDate:   Yesterday\n\n    Remove hardcoded credentials from config.json\n\ndiff --git a/config.json b/config.json\nindex 832a...e12b 100644\n--- a/config.json\n+++ b/config.json\n@@ -2,3 +2,3 @@\n   "db_host": "localhost",\n-  "db_pass": "GHOST_ROOT{G1T_H1ST0RY_L34K}",\n+  "db_pass": "env_var_secure",\n   "debug": false`;
+                        
+                        // Mission Update
+                        if (!VFS['/var/run/git_solved']) {
+                            VFS['/var/run/git_solved'] = { type: 'file', content: 'TRUE' };
+                            const runDir = getNode('/var/run');
+                            if (runDir && runDir.type === 'dir' && !runDir.children.includes('git_solved')) {
+                                runDir.children.push('git_solved');
+                            }
+                            output += `\n\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SOURCE CODE AUDIT.\x1b[0m`;
+                        }
+                    } else if (hash) {
+                        output = `commit ${hash}\nAuthor: Ghost <ghost@local>\n\n    [Content hidden for simulation]`;
+                    } else {
+                        output = 'usage: git show <commit>';
+                    }
+                } else {
+                    output = `git: '${subcmd}' is not a git command.`;
+                }
+            }
+        }
+        break;
     }
     case 'exit':
         output = 'Logout.';

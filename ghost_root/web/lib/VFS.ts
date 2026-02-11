@@ -232,7 +232,7 @@ KEY_ID: GHOST_PROTOCOL_INIT_V2
   },
   '/home/ghost': {
     type: 'dir',
-    children: ['secrets', '.bash_history', 'wifi_note.txt', 'journal', 'evidence.jpg', 'tools', 'tools.zip', 'capture.cap', 'drone_manual.txt', 'hashes.txt', 'wordlist.txt']
+    children: ['project_alpha', 'secrets', '.bash_history', 'wifi_note.txt', 'journal', 'evidence.jpg', 'tools', 'tools.zip', 'capture.cap', 'drone_manual.txt', 'hashes.txt', 'wordlist.txt']
   },
   '/home/ghost/tools': {
     type: 'dir',
@@ -334,6 +334,26 @@ dmesg | grep sdb
 mount /dev/sdb1 /mnt
 ./emergency_protocol.sh
 exit`
+  },
+  '/home/ghost/project_alpha': {
+    type: 'dir',
+    children: ['.git', 'config.json', 'src']
+  },
+  '/home/ghost/project_alpha/.git': {
+    type: 'dir',
+    children: ['HEAD', 'config', 'objects']
+  },
+  '/home/ghost/project_alpha/config.json': {
+    type: 'file',
+    content: '{\n  "db_host": "localhost",\n  "db_pass": "env_var_secure",\n  "debug": false\n}'
+  },
+  '/home/ghost/project_alpha/src': {
+    type: 'dir',
+    children: ['main.c']
+  },
+  '/home/ghost/project_alpha/src/main.c': {
+    type: 'file',
+    content: '#include <stdio.h>\n\nint main() {\n  printf("Project Alpha v1.0\\n");\n  return 0;\n}'
   },
   '/home/ghost/secrets': {
     type: 'dir',
