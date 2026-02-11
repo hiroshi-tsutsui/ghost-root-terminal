@@ -1172,6 +1172,24 @@ int main(int argc, char* argv[]) {
       }
   }
 
+  // Cycle 64 Init (The Internal Proxy)
+  if (!VFS['/etc/nginx/sites-enabled/internal.conf']) {
+      const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+      const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+      
+      ensureDir('/etc');
+      ensureDir('/etc/nginx');
+      link('/etc', 'nginx');
+      ensureDir('/etc/nginx/sites-enabled');
+      link('/etc/nginx', 'sites-enabled');
+      
+      VFS['/etc/nginx/sites-enabled/internal.conf'] = {
+          type: 'file',
+          content: 'server {\n    listen 8080;\n    server_name localhost;\n\n    location /admin {\n        # INTERNAL ONLY\n        allow 127.0.0.1;\n        deny all;\n        # TODO: Remove this debug endpoint\n        return 200 "GHOST_ROOT{NG1NX_M1SCONF1G_R3V3AL3D}";\n    }\n}'
+      };
+      link('/etc/nginx/sites-enabled', 'internal.conf');
+  }
+
   // 1. Handle Piping (|) recursively
   const segments = splitPipeline(commandLine);
   if (segments.length > 1) {
@@ -5114,6 +5132,21 @@ auth.py
                  output = `[DEPLOY] Connecting to payload delivery system...\n[UPLOAD] Sending agent binary... 100%\n[RESPONSE] HTTP 200 OK\n{\n  "status": "deployed",\n  "target": "covert_asset_v2",\n  "message": "Asset active. Standby for instructions.",\n  "flag": "GHOST_ROOT{D3BUG_MAST3R}"\n}`;
              } else {
                  output = `[DEPLOY] Connecting...\n[ERROR] HTTP 401 Unauthorized. Missing or invalid auth token.`;
+             }
+        } else if (url.includes('localhost:8080') || url.includes('127.0.0.1:8080')) {
+             if (url.includes('/admin')) {
+                 output = `[200 OK]\nContent-Type: text/plain\n\n# INTERNAL PROXY CONFIG\nFLAG: GHOST_ROOT{NG1NX_M1SCONF1G_R3V3AL3D}\n\n[MISSION UPDATE] Objective Complete: INTERNAL PROXY FOUND.`;
+                 if (!VFS['/var/run/proxy_solved']) {
+                     VFS['/var/run/proxy_solved'] = { type: 'file', content: 'TRUE' };
+                     const runDir = getNode('/var/run');
+                     if (runDir && runDir.type === 'dir' && !runDir.children.includes('proxy_solved')) {
+                         runDir.children.push('proxy_solved');
+                     }
+                 }
+                 return finalize(output, newCwd);
+             } else {
+                 output = `[403 Forbidden]\nAccess Denied.\n(Hint: Check /etc/nginx/sites-enabled for allowed paths)`;
+                 return finalize(output, newCwd);
              }
         } else if (url.includes('google.com')) {
              output = '<HTML><HEAD><meta http-equiv="content-type" content="text/html;charset=utf-8">\n<TITLE>301 Moved</TITLE></HEAD><BODY>\n<H1>301 Moved</H1>\nThe document has moved\n<A HREF="http://www.google.com/">here</A>.\n</BODY></HTML>';
