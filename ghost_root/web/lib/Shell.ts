@@ -10,6 +10,7 @@ const C_RESET = '\x1b[0m';
 // Persistence Keys
 const STORAGE_KEY_VFS = 'ghost_root_vfs_v1';
 const STORAGE_KEY_SHELL = 'ghost_root_shell_v1';
+const STORAGE_KEY_ATTRS = 'ghost_root_attrs_v1';
 
 const ALIASES: Record<string, string> = {
   'l': 'ls -la',
@@ -30,6 +31,10 @@ const ENV_VARS: Record<string, string> = {
   'PATH': '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
   '_': '/usr/bin/env',
   'GHOST_PROTOCOL': 'ACTIVE'
+};
+
+const FILE_ATTRIBUTES: Record<string, string[]> = {
+    '/var/log/surveillance.log': ['i']
 };
 
 let ALERT_LEVEL = 0;
@@ -57,6 +62,7 @@ export const saveSystemState = () => {
         ALERT_LEVEL,
         SYSTEM_TIME_OFFSET,
         LOADED_MODULES,
+        FILE_ATTRIBUTES, // Added for Cycle 40
         // Processes and Jobs are volatile (memory only), so we don't save them.
         // History is saved separately in VFS (.bash_history)
     };
@@ -98,8 +104,21 @@ export const loadSystemState = () => {
                 LOADED_MODULES.length = 0;
                 LOADED_MODULES.push(...parsed.LOADED_MODULES);
             }
+            if (parsed.FILE_ATTRIBUTES) {
+                // Merge or replace
+                Object.assign(FILE_ATTRIBUTES, parsed.FILE_ATTRIBUTES);
+            }
         } catch (e) {
             console.error('Failed to load Shell State', e);
+        }
+    }
+    
+    // Cycle 40 Init (Ensure surveillance log exists)
+    if (!VFS['/var/log/surveillance.log']) {
+        VFS['/var/log/surveillance.log'] = { type: 'file', content: '[VIDEO FEED 09:12] Subject 452 accessed secure terminal.\n[AUDIO LOG] "They will never find the key in the .cache folder."\n[METADATA] ENCRYPTED_V2' };
+        const logDir = getNode('/var/log');
+        if (logDir && logDir.type === 'dir' && !logDir.children.includes('surveillance.log')) {
+            logDir.children.push('surveillance.log');
         }
     }
 };
@@ -299,7 +318,7 @@ export interface CommandResult {
   data?: any;
 }
 
-const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'jobs', 'fg', 'bg', 'recover_data', 'ghost_update', 'git', 'file', 'openssl', 'beacon', 'fsck', 'docker'];
+const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'jobs', 'fg', 'bg', 'recover_data', 'ghost_update', 'git', 'file', 'openssl', 'beacon', 'fsck', 'docker', 'lsattr', 'chattr'];
 
 export interface MissionStatus {
   objectives: {
@@ -469,6 +488,19 @@ export const tabCompletion = (cwd: string, inputBuffer: string): { matches: stri
 };
 
 export const processCommand = (cwd: string, commandLine: string, stdin?: string): CommandResult => {
+  // Cycle 40 Init (Self-Healing)
+  if (!VFS['/var/log/surveillance.log']) {
+      VFS['/var/log/surveillance.log'] = { type: 'file', content: '[VIDEO FEED 09:12] Subject 452 accessed secure terminal.\n[AUDIO LOG] "They will never find the key in the .cache folder."\n[METADATA] ENCRYPTED_V2' };
+      const logDir = getNode('/var/log');
+      if (logDir && logDir.type === 'dir' && !logDir.children.includes('surveillance.log')) {
+          logDir.children.push('surveillance.log');
+      }
+      // Ensure attribute is set
+      if (!FILE_ATTRIBUTES['/var/log/surveillance.log']) {
+          FILE_ATTRIBUTES['/var/log/surveillance.log'] = ['i'];
+      }
+  }
+
   // 1. Handle Piping (|) recursively
   const segments = splitPipeline(commandLine);
   if (segments.length > 1) {
@@ -1587,8 +1619,6 @@ ACCEPT     all  --  anywhere             anywhere`;
                       output = `chmod: changing permissions of '${target}': Operation not permitted`;
                   } else {
                       // Apply permission
-                      // We need to cast node to any because we just added permissions to the interface in VFS.ts
-                      // but Shell.ts imports might need refresh or we just use it.
                       (node as any).permissions = mode;
                       output = ''; // Silent success
                   }
@@ -1598,6 +1628,64 @@ ACCEPT     all  --  anywhere             anywhere`;
           }
        }
        break;
+    }
+    case 'lsattr': {
+        if (args.length < 1) {
+            output = 'usage: lsattr <file>';
+        } else {
+            const target = args[0];
+            const path = resolvePath(cwd, target);
+            const node = getNode(path);
+            
+            if (!node) {
+                output = `lsattr: cannot access '${target}': No such file or directory`;
+            } else {
+                const attrs = FILE_ATTRIBUTES[path] || [];
+                const attrStr = attrs.includes('i') ? '----i---------e----' : '-------------------';
+                output = `${attrStr} ${target}`;
+            }
+        }
+        break;
+    }
+    case 'chattr': {
+        if (args.length < 2) {
+            output = 'usage: chattr [-+=][mode] <file>';
+        } else {
+            const modeStr = args[0];
+            const target = args[1];
+            const path = resolvePath(cwd, target);
+            const node = getNode(path);
+            
+            if (!node) {
+                output = `chattr: cannot access '${target}': No such file or directory`;
+            } else {
+                const isRoot = !!getNode('/tmp/.root_session');
+                if (!isRoot) {
+                    output = `chattr: changing attributes of '${target}': Operation not permitted (Root Required)`;
+                } else {
+                    const op = modeStr[0];
+                    const flag = modeStr[1];
+                    
+                    if (['+', '-', '='].includes(op) && flag === 'i') {
+                        const currentAttrs = FILE_ATTRIBUTES[path] || [];
+                        if (op === '+') {
+                            if (!currentAttrs.includes('i')) currentAttrs.push('i');
+                        } else if (op === '-') {
+                            const idx = currentAttrs.indexOf('i');
+                            if (idx !== -1) currentAttrs.splice(idx, 1);
+                        } else if (op === '=') {
+                            currentAttrs.length = 0;
+                            currentAttrs.push('i');
+                        }
+                        FILE_ATTRIBUTES[path] = currentAttrs;
+                        output = '';
+                    } else {
+                        output = `chattr: invalid mode: '${modeStr}'`;
+                    }
+                }
+            }
+        }
+        break;
     }
     case 'export': {
         if (args.length < 1) {
@@ -3080,6 +3168,13 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
         const path = resolvePath(cwd, target);
         const isRoot = !!getNode('/tmp/.root_session');
 
+        // Check Attributes (Cycle 40)
+        const attrs = FILE_ATTRIBUTES[path] || [];
+        if (attrs.includes('i')) {
+             output = `rm: cannot remove '${target}': Operation not permitted`;
+             return { output, newCwd };
+        }
+
         // Critical system files check
         if (['/bin/bash', '/sbin/init', '/vmlinuz', '/boot/vmlinuz'].includes(path) || path === '/') {
              if (isRoot && (args.includes('-rf') || args.includes('--no-preserve-root'))) {
@@ -3094,6 +3189,18 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
             if (parentNode && parentNode.type === 'dir') {
               delete VFS[path];
               parentNode.children = parentNode.children.filter(c => c !== fileName);
+              
+              // Mission Update for Cycle 40
+              if (path === '/var/log/surveillance.log') {
+                  if (!VFS['/var/run/attr_solved']) {
+                      VFS['/var/run/attr_solved'] = { type: 'file', content: 'TRUE' };
+                      const runDir = getNode('/var/run');
+                      if (runDir && runDir.type === 'dir' && !runDir.children.includes('attr_solved')) {
+                          runDir.children.push('attr_solved');
+                      }
+                      output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: EVIDENCE SCRUBBED (Immutable Attribute Bypassed).\x1b[0m`;
+                  }
+              }
             } else {
                 output = `rm: cannot remove '${target}': No such file or directory`;
             }
