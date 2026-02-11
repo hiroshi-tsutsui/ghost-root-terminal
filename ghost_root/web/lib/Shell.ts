@@ -180,7 +180,8 @@ let PROCESSES: Process[] = [
   { pid: 555, ppid: 1, user: 'ghost', cpu: 12.5, mem: 4.2, time: '2:15', command: './data_miner --silent', tty: '?', stat: 'R' },
   { pid: 4000, ppid: 1, user: 'root', cpu: 0.1, mem: 0.2, time: '1:00', command: '/usr/bin/vault_guardian', tty: '?', stat: 'Ss' },
   { pid: 4001, ppid: 4000, user: 'root', cpu: 0.0, mem: 0.0, time: '0:00', command: '[vault_worker] <defunct>', tty: '?', stat: 'Z' },
-  { pid: 6000, ppid: 1, user: 'root', cpu: 0.5, mem: 1.0, time: '0:10', command: '/usr/bin/overseer', tty: '?', stat: 'Ss' }
+  { pid: 6000, ppid: 1, user: 'root', cpu: 0.5, mem: 1.0, time: '0:10', command: '/usr/bin/overseer', tty: '?', stat: 'Ss' },
+  { pid: 8192, ppid: 1, user: 'root', cpu: 0.0, mem: 0.1, time: '0:00', command: '/usr/bin/keepalive_d', tty: '?', stat: 'Ss' }
 ];
 
 // Mock Network Connections
@@ -319,7 +320,7 @@ export interface CommandResult {
   data?: any;
 }
 
-const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'jobs', 'fg', 'bg', 'recover_data', 'ghost_update', 'git', 'file', 'openssl', 'beacon', 'fsck', 'docker', 'lsattr', 'chattr', 'backup_service'];
+const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'jobs', 'fg', 'bg', 'recover_data', 'ghost_update', 'git', 'file', 'openssl', 'beacon', 'fsck', 'docker', 'lsattr', 'chattr', 'backup_service', 'getfattr', 'setfattr', 'mkfifo', 'uplink_service'];
 
 export interface MissionStatus {
   objectives: {
@@ -866,6 +867,74 @@ int main(int argc, char* argv[]) {
       link('/', 'proc');
   }
 
+  // Cycle 52 Init (Alternate Data Stream / xattr)
+  if (!VFS['/home/ghost/evidence/ntfs_stream.dat']) {
+      // Create evidence dir if missing
+      if (!VFS['/home/ghost/evidence']) {
+          VFS['/home/ghost/evidence'] = { type: 'dir', children: [] };
+          const home = getNode('/home/ghost');
+          if (home && home.type === 'dir' && !home.children.includes('evidence')) {
+              home.children.push('evidence');
+          }
+      }
+
+      VFS['/home/ghost/evidence/ntfs_stream.dat'] = {
+          type: 'file',
+          content: '[DATA_FILE]\nStandard content visible to user.\nNothing to see here.\n',
+          permissions: '0644',
+          xattrs: {
+              'user.secret_stream': 'GHOST_ROOT{ALT_D4T4_STR34M_FOUND}',
+              'user.author': 'SysAdmin',
+              'security.selinux': 'unconfined_u:object_r:user_home_t:s0'
+          }
+      };
+      
+      const evDir = getNode('/home/ghost/evidence');
+      if (evDir && evDir.type === 'dir' && !evDir.children.includes('ntfs_stream.dat')) {
+          evDir.children.push('ntfs_stream.dat');
+      }
+  }
+
+  // Cycle 53 Init (Signal Handler)
+  if (!VFS['/usr/bin/keepalive_d']) {
+      // Create binary
+      VFS['/usr/bin/keepalive_d'] = {
+          type: 'file',
+          content: '[BINARY_ELF_X86_64] [DAEMON] [SIGNAL_HANDLER]\nstrings: SIGUSR1_RECEIVED... Dumping state to /var/log/keepalive.dump\n'
+      };
+      (VFS['/usr/bin/keepalive_d'] as any).permissions = '0755';
+      const binDir = getNode('/usr/bin');
+      if (binDir && binDir.type === 'dir' && !binDir.children.includes('keepalive_d')) {
+          binDir.children.push('keepalive_d');
+      }
+  }
+
+  // Cycle 54 Init (The Named Pipe)
+  if (!VFS['/usr/bin/uplink_service']) {
+      // Create binary
+      VFS['/usr/bin/uplink_service'] = {
+          type: 'file',
+          content: '[BINARY_ELF_X86_64] [SERVICE] [FIFO_READER]\nstrings: /tmp/uplink.pipe\n[STATUS] Waiting for data stream...'
+      };
+      (VFS['/usr/bin/uplink_service'] as any).permissions = '0755';
+      const binDir = getNode('/usr/bin');
+      if (binDir && binDir.type === 'dir' && !binDir.children.includes('uplink_service')) {
+          binDir.children.push('uplink_service');
+      }
+  }
+
+  // Cycle 55 Init (The Unreachable Network)
+  if (!VFS['/var/log/network.log']) {
+      VFS['/var/log/network.log'] = {
+          type: 'file',
+          content: '[NETWORK] Interface eth0 up.\n[NETWORK] DHCP Lease Acquired: 192.168.1.105\n[ERROR] Failed to add route to 10.10.99.0/24 (Black Site Uplink). Gateway 192.168.1.1 unreachable.\n[HINT] Manually add route via "route add".'
+      };
+      const logDir = getNode('/var/log');
+      if (logDir && logDir.type === 'dir' && !logDir.children.includes('network.log')) {
+          logDir.children.push('network.log');
+      }
+  }
+
   // 1. Handle Piping (|) recursively
   const segments = splitPipeline(commandLine);
   if (segments.length > 1) {
@@ -947,6 +1016,25 @@ int main(int argc, char* argv[]) {
           // DISK FULL SIMULATION
           if (filePath.startsWith('/var') && !!getNode('/var/log/overflow.dmp')) {
              return { output: `bash: write error: No space left on device`, newCwd: nCwd, action: act, data: dat, newPrompt: prompt };
+          }
+
+          // FIFO Check (Cycle 54)
+          const existingNode = getNode(filePath);
+          if (existingNode && existingNode.type === 'file' && (existingNode as any).xattrs && (existingNode as any).xattrs.type === 'fifo') {
+              if (filePath.endsWith('/uplink.pipe')) {
+                  let resultOutput = `[UPLINK] Pipe Data Received: ${out.substring(0, 50)}...\n[UPLINK] Authenticating...\n[SUCCESS] Uplink Established.\nFLAG: GHOST_ROOT{N4M3D_P1P3_WR1T3R}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: NAMED PIPE.\x1b[0m`;
+                  if (!VFS['/var/run/fifo_solved']) {
+                      VFS['/var/run/fifo_solved'] = { type: 'file', content: 'TRUE' };
+                      const runDir = getNode('/var/run');
+                      if (runDir && runDir.type === 'dir' && !runDir.children.includes('fifo_solved')) {
+                          runDir.children.push('fifo_solved');
+                      }
+                  }
+                  return { output: resultOutput, newCwd: nCwd, action: act, data: dat, newPrompt: prompt };
+              } else {
+                  // Generic FIFO (no listener)
+                  return { output: '', newCwd: nCwd, action: 'delay', data: dat, newPrompt: prompt };
+              }
           }
 
           const parentPath = filePath.substring(0, filePath.lastIndexOf('/')) || '/';
@@ -1108,6 +1196,33 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
               } else if (fileName === 'launch_codes.bin' || fileName === './launch_codes.bin') {
                   output = `[SYSTEM] INITIATING LAUNCH SEQUENCE...\n[SYSTEM] AUTHENTICATION VERIFIED (OMEGA-LVL-5)\n[SYSTEM] TARGET: GLOBAL_RESET_PROTOCOL\n\n3...\n2...\n1...\n`;
                   return { output, newCwd, action: 'win_sim' };
+              } else if (fileName === 'uplink_service') {
+                  // Cycle 54 Logic
+                  const pipePath = '/tmp/uplink.pipe';
+                  const pipeNode = getNode(pipePath);
+                  
+                  if (!pipeNode) {
+                      output = `[ERROR] Failed to open communication channel.\n[REASON] Named pipe ${pipePath} not found.\n[HINT] Create the FIFO first.`;
+                  } else if (!(pipeNode as any).xattrs || (pipeNode as any).xattrs.type !== 'fifo') {
+                      output = `[ERROR] Invalid file type.\n[REASON] ${pipePath} is not a FIFO (named pipe).\n[HINT] Use 'mkfifo'.`;
+                  } else {
+                      // Check if pipe has content (simulating data written to it)
+                      if ((pipeNode as any).content && (pipeNode as any).content.trim().length > 0) {
+                          if (!VFS['/var/run/uplink_established']) {
+                              VFS['/var/run/uplink_established'] = { type: 'file', content: 'TRUE' };
+                              const runDir = getNode('/var/run');
+                              if (runDir && runDir.type === 'dir' && !runDir.children.includes('uplink_established')) {
+                                  runDir.children.push('uplink_established');
+                              }
+                              output = `[SUCCESS] Uplink Established.\n[DATA] Received: ${(pipeNode as any).content}\nFLAG: GHOST_ROOT{F1F0_P1P3_DR34M}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: NAMED PIPE COMM.\x1b[0m`;
+                          } else {
+                              output = `[SUCCESS] Uplink Active.\n[DATA] ${(pipeNode as any).content}`;
+                          }
+                      } else {
+                          output = `[SERVICE] Listening on ${pipePath}...\n[STATUS] Idle (No Data).\n[HINT] Write data to the pipe (echo "..." > ${pipePath}).`;
+                      }
+                  }
+                  return { output, newCwd, action: 'delay' };
               } else {
                   output = `bash: ${command}: Permission denied (Missing execute bit or corrupt header)`;
               }
@@ -1514,6 +1629,46 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
        const reversedLines = lines.map(line => line.split('').reverse().join(''));
        output = reversedLines.join('\n');
        break;
+    }
+    case 'mkfifo': {
+        if (args.length < 1) {
+            output = 'usage: mkfifo <file>';
+        } else {
+            const target = args[0];
+            const path = resolvePath(cwd, target);
+            const parentPath = path.substring(0, path.lastIndexOf('/')) || '/';
+            const fileName = path.substring(path.lastIndexOf('/') + 1);
+            const parentNode = getNode(parentPath);
+            
+            if (!parentNode || parentNode.type !== 'dir') {
+                 output = `mkfifo: cannot create fifo '${target}': No such file or directory`;
+            } else if (parentNode.children.includes(fileName)) {
+                 output = `mkfifo: cannot create fifo '${target}': File exists`;
+            } else {
+                 VFS[path] = {
+                     type: 'file',
+                     content: '',
+                     xattrs: { type: 'fifo' }
+                 } as any;
+                 parentNode.children.push(fileName);
+                 output = '';
+            }
+        }
+        break;
+    }
+    case 'uplink_service': {
+        const pipePath = '/tmp/uplink.pipe';
+        const pipeNode = getNode(pipePath);
+        
+        if (!pipeNode) {
+            output = `uplink_service: fatal: /tmp/uplink.pipe not found. (Hint: Create it with mkfifo)`;
+        } else if (pipeNode.type !== 'file' || !(pipeNode as any).xattrs || (pipeNode as any).xattrs.type !== 'fifo') {
+            output = `uplink_service: fatal: /tmp/uplink.pipe is not a FIFO.`;
+        } else {
+            output = `[SERVICE] Listening on /tmp/uplink.pipe...\n[INFO] Waiting for data stream... (Use redirection > to write)`;
+            return { output, newCwd, action: 'delay' };
+        }
+        break;
     }
     case 'base64': {
        let decode = false;
@@ -2516,6 +2671,35 @@ Type "status" for mission objectives.`;
        }
        break;
     }
+    case 'mkfifo': {
+        if (args.length < 1) {
+            output = 'usage: mkfifo <path>';
+        } else {
+            const pipePath = resolvePath(cwd, args[0]);
+            const pipeParent = pipePath.substring(0, pipePath.lastIndexOf('/')) || '/';
+            const pipeName = pipePath.substring(pipePath.lastIndexOf('/') + 1);
+            
+            if (!getNode(pipeParent)) {
+                output = `mkfifo: cannot create fifo '${args[0]}': No such file or directory`;
+            } else if (getNode(pipePath)) {
+                output = `mkfifo: cannot create fifo '${args[0]}': File exists`;
+            } else {
+                VFS[pipePath] = { 
+                    type: 'file', 
+                    content: '', 
+                    permissions: '0644',
+                    fileType: 'fifo' 
+                } as any;
+                addChild(pipeParent, pipeName);
+                
+                // Check if this solves Cycle 54 (if created in correct location)
+                if (pipePath === '/tmp/uplink.pipe') {
+                    output = `[SYSTEM] Named Pipe Created: ${pipePath}\n[HINT] Now run the service that listens to this pipe: 'uplink_service'`;
+                }
+            }
+        }
+        break;
+    }
     case 'calc': {
         if (args.length < 1) {
             output = 'usage: calc <expression>';
@@ -3199,13 +3383,27 @@ ${extraRoute}`;
             if (!isRoot) {
                 output = 'route: SIOCADDRT: Operation not permitted';
             } else {
-                // Parsing logic: looking for "10.10.99.0" (target) and "192.168.1.1" (gw)
+                // Parsing logic: looking for "10.10.99.0" (target) OR "default" and "192.168.1.1" (gw)
                 const commandStr = args.join(' ');
-                if (commandStr.includes('10.10.99.0') && commandStr.includes('192.168.1.1')) {
+                const correctGw = commandStr.includes('192.168.1.1') || commandStr.includes('gateway');
+                const correctTarget = commandStr.includes('10.10.99.0') || commandStr.includes('default');
+                
+                if (correctGw && correctTarget) {
                      VFS['/var/run/route_added'] = { type: 'file', content: 'TRUE' };
-                     output = ''; // Silent success
+                     
+                     // Mission Update
+                     if (!VFS['/var/run/route_solved']) {
+                         VFS['/var/run/route_solved'] = { type: 'file', content: 'TRUE' };
+                         const runDir = getNode('/var/run');
+                         if (runDir && runDir.type === 'dir' && !runDir.children.includes('route_solved')) {
+                             runDir.children.push('route_solved');
+                         }
+                         output = `\x1b[1;32m[MISSION UPDATE] Objective Complete: ROUTING TABLE FIXED.\x1b[0m`;
+                     } else {
+                         output = ''; // Silent success
+                     }
                 } else {
-                     output = 'route: SIOCADDRT: No such device';
+                     output = 'route: SIOCADDRT: No such device or address invalid';
                 }
             }
         } else if (args[0] === 'del') {
@@ -4124,9 +4322,10 @@ tmpfs             815276    1184    814092   1% /run
       if (args.length < 1) {
           output = 'kill: usage: kill [-s signal|-p] [-a] <pid>...';
       } else {
-          // Check for signals (e.g., -9, -SIGKILL)
+          // Check for signals (e.g., -9, -SIGKILL, -USR1, -10)
           const signal = args.find(a => a.startsWith('-'));
           const isSigKill = signal === '-9' || signal === '-SIGKILL';
+          const isSigUsr1 = signal === '-10' || signal === '-SIGUSR1' || signal === '-USR1';
           
           // Extract PID (last argument that isn't a flag)
           const pidStr = args.filter(a => !a.startsWith('-')).pop();
@@ -4140,7 +4339,35 @@ tmpfs             815276    1184    814092   1% /run
                   output = `kill: (${pid}) - No such process`;
               } else {
                   const proc = PROCESSES[idx];
-                  if (pid === 1) {
+                  if (pid === 8192 || proc.command === '/usr/bin/keepalive_d') {
+                      if (isSigUsr1) {
+                          output = `[SYSTEM] keepalive_d: Received SIGUSR1.\n[SYSTEM] Dumping state to /var/log/keepalive.dump... Done.`;
+                          
+                          // Create Dump File
+                          if (!VFS['/var/log/keepalive.dump']) {
+                              VFS['/var/log/keepalive.dump'] = {
+                                  type: 'file',
+                                  content: 'STATE_DUMP_V1:\nUPTIME: 99999s\nCONNECTIONS: 0\nFLAG: GHOST_ROOT{S1GN4L_TR4P_M4ST3R}\n'
+                              };
+                              const logDir = getNode('/var/log');
+                              if (logDir && logDir.type === 'dir' && !logDir.children.includes('keepalive.dump')) {
+                                  logDir.children.push('keepalive.dump');
+                              }
+                              
+                              // Mission Update
+                              if (!VFS['/var/run/signal_solved']) {
+                                  VFS['/var/run/signal_solved'] = { type: 'file', content: 'TRUE' };
+                                  const runDir = getNode('/var/run');
+                                  if (runDir && runDir.type === 'dir' && !runDir.children.includes('signal_solved')) {
+                                      runDir.children.push('signal_solved');
+                                  }
+                                  output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SIGNAL HANDLED.\x1b[0m`;
+                              }
+                          }
+                      } else {
+                          output = `[SYSTEM] keepalive_d: Caught signal ${signal || 'SIGTERM'}. Ignoring (critical process).`;
+                      }
+                  } else if (pid === 1) {
                       output = 'Attempting to kill init process...';
                       return { output, newCwd, action: 'kernel_panic' };
                   } else if (pid === 666) {
@@ -6566,6 +6793,54 @@ postgres            14-alpine 1234567890ab   5 days ago     214MB`;
                 output = `rmmod: ERROR: Module ${modName} is in use`;
             } else {
                 output = `rmmod: ERROR: Module ${modName} is not currently loaded`;
+            }
+        }
+        break;
+    }
+    case 'getfattr': {
+        if (args.length === 0) {
+            output = 'Usage: getfattr [-d] [-n name] <file>';
+        } else {
+            const fileName = args[args.length - 1]; 
+            const showAll = args.includes('-d');
+            const nameIndex = args.indexOf('-n');
+            const requestedName = nameIndex !== -1 && args[nameIndex + 1] ? args[nameIndex + 1] : null;
+
+            const filePath = resolvePath(cwd, fileName);
+            const node = getNode(filePath);
+
+            if (!node) {
+                output = `getfattr: ${fileName}: No such file or directory`;
+            } else if (node.type !== 'file') {
+                output = `getfattr: ${fileName}: Not a regular file`;
+            } else {
+                const fileNode = node as any;
+                if (!fileNode.xattrs || Object.keys(fileNode.xattrs).length === 0) {
+                    output = ''; 
+                } else {
+                    let buffer = `# file: ${fileName}\n`;
+                    let hasOutput = false;
+                    for (const [key, val] of Object.entries(fileNode.xattrs)) {
+                        if (showAll || requestedName === key) {
+                             buffer += `${key}="${val}"\n`;
+                             hasOutput = true;
+                             
+                             // Puzzle Solve Check
+                             if ((val as string).includes('GHOST_ROOT{ALT_D4T4_STR34M_FOUND}')) {
+                                  // Update Mission State
+                                  if (!VFS['/var/run/xattr_solved']) {
+                                      VFS['/var/run/xattr_solved'] = { type: 'file', content: 'TRUE' };
+                                      const runDir = getNode('/var/run');
+                                      if (runDir && runDir.type === 'dir' && !runDir.children.includes('xattr_solved')) {
+                                          runDir.children.push('xattr_solved');
+                                      }
+                                      buffer += '\n\x1b[1;32m[MISSION UPDATE] Objective Complete: ALTERNATE DATA STREAM (XATTR).\x1b[0m';
+                                  }
+                             }
+                        }
+                    }
+                    output = hasOutput ? buffer : ''; 
+                }
             }
         }
         break;
