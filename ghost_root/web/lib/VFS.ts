@@ -151,7 +151,7 @@ curl -s "http://$TARGET_SERVER/api/deploy?auth=$AUTH_TOKEN"
   },
   '/usr/src': {
     type: 'dir',
-    children: ['exploit.c', 'Makefile']
+    children: ['exploit.c', 'Makefile', 'ghost_kernel']
   },
   '/usr/src/Makefile': {
     type: 'file',
@@ -164,6 +164,14 @@ exploit: exploit.c
 clean:
 	rm exploit
 `
+  },
+  '/usr/src/ghost_kernel': {
+    type: 'dir',
+    children: ['source_code.c']
+  },
+  '/usr/src/ghost_kernel/source_code.c': {
+    type: 'file',
+    content: '/*\n * GHOST KERNEL V1.0\n * Copyright (c) 2024 The Architect\n *\n * TODO: Remove backdoor access code: GHOST_ROOT{TH3_ARCH1T3CT_L1V3S}\n */\n\nvoid kernel_init() {\n  // ...\n}'
   },
   '/usr/src/exploit.c': {
     type: 'file',
@@ -354,6 +362,22 @@ dmesg | grep sdb
 mount /dev/sdb1 /mnt
 ./emergency_protocol.sh
 exit`
+  },
+  '/home/ghost/projects': {
+    type: 'dir',
+    children: ['omega_blueprint.pdf.enc', 'README.txt']
+  },
+  '/home/ghost/projects/omega_blueprint.pdf.enc': {
+    type: 'file',
+    content: 'Salted__\x00\x00\x00\x00\x00\x00\x00\x00[ENCRYPTED_PDF_HEADER_V1.4]\n[BINARY_BLOB_DO_NOT_READ]\n...'
+  },
+  '/home/ghost/projects/README.txt': {
+    type: 'file',
+    content: 'URGENT: The blueprints were encrypted by the rogue AI.\nIt seems to have hidden the key in a temporary location.\nCheck /var/tmp/.key (it might be hidden).\n\nUse: openssl enc -d -aes-256-cbc -in omega_blueprint.pdf.enc -out blueprint.pdf -k <key>'
+  },
+  '/var/tmp/.key': {
+    type: 'file',
+    content: 'aes-256-key-0xDEADBEEF'
   },
   '/home/ghost/project_alpha': {
     type: 'dir',
