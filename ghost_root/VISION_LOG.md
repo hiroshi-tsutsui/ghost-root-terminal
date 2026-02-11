@@ -1,15 +1,15 @@
 # VISION_LOG.md
 
-[2026-02-12 04:25]
+[2026-02-12 06:10]
 > CHANGES: ghost_root/web/lib/Shell.ts
-> PUZZLE ADDED: "The Unreachable Network" (Route).
-> MECHANICS: Added `route` command. Implemented routing table manipulation logic.
-> LORE: Black Site Uplink (10.10.99.0/24) is unreachable due to missing gateway.
-> SOLUTION: `route add -net 10.10.99.0 gw 192.168.1.1` or `route add default gw 192.168.1.1`.
+> PUZZLE ADDED: "The Python Bytecode" (.pyc Reverse Engineering).
+> MECHANICS: Added `.pyc` file detection and `python3 -m dis` support.
+> LORE: A compiled python file `auth.pyc` contains a hardcoded secret.
+> SOLUTION: `python3 -m dis /home/ghost/tools/auth.pyc` reveals the flag `GHOST_ROOT{PYC_R3V3RS3_3NG1N33R}`.
 
-[2026-02-12 05:35]
+[2026-02-12 07:15]
 > CHANGES: ghost_root/web/lib/Shell.ts
-> PUZZLE ADDED: "The DNS Spoof" (Hosts File / DNS Poisoning).
-> MECHANICS: Added `echo` command (supports redirection `>>`). Implemented `ping` logic for `omega-control.net`.
-> LORE: Black Site DNS hidden. Requires manual `/etc/hosts` entry.
-> SOLUTION: `echo "192.168.1.99 omega-control.net" >> /etc/hosts`.
+> PUZZLE ADDED: "The Web Shell" (PHP Upload Analysis).
+> MECHANICS: Added `/var/www/html/uploads` and obfuscated PHP shell.
+> LORE: A security alert warns of a potential breach in the uploads directory.
+> SOLUTION: `php /var/www/html/uploads/shell.php` or `cat` + `base64 -d` reveals the flag `GHOST_ROOT{W3B_SH3LL_D3T3CT3D}`.

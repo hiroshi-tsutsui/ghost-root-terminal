@@ -320,7 +320,7 @@ export interface CommandResult {
   data?: any;
 }
 
-const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'jobs', 'fg', 'bg', 'recover_data', 'ghost_update', 'git', 'file', 'openssl', 'beacon', 'fsck', 'docker', 'lsattr', 'chattr', 'backup_service', 'getfattr', 'setfattr', 'mkfifo', 'uplink_service'];
+const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'jobs', 'fg', 'bg', 'recover_data', 'ghost_update', 'git', 'file', 'openssl', 'beacon', 'fsck', 'docker', 'lsattr', 'chattr', 'backup_service', 'getfattr', 'setfattr', 'mkfifo', 'uplink_service', 'sqlite3', 'gdb', 'jwt_tool', 'php'];
 
 export interface MissionStatus {
   objectives: {
@@ -988,6 +988,187 @@ int main(int argc, char* argv[]) {
       const evDir = getNode('/home/ghost/evidence');
       if (evDir && evDir.type === 'dir' && !evDir.children.includes('transmission.wav')) {
           evDir.children.push('transmission.wav');
+      }
+  }
+
+  // Cycle 58 Init (The Kernel Panic)
+  if (!VFS['/var/crash']) {
+      VFS['/var/crash'] = { type: 'dir', children: ['vmcore.1'] };
+      const varDir = getNode('/var');
+      if (varDir && varDir.type === 'dir' && !varDir.children.includes('crash')) {
+          varDir.children.push('crash');
+      }
+      VFS['/var/crash/vmcore.1'] = {
+          type: 'file',
+          content: '[KERNEL_PANIC] PID: 1 (init) | RIP: 0010:panic+0x123/0x456\n[CAUSE] Null pointer dereference in module "phantom_driver.ko"\n[DEBUG] Remove offending module via "rmmod phantom_driver" to restore system stability.'
+      };
+  }
+
+  // Cycle 59 Init (The Corrupt Database)
+  if (!VFS['/var/lib/sqlite3']) {
+      VFS['/var/lib/sqlite3'] = { type: 'dir', children: ['users.db'] };
+      const libDir = getNode('/var/lib');
+      if (libDir && libDir.type === 'dir' && !libDir.children.includes('sqlite3')) {
+          libDir.children.push('sqlite3');
+      }
+      VFS['/var/lib/sqlite3/users.db'] = {
+          type: 'file',
+          content: 'SQLite format 3\x00\x04\x00\x01\x01\x00@  \x00\x00\x00\x05\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\x04\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\ntableusersusers\x02CREATE TABLE users (id INTEGER PRIMARY KEY, username TEXT, password TEXT, role TEXT)',
+          permissions: '0644'
+      };
+      
+      // Create binary
+      VFS['/usr/bin/sqlite3'] = {
+          type: 'file',
+          content: '[BINARY_ELF_X86_64] [SQL_CLIENT]',
+          permissions: '0755'
+      };
+      const binDir = getNode('/usr/bin');
+      if (binDir && binDir.type === 'dir' && !binDir.children.includes('sqlite3')) {
+          binDir.children.push('sqlite3');
+      }
+  }
+
+  // Cycle 60 Init (The Memory Dump)
+  if (!VFS['/home/ghost/core.1337']) {
+      VFS['/home/ghost/core.1337'] = {
+          type: 'file',
+          content: '[ELF_CORE_DUMP] [PROGRAM: auth_service] [PID: 1337]\n...MEMORY_BLOCK_START...\n0x08048000: 55 89 e5 57 56 53 83 ec 1c 8b 45 08 8b 5d 0c 8b\n0x08048010: 75 10 89 44 24 04 89 1c 24 e8 00 00 00 00 83 c4\n...HEAP_SEGMENT...\n0x08049000: 70 61 73 73 77 6f 72 64 3d 73 75 70 65 72 73 65\n0x08049010: 63 72 65 74 6b 65 79 31 32 33 00 00 00 00 00 00\n...STACK_TRACE...\n#0  0x0804801a in authenticate () at auth.c:42\n',
+          permissions: '0600'
+      };
+      const home = getNode('/home/ghost');
+      if (home && home.type === 'dir' && !home.children.includes('core.1337')) {
+          home.children.push('core.1337');
+      }
+      
+      // Create gdb binary
+      VFS['/usr/bin/gdb'] = {
+          type: 'file',
+          content: '[BINARY_ELF_X86_64] [DEBUGGER]',
+          permissions: '0755'
+      };
+      const binDir = getNode('/usr/bin');
+      if (binDir && binDir.type === 'dir' && !binDir.children.includes('gdb')) {
+          binDir.children.push('gdb');
+      }
+  }
+
+  // Cycle 61 Init (Python Bytecode)
+  if (!VFS['/home/ghost/tools/auth.pyc']) {
+      // Ensure tools dir exists
+      if (!VFS['/home/ghost/tools']) {
+          VFS['/home/ghost/tools'] = { type: 'dir', children: [] };
+          const homeGhost = getNode('/home/ghost');
+          if (homeGhost && homeGhost.type === 'dir' && !homeGhost.children.includes('tools')) {
+              homeGhost.children.push('tools');
+          }
+      }
+
+      VFS['/home/ghost/tools/auth.pyc'] = {
+          type: 'file',
+          content: '\x03\xf3\x0d\x0a\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00@\x00\x00\x00s\x1a\x00\x00\x00d\x00d\x01l\x00Z\x00e\x00\x01\x00d\x02S\x00)\x03N\xda\x04hash\xda\x0fGHOST_ROOT{PYTH0N_BYT3C0D3_S3CR3T}\xda\x08password_check\xa9\x00r\x02\x00\x00\x00r\x02\x00\x00\x00\xfa\x07auth.py\xda\x08<module>\x01\x00\x00\x00s\x00\x00\x00\x00',
+          permissions: '0644'
+      };
+      const toolsDir = getNode('/home/ghost/tools');
+      if (toolsDir && toolsDir.type === 'dir' && !toolsDir.children.includes('auth.pyc')) {
+          toolsDir.children.push('auth.pyc');
+      }
+  }
+
+  // Cycle 61 Init (The Python Bytecode)
+  if (!VFS['/home/ghost/tools/auth.pyc']) {
+      // Create tools dir if missing
+      if (!VFS['/home/ghost/tools']) {
+          VFS['/home/ghost/tools'] = { type: 'dir', children: [] };
+          const homeGhost = getNode('/home/ghost');
+          if (homeGhost && homeGhost.type === 'dir' && !homeGhost.children.includes('tools')) {
+              homeGhost.children.push('tools');
+          }
+      }
+
+      VFS['/home/ghost/tools/auth.pyc'] = {
+          type: 'file',
+          content: '03 f3 0d 0a ... [PYTHON_BYTECODE_V3.8] ...\nStrings: "GHOST_ROOT{PYC_R3V3RS3_3NG1N33R}"\nOp: LOAD_CONST 1\nOp: STORE_NAME 0',
+          permissions: '0644'
+      };
+      const toolsDir = getNode('/home/ghost/tools');
+      if (toolsDir && toolsDir.type === 'dir' && !toolsDir.children.includes('auth.pyc')) {
+          toolsDir.children.push('auth.pyc');
+      }
+  }
+
+  // Cycle 62 Init (The JWT Token)
+  if (!VFS['/home/ghost/cookies.json']) {
+      VFS['/home/ghost/cookies.json'] = {
+          type: 'file',
+          content: '{\n  "session_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiZ2hvc3QiLCJyb2xlIjoidXNlciIsImlhdCI6MTYxNjIzOTAyMn0.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"\n}',
+          permissions: '0600'
+      };
+      const home = getNode('/home/ghost');
+      if (home && home.type === 'dir' && !home.children.includes('cookies.json')) {
+          home.children.push('cookies.json');
+      }
+      
+      // Create jwt_tool
+      VFS['/usr/bin/jwt_tool'] = {
+          type: 'file',
+          content: '[BINARY_ELF_X86_64] [JWT_ANALYZER]',
+          permissions: '0755'
+      };
+      const binDir = getNode('/usr/bin');
+      if (binDir && binDir.type === 'dir' && !binDir.children.includes('jwt_tool')) {
+          binDir.children.push('jwt_tool');
+      }
+  }
+
+  // Cycle 63 Init (The Web Shell)
+  if (!VFS['/var/www/html/uploads/shell.php']) {
+      // Ensure paths
+      const ensureDir = (p: string) => {
+           if (!VFS[p]) VFS[p] = { type: 'dir', children: [] };
+      };
+      const link = (p: string, c: string) => {
+          const n = getNode(p);
+          if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c);
+      };
+
+      ensureDir('/var');
+      ensureDir('/var/www');
+      link('/var', 'www');
+      ensureDir('/var/www/html');
+      link('/var/www', 'html');
+      ensureDir('/var/www/html/uploads');
+      link('/var/www/html', 'uploads');
+
+      // Create Dummy Files
+      if (!VFS['/var/www/html/index.html']) {
+          VFS['/var/www/html/index.html'] = { type: 'file', content: '<html><body><h1>Welcome to Omega Corp</h1></body></html>' };
+          link('/var/www/html', 'index.html');
+      }
+      
+      if (!VFS['/var/www/html/uploads/logo.png']) {
+          VFS['/var/www/html/uploads/logo.png'] = { type: 'file', content: '[PNG_IMAGE_DATA]' };
+          link('/var/www/html/uploads', 'logo.png');
+      }
+
+      // Create Web Shell
+      VFS['/var/www/html/uploads/shell.php'] = {
+          type: 'file',
+          content: '<?php\n// AVATAR UPLOAD V2\n$data = "ZWNobyAiRmxhZzogR0hPU1RfUk9PVHtXM0JfU0gzTExfRDNUM0NUM0R9Ijs=";\neval(base64_decode($data));\n?>',
+          permissions: '0644'
+      };
+      link('/var/www/html/uploads', 'shell.php');
+      
+      // Hint file
+      if (!VFS['/home/ghost/security_alert.txt']) {
+          VFS['/home/ghost/security_alert.txt'] = {
+              type: 'file',
+              content: '[SECURITY ALERT]\nSuspicious activity detected in /var/www/html/uploads.\nPlease investigate for potential web shells.\n'
+          };
+          const home = getNode('/home/ghost');
+          if (home && home.type === 'dir' && !home.children.includes('security_alert.txt')) {
+              home.children.push('security_alert.txt');
+          }
       }
   }
 
@@ -1863,6 +2044,38 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
             VFS['/var/run/void_solved'] = { type: 'file', content: 'TRUE' };
         }
         break;
+    }
+    case 'php': {
+       if (args.length > 0) {
+           const file = args[0];
+           const node = getNode(resolvePath(cwd, file));
+           if (node && node.type === 'file') {
+                if (node.content.includes('<?php')) {
+                    if (file.includes('shell.php')) {
+                        output = 'Flag: GHOST_ROOT{W3B_SH3LL_D3T3CT3D}';
+                        if (!VFS['/var/run/webshell_solved']) {
+                            VFS['/var/run/webshell_solved'] = { type: 'file', content: 'TRUE' };
+                            const runDir = getNode('/var/run');
+                            if (runDir && runDir.type === 'dir' && !runDir.children.includes('webshell_solved')) {
+                                runDir.children.push('webshell_solved');
+                            }
+                            output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: WEB SHELL ANALYZED.\x1b[0m`;
+                        }
+                    } else {
+                        output = 'PHP Parse Error: syntax error, unexpected end of file';
+                    }
+                } else {
+                    output = 'Could not open input file: ' + file;
+                }
+           } else {
+               output = 'Could not open input file: ' + file;
+           }
+       } else if (stdin) {
+            output = 'Interactive mode not supported.';
+       } else {
+           output = 'php: missing operand';
+       }
+       break;
     }
     case 'sudo': {
       if (args.length < 1) {
@@ -4408,6 +4621,24 @@ tmpfs             815276    1184    814092   1% /run
            output = 'rmmod: usage: rmmod <modulename>';
        } else {
            const modName = args[0];
+           
+           // Cycle 58: Kernel Panic Fix
+           if (modName === 'phantom_driver') {
+               if (getNode('/var/crash/vmcore.1')) {
+                   if (!VFS['/var/run/kernel_fixed']) {
+                       VFS['/var/run/kernel_fixed'] = { type: 'file', content: 'TRUE' };
+                       const runDir = getNode('/var/run');
+                       if (runDir && runDir.type === 'dir' && !runDir.children.includes('kernel_fixed')) {
+                           runDir.children.push('kernel_fixed');
+                       }
+                       output = `[KERNEL] Module "phantom_driver" unloaded.\n[KERNEL] System Stability Restored.\n[KERNEL] Panic resolved.\nFLAG: GHOST_ROOT{K3RN3L_P4N1C_F1X3D}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: KERNEL PANIC RESOLVED.\x1b[0m`;
+                   } else {
+                       output = `rmmod: ERROR: Module phantom_driver is not currently loaded`;
+                   }
+                   return { output, newCwd, action: 'delay' };
+               }
+           }
+
            const idx = LOADED_MODULES.indexOf(modName);
            if (idx !== -1) {
                LOADED_MODULES.splice(idx, 1);
@@ -4417,6 +4648,199 @@ tmpfs             815276    1184    814092   1% /run
            }
        }
        break;
+    }
+    case 'sqlite3': {
+        if (args.length < 1) {
+            output = 'sqlite3: usage: sqlite3 <database> [sql]';
+        } else {
+            const dbPath = resolvePath(cwd, args[0]);
+            const dbNode = getNode(dbPath);
+            const query = args.slice(1).join(' '); // Simple join, not parsing quotes perfectly here but good enough for simulation
+
+            if (!dbNode) {
+                output = `sqlite3: Error: unable to open database "${args[0]}": file is not a database`;
+            } else if (dbNode.type !== 'file' || !dbNode.content.startsWith('SQLite format 3')) {
+                output = `sqlite3: Error: file is not a database`;
+            } else {
+                if (args.length === 1) {
+                    // Interactive mode (simulation)
+                    output = `SQLite version 3.31.1 2020-01-27 19:55:54\nEnter ".help" for usage hints.\nsqlite> `;
+                    // Note: We don't support full interactive mode here, just one-shot commands. 
+                    // This output is just flavor text for the "no query" case.
+                    return { output, newCwd, action: 'delay' };
+                }
+
+                // Check for SQL Injection / specific query
+                if (query.includes("' OR '1'='1")) {
+                    output = `1|admin|21232f297a57a5a743894a0e4a801fc3|superuser\n2|ghost|5f4dcc3b5aa765d61d8327deb882cf99|user\n3|guest|084e0343a0486ff05530df6c705c8bb4|guest\n\n[SUCCESS] SQL Injection Successful.\n[DUMP] Dumping user table...\nFLAG: GHOST_ROOT{SQL_1NJ3CT10N_PWND}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: DATABASE EXPLOITED.\x1b[0m`;
+                    
+                    if (!VFS['/var/run/sql_solved']) {
+                        VFS['/var/run/sql_solved'] = { type: 'file', content: 'TRUE' };
+                        const runDir = getNode('/var/run');
+                        if (runDir && runDir.type === 'dir' && !runDir.children.includes('sql_solved')) {
+                            runDir.children.push('sql_solved');
+                        }
+                    }
+                } else if (query.toLowerCase().startsWith('select')) {
+                    // Mock query result
+                    if (query.includes('users')) {
+                        output = `Error: no such table: users (Try SQL Injection)`;
+                    } else {
+                        output = `Error: syntax error near "${query.split(' ')[0]}"`;
+                    }
+                } else {
+                    output = `Error: near "${query.split(' ')[0]}": syntax error`;
+                }
+            }
+        }
+        break;
+    }
+    case 'gdb': {
+        if (args.length < 1) {
+            output = 'gdb: usage: gdb <core_dump>';
+        } else {
+            const fileTarget = args[0];
+            const filePath = resolvePath(cwd, fileTarget);
+            const fileNode = getNode(filePath);
+
+            if (!fileNode) {
+                output = `gdb: ${fileTarget}: No such file or directory`;
+            } else if (fileNode.type !== 'file' || !fileNode.content.includes('ELF_CORE_DUMP')) {
+                output = `gdb: ${fileTarget}: File format not recognized`;
+            } else {
+                // Cycle 60: Memory Dump Analysis
+                output = `GNU gdb (Ghost Root GDB) 9.2\nCore was generated by \`./auth_service\`.\nProgram terminated with signal SIGSEGV, Segmentation fault.\n#0  0x0804801a in authenticate () at auth.c:42\n42\t    if (strcmp(input, secret) == 0) grant_access();\n(gdb) \n[SYSTEM] Debugger attached. Try examining memory (e.g., 'x/s 0x08049000').`;
+                
+                // Hack: Since we don't have interactive GDB, we check if the user *also* passed a command via --eval-command or similar, 
+                // OR we simulate the result if they just ran gdb on the file.
+                // Better approach: Let them run `gdb core.1337` then maybe `strings core.1337` is the intended solution?
+                // The prompt says "GDB Core Analysis". 
+                // Let's support `strings` finding the flag too.
+                
+                // But if they run `gdb core.1337`, we can just give them the win if they use `strings` on it later.
+                // Wait, `strings` command is already implemented but just returns "strings" usually.
+                // Let's update `strings` case or `cat` case? No, `strings` is in the COMMANDS list but maybe not implemented in switch.
+                
+                // Let's implement `strings` command logic properly if it's missing.
+                // Checking `strings` implementation...
+                // It is in COMMANDS but likely not in switch.
+            }
+        }
+        break;
+    }
+    case 'strings': {
+        if (args.length < 1) {
+            output = 'strings: usage: strings <file>';
+        } else {
+            const fileTarget = args[0];
+            const filePath = resolvePath(cwd, fileTarget);
+            const fileNode = getNode(filePath);
+            
+            if (!fileNode || fileNode.type !== 'file') {
+                output = `strings: ${fileTarget}: No such file`;
+            } else {
+                // Filter for readable strings (simulated)
+                const content = fileNode.content;
+                // If it's the core dump
+                if (fileTarget.includes('core.1337')) {
+                    output = `...
+/lib/ld-linux.so.2
+auth_service
+password=supersecretkey123
+GHOST_ROOT{C0R3_DUMP_D1V3R}
+...`;
+                    if (!VFS['/var/run/gdb_solved']) {
+                        VFS['/var/run/gdb_solved'] = { type: 'file', content: 'TRUE' };
+                        const runDir = getNode('/var/run');
+                        if (runDir && runDir.type === 'dir' && !runDir.children.includes('gdb_solved')) {
+                            runDir.children.push('gdb_solved');
+                        }
+                        output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: MEMORY DUMP ANALYZED.\x1b[0m`;
+                    }
+                } else if (fileTarget.includes('auth.pyc')) {
+                    output = `...
+hash
+GHOST_ROOT{PYTH0N_BYT3C0D3_S3CR3T}
+password_check
+auth.py
+<module>
+...`;
+                    if (!VFS['/var/run/pyc_solved']) {
+                        VFS['/var/run/pyc_solved'] = { type: 'file', content: 'TRUE' };
+                        const runDir = getNode('/var/run');
+                        if (runDir && runDir.type === 'dir' && !runDir.children.includes('pyc_solved')) {
+                            runDir.children.push('pyc_solved');
+                        }
+                        output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PYTHON BYTECODE REVERSED.\x1b[0m`;
+                    }
+                } else {
+                    // Generic strings behavior (strip non-printable)
+                    output = content.replace(/[^\x20-\x7E]/g, '');
+                }
+            }
+        }
+        break;
+    }
+    case 'jwt_tool': {
+        if (args.length < 1) {
+            output = 'jwt_tool: usage: jwt_tool <token_file> OR jwt_tool decode <token>';
+        } else {
+            let token = '';
+            if (args[0] === 'decode' && args[1]) {
+                token = args[1];
+            } else {
+                const fileTarget = args[0];
+                const filePath = resolvePath(cwd, fileTarget);
+                const fileNode = getNode(filePath);
+                
+                if (fileNode && fileNode.type === 'file') {
+                    // Try to parse JSON to get token
+                    try {
+                        const json = JSON.parse(fileNode.content);
+                        if (json.session_token) token = json.session_token;
+                    } catch (e) {
+                        token = fileNode.content.trim();
+                    }
+                } else {
+                    output = `jwt_tool: ${fileTarget}: File not found or invalid`;
+                    return { output, newCwd };
+                }
+            }
+
+            if (token) {
+                const parts = token.split('.');
+                if (parts.length === 3) {
+                    try {
+                        const header = atob(parts[0]);
+                        const payload = atob(parts[1]);
+                        output = `HEADER: ${header}\nPAYLOAD: ${payload}\nSIGNATURE: [HIDDEN]`;
+                        
+                        // Check for flag condition (Cycle 62)
+                        if (payload.includes('"user":"ghost"') && payload.includes('"role":"user"')) {
+                            // In a real scenario, they would forge it. Here we just reward decoding analysis.
+                            // Or maybe they need to forge it? Let's keep it simple: Analysis first.
+                            // Actually, let's make them forge it?
+                            // "The JWT Token" - typically implies forgery or cracking.
+                            // Let's just reward analysis for now as step 1.
+                            
+                            if (!VFS['/var/run/jwt_solved']) {
+                                VFS['/var/run/jwt_solved'] = { type: 'file', content: 'TRUE' };
+                                const runDir = getNode('/var/run');
+                                if (runDir && runDir.type === 'dir' && !runDir.children.includes('jwt_solved')) {
+                                    runDir.children.push('jwt_solved');
+                                }
+                                output += `\n\n[ANALYSIS] Weak Secret Detected (HS256).\nFLAG: GHOST_ROOT{JW7_D3C0D3D_SUCC3SS}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: JWT ANALYZED.\x1b[0m`;
+                            }
+                        }
+                    } catch (e) {
+                        output = `jwt_tool: Invalid Base64 encoding`;
+                    }
+                } else {
+                    output = `jwt_tool: Invalid JWT format (must have 3 parts)`;
+                }
+            }
+        }
+        break;
     }
     case 'kill': {
       if (args.length < 1) {
@@ -6069,6 +6493,33 @@ ${validUnits.length} loaded units listed.`;
            } else if (node.type === 'dir') {
                output = `/usr/bin/python3: can't find '__main__' module in '${fileName}'`;
            } else if (node.type === 'file') {
+               // Cycle 61: Python Bytecode Reverse Engineering
+               if (fileName.endsWith('.pyc')) {
+                   // User trying to run .pyc directly?
+                   output = `RuntimeError: Bad magic number in .pyc file`;
+               } else if (fileName === 'decompile.py' || (node.content && node.content.includes('dis.dis'))) {
+                   // Allow user to write a decompilation script?
+                   // Or if they run `python3 -m dis auth.pyc` (args check needed)
+               } 
+               
+               // Check for dis module usage in command
+               if (args.includes('-m') && args.includes('dis') && args.some(a => a.endsWith('auth.pyc'))) {
+                   output = `  1           0 LOAD_CONST               1 ('GHOST_ROOT{PYC_R3V3RS3_3NG1N33R}')
+              2 STORE_NAME               0 (secret_key)
+              4 LOAD_CONST               0 (None)
+              6 RETURN_VALUE`;
+                   
+                   if (!VFS['/var/run/pyc_solved']) {
+                       VFS['/var/run/pyc_solved'] = { type: 'file', content: 'TRUE' };
+                       const runDir = getNode('/var/run');
+                       if (runDir && runDir.type === 'dir' && !runDir.children.includes('pyc_solved')) {
+                           runDir.children.push('pyc_solved');
+                       }
+                       output += `\n\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PYTHON BYTECODE REVERSED.\x1b[0m`;
+                   }
+                   return { output, newCwd, action: 'delay' };
+               }
+
                // Simple mock interpreter
                const content = node.content;
                if (content.includes('import os') || content.includes('system(')) {
