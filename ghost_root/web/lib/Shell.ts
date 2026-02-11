@@ -501,6 +501,41 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
       }
   }
 
+  // Cycle 41 Init (Compilation Puzzle)
+  if (!VFS['/home/ghost/tools/exploit.c']) {
+      // Create tools dir if missing
+      if (!VFS['/home/ghost/tools']) {
+          VFS['/home/ghost/tools'] = { type: 'dir', children: [] };
+          const homeGhost = getNode('/home/ghost');
+          if (homeGhost && homeGhost.type === 'dir' && !homeGhost.children.includes('tools')) {
+              homeGhost.children.push('tools');
+          }
+      }
+      
+      // Create exploit.c
+      VFS['/home/ghost/tools/exploit.c'] = { 
+          type: 'file', 
+          content: '#include <stdio.h>\n#include "libbreaker.h"\n\nint main() {\n    printf("Targeting System...\\n");\n    breaker_exploit();\n    return 0;\n}' 
+      };
+      const toolsDir = getNode('/home/ghost/tools');
+      if (toolsDir && toolsDir.type === 'dir' && !toolsDir.children.includes('exploit.c')) {
+          toolsDir.children.push('exploit.c');
+      }
+
+      // Create hidden header file
+      if (!VFS['/usr/src']) VFS['/usr/src'] = { type: 'dir', children: ['legacy'] };
+      if (!VFS['/usr/src/legacy']) VFS['/usr/src/legacy'] = { type: 'dir', children: ['libbreaker.h'] };
+      VFS['/usr/src/legacy/libbreaker.h'] = {
+          type: 'file',
+          content: '#ifndef LIBBREAKER_H\n#define LIBBREAKER_H\n\nvoid breaker_exploit() {\n    // PROPRIETARY ALGORITHM\n}\n\n#endif'
+      };
+      // Ensure /usr exists and has src
+      const usrNode = getNode('/usr');
+      if (usrNode && usrNode.type === 'dir') {
+          if (!usrNode.children.includes('src')) usrNode.children.push('src');
+      }
+  }
+
   // 1. Handle Piping (|) recursively
   const segments = splitPipeline(commandLine);
   if (segments.length > 1) {
@@ -653,9 +688,15 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
           }
 
           if (fileNode.content.includes('[BINARY_ELF_X86_64]') || fileNode.content.includes('BINARY_PAYLOAD') || fileNode.content.includes('DOOMSDAY_PROTOCOL')) {
-              if (fileName === 'overflow' || fileName === 'exploit') {
+              if (fileName === 'overflow') {
                   output = `[SYSTEM] Buffer Overflow Triggered at 0xBF800000...\n[SYSTEM] EIP overwritten with 0x08048000\n[SYSTEM] Spawning root shell...\n\n# whoami\nroot`;
                   return { output, newCwd: '/root', newPrompt: 'root@ghost-root#', action: 'delay' };
+              } else if (fileName === 'exploit') {
+                  output = `[EXPLOIT] Linking libbreaker.so... OK\n[EXPLOIT] Injecting Payload into Kernel... OK\n[EXPLOIT] Root Access Granted.\n\nFLAG: GHOST_ROOT{C0MP1L3R_M4ST3R}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PAYLOAD DELIVERED.\x1b[0m`;
+                  if (!VFS['/var/run/payload_delivered']) {
+                      VFS['/var/run/payload_delivered'] = { type: 'file', content: 'TRUE' };
+                  }
+                  return { output, newCwd, action: 'delay' };
               } else if (fileName === 'secure_vault') {
                   if (VFS['/var/lock/subsystem/vault.lock']) {
                       output = `[ERROR] Secure Vault Locked.\n[REASON] Exclusive lock held by process (PID: 4001).\n[HINT] Check process table (ps -ef).`;
@@ -2822,6 +2863,35 @@ ${host}.		300	IN	A	${ip}
             } else if (node.type === 'dir') {
                 output = `gcc: error: ${inputFile}: Is a directory`;
             } else {
+                // Cycle 41: Header Check for exploit.c
+                if (inputFile.endsWith('exploit.c') || node.content.includes('#include "libbreaker.h"')) {
+                    const headerPath = resolvePath(cwd, 'libbreaker.h');
+                    const headerNode = getNode(headerPath);
+                    
+                    // Simple check: Is libbreaker.h in the current directory?
+                    // We can also support -I later if needed, but for now force them to move/copy it.
+                    let foundHeader = false;
+                    if (headerNode && headerNode.type === 'file') {
+                        foundHeader = true;
+                    }
+                    
+                    // Also check args for -I path
+                    const includeIndex = args.indexOf('-I');
+                    if (includeIndex !== -1 && args[includeIndex + 1]) {
+                        const includePath = resolvePath(cwd, args[includeIndex + 1]);
+                        const includeHeaderPath = resolvePath(includePath, 'libbreaker.h');
+                        const includeHeaderNode = getNode(includeHeaderPath);
+                        if (includeHeaderNode && includeHeaderNode.type === 'file') {
+                            foundHeader = true;
+                        }
+                    }
+
+                    if (!foundHeader) {
+                        output = `${inputFile}:2:10: fatal error: libbreaker.h: No such file or directory\ncompilation terminated.`;
+                        return finalize(output, newCwd);
+                    }
+                }
+
                 // Compilation Success Simulation
                 output = '';
                 const newPath = resolvePath(cwd, outputFile);
