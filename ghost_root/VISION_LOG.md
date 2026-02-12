@@ -1,5 +1,3 @@
-# VISION_LOG.md
-
 [2026-02-12 07:10]
 > CHANGES: ghost_root/web/lib/Shell.ts
 > PUZZLE ADDED: "The Web Shell" (PHP Upload).
@@ -63,3 +61,43 @@
 > LORE: User is restricted but can run a specific restore script as root. Script requires a hidden auth code found in its source.
 > SOLUTION: `sudo -l` -> See allowed script. `cat /opt/admin/restore_service.py` -> Find Auth Code (`OMEGA-7-RED`). `sudo /opt/admin/restore_service.py OMEGA-7-RED`.
 > ENCRYPTION: MED
+
+[2026-02-12 12:00]
+> CHANGES: ghost_root/web/lib/Shell.ts
+> PUZZLE ADDED: "The Port Knocking" (Firewall Bypass).
+> MECHANICS: Implemented stateful `nc` (Netcat) port sequence detection (7000 -> 8000 -> 9000). Added `/etc/knockd.conf`.
+> LORE: The Gateway (192.168.1.1) has SSH closed. A config file reveals a "knock" sequence required to open it.
+> SOLUTION: `cat /etc/knockd.conf` (read sequence: 7000, 8000, 9000). Run `nc -z 192.168.1.1 7000`, then `8000`, then `9000`. Port 22 opens.
+> ENCRYPTION: HIGH
+
+[2026-02-12 12:45]
+> CHANGES: ghost_root/web/lib/Shell.ts
+> PUZZLE ADDED: "The Deleted File Handle" (Disk Usage).
+> MECHANICS: Added `df` (Disk Free) and `lsof` (List Open Files) commands.
+> LORE: System disk (/var) is critically full (100%), but no large files are visible.
+> SOLUTION: `df -h` -> See /var full. `lsof +L1` -> Find `log_daemon` holding deleted syslog. `kill 1001`.
+> ENCRYPTION: MED
+
+[2026-02-12 13:15]
+> CHANGES: ghost_root/web/lib/Shell.ts
+> PUZZLE ADDED: "The Immutable Attribute" (Chattr/Lsattr).
+> MECHANICS: Added `chattr` and `lsattr` commands. Implemented immutable bit ('i') logic for file deletion/modification.
+> LORE: A lockdown config file (`/etc/security/lockdown.conf`) is enforcing restrictions and cannot be deleted.
+> SOLUTION: `lsattr /etc/security/lockdown.conf` (shows 'i' bit). `chattr -i /etc/security/lockdown.conf`. `rm /etc/security/lockdown.conf`.
+> ENCRYPTION: HIGH
+
+[2026-02-12 13:40]
+> CHANGES: ghost_root/web/lib/Shell.ts, ghost_root/web/lib/VFS.ts
+> PUZZLE ADDED: "The Bad Superblock" (Filesystem Corruption).
+> MECHANICS: Added /dev/sdc1 (corrupted) and updated mount/fsck/dmesg.
+> LORE: A backup drive containing critical data has a corrupted superblock.
+> SOLUTION: dmesg (find sdc1 error) -> fsck /dev/sdc1 (fails) -> fsck -b 32768 /dev/sdc1 (fixes) -> mount /dev/sdc1 /mnt/backup.
+> ENCRYPTION: HIGH
+
+[2026-02-12 14:15]
+> CHANGES: ghost_root/web/lib/Shell.ts
+> PUZZLE ADDED: "The Kubernetes Config" (Kubeconfig / API Access).
+> MECHANICS: Added `~/.kube/config` with cluster details and a Bearer token. Updated `curl` to support `10.96.0.1` and Authorization header check.
+> LORE: A developer left their kubeconfig file in the home directory. Use the token to access the internal API and retrieve secrets.
+> SOLUTION: `cat /home/ghost/.kube/config` -> Get Token. `curl -H "Authorization: Bearer GH0ST-KUBE-T0K3N-V1" https://10.96.0.1`.
+> ENCRYPTION: HIGH

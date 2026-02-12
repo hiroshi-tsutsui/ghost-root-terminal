@@ -548,6 +548,38 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
       // Marker for constraint
       VFS['/var/log/overflow.dmp'] = { type: 'file', content: 'MARKER_FOR_DISK_FULL' }; 
   }
+
+  // Cycle 75 Init (The Immutable Attribute)
+  if (!VFS['/etc/security/lockdown.conf']) {
+      // Create config file
+      const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+      const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+      ensureDir('/etc');
+      ensureDir('/etc/security');
+      link('/etc', 'security');
+
+      VFS['/etc/security/lockdown.conf'] = {
+          type: 'file',
+          content: 'LOCKDOWN_MODE=STRICT\nROOT_ACCESS=DENIED\n# To lift lockdown, delete this file.\n',
+          permissions: '0644'
+      };
+      link('/etc/security', 'lockdown.conf');
+      
+      // Set Immutable Attribute
+      FILE_ATTRIBUTES['/etc/security/lockdown.conf'] = ['i'];
+
+      // Create Hint
+      if (!VFS['/home/ghost/security_memo.txt']) {
+          VFS['/home/ghost/security_memo.txt'] = {
+              type: 'file',
+              content: 'From: SysAdmin\nTo: Staff\nSubject: Lockdown Mode\n\nDue to recent intrusions, I have enabled strict lockdown mode.\nI made the config file immutable so no script kiddies can delete it.\n\n- Admin'
+          };
+          const home = getNode('/home/ghost');
+          if (home && home.type === 'dir' && !home.children.includes('security_memo.txt')) {
+              home.children.push('security_memo.txt');
+          }
+      }
+  }
   
   // Clean up marker if puzzle solved
   if (VFS['/var/run/disk_solved'] && VFS['/var/log/overflow.dmp']) {
@@ -562,6 +594,23 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
           // Force save to persist the fix
           saveSystemState();
       }
+  }
+
+  // Cycle 77 Init (The Kubernetes Config)
+  if (!VFS['/home/ghost/.kube/config']) {
+      // Create .kube dir
+      const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+      const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+      
+      ensureDir('/home/ghost/.kube');
+      link('/home/ghost', '.kube');
+      
+      VFS['/home/ghost/.kube/config'] = {
+          type: 'file',
+          content: 'apiVersion: v1\nclusters:\n- cluster:\n    server: https://10.96.0.1\n    certificate-authority-data: REDACTED\n  name: ghost-cluster\ncontexts:\n- context:\n    cluster: ghost-cluster\n    user: ghost-admin\n  name: ghost-admin@ghost-cluster\ncurrent-context: ghost-admin@ghost-cluster\nusers:\n- name: ghost-admin\n  user:\n    token: GH0ST-KUBE-T0K3N-V1',
+          permissions: '0600'
+      };
+      link('/home/ghost/.kube', 'config');
   }
 
   // Cycle 40 Init (Self-Healing)
@@ -3428,11 +3477,13 @@ Type "status" for mission objectives.`;
         break;
     }
     case 'fsck': {
-       if (args.length < 1) {
-           output = 'usage: fsck <device>';
-       } else {
-           const dev = args[0];
-           if (dev === '/dev/sdb1') {
+       // Parse args better to handle flags like -b 32768
+       const hasBackupFlag = args.includes('-b') && (args.includes('32768') || args.includes('8193'));
+       const dev = args.find(a => a.startsWith('/dev/')) || args[args.length - 1];
+
+       if (!dev) {
+           output = 'usage: fsck [-b superblock] <device>';
+       } else if (dev === '/dev/sdb1') {
                const runDir = getNode('/var/run');
                const isFixed = runDir && runDir.type === 'dir' && runDir.children.includes('sdb1_fixed');
                
@@ -3455,10 +3506,18 @@ Type "status" for mission objectives.`;
                        output += '\n\x1b[1;32m[MISSION UPDATE] Objective Complete: FILESYSTEM REPAIRED.\x1b[0m';
                    }
                }
+           } else if (dev === '/dev/sdc1') {
+               // Cycle 76: Bad Superblock
+               if (hasBackupFlag) {
+                  output = `fsck from util-linux 2.34\ne2fsck 1.45.5 (07-Jan-2020)\n${dev}: recovering journal\n${dev}: clean, 11/65536 files, 7963/262144 blocks`;
+                  VFS['/var/run/sdc1_fixed'] = { type: 'file', content: 'TRUE' };
+                  addChild('/var/run', 'sdc1_fixed');
+               } else {
+                  output = `fsck from util-linux 2.34\ne2fsck 1.45.5 (07-Jan-2020)\nfsck.ext4: Bad magic number in super-block while trying to open ${dev}\n\nThe superblock could not be read or does not describe a valid ext2/ext3/ext4 filesystem. If the device is valid and it really contains an ext2/ext3/ext4 filesystem (and not swap or ufs or something else), then the superblock is corrupt, and you might try running e2fsck with an alternate superblock:\n    e2fsck -b 8193 <device>\n or\n    e2fsck -b 32768 <device>`;
+               }
            } else {
                output = `fsck from util-linux 2.34\nfsck: error: ${dev}: No such file or directory`;
            }
-       }
        break;
     }
     case 'mount': {
@@ -3535,6 +3594,17 @@ Type "status" for mission objectives.`;
                    output = `mount: /dev/vault mounted on ${target}.`;
                } else {
                    output = `mount: /dev/vault: unknown filesystem type 'cryptex_fs'`;
+               }
+           } else if (source === '/dev/sdc1') {
+               // Cycle 76: Bad Superblock Logic
+               const isFixed = getNode('/var/run/sdc1_fixed');
+               if (!isFixed) {
+                   output = `mount: wrong fs type, bad option, bad superblock on /dev/sdc1, missing codepage or helper program, or other error.`;
+               } else {
+                   MOUNTED_DEVICES[source] = target;
+                   VFS[`${target}/backup.tar.gz`] = { type: 'file', content: 'GHOST_ROOT{B4D_SUp3RBL0CK_R3C0V3R3D}' };
+                   addChild(target, 'backup.tar.gz');
+                   output = `mount: /dev/sdc1 mounted on ${target}.`;
                }
            } else {
                output = `mount: ${source}: special device does not exist`;
@@ -4957,7 +5027,7 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
       return { output, newCwd, action: 'crack_sim', data: { target: args[0], user: args[1], success: false } };
     }
     case 'dmesg':
-      output = '[    0.000000] Linux version 5.4.0-ghost (root@mainframe) (gcc version 9.3.0)\n[    0.420000] pci 0000:00:1f.2: [sda] 134217728 512-byte logical blocks: (68.7 GB/64.0 GiB)\n[    0.420420] pci 0000:00:1f.3: [sdb] Attached SCSI disk (Hidden)\n[    0.420666] sdb: sdb1\n[    1.337000] EXT4-fs (sdb1): mounted filesystem with ordered data mode. Opts: (null)';
+      output = '[    0.000000] Linux version 5.4.0-ghost (root@mainframe) (gcc version 9.3.0)\n[    0.420000] pci 0000:00:1f.2: [sda] 134217728 512-byte logical blocks: (68.7 GB/64.0 GiB)\n[    0.420420] pci 0000:00:1f.3: [sdb] Attached SCSI disk (Hidden)\n[    0.420666] sdb: sdb1\n[    1.337000] EXT4-fs (sdb1): mounted filesystem with ordered data mode. Opts: (null)\n[    2.100000] sd 2:0:0:0: [sdc] 16777216 512-byte logical blocks: (8.5 GB/7.9 GiB)\n[    2.100420] sdc: sdc1\n[    2.150000] EXT4-fs (sdc1): VFS: Can\'t find ext4 filesystem';
       break;
     case 'top':
       return { output: '', newCwd, action: 'top_sim' };
@@ -5714,6 +5784,24 @@ auth.py
                  return finalize(output, newCwd);
              } else {
                  output = `[403 Forbidden]\nAccess Denied.\n(Hint: Check /etc/nginx/sites-enabled for allowed paths)`;
+                 return finalize(output, newCwd);
+             }
+        } else if (url.includes('10.96.0.1')) {
+             // Cycle 77: Kubernetes Config
+             const hasToken = args.some(a => a.includes('Authorization: Bearer GH0ST-KUBE-T0K3N-V1'));
+             if (hasToken) {
+                 output = `[200 OK]\nContent-Type: application/json\n\n{\n  "kind": "SecretList",\n  "items": [\n    {\n      "metadata": { "name": "admin-token" },\n      "data": { "token": "REDACTED" }\n    },\n    {\n      "metadata": { "name": "flag-secret" },\n      "data": { "flag": "GHOST_ROOT{K8S_C0NF1G_3XPOS3D}" }\n    }\n  ]\n}`;
+                 output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: KUBERNETES EXPOSED.\x1b[0m`;
+                 if (!VFS['/var/run/k8s_solved']) {
+                     VFS['/var/run/k8s_solved'] = { type: 'file', content: 'TRUE' };
+                     const runDir = getNode('/var/run');
+                     if (runDir && runDir.type === 'dir' && !runDir.children.includes('k8s_solved')) {
+                         runDir.children.push('k8s_solved');
+                     }
+                 }
+                 return finalize(output, newCwd);
+             } else {
+                 output = `[401 Unauthorized]\nMetadata: { "kind": "Status", "status": "Failure", "message": "Unauthorized", "reason": "Unauthorized", "code": 401 }`;
                  return finalize(output, newCwd);
              }
         } else if (url.includes('google.com')) {
@@ -8033,6 +8121,82 @@ postgres            14-alpine 1234567890ab   5 days ago     214MB`;
                         }
                     }
                     output = hasOutput ? buffer : ''; 
+                }
+            }
+        }
+        break;
+    }
+    case 'lsattr': {
+        if (args.length < 1) {
+            output = 'Usage: lsattr [OPTION]... [FILE]...';
+        } else {
+            const fileName = args[args.length - 1]; 
+            const filePath = resolvePath(cwd, fileName);
+            const node = getNode(filePath);
+
+            if (!node) {
+                output = `lsattr: ${fileName}: No such file or directory`;
+            } else if (node.type !== 'file') {
+                output = `lsattr: ${fileName}: Inappropriate ioctl for device`;
+            } else {
+                const attrs = FILE_ATTRIBUTES[filePath] || [];
+                const attrStr = '----' + (attrs.includes('i') ? 'i' : '-') + '---------';
+                output = `${attrStr} ${fileName}`;
+            }
+        }
+        break;
+    }
+    case 'chattr': {
+        if (args.length < 2) {
+            output = 'Usage: chattr [-+=aAcCdDeijsStTu] [files...]';
+        } else {
+            const modeArg = args[0];
+            const fileName = args[1];
+            const filePath = resolvePath(cwd, fileName);
+            const isRoot = !!getNode('/tmp/.root_session');
+            
+            if (!isRoot) {
+                output = `chattr: Operation not permitted`;
+            } else {
+                const node = getNode(filePath);
+                if (!node) {
+                    output = `chattr: ${fileName}: No such file or directory`;
+                } else if (node.type !== 'file') {
+                    output = `chattr: ${fileName}: Operation not supported`;
+                } else {
+                    const op = modeArg[0]; // + - =
+                    const flag = modeArg.substring(1);
+                    
+                    if (flag !== 'i') {
+                         output = `chattr: invalid mode: '${modeArg}' (simulation supports only 'i')`;
+                    } else {
+                        const currentAttrs = FILE_ATTRIBUTES[filePath] || [];
+                        if (op === '+') {
+                            if (!currentAttrs.includes('i')) {
+                                FILE_ATTRIBUTES[filePath] = [...currentAttrs, 'i'];
+                            }
+                        } else if (op === '-') {
+                            if (currentAttrs.includes('i')) {
+                                FILE_ATTRIBUTES[filePath] = currentAttrs.filter(a => a !== 'i');
+                                
+                                // Puzzle Solve Check (Cycle 75)
+                                if (filePath === '/etc/security/lockdown.conf') {
+                                     output = `\x1b[1;32m[MISSION UPDATE] Objective Complete: IMMUTABLE ATTRIBUTE REMOVED.\x1b[0m\nFLAG: GHOST_ROOT{1MMUT4BL3_ATTR_RM}`;
+                                     if (!VFS['/var/run/attr_rm_solved']) {
+                                         VFS['/var/run/attr_rm_solved'] = { type: 'file', content: 'TRUE' };
+                                         const runDir = getNode('/var/run');
+                                         if (runDir && runDir.type === 'dir' && !runDir.children.includes('attr_rm_solved')) {
+                                             runDir.children.push('attr_rm_solved');
+                                         }
+                                     }
+                                     return finalize(output, newCwd);
+                                }
+                            }
+                        } else if (op === '=') {
+                            FILE_ATTRIBUTES[filePath] = ['i'];
+                        }
+                        output = ''; // Silent success
+                    }
                 }
             }
         }
