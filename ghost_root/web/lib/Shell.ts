@@ -121,6 +121,30 @@ export const loadSystemState = () => {
             logDir.children.push('surveillance.log');
         }
     }
+
+    // Cycle 72 Init (Sudoers Puzzle)
+    if (!VFS['/opt/admin/restore_service.py']) {
+        // Ensure /opt and /opt/admin exist
+        if (!VFS['/opt']) {
+             VFS['/opt'] = { type: 'dir', children: [] };
+             addChild('/', 'opt');
+        }
+        if (!VFS['/opt/admin']) {
+             VFS['/opt/admin'] = { type: 'dir', children: [] };
+             addChild('/opt', 'admin');
+        }
+        
+        VFS['/opt/admin/restore_service.py'] = { type: 'file', content: '#!/usr/bin/env python3\nimport sys\n# ADMIN AUTH CODE: "OMEGA-7-RED"\n\nif len(sys.argv) < 2:\n    print("Usage: restore_service.py <auth_code>")\n    sys.exit(1)\n\nif sys.argv[1] == "OMEGA-7-RED":\n    print("System Restoration Sequence Initiated...")\n    print("[SUCCESS] Services Restored.")\n    print("FLAG: GHOST_ROOT{SUD0_PR1V_3SC_SUCC3SS}")\nelse:\n    print("Access Denied.")' };
+        addChild('/opt/admin', 'restore_service.py');
+        
+        // Ensure /etc/sudoers.d exists
+        if (!VFS['/etc/sudoers.d']) {
+             VFS['/etc/sudoers.d'] = { type: 'dir', children: [] };
+             addChild('/etc', 'sudoers.d');
+        }
+        VFS['/etc/sudoers.d/readme'] = { type: 'file', content: 'User ghost has limited sudo privileges.\nRun "sudo -l" to see allowed commands.' };
+        addChild('/etc/sudoers.d', 'readme');
+    }
 };
 
 // Helper to reset state
@@ -1627,6 +1651,18 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
                   output = `bash: ${command}: Permission denied (Missing execute bit or corrupt header)`;
               }
           } else if (fileNode.content.startsWith('#!/bin/bash')) {
+              if (fileName === 'system_backup.sh') {
+                  output = `[BACKUP] Executing backup routine...\n[BACKUP] Archive created.\nFLAG: GHOST_ROOT{CR0N_D_D1SCOV3RY}\n`;
+                  if (!VFS['/var/run/cron_d_solved']) {
+                      VFS['/var/run/cron_d_solved'] = { type: 'file', content: 'TRUE' };
+                      const runDir = getNode('/var/run');
+                      if (runDir && runDir.type === 'dir' && !runDir.children.includes('cron_d_solved')) {
+                          runDir.children.push('cron_d_solved');
+                      }
+                      output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: HIDDEN CRON FOUND.\x1b[0m`;
+                  }
+                  return { output, newCwd, action: 'delay' };
+              }
               if (fileName === 'secure_cleanup') {
                   const tmpNode = getNode('/tmp');
                   const perms = (tmpNode as any).permissions || '0777';
@@ -2283,9 +2319,32 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
     case 'sudo': {
       if (args.length < 1) {
         output = 'usage: sudo <command>';
+      } else if (args[0] === '-l') {
+        output = 'Matching Defaults entries for ghost on ghost-root:\n    env_reset, mail_badpass, secure_path=/usr/local/sbin\\:/usr/local/bin\\:/usr/sbin\\:/usr/bin\\:/sbin\\:/bin\n\nUser ghost may run the following commands on ghost-root:\n    (root) NOPASSWD: /usr/bin/python3 /opt/admin/restore_service.py';
       } else {
-        output = `[sudo] password for ghost:\n\nghost is not in the sudoers file. This incident will be reported.`;
-        return { output, newCwd, action: 'delay' };
+        const fullCmd = args.join(' ');
+        const validCmd = '/usr/bin/python3 /opt/admin/restore_service.py';
+        
+        if (fullCmd.startsWith(validCmd) || fullCmd.startsWith('/opt/admin/restore_service.py')) {
+            const scriptArgs = fullCmd.includes(validCmd) 
+                ? fullCmd.substring(validCmd.length).trim().split(/\s+/)
+                : fullCmd.substring('/opt/admin/restore_service.py'.length).trim().split(/\s+/);
+            
+            const authCode = scriptArgs[0];
+            
+            if (!authCode) {
+                 output = 'Usage: restore_service.py <auth_code>';
+            } else if (authCode === 'OMEGA-7-RED' || authCode === '"OMEGA-7-RED"' || authCode === "'OMEGA-7-RED'") {
+                 output = 'System Restoration Sequence Initiated...\n[SUCCESS] Services Restored.\n\nFLAG: GHOST_ROOT{SUD0_PR1V_3SC_SUCC3SS}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PRIVILEGE ESCALATION.\x1b[0m';
+                 return { output, newCwd, action: 'delay' };
+            } else {
+                 output = 'Access Denied.';
+                 return { output, newCwd, action: 'delay' };
+            }
+        } else {
+            output = `[sudo] password for ghost:\n\nghost is not in the sudoers file. This incident will be reported.`;
+            return { output, newCwd, action: 'delay' };
+        }
       }
       break;
     }
@@ -2568,6 +2627,16 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
              const matches = content.match(/[\x20-\x7E]{4,}/g);
              if (matches) {
                  output = matches.join('\n');
+                 if (content.includes('GHOST_ROOT{STR1NGS_R3V3AL_TRUTH}')) {
+                     if (!VFS['/var/run/strings_solved']) {
+                         VFS['/var/run/strings_solved'] = { type: 'file', content: 'TRUE' };
+                         const runDir = getNode('/var/run');
+                         if (runDir && runDir.type === 'dir' && !runDir.children.includes('strings_solved')) {
+                             runDir.children.push('strings_solved');
+                         }
+                         output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: HIDDEN STRINGS REVEALED.\x1b[0m`;
+                     }
+                 }
              } else {
                  output = '';
              }

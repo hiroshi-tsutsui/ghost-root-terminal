@@ -28,6 +28,42 @@ const VFS: Record<string, VFSNode> = {
     children: ['home', 'etc', 'var', 'archive', 'usr', 'root', 'tmp', 'dev', 'lib', 'mnt', 'opt', 'remote'],
     permissions: '755'
   },
+  // Cycle 69: The Corrupted Binary (Fix)
+  '/usr/bin/sys_monitor': {
+      type: 'file',
+      content: '[BINARY_ELF_X86_64] [CORRUPTED_HEADER] [SEGFAULT_ON_EXEC]\nError: 0xDEADBEEF memory violation.',
+      permissions: '0755'
+  },
+  '/var/backups/bin': {
+      type: 'dir',
+      children: ['sys_monitor']
+  },
+  '/var/backups/bin/sys_monitor': {
+      type: 'file',
+      content: '[BINARY_ELF_X86_64] [VALID_HEADER] [SYSTEM_MONITOR_V2]\n[OK] System Integrity Verified.\nFLAG: GHOST_ROOT{MD5_H4SH_R3ST0R3D}',
+      permissions: '0755'
+  },
+  // Cycle 70: The Hidden String
+  '/var/log/debug.dump': {
+      type: 'file',
+      content: '\x00\x01\x02\x03[DEBUG_START]...GHOST_ROOT{STR1NGS_R3V3AL_TRUTH}...[DEBUG_END]\x04\x05\x06',
+      permissions: '0644'
+  },
+  // Cycle 70: The Hidden Cron
+  '/etc/cron.d': {
+      type: 'dir',
+      children: ['hidden_task']
+  },
+  '/etc/cron.d/hidden_task': {
+      type: 'file',
+      content: '* * * * * root /usr/local/bin/system_backup.sh\n',
+      permissions: '0600'
+  },
+  '/usr/local/bin/system_backup.sh': {
+      type: 'file',
+      content: '#!/bin/bash\n# SYSTEM BACKUP\n# FLAG: GHOST_ROOT{CR0N_D_D1SCOV3RY}\necho "Backup complete."',
+      permissions: '0700'
+  },
   '/root': {
     type: 'dir',
     children: ['launch_codes.bin', 'README.txt']
@@ -46,7 +82,7 @@ const VFS: Record<string, VFSNode> = {
   },
   '/usr/bin': {
     type: 'dir',
-    children: ['gcc', 'net-bridge', 'void_crypt', 'deploy_agent', 'otp_gen', 'recover_data', 'ghost_update', 'secure_vault']
+    children: ['gcc', 'net-bridge', 'void_crypt', 'deploy_agent', 'otp_gen', 'recover_data', 'ghost_update', 'secure_vault', 'sys_monitor']
   },
   '/usr/bin/secure_vault': {
     type: 'file',
@@ -433,7 +469,7 @@ exit`
   },
   '/etc': {
     type: 'dir',
-    children: ['passwd', 'shadow', 'hosts', 'iptables.rules', 'tor', 'cron.daily', 'ssl', 'uplink.conf']
+    children: ['passwd', 'shadow', 'hosts', 'iptables.rules', 'tor', 'cron.daily', 'cron.d', 'ssl', 'uplink.conf']
   },
   '/etc/uplink.conf': {
     type: 'file',
