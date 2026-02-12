@@ -101,3 +101,83 @@
 > LORE: A developer left their kubeconfig file in the home directory. Use the token to access the internal API and retrieve secrets.
 > SOLUTION: `cat /home/ghost/.kube/config` -> Get Token. `curl -H "Authorization: Bearer GH0ST-KUBE-T0K3N-V1" https://10.96.0.1`.
 > ENCRYPTION: HIGH
+
+[2026-02-12 15:35]
+> CHANGES: ghost_root/web/lib/Shell.ts
+> PUZZLE ADDED: "The Capability Escalation" (Linux Capabilities).
+> MECHANICS: Added `getcap` and `tac` commands. Added `/usr/bin/tac` with `cap_dac_read_search+ep`.
+> LORE: A backup tool (`tac`) was given extended capabilities to read log files but can be used to read root secrets.
+> SOLUTION: `getcap /usr/bin/tac` (reveals capability) -> `tac /root/secret_plan.txt` (bypasses permission check).
+> ENCRYPTION: HIGH
+
+[2026-02-12 16:35]
+> CHANGES: ghost_root/web/lib/Shell.ts
+> PUZZLE ADDED: "The Shared Object Injection" (LD_PRELOAD).
+> MECHANICS: Added `/usr/bin/secure_vault` and `/home/ghost/tools/bypass.so`. Implemented `LD_PRELOAD` parsing logic.
+> LORE: A secure vault uses a dynamically linked library for hardware key validation. An interceptor library was found.
+> SOLUTION: `LD_PRELOAD=/home/ghost/tools/bypass.so secure_vault`.
+> ENCRYPTION: HIGH
+
+[2026-02-12 17:00]
+> CHANGES: ghost_root/web/lib/Shell.ts, ghost_root/web/lib/VFS.ts
+> PUZZLE ADDED: "The Unmounted Partition" (Loop Device).
+> MECHANICS: Added `lsblk` command and `/dev/loop0`. Enhanced `mount` to support loopback mounting.
+> LORE: A hidden partition (`/dev/loop0`) contains archived shadow data. It is not mounted by default.
+> SOLUTION: `lsblk` (discover loop0) -> `mkdir /mnt/secret` (optional, can use existing) -> `mount /dev/loop0 /mnt/secret` -> `cat /mnt/secret/shadow_archive.tar`.
+> ENCRYPTION: MED
+
+[2026-02-12 17:30]
+> CHANGES: ghost_root/web/lib/Shell.ts
+> PUZZLE ADDED: "The Kernel Module" (lsmod / insmod).
+> MECHANICS: Added `lsmod`, `insmod`, `modinfo`, `rmmod` commands. Added `/lib/modules/.../blackbox.ko`.
+> LORE: A proprietary kernel module is required to interface with a "Black Box" device.
+> SOLUTION: `insmod /lib/modules/5.4.0-ghost/kernel/drivers/misc/blackbox.ko` -> Module loaded -> `/dev/blackbox` created -> `cat /dev/blackbox`.
+> ENCRYPTION: MED
+
+[2026-02-12 18:15]
+> CHANGES: ghost_root/web/lib/Shell.ts
+> PUZZLE ADDED: "The ARP Spoof" (Network Anomaly).
+> MECHANICS: Added `arp` command and `/proc/net/arp`.
+> LORE: A rogue IoT device is hidden on the subnet (192.168.1.110).
+> SOLUTION: `arp` -> See MAC/IP -> `ssh 192.168.1.110` or `nc 192.168.1.110 80`.
+> ENCRYPTION: MED
+
+[2026-02-12 19:10]
+> CHANGES: ghost_root/web/lib/Shell.ts
+> PUZZLE ADDED: "The Unix Socket" (IPC / Netcat).
+> MECHANICS: Added `ss` (Socket Statistics) and `nc -U` (Unix Socket) support.
+> LORE: A secure daemon is listening on a local Unix socket, bypassing the network stack.
+> SOLUTION: `ss -x` (find /var/run/ghost.sock) -> `nc -U /var/run/ghost.sock`.
+> ENCRYPTION: MED
+
+[2026-02-12 20:00]
+> CHANGES: ghost_root/web/lib/Shell.ts, ghost_root/web/components/Terminal.tsx
+> PUZZLE ADDED: "The Runaway Process" (Process Management).
+> MECHANICS: Added `sys_bloat` (PID 5000) and `bloat_guard` (PID 4999). Updated `top` to use real process data.
+> LORE: System performance degraded due to a crypto miner hidden as a system process.
+> SOLUTION: `top` -> See high CPU. `kill 5000` -> Respawns. `kill 4999` (Parent) -> Then `kill 5000`.
+> ENCRYPTION: LOW
+
+[2026-02-12 20:35]
+> CHANGES: ghost_root/web/lib/Shell.ts
+> PUZZLE ADDED: "The Ghost Commit" (Git History).
+> MECHANICS: Added `git` command (`log`, `show`, `status`) and `.git` repository simulation.
+> LORE: A developer removed sensitive keys from the code but forgot to scrub the git history.
+> SOLUTION: `cd repo` -> `git log` (find commit 9f8e7d6) -> `git show 9f8e7d6`.
+> ENCRYPTION: LOW
+
+[2026-02-12 21:00]
+> CHANGES: ghost_root/web/lib/Shell.ts
+> PUZZLE ADDED: "The Compressed Evidence" (Log Rotation / Gzip).
+> MECHANICS: Added `/var/log/auth.log.2.gz` and `zcat`/`zgrep`/`gunzip` commands.
+> LORE: Security logs are rotated and compressed. An incident from 3 days ago is hidden in an archive.
+> SOLUTION: `zcat /var/log/auth.log.2.gz` or `zgrep "Accepted" /var/log/auth.log.2.gz`.
+> ENCRYPTION: MED
+
+[2026-02-12 21:30]
+> CHANGES: ghost_root/web/lib/Shell.ts
+> PUZZLE ADDED: "The SSL Handshake" (OpenSSL / Certificate Expiry).
+> MECHANICS: Added `openssl x509 -in <file> -text` support and `unzip -P <password>`. Added `/etc/ssl/certs/omega.crt` and `/home/ghost/secure_data.zip`.
+> LORE: A secure archive is locked with a password hidden in the issuer details of an SSL certificate.
+> SOLUTION: `openssl x509 -in /etc/ssl/certs/omega.crt -text` -> Find Issuer CN: `Omega_Secure_Pass_2026`. `unzip -P Omega_Secure_Pass_2026 secure_data.zip`.
+> ENCRYPTION: MED

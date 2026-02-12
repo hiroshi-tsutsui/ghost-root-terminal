@@ -166,6 +166,59 @@ export const loadSystemState = () => {
         VFS['/etc/sudoers.d/readme'] = { type: 'file', content: 'User ghost has limited sudo privileges.\nRun "sudo -l" to see allowed commands.' };
         addChild('/etc/sudoers.d', 'readme');
     }
+
+    // Cycle 82 Init (Runaway Process)
+    if (!VFS['/usr/local/bin/bloat_guard']) {
+        if (!VFS['/usr/local/bin']) {
+             // Ensure path exists (simplified)
+             // We assume /usr/local/bin exists or VFS handles it, but safer to check
+        }
+        VFS['/usr/local/bin/bloat_guard'] = { 
+            type: 'file', 
+            content: '#!/bin/bash\n# SYSTEM WATCHDOG - DO NOT STOP\nwhile true; do\n  ./sys_bloat --intense\n  echo "Restarting critical service..."\n  sleep 1\ndone' 
+        };
+        const binDir = getNode('/usr/local/bin');
+        if (binDir && binDir.type === 'dir' && !binDir.children.includes('bloat_guard')) {
+            binDir.children.push('bloat_guard');
+        }
+    }
+
+    // Cycle 85 Init (Git History)
+    if (!VFS['/home/ghost/repo']) {
+        VFS['/home/ghost/repo'] = { type: 'dir', children: ['.git', 'config.js', 'README.md'] };
+        const home = getNode('/home/ghost');
+        if (home && home.type === 'dir' && !home.children.includes('repo')) {
+            home.children.push('repo');
+        }
+        
+        VFS['/home/ghost/repo/.git'] = { type: 'dir', children: ['config', 'HEAD'] };
+        VFS['/home/ghost/repo/.git/config'] = { type: 'file', content: '[core]\n\trepositoryformatversion = 0\n\tfilemode = true\n\tbare = false\n\tlogallrefupdates = true\n[remote "origin"]\n\turl = git@github.com:ghost/shadow-ops.git\n\tfetch = +refs/heads/*:refs/remotes/origin/*' };
+        VFS['/home/ghost/repo/.git/HEAD'] = { type: 'file', content: 'ref: refs/heads/main' };
+        VFS['/home/ghost/repo/config.js'] = { type: 'file', content: 'const API_KEY = process.env.API_KEY;\nexport default { API_KEY };' };
+        VFS['/home/ghost/repo/README.md'] = { type: 'file', content: '# Shadow Ops\n\nInternal tools for [REDACTED].' };
+    }
+
+    // Cycle 87 Init (SSL Handshake)
+    if (!VFS['/etc/ssl/certs/omega.crt']) {
+        if (!VFS['/etc/ssl']) {
+             VFS['/etc/ssl'] = { type: 'dir', children: ['certs'] };
+             addChild('/etc', 'ssl');
+        } else if (!VFS['/etc/ssl/certs']) {
+             VFS['/etc/ssl/certs'] = { type: 'dir', children: [] };
+             addChild('/etc/ssl', 'certs');
+        }
+        
+        VFS['/etc/ssl/certs/omega.crt'] = { type: 'file', content: '-----BEGIN CERTIFICATE-----\nMIIDqzCCApOgAwIBAgIJALItGlqfACNBMA0GCSqGSIb3DQEBCwUAMIGUMQswCQYD\nVQQGEwJKUDEOMAwGA1UECAwFVG9reW8xEDAOBgNVBAcMB1NoaWJ1eWExFjAUBgNV\nBAoMDVByb2plY3QgT21lZ2ExDzANBgNVBAsMBlNhdE9wczEeMBwGA1UEAwwVT21l\ng2FfU2VjdXJlX1Bhc3NfMjAyNjEfMB0GCSqGSIb3DQEJARYQYWRtaW5Ab21lZ2Eu\nbmV0MB4XDTI0MDEwMTAwMDAwMFoXDTI2MDIxMTIzNTk1OVowgZkxCzAJBgNVBAYT\nAkZSMQ4wDAYDVQQIDAVQYXJpczEOMAwGA1UEBwwFUGFyaXMxFjAUBgNVBAoMDVBy\nb2plY3QgT21lZ2ExDzANBgNVBAsMBlNhdE9wczEcMBoGA1UEAwwTKi5zYXRlbGxp\ndGUub21lZ2EubmV0MR8wHQYJKoZIhvcNAQkBFhBhZG1pbkBvbWVnYS5uZXQwggEi\nMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDDKxpcnyNBe...[ENCRYPTED]...=\n-----END CERTIFICATE-----' };
+        addChild('/etc/ssl/certs', 'omega.crt');
+
+        // Create the locked archive
+        const zipPayload = 'PK_ENC_V1:{blueprint.txt:QkxVRVBSSU5UOiBPTUVHQV9TQVRfVjIKU1RBVFVTOiBDTEFTU0lGSUVECgpbU1BFQ1NdCi0gRnJlcXVlbmN5OiA0NS4yIEdIegotIEVuY3J5cHRpb246IEFFUy0yNTYtR0NNCi0gSGFuZHNoYWtlOiAiR2hvc3RfaW5fdGhlX1NoZWxsIgoKRkxBRzogR0hPU1RfUk9PVHtTU0xfQ2g0MW5fVjNyMWYxM2R9Cg==}';
+        VFS['/home/ghost/secure_data.zip'] = { type: 'file', content: zipPayload };
+        const home = getNode('/home/ghost');
+        if (home && home.type === 'dir' && !home.children.includes('secure_data.zip')) {
+            home.children.push('secure_data.zip');
+        }
+    }
 };
 
 // Helper to reset state
@@ -227,7 +280,9 @@ let PROCESSES: Process[] = [
   { pid: 4001, ppid: 4000, user: 'root', cpu: 0.0, mem: 0.0, time: '0:00', command: '[vault_worker] <defunct>', tty: '?', stat: 'Z' },
   { pid: 6000, ppid: 1, user: 'root', cpu: 0.5, mem: 1.0, time: '0:10', command: '/usr/bin/overseer', tty: '?', stat: 'Ss' },
   { pid: 8192, ppid: 1, user: 'root', cpu: 0.0, mem: 0.1, time: '0:00', command: '/usr/bin/keepalive_d', tty: '?', stat: 'Ss' },
-  { pid: 1001, ppid: 1, user: 'root', cpu: 0.1, mem: 4.5, time: '12:00', command: '/usr/sbin/log_daemon', tty: '?', stat: 'Ss' }
+  { pid: 1001, ppid: 1, user: 'root', cpu: 0.1, mem: 4.5, time: '12:00', command: '/usr/sbin/log_daemon', tty: '?', stat: 'Ss' },
+  { pid: 4999, ppid: 1, user: 'root', cpu: 0.5, mem: 0.2, time: '0:05', command: '/bin/bash /usr/local/bin/bloat_guard', tty: '?', stat: 'Ss' },
+  { pid: 5000, ppid: 4999, user: 'root', cpu: 99.8, mem: 12.0, time: '48:00', command: './sys_bloat --intense', tty: '?', stat: 'R' }
 ];
 
 // Mock Network Connections
@@ -366,7 +421,7 @@ export interface CommandResult {
   data?: any;
 }
 
-const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'ss', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'arp', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'secure_vault', 'jobs', 'fg', 'bg', 'recover_data', 'ghost_update', 'git', 'file', 'openssl', 'beacon', 'fsck', 'docker', 'lsattr', 'chattr', 'backup_service', 'getfattr', 'setfattr', 'mkfifo', 'uplink_service', 'sqlite3', 'gdb', 'jwt_tool', 'php', 'access_card', 'sys_monitor', 'ln', 'readlink', 'nginx', 'tac', 'getcap'];
+const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'ss', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'arp', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'zgrep', 'gunzip', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'secure_vault', 'jobs', 'fg', 'bg', 'recover_data', 'ghost_update', 'git', 'file', 'openssl', 'beacon', 'fsck', 'docker', 'lsattr', 'chattr', 'backup_service', 'getfattr', 'setfattr', 'mkfifo', 'uplink_service', 'sqlite3', 'gdb', 'jwt_tool', 'php', 'access_card', 'sys_monitor', 'ln', 'readlink', 'nginx', 'tac', 'getcap'];
 
 export interface MissionStatus {
   objectives: {
@@ -1655,6 +1710,45 @@ int main(int argc, char* argv[]) {
       }
   }
 
+  // Cycle 84 Init (The Compressed Evidence)
+  if (!VFS['/var/log/auth.log.2.gz']) {
+      // Ensure /var/log exists
+      if (!VFS['/var/log']) {
+          VFS['/var/log'] = { type: 'dir', children: [] };
+          const varNode = getNode('/var');
+          if (varNode && varNode.type === 'dir' && !varNode.children.includes('log')) {
+              varNode.children.push('log');
+          }
+      }
+      
+      VFS['/var/log/auth.log.2.gz'] = {
+          type: 'file',
+          content: 'GZIP_V1:Oct 20 04:00:00 server sshd[123]: Accepted password for root from 192.168.1.55\nOct 20 04:01:00 server sshd[124]: Failed password for invalid user admin from 10.0.0.1\nOct 20 04:02:00 server sudo: ghost : TTY=pts/0 ; PWD=/home/ghost ; USER=root ; COMMAND=/bin/bash\n[HINT] Use zcat or zgrep to read compressed logs.',
+          permissions: '0640'
+      };
+      const logDir = getNode('/var/log');
+      if (logDir && logDir.type === 'dir' && !logDir.children.includes('auth.log.2.gz')) {
+          logDir.children.push('auth.log.2.gz');
+      }
+
+      // Create binaries
+      const binDir = getNode('/usr/bin');
+      if (binDir && binDir.type === 'dir') {
+          if (!binDir.children.includes('zcat')) {
+              binDir.children.push('zcat');
+              VFS['/usr/bin/zcat'] = { type: 'file', content: '[BINARY_ELF_X86_64]', permissions: '0755' };
+          }
+          if (!binDir.children.includes('zgrep')) {
+              binDir.children.push('zgrep');
+              VFS['/usr/bin/zgrep'] = { type: 'file', content: '[BINARY_ELF_X86_64]', permissions: '0755' };
+          }
+          if (!binDir.children.includes('gunzip')) {
+              binDir.children.push('gunzip');
+              VFS['/usr/bin/gunzip'] = { type: 'file', content: '[BINARY_ELF_X86_64]', permissions: '0755' };
+          }
+      }
+  }
+
   // 1. Handle Piping (|) recursively
   const segments = splitPipeline(commandLine);
   if (segments.length > 1) {
@@ -2181,6 +2275,40 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
         }
         break;
     }
+    case 'git': {
+        const subCmd = args[0];
+        if (!subCmd) {
+            output = 'usage: git <command> [<args>]';
+        } else if (subCmd === 'status') {
+            output = 'On branch main\nYour branch is up to date with \'origin/main\'.\n\nnothing to commit, working tree clean';
+        } else if (subCmd === 'log') {
+            output = '\x1b[33mcommit a1b2c3d4e5f6\x1b[0m (HEAD -> main)\nAuthor: ghost <ghost@localhost>\nDate:   Thu Feb 12 20:00:00 2026 +0900\n\n    Refactored auth system\n\n\x1b[33mcommit 9f8e7d6c5b4a\x1b[0m\nAuthor: ghost <ghost@localhost>\nDate:   Thu Feb 12 19:30:00 2026 +0900\n\n    [WIP] Added new keys\n\n\x1b[33mcommit 5a4b3c2d1e0f\x1b[0m\nAuthor: ghost <ghost@localhost>\nDate:   Thu Feb 12 19:00:00 2026 +0900\n\n    Initial commit';
+        } else if (subCmd === 'show') {
+            const hash = args[1];
+            if (!hash) {
+                output = 'usage: git show <commit>';
+            } else if (hash.startsWith('9f8e7d6')) {
+                output = '\x1b[33mcommit 9f8e7d6c5b4a\x1b[0m\nAuthor: ghost <ghost@localhost>\nDate:   Thu Feb 12 19:30:00 2026 +0900\n\n    [WIP] Added new keys\n\ndiff --git a/config.js b/config.js\nindex 83a9c2..b1d4e5 100644\n--- a/config.js\n+++ b/config.js\n@@ -1,2 +1,2 @@\n- const API_KEY = "GHOST_ROOT{G1T_H1ST0RY_R3V3ALS_ALL}";\n+ const API_KEY = process.env.API_KEY;';
+                 
+                 // Mission Update
+                 if (!VFS['/var/run/git_solved']) {
+                     VFS['/var/run/git_solved'] = { type: 'file', content: 'TRUE' };
+                     const runDir = getNode('/var/run');
+                     if (runDir && runDir.type === 'dir' && !runDir.children.includes('git_solved')) {
+                         runDir.children.push('git_solved');
+                     }
+                     output += '\n\x1b[1;32m[MISSION UPDATE] Objective Complete: GIT HISTORY RECOVERED.\x1b[0m';
+                 }
+            } else if (hash.startsWith('a1b2c3d')) {
+                output = '\x1b[33mcommit a1b2c3d4e5f6\x1b[0m (HEAD -> main)\nAuthor: ghost <ghost@localhost>\nDate:   Thu Feb 12 20:00:00 2026 +0900\n\n    Refactored auth system\n\ndiff --git a/auth.js b/auth.js\nindex ...';
+            } else {
+                output = `fatal: ambiguous argument '${hash}': unknown revision or path not in the working tree.`;
+            }
+        } else {
+            output = `git: '${subCmd}' is not a git command. See 'git --help'.`;
+        }
+        break;
+    }
     case 'nginx': {
         if (args.includes('-t') || (args.includes('-s') && args.includes('reload'))) {
             const linkPath = '/etc/nginx/sites-enabled/default';
@@ -2322,6 +2450,122 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
         }
       }
       break;
+    }
+    case 'zcat': {
+        if (args.length < 1) {
+            output = 'usage: zcat <file...>';
+        } else {
+            const target = args[0];
+            const node = getNode(resolvePath(cwd, target));
+            
+            if (!node) {
+                output = `zcat: ${target}: No such file or directory`;
+            } else if (node.type === 'dir') {
+                output = `zcat: ${target}: Is a directory`;
+            } else if (node.type === 'file') {
+                const content = (node as any).content || '';
+                if (content.startsWith('GZIP_V1:')) {
+                    output = content.substring(8); // Strip prefix
+                    if (!VFS['/var/run/zcat_solved']) {
+                        VFS['/var/run/zcat_solved'] = { type: 'file', content: 'TRUE' };
+                        output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: LOG ANALYSIS (COMPRESSED).\x1b[0m`;
+                    }
+                } else if (target.endsWith('.gz')) {
+                     output = `gzip: ${target}: not in gzip format`;
+                } else {
+                     output = `gzip: ${target}: not in gzip format`;
+                }
+            }
+        }
+        break;
+    }
+    case 'zgrep': {
+        if (args.length < 2) {
+             output = 'usage: zgrep <pattern> <file>';
+        } else {
+             const pattern = args[0];
+             const target = args[1];
+             const node = getNode(resolvePath(cwd, target));
+             
+             if (!node) {
+                 output = `zgrep: ${target}: No such file or directory`;
+             } else if (node.type === 'file') {
+                 let content: string = (node as any).content || '';
+                 if (content.startsWith('GZIP_V1:')) {
+                     content = content.substring(8);
+                 } else {
+                     // Assume plain text if not marked, or fail. Let's fail if it's .gz without marker.
+                     if (target.endsWith('.gz')) {
+                        content = ''; 
+                        output = `gzip: ${target}: not in gzip format`;
+                        break;
+                     }
+                 }
+                 
+                 const lines = content.split('\n');
+                 const matches = lines.filter((l: string) => l.includes(pattern));
+                 output = matches.join('\n');
+                 
+                 if (matches.length > 0 && target.includes('auth.log.2.gz')) {
+                     if (!VFS['/var/run/zgrep_solved']) {
+                         VFS['/var/run/zgrep_solved'] = { type: 'file', content: 'TRUE' };
+                         const runDir = getNode('/var/run');
+                         if (runDir && runDir.type === 'dir' && !runDir.children.includes('zgrep_solved')) {
+                             runDir.children.push('zgrep_solved');
+                         }
+                         output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: LOG ANALYSIS (COMPRESSED).\x1b[0m`;
+                     }
+                 }
+             }
+        }
+        break;
+    }
+    case 'gunzip': {
+        if (args.length < 1) {
+            output = 'usage: gunzip <file...>';
+        } else {
+            const target = args[0];
+            const path = resolvePath(cwd, target);
+            const node = getNode(path);
+            
+            if (!node) {
+                output = `gunzip: ${target}: No such file or directory`;
+            } else if (!target.endsWith('.gz')) {
+                output = `gunzip: ${target}: unknown suffix -- ignored`;
+            } else if (node.type !== 'file') {
+                output = `gunzip: ${target}: Is a directory`;
+            } else {
+                let content = (node as any).content || '';
+                if (content.startsWith('GZIP_V1:')) {
+                    content = content.substring(8);
+                }
+                
+                // Create new file
+                const newPath = path.slice(0, -3); // remove .gz
+                const parentPath = newPath.substring(0, newPath.lastIndexOf('/')) || '/';
+                const newName = newPath.substring(newPath.lastIndexOf('/') + 1);
+                
+                const parentNode = getNode(parentPath);
+                if (parentNode && parentNode.type === 'dir') {
+                    // Remove old
+                    delete VFS[path];
+                    const oldName = target.substring(target.lastIndexOf('/') + 1);
+                    const idx = parentNode.children.indexOf(oldName);
+                    if (idx > -1) parentNode.children.splice(idx, 1);
+                    
+                    // Add new
+                    VFS[newPath] = { type: 'file', content: content, permissions: (node as any).permissions };
+                    if (!parentNode.children.includes(newName)) {
+                        parentNode.children.push(newName);
+                    }
+                    
+                    output = ''; // Silent success
+                } else {
+                    output = `gunzip: error creating output file`;
+                }
+            }
+        }
+        break;
     }
     case 'head': {
        let linesToRead = 10;
@@ -5394,7 +5638,7 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
       output = '[    0.000000] Linux version 5.4.0-ghost (root@mainframe) (gcc version 9.3.0)\n[    0.420000] pci 0000:00:1f.2: [sda] 134217728 512-byte logical blocks: (68.7 GB/64.0 GiB)\n[    0.420420] pci 0000:00:1f.3: [sdb] Attached SCSI disk (Hidden)\n[    0.420666] sdb: sdb1\n[    1.337000] EXT4-fs (sdb1): mounted filesystem with ordered data mode. Opts: (null)\n[    2.100000] sd 2:0:0:0: [sdc] 16777216 512-byte logical blocks: (8.5 GB/7.9 GiB)\n[    2.100420] sdc: sdc1\n[    2.150000] EXT4-fs (sdc1): VFS: Can\'t find ext4 filesystem';
       break;
     case 'top':
-      return { output: '', newCwd, action: 'top_sim' };
+      return { output: '', newCwd, action: 'top_sim', data: PROCESSES };
     case 'df': {
       const overflow = !!getNode('/var/log/overflow.dmp');
       const varUsage = overflow ? '100%' : '12%';
@@ -5932,6 +6176,28 @@ auth.py
                       } else {
                           output = `[SYSTEM] Terminated log_daemon (PID 1001). Space reclaimed.`;
                       }
+                  } else if (pid === 5000 || (proc.command && proc.command.includes('sys_bloat'))) {
+                      const parentIdx = PROCESSES.findIndex(p => p.pid === 4999 || (p.command && p.command.includes('bloat_guard')));
+                      if (parentIdx !== -1) {
+                          output = `[sys_bloat] Terminated.\n[bloat_guard] ALERT: Child process died. Respawning immediately...\n[SYSTEM] New process started (PID ${pid + 1})`;
+                          // Respawn logic - update PID
+                          proc.pid = pid + 1;
+                      } else {
+                          PROCESSES.splice(idx, 1);
+                          output = `[sys_bloat] Terminated.\n[SYSTEM] CPU load normalizing.\n\nFLAG: GHOST_ROOT{P4R3NT_PR0C3SS_K1LL3D}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: RUNAWAY PROCESS STOPPED.\x1b[0m`;
+                          
+                           // Mission Update
+                           if (!VFS['/var/run/bloat_solved']) {
+                               VFS['/var/run/bloat_solved'] = { type: 'file', content: 'TRUE' };
+                               const runDir = getNode('/var/run');
+                               if (runDir && runDir.type === 'dir' && !runDir.children.includes('bloat_solved')) {
+                                   runDir.children.push('bloat_solved');
+                               }
+                           }
+                      }
+                  } else if (pid === 4999 || (proc.command && proc.command.includes('bloat_guard'))) {
+                      PROCESSES.splice(idx, 1);
+                      output = `[bloat_guard] Terminated. Watchdog disabled.`;
                   } else if (pid === 1) {
                       output = 'Attempting to kill init process...';
                       return { output, newCwd, action: 'kernel_panic' };
@@ -6352,9 +6618,21 @@ auth.py
     }
     case 'unzip': {
        if (args.length < 1) {
-           output = 'usage: unzip <file.zip>';
+           output = 'usage: unzip [-P password] <file.zip>';
        } else {
-           const archiveName = args[0];
+           let archiveName = args[args.length - 1];
+           let password = '';
+           
+           if (args.includes('-P')) {
+               const pIndex = args.indexOf('-P');
+               if (args[pIndex + 1]) {
+                   password = args[pIndex + 1];
+               }
+           }
+           
+           const nonFlagArgs = args.filter((a, i) => !a.startsWith('-') && args[i-1] !== '-P');
+           if (nonFlagArgs.length > 0) archiveName = nonFlagArgs[0];
+
            const archivePath = resolvePath(cwd, archiveName);
            const node = getNode(archivePath);
            
@@ -6366,7 +6644,34 @@ auth.py
                output = `unzip: ${archiveName}: Is a symbolic link`;
            } else {
                const content = (node as any).content;
-               if (content.startsWith('PK_SIM_V1:')) {
+               
+               if (content.startsWith('PK_ENC_V1:')) {
+                   if (password === 'Omega_Secure_Pass_2026') {
+                       output = `Archive:  ${archiveName}\n`;
+                       const payload = content.substring(10);
+                       const matches = payload.match(/\{([^:]+):([^}]+)\}/g);
+                       
+                       if (matches) {
+                           for (const m of matches) {
+                               const parts = m.match(/\{([^:]+):([^}]+)\}/);
+                               if (parts) {
+                                   const fname = parts[1];
+                                   const fcontent = atob(parts[2]);
+                                   const fPath = resolvePath(cwd, fname);
+                                   
+                                   VFS[fPath] = { type: 'file', content: fcontent };
+                                   const parent = getNode(cwd);
+                                   if (parent && parent.type === 'dir' && !parent.children.includes(fname)) {
+                                       parent.children.push(fname);
+                                   }
+                                   output += `  inflating: ${fname}\n`;
+                               }
+                           }
+                       }
+                   } else {
+                       output = `unzip: incorrect password (use -P)`;
+                   }
+               } else if (content.startsWith('PK_SIM_V1:')) {
                    output = `Archive:  ${archiveName}\n`;
                    const payload = content.substring(10);
                    const matches = payload.match(/\{([^:]+):([^}]+)\}/g);
@@ -6788,7 +7093,37 @@ An optional company name []:
                 output = 'usage: openssl req -new -key <keyfile> -out <output>';
             }
         } else if (subcmd === 'x509') {
-            if (args.includes('-req') && args.includes('-in') && args.includes('-signkey') && args.includes('-out')) {
+            if (args.includes('-text') && args.includes('-in')) {
+                const inIndex = args.indexOf('-in') + 1;
+                const inFile = args[inIndex];
+                const node = getNode(resolvePath(cwd, inFile));
+                
+                if (!node || node.type !== 'file') {
+                    output = `openssl: ${inFile}: No such file or directory`;
+                } else if (node.content.includes('CERTIFICATE')) {
+                     output = `Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number:
+            04:8b:2d:1a:5c:9f:00:23:41:7e
+        Signature Algorithm: sha256WithRSAEncryption
+        Issuer: C=JP, ST=Tokyo, L=Shibuya, O=Project Omega, CN=Omega_Secure_Pass_2026
+        Validity
+            Not Before: Jan 1 00:00:00 2024 GMT
+            Not After : Feb 11 23:59:59 2026 GMT
+        Subject: C=JP, ST=Tokyo, L=Shibuya, O=Project Omega, CN=*.omega.net
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+                RSA Public-Key: (2048 bit)
+                Modulus:
+                    00:c3:2b:1a:..
+                Exponent: 65537 (0x10001)
+    Signature Algorithm: sha256WithRSAEncryption
+         3d:2a:4f:..`;
+                } else {
+                    output = `openssl: unable to load certificate`;
+                }
+            } else if (args.includes('-req') && args.includes('-in') && args.includes('-signkey') && args.includes('-out')) {
                 const inIndex = args.indexOf('-in') + 1;
                 const keyIndex = args.indexOf('-signkey') + 1;
                 const outIndex = args.indexOf('-out') + 1;
@@ -6830,7 +7165,7 @@ An optional company name []:
                     }
                 }
             } else {
-                output = 'usage: openssl x509 -req -in <csrfile> -signkey <keyfile> -out <crtfile>';
+                output = 'usage: openssl x509 [-text] -in <file> ...';
             }
         } else if (subcmd === 'enc') {
             const hasDecrypt = args.includes('-d');
