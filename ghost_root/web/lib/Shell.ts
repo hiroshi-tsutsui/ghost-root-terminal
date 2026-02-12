@@ -219,6 +219,45 @@ export const loadSystemState = () => {
             home.children.push('secure_data.zip');
         }
     }
+
+    // Cycle 88 Init (The Kernel Parameters)
+    if (!VFS['/proc/sys/net/ipv4/ip_forward']) {
+        const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+        const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+
+        ensureDir('/proc'); ensureDir('/proc/sys'); ensureDir('/proc/sys/net'); ensureDir('/proc/sys/net/ipv4');
+        link('/proc', 'sys'); link('/proc/sys', 'net'); link('/proc/sys/net', 'ipv4');
+
+        VFS['/proc/sys/net/ipv4/ip_forward'] = {
+            type: 'file',
+            content: '0',
+            permissions: '0644'
+        };
+        link('/proc/sys/net/ipv4', 'ip_forward');
+
+        // Create Hint
+        if (!VFS['/home/ghost/gateway_config.log']) {
+            VFS['/home/ghost/gateway_config.log'] = {
+                type: 'file',
+                content: '[CONFIG] Interface eth0: 192.168.1.105\n[CONFIG] Gateway: 10.0.0.1 (Unreachable)\n[ERROR] Packet forwarding disabled by policy.\n[ACTION] Enable IP forwarding to reach internal subnet.'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('gateway_config.log')) {
+                home.children.push('gateway_config.log');
+            }
+        }
+    }
+
+    // Cycle 89 Init (The Orphaned Inode)
+    if (!VFS['/lost+found']) {
+        VFS['/lost+found'] = { type: 'dir', children: ['#8492'] };
+        addChild('/', 'lost+found');
+        
+        VFS['/lost+found/#8492'] = {
+            type: 'file',
+            content: 'Recovered Journal Entry: [INODE 8492]\nStatus: DELETED\nUser: ghost_admin\nAction: KEY_BACKUP\nData: R0hPU1RfUk9PVHtMMFNUX0FORF9GMFVORF9SM0MwVjNSWX0=\n[END_OF_RECORD]' 
+        };
+    }
 };
 
 // Helper to reset state
@@ -421,7 +460,7 @@ export interface CommandResult {
   data?: any;
 }
 
-const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'ss', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'arp', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'zgrep', 'gunzip', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'secure_vault', 'jobs', 'fg', 'bg', 'recover_data', 'ghost_update', 'git', 'file', 'openssl', 'beacon', 'fsck', 'docker', 'lsattr', 'chattr', 'backup_service', 'getfattr', 'setfattr', 'mkfifo', 'uplink_service', 'sqlite3', 'gdb', 'jwt_tool', 'php', 'access_card', 'sys_monitor', 'ln', 'readlink', 'nginx', 'tac', 'getcap'];
+const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'ss', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'arp', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'zgrep', 'gunzip', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'secure_vault', 'jobs', 'fg', 'bg', 'recover_data', 'ghost_update', 'git', 'file', 'openssl', 'beacon', 'fsck', 'docker', 'lsattr', 'chattr', 'backup_service', 'getfattr', 'setfattr', 'mkfifo', 'uplink_service', 'sqlite3', 'gdb', 'jwt_tool', 'php', 'access_card', 'sys_monitor', 'ln', 'readlink', 'nginx', 'tac', 'getcap', 'sysctl'];
 
 export interface MissionStatus {
   objectives: {
@@ -591,6 +630,26 @@ export const tabCompletion = (cwd: string, inputBuffer: string): { matches: stri
 };
 
 export const processCommand = (cwd: string, commandLine: string, stdin?: string): CommandResult => {
+  // Cycle 84: Restricted Shell Enforcer
+  if (ENV_VARS['RESTRICTED_SHELL'] === '1') {
+      const allowedCmds = ['ls', 'pwd', 'help', 'vi', 'vim', 'nano', 'exit', 'echo', 'clear', 'cat', 'history', 'whoami'];
+      const cmd = commandLine.trim().split(/\s+/)[0];
+      
+      // Allow specific escape sequence inside vi (handled by UI, but here we trap command execution)
+      // Actually, vi execution is handled below. We just need to allow 'vi' itself.
+      
+      if (commandLine.includes('/') || commandLine.includes('>') || commandLine.includes('|') || commandLine.includes('&')) {
+          // Special exemption: vi commands might look like paths in args, but we block paths.
+          // rbash blocks / in command NAME. Arguments with / are usually allowed in real rbash? 
+          // No, rbash blocks / in command name. It allows / in args.
+          // BUT, we want to prevent /bin/bash execution.
+          // Let's strictly block / in the command string for now to be safe/annoying.
+          return { output: `rbash: ${commandLine}: restricted: cannot specify '/' in command names`, newCwd: cwd };
+      }
+      if (!allowedCmds.includes(cmd)) {
+          return { output: `rbash: ${cmd}: command not found`, newCwd: cwd };
+      }
+  }
   // Cycle 74 Init (The Deleted File Handle)
   if (!VFS['/usr/sbin/log_daemon']) {
       // Create binary
@@ -4150,6 +4209,59 @@ Type "status" for mission objectives.`;
        }
        break;
     }
+    case 'sysctl': {
+        if (args.length === 0) {
+            output = 'usage: sysctl [-n] [-e] variable ...';
+        } else if (args[0] === '-a') {
+            const val = (getNode('/proc/sys/net/ipv4/ip_forward') as any)?.content || '0';
+            output = `kernel.hostname = ghost-root\nnet.ipv4.ip_forward = ${val}\nvm.swappiness = 60\nfs.file-max = 100000`;
+        } else if (args[0] === '-w') {
+            const assignment = args[1];
+            if (!assignment || !assignment.includes('=')) {
+                output = 'sysctl: cannot stat /proc/sys/' + (assignment || '') + ': No such file or directory';
+            } else {
+                const parts = assignment.split('=');
+                const key = parts[0];
+                const val = parts[1];
+                
+                if (key === 'net.ipv4.ip_forward') {
+                    const node = getNode('/proc/sys/net/ipv4/ip_forward');
+                    if (node && node.type === 'file') {
+                        node.content = val;
+                        output = `${key} = ${val}`;
+                    } else {
+                         // Should exist due to init
+                         output = `sysctl: cannot stat /proc/sys/${key}: No such file or directory`;
+                    }
+                } else {
+                    output = `sysctl: cannot stat /proc/sys/${key}: No such file or directory`;
+                }
+            }
+        } else {
+            // Read variable or handle assignment without -w (common alias)
+            const arg = args[0];
+            if (arg.includes('=')) {
+                const parts = arg.split('=');
+                const key = parts[0];
+                const val = parts[1];
+                if (key === 'net.ipv4.ip_forward') {
+                    const node = getNode('/proc/sys/net/ipv4/ip_forward');
+                    if (node && node.type === 'file') {
+                        node.content = val;
+                        output = `${key} = ${val}`;
+                    }
+                } else {
+                    output = `sysctl: cannot stat /proc/sys/${key}: No such file or directory`;
+                }
+            } else if (arg === 'net.ipv4.ip_forward') {
+                const val = (getNode('/proc/sys/net/ipv4/ip_forward') as any)?.content || '0';
+                output = `${arg} = ${val}`;
+            } else {
+                output = `sysctl: cannot stat /proc/sys/${arg}: No such file or directory`;
+            }
+        }
+        break;
+    }
     case 'ghost_update': {
        const lockFile = '/var/lib/dpkg/lock-frontend';
        if (getNode(lockFile)) {
@@ -4230,6 +4342,38 @@ Type "status" for mission objectives.`;
            }
        }
        break;
+    }
+    case 'vi':
+    case 'vim':
+    case 'nano': {
+        if (args.length < 1) {
+            output = `usage: ${command} <file>`;
+        } else {
+            const fileName = args[0];
+            
+            // Cycle 84: Restricted Shell Escape
+            // Solution: vi -c ':!/bin/bash' or similar
+            // We check args for the escape sequence
+            const cmdStr = args.join(' ');
+            if (cmdStr.includes('!/bin/bash') || cmdStr.includes('!bash') || cmdStr.includes('!/bin/sh')) {
+                 if (ENV_VARS['RESTRICTED_SHELL'] === '1') {
+                     ENV_VARS['RESTRICTED_SHELL'] = '0';
+                     output = `[EDITOR] Shell Escape Detected.\n[SHELL] Executing command: /bin/bash\n[SUCCESS] Restricted Mode Deactivated.\n\nFLAG: GHOST_ROOT{RBASH_3SC4P3_V1_M0D3}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: RESTRICTED SHELL ESCAPE.\x1b[0m`;
+                     
+                     if (!VFS['/var/run/rbash_solved']) {
+                         VFS['/var/run/rbash_solved'] = { type: 'file', content: 'TRUE' };
+                         const runDir = getNode('/var/run');
+                         if (runDir && runDir.type === 'dir' && !runDir.children.includes('rbash_solved')) {
+                             runDir.children.push('rbash_solved');
+                         }
+                     }
+                     return { output, newCwd: '/home/restricted', newPrompt: 'restricted@server:~$ ', action: 'delay' };
+                 }
+            }
+
+            return { output: '', newCwd, action: 'edit_file', data: { file: fileName } };
+        }
+        break;
     }
     case 'clear':
       output = '\x1b[2J\x1b[0;0H'; 
@@ -4354,7 +4498,12 @@ Type "status" for mission objectives.`;
                  return { output, newCwd, action: 'delay' };
              }
         } else if (resolvedIP === '192.168.1.5') {
-             output = `Connecting to ${hostPart}...\nPermission denied (publickey).\n(Hint: Try cracking the 'backup' user)`;
+             if (userPart === 'restricted') {
+                 output = `Connecting to ${hostPart}...\nWarning: Permanently added '${hostPart}' (ECDSA) to the list of known hosts.\nrestricted@${hostPart}'s password: \n\nWelcome to Restricted Shell (rbash).\nNOTE: You are in a jailed environment. Many commands are disabled.`;
+                 ENV_VARS['RESTRICTED_SHELL'] = '1';
+                 return { output, newCwd: '/home/restricted', newPrompt: 'restricted@server:~$ ', action: 'delay' };
+             }
+             output = `Connecting to ${hostPart}...\nPermission denied (publickey).\n(Hint: Try cracking the 'backup' or 'restricted' user)`;
              return { output, newCwd, action: 'delay' };
         } else if (resolvedIP === '192.168.1.110') {
              output = `Connecting to ${hostPart}...\nHP JetDirect J4169A\nFirmware: V.2026.02.12\n\n[ADMIN CONSOLE]\nAuthenticated as: Guest\nAccess Level: Restricted\n\nFLAG: GHOST_ROOT{ARP_C4CH3_P01S0N}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: ROGUE DEVICE IDENTIFIED.\x1b[0m`;
@@ -4828,6 +4977,29 @@ ${extraRoute}`;
                        output = `PING ${host} (${ip}) 56(84) bytes of data.\n64 bytes from ${ip}: icmp_seq=1 ttl=64 time=0.4 ms`;
                    }
                    return { output, newCwd, action: 'delay' };
+               }
+
+               // Cycle 88: Sysctl/Gateway Check
+               if (ip.startsWith('10.0.0.')) {
+                   const fwdNode = getNode('/proc/sys/net/ipv4/ip_forward');
+                   const isForwarding = fwdNode && fwdNode.type === 'file' && fwdNode.content.trim() === '1';
+                   
+                   if (!isForwarding) {
+                       output = `ping: sendmsg: Network is unreachable (Gateway forwarding disabled)`;
+                       return { output, newCwd };
+                   } else {
+                       if (!VFS['/var/run/sysctl_solved']) {
+                           VFS['/var/run/sysctl_solved'] = { type: 'file', content: 'TRUE' };
+                           const runDir = getNode('/var/run');
+                           if (runDir && runDir.type === 'dir' && !runDir.children.includes('sysctl_solved')) {
+                               runDir.children.push('sysctl_solved');
+                           }
+                           output = `PING ${host} (${ip}) 56(84) bytes of data.\n64 bytes from ${ip}: icmp_seq=1 ttl=64 time=0.4 ms\n\n[SUCCESS] Gateway Forwarding Active.\nFLAG: GHOST_ROOT{SYSCTL_K3RN3L_TUN1NG}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: KERNEL PARAMETERS TUNED.\x1b[0m`;
+                       } else {
+                           output = `PING ${host} (${ip}) 56(84) bytes of data.\n64 bytes from ${ip}: icmp_seq=1 ttl=64 time=0.4 ms`;
+                       }
+                       return { output, newCwd, action: 'delay' };
+                   }
                }
 
                // Route Check for Black Site (Cycle 55 dependency)
