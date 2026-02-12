@@ -347,7 +347,7 @@ export interface CommandResult {
   data?: any;
 }
 
-const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'jobs', 'fg', 'bg', 'recover_data', 'ghost_update', 'git', 'file', 'openssl', 'beacon', 'fsck', 'docker', 'lsattr', 'chattr', 'backup_service', 'getfattr', 'setfattr', 'mkfifo', 'uplink_service', 'sqlite3', 'gdb', 'jwt_tool', 'php', 'access_card', 'sys_monitor'];
+const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'arp', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'secure_vault', 'jobs', 'fg', 'bg', 'recover_data', 'ghost_update', 'git', 'file', 'openssl', 'beacon', 'fsck', 'docker', 'lsattr', 'chattr', 'backup_service', 'getfattr', 'setfattr', 'mkfifo', 'uplink_service', 'sqlite3', 'gdb', 'jwt_tool', 'php', 'access_card', 'sys_monitor', 'ln', 'readlink', 'nginx', 'tac', 'getcap'];
 
 export interface MissionStatus {
   objectives: {
@@ -611,6 +611,57 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
           permissions: '0600'
       };
       link('/home/ghost/.kube', 'config');
+  }
+
+  // Cycle 81 Init (Kernel Module)
+  if (!VFS['/lib/modules/5.4.0-ghost/kernel/drivers/misc/blackbox.ko']) {
+      const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+      const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+      
+      ensureDir('/lib'); ensureDir('/lib/modules'); ensureDir('/lib/modules/5.4.0-ghost');
+      ensureDir('/lib/modules/5.4.0-ghost/kernel'); ensureDir('/lib/modules/5.4.0-ghost/kernel/drivers');
+      ensureDir('/lib/modules/5.4.0-ghost/kernel/drivers/misc');
+      
+      link('/', 'lib'); link('/lib', 'modules'); link('/lib/modules', '5.4.0-ghost');
+      link('/lib/modules/5.4.0-ghost', 'kernel'); link('/lib/modules/5.4.0-ghost/kernel', 'drivers');
+      link('/lib/modules/5.4.0-ghost/kernel/drivers', 'misc');
+      
+      VFS['/lib/modules/5.4.0-ghost/kernel/drivers/misc/blackbox.ko'] = {
+          type: 'file',
+          content: '[KERNEL_MODULE_V1]\nfilename:       /lib/modules/5.4.0-ghost/kernel/drivers/misc/blackbox.ko\nlicense:        GPL\ndescription:    Black Box Interface Driver\nauthor:         Unknown\nsrcversion:     B49382098402\ndepends:        \nretpoline:      Y\nname:           blackbox\nvermagic:       5.4.0-ghost SMP mod_unload ',
+          permissions: '0644'
+      };
+      link('/lib/modules/5.4.0-ghost/kernel/drivers/misc', 'blackbox.ko');
+  }
+
+  // Cycle 82 Init (The ARP Spoof)
+  if (!VFS['/proc/net/arp']) {
+      // Ensure /proc/net exists
+      const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+      const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+      
+      ensureDir('/proc');
+      ensureDir('/proc/net');
+      link('/proc', 'net');
+
+      VFS['/proc/net/arp'] = {
+          type: 'file',
+          content: 'IP address       HW type     Flags       HW address            Mask     Device\\n192.168.1.1      0x1         0x2         00:50:56:c0:00:01     *        eth0\\n192.168.1.5      0x1         0x2         00:50:56:c0:00:05     *        eth0\\n192.168.1.110    0x1         0x2         de:ad:be:ef:13:37     *        eth0',
+          permissions: '0444'
+      };
+      link('/proc/net', 'arp');
+      
+      // Create Hint
+      if (!VFS['/home/ghost/network_anomaly.log']) {
+          VFS['/home/ghost/network_anomaly.log'] = {
+              type: 'file',
+              content: '[ALERT] Rogue device detected on local subnet.\\n[ACTION] Check ARP table for unauthorized MAC addresses.\\n[TARGET] Identify and neutralize.'
+          };
+          const home = getNode('/home/ghost');
+          if (home && home.type === 'dir' && !home.children.includes('network_anomaly.log')) {
+              home.children.push('network_anomaly.log');
+          }
+      }
   }
 
   // Cycle 40 Init (Self-Healing)
@@ -1453,6 +1504,126 @@ int main(int argc, char* argv[]) {
       }
   }
 
+  // Cycle 79 Init (The Broken Symlink)
+  if (!VFS['/etc/nginx/sites-available/default']) {
+      const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+      const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+      
+      ensureDir('/etc');
+      ensureDir('/etc/nginx');
+      link('/etc', 'nginx');
+      ensureDir('/etc/nginx/sites-available');
+      link('/etc/nginx', 'sites-available');
+      ensureDir('/etc/nginx/sites-enabled');
+      link('/etc/nginx', 'sites-enabled');
+
+      VFS['/etc/nginx/sites-available/default'] = {
+          type: 'file',
+          content: 'server {\n    listen 80;\n    server_name localhost;\n    root /var/www/html;\n    index index.html;\n}',
+          permissions: '0644'
+      };
+      link('/etc/nginx/sites-available', 'default');
+
+      VFS['/etc/nginx/sites-enabled/default'] = {
+          type: 'symlink',
+          target: '/etc/nginx/sites-available/default.bak',
+          permissions: '0777'
+      } as any;
+      link('/etc/nginx/sites-enabled', 'default');
+      
+      if (!VFS['/home/ghost/web_config_error.log']) {
+          VFS['/home/ghost/web_config_error.log'] = {
+              type: 'file',
+              content: '[ERROR] nginx: configuration file /etc/nginx/sites-enabled/default test failed\n[ERROR] nginx: open() "/etc/nginx/sites-enabled/default" failed (2: No such file or directory)\n[ACTION] Fix the symlink in sites-enabled.'
+          };
+          const home = getNode('/home/ghost');
+          if (home && home.type === 'dir' && !home.children.includes('web_config_error.log')) {
+              home.children.push('web_config_error.log');
+          }
+      }
+  }
+
+  // Cycle 79 Init (The Shared Object Injection)
+  if (!VFS['/usr/bin/secure_vault']) {
+      // Create Binary
+      VFS['/usr/bin/secure_vault'] = {
+          type: 'file',
+          content: '[BINARY_ELF_X86_64] [SECURE_STORAGE] [HW_KEY_REQUIRED]\nstrings: hardware_key_check\nstrings: access_granted\n',
+          permissions: '0755'
+      };
+      const binDir = getNode('/usr/bin');
+      if (binDir && binDir.type === 'dir' && !binDir.children.includes('secure_vault')) {
+          binDir.children.push('secure_vault');
+      }
+
+      // Create Bypass Library
+      if (!VFS['/home/ghost/tools']) {
+           VFS['/home/ghost/tools'] = { type: 'dir', children: [] };
+           const hg = getNode('/home/ghost');
+           if (hg && hg.type === 'dir' && !hg.children.includes('tools')) hg.children.push('tools');
+      }
+
+      VFS['/home/ghost/tools/bypass.so'] = {
+          type: 'file',
+          content: '[ELF_SHARED_OBJECT] [INTERCEPTOR]\n// Hooks hardware_key_check() to always return 1.\n',
+          permissions: '0755'
+      };
+      const toolsDir = getNode('/home/ghost/tools');
+      if (toolsDir && toolsDir.type === 'dir' && !toolsDir.children.includes('bypass.so')) {
+          toolsDir.children.push('bypass.so');
+      }
+
+      // Hint
+      if (!VFS['/home/ghost/exploit_notes.txt']) {
+          VFS['/home/ghost/exploit_notes.txt'] = {
+              type: 'file',
+              content: 'TARGET: secure_vault\nMETHOD: Library Injection\nTOOL: tools/bypass.so\n\nNotes: The binary uses a dynamic library call to check for the hardware key.\nIf we can preload our own library before libc, we can hijack the function.\nTry using LD_PRELOAD.'
+          };
+          const home = getNode('/home/ghost');
+          if (home && home.type === 'dir' && !home.children.includes('exploit_notes.txt')) {
+              home.children.push('exploit_notes.txt');
+          }
+      }
+  }
+
+  // Cycle 78 Init (The Capability Escalation)
+  if (!VFS['/usr/bin/tac']) {
+      // Create binary with capability
+      VFS['/usr/bin/tac'] = {
+          type: 'file',
+          content: '[BINARY_ELF_X86_64] [CAPABILITY_SET]\nstrings: cap_dac_read_search+ep',
+          permissions: '0755',
+          xattrs: { 'security.capability': 'cap_dac_read_search+ep' }
+      };
+      const binDir = getNode('/usr/bin');
+      if (binDir && binDir.type === 'dir' && !binDir.children.includes('tac')) {
+          binDir.children.push('tac');
+      }
+
+      // Create Secret File
+      VFS['/root/secret_plan.txt'] = {
+          type: 'file',
+          content: 'OPERATION BLACKOUT V2\n---------------------\nTARGET: 10.10.99.5\nPAYLOAD: rm -rf /var/lib/backups\nFLAG: GHOST_ROOT{C4P_D4C_R34D_BYP4SS}',
+          permissions: '0600' // Root only
+      };
+      const rootDir = getNode('/root');
+      if (rootDir && rootDir.type === 'dir' && !rootDir.children.includes('secret_plan.txt')) {
+          rootDir.children.push('secret_plan.txt');
+      }
+
+      // Create Hint
+      if (!VFS['/home/ghost/security_audit.log']) {
+          VFS['/home/ghost/security_audit.log'] = {
+              type: 'file',
+              content: '[AUDIT] Checking file capabilities...\n[WARN] /usr/bin/tac has elevated capabilities (cap_dac_read_search).\n[ACTION] Remove capability or restrict access.\n'
+          };
+          const home = getNode('/home/ghost');
+          if (home && home.type === 'dir' && !home.children.includes('security_audit.log')) {
+              home.children.push('security_audit.log');
+          }
+      }
+  }
+
   // 1. Handle Piping (|) recursively
   const segments = splitPipeline(commandLine);
   if (segments.length > 1) {
@@ -1490,6 +1661,22 @@ int main(int argc, char* argv[]) {
   }
 
   let parts = tokenize(cmdToProcess);
+
+  // Environment Variable Parsing (Cycle 79 Support)
+  const tempEnv: Record<string, string> = { ...ENV_VARS };
+  while (parts.length > 0 && parts[0].includes('=')) {
+      const eqIdx = parts[0].indexOf('=');
+      // Must be key=value, not starting with / (unlikely path) or quote
+      if (eqIdx > 0 && !parts[0].startsWith('/') && !parts[0].startsWith('"') && !parts[0].startsWith("'")) {
+          const key = parts[0].substring(0, eqIdx);
+          const val = parts[0].substring(eqIdx + 1);
+          tempEnv[key] = val;
+          parts.shift();
+      } else {
+          break;
+      }
+  }
+
   let command = parts[0];
   
   if (ALIASES[command]) {
@@ -1959,6 +2146,48 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
                 } else {
                     output = 'useradd: /etc/passwd not found';
                 }
+            }
+        }
+        break;
+    }
+    case 'nginx': {
+        if (args.includes('-t') || (args.includes('-s') && args.includes('reload'))) {
+            const linkPath = '/etc/nginx/sites-enabled/default';
+            const linkNode = getNode(linkPath);
+            
+            if (linkNode && linkNode.type === 'symlink') {
+                const target = (linkNode as any).target;
+                if (target === '/etc/nginx/sites-available/default') {
+                     output = 'nginx: the configuration file /etc/nginx/nginx.conf syntax is ok\nnginx: configuration file /etc/nginx/nginx.conf test is successful';
+                     if (!VFS['/var/run/nginx_fixed']) {
+                         VFS['/var/run/nginx_fixed'] = { type: 'file', content: 'TRUE' };
+                         const runDir = getNode('/var/run');
+                         if (runDir && runDir.type === 'dir' && !runDir.children.includes('nginx_fixed')) {
+                             runDir.children.push('nginx_fixed');
+                         }
+                         output += '\n\x1b[1;32m[MISSION UPDATE] Objective Complete: WEB SERVER RESTORED.\x1b[0m';
+                     }
+                } else {
+                     output = `nginx: [emerg] open() "${target}" failed (2: No such file or directory)\nnginx: configuration file /etc/nginx/nginx.conf test failed`;
+                }
+            } else if (linkNode && linkNode.type === 'file') {
+                 output = 'nginx: [warn] /etc/nginx/sites-enabled/default should be a symbolic link\nnginx: configuration test successful (but non-standard)';
+            } else {
+                 output = 'nginx: [emerg] open() "/etc/nginx/sites-enabled/default" failed (2: No such file or directory)';
+            }
+        } else {
+            output = 'usage: nginx -t';
+        }
+        break;
+    }
+    case 'readlink': {
+        if (args.length < 1) {
+            output = 'usage: readlink <file>';
+        } else {
+            const target = args[0];
+            const node = getNode(resolvePath(cwd, target));
+            if (node && node.type === 'symlink') {
+                output = (node as any).target;
             }
         }
         break;
@@ -2896,6 +3125,12 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
     case 'whoami':
       output = 'ghost';
       break;
+    case 'arp': {
+      const arpNode = getNode('/proc/net/arp');
+      if (arpNode) output = (arpNode as any).content;
+      else output = 'arp: /proc/net/arp: No such file';
+      break;
+    }
     case 'reboot':
       output = 'Rebooting system...';
       return { output, newCwd, action: 'kernel_panic' };
@@ -3520,6 +3755,18 @@ Type "status" for mission objectives.`;
            }
        break;
     }
+    case 'lsblk': {
+        const mounts = MOUNTED_DEVICES;
+        output = 'NAME   MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT\n';
+        output += `sda      8:0    0 256G  0 disk \n`;
+        output += `└─sda1   8:1    0 256G  0 part /\n`;
+        output += `sdb      8:16   0   1G  0 disk \n`;
+        output += `└─sdb1   8:17   0   1G  0 part ${mounts['/dev/sdb1'] || ''}\n`;
+        output += `sdc      8:32   0  64G  0 disk \n`;
+        output += `└─sdc1   8:33   0  64G  0 part ${mounts['/dev/sdc1'] || ''}\n`;
+        output += `loop0    7:0    0 512M  0 loop ${mounts['/dev/loop0'] || ''}`;
+        break;
+    }
     case 'mount': {
        // HANDLE REMOUNT
        if (args.includes('-o') && (args.includes('remount,rw') || args.includes('rw,remount'))) {
@@ -3605,6 +3852,22 @@ Type "status" for mission objectives.`;
                    VFS[`${target}/backup.tar.gz`] = { type: 'file', content: 'GHOST_ROOT{B4D_SUp3RBL0CK_R3C0V3R3D}' };
                    addChild(target, 'backup.tar.gz');
                    output = `mount: /dev/sdc1 mounted on ${target}.`;
+               }
+           } else if (source === '/dev/loop0') {
+               MOUNTED_DEVICES[source] = target;
+               VFS[`${target}/shadow_archive.tar`] = { type: 'file', content: 'GHOST_ROOT{L00P_D3V1C3_M0UNT3D}' };
+               addChild(target, 'shadow_archive.tar');
+               
+               // Mission Update
+               if (!VFS['/var/run/loop_solved']) {
+                   VFS['/var/run/loop_solved'] = { type: 'file', content: 'TRUE' };
+                   const runDir = getNode('/var/run');
+                   if (runDir && runDir.type === 'dir' && !runDir.children.includes('loop_solved')) {
+                       runDir.children.push('loop_solved');
+                   }
+                   output = `mount: /dev/loop0 mounted on ${target}.\n\x1b[1;32m[MISSION UPDATE] Objective Complete: UNMOUNTED PARTITION ACCESS.\x1b[0m`;
+               } else {
+                   output = `mount: /dev/loop0 mounted on ${target}.`;
                }
            } else {
                output = `mount: ${source}: special device does not exist`;
@@ -3703,7 +3966,8 @@ Type "status" for mission objectives.`;
             'admin-pc': '192.168.1.5',
             '192.168.1.5': '192.168.1.5',
             'backup-server': '192.168.1.50',
-            '192.168.1.50': '192.168.1.50'
+            '192.168.1.50': '192.168.1.50',
+            '192.168.1.110': '192.168.1.110'
         };
         
         const etcHosts = getNode('/etc/hosts');
@@ -3793,6 +4057,18 @@ Type "status" for mission objectives.`;
              }
         } else if (resolvedIP === '192.168.1.5') {
              output = `Connecting to ${hostPart}...\nPermission denied (publickey).\n(Hint: Try cracking the 'backup' user)`;
+             return { output, newCwd, action: 'delay' };
+        } else if (resolvedIP === '192.168.1.110') {
+             output = `Connecting to ${hostPart}...\nHP JetDirect J4169A\nFirmware: V.2026.02.12\n\n[ADMIN CONSOLE]\nAuthenticated as: Guest\nAccess Level: Restricted\n\nFLAG: GHOST_ROOT{ARP_C4CH3_P01S0N}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: ROGUE DEVICE IDENTIFIED.\x1b[0m`;
+             
+             // Mission Update
+             if (!VFS['/var/run/arp_solved']) {
+                 VFS['/var/run/arp_solved'] = { type: 'file', content: 'TRUE' };
+                 const runDir = getNode('/var/run');
+                 if (runDir && runDir.type === 'dir' && !runDir.children.includes('arp_solved')) {
+                     runDir.children.push('arp_solved');
+                 }
+             }
              return { output, newCwd, action: 'delay' };
         } else if (resolvedIP === '192.168.1.200') {
              output = `Connecting to ${hostPart} (${resolvedIP})...\n[VAULT NODE TERMINAL]\nACCESS GRANTED: DNS_OVERRIDE_CONFIRMED.\n\nType 'cat root/VAULT_ACCESS_LOG.txt' to view logs.`;
@@ -4832,6 +5108,8 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
                    } else {
                         output = `(UNKNOWN) [${host}] ${p} (?) : Connection refused`;
                    }
+               } else if (host === '192.168.1.110') {
+                    output = `(UNKNOWN) [192.168.1.110] ${p} open\nHP JetDirect J4169A\nFLAG: GHOST_ROOT{ARP_C4CH3_P01S0N}\n`;
                } else if (host === '10.10.10.10') {
                     output = `(UNKNOWN) [10.10.10.10] 4444 (?) open\n[DATA RECEIVED] Key: BRIDGE_SECURE_KEY_X9\n[DATA RECEIVED] Message: The Black Site is heavily monitored. Proceed with caution.\n`;
                } else if (host === 'localhost' || host === '127.0.0.1') {
@@ -5455,6 +5733,41 @@ auth.py
         }
         break;
     }
+    case 'secure_vault': {
+        if (args.length > 0) return finalize('usage: secure_vault', newCwd);
+        
+        const preload = tempEnv['LD_PRELOAD'];
+        
+        if (!preload) {
+            return finalize('[ERROR] Hardware Key Validation Failed.\n[SECURE] Access Denied.', newCwd);
+        }
+
+        if (preload.includes('bypass.so')) {
+            // Check if file exists
+            const bypassPath = resolvePath(cwd, preload);
+            if (!getNode(bypassPath)) {
+                return finalize(`[ERROR] LD_PRELOAD error: ${preload}: cannot open shared object file: No such file or directory`, newCwd);
+            }
+
+            let output = '[SECURE_VAULT] Initializing Hardware Bypass...\n[HOOK] hardware_key_check() -> INTERCEPTED (Ret: 1)\n[SUCCESS] Vault Unlocked.\n\n';
+            output += '--- TOP SECRET DATA ---\n';
+            output += 'PROJECT: OMEGA PROTOCOL\nSTATUS: ACTIVE\nFLAG: GHOST_ROOT{LD_PR3L04D_H1J4CK}\n';
+            output += '\x1b[1;32m[MISSION UPDATE] Objective Complete: SHARED LIBRARY INJECTION.\x1b[0m';
+            
+            // Mark solved
+            if (!VFS['/var/run/preload_solved']) {
+                VFS['/var/run/preload_solved'] = { type: 'file', content: 'TRUE' };
+                const runDir = getNode('/var/run');
+                if (runDir && runDir.type === 'dir' && !runDir.children.includes('preload_solved')) {
+                    runDir.children.push('preload_solved');
+                }
+            }
+            return finalize(output, newCwd);
+        } else {
+            return finalize(`[ERROR] LD_PRELOAD error: ${preload}: cannot open shared object file: No such file or directory`, newCwd);
+        }
+    }
+
     case 'access_card': {
         // Cycle 67: Environment Injection
         const clearance = ENV_VARS['CLEARANCE_LEVEL'];
@@ -8198,6 +8511,177 @@ postgres            14-alpine 1234567890ab   5 days ago     214MB`;
                         output = ''; // Silent success
                     }
                 }
+            }
+        }
+        break;
+    }
+    case 'getcap': {
+        if (args.length < 1) {
+            output = 'usage: getcap <file>';
+        } else {
+            const target = args[0];
+            const node = getNode(resolvePath(cwd, target));
+            if (node && node.type === 'file' && (node as any).xattrs && (node as any).xattrs['security.capability']) {
+                output = `${target} = ${(node as any).xattrs['security.capability']}`;
+            } else if (node) {
+                output = ''; // No capabilities
+            } else {
+                output = `getcap: ${target}: No such file or directory`;
+            }
+        }
+        break;
+    }
+    case 'tac': {
+        if (args.length < 1) {
+            output = 'usage: tac <file>';
+        } else {
+            const target = args[0];
+            const node = getNode(resolvePath(cwd, target));
+            
+            // Capability Check for /usr/bin/tac
+            const binaryNode = getNode('/usr/bin/tac');
+            const hasCap = binaryNode && (binaryNode as any).xattrs && (binaryNode as any).xattrs['security.capability'] === 'cap_dac_read_search+ep';
+            
+            if (!node) {
+                output = `tac: ${target}: No such file or directory`;
+            } else if (node.type === 'dir') {
+                output = `tac: ${target}: Is a directory`;
+            } else {
+                 // Check permissions logic similar to 'cat'
+                 // BUT if hasCap is true, bypass permission check
+                 const fileNode = node as any;
+                 let allowed = false;
+                 
+                 if (hasCap) {
+                     allowed = true;
+                 } else {
+                     // Standard check
+                     if ((resolvePath(cwd, target).startsWith('/root')) && !VFS['/tmp/.root_session']) {
+                         allowed = false;
+                     } else {
+                         allowed = true;
+                     }
+                 }
+                 
+                 if (allowed) {
+                     const content = fileNode.content;
+                     output = content.split('\n').reverse().join('\n');
+                     if (content.includes('GHOST_ROOT{C4P_D4C_R34D_BYP4SS}')) {
+                         if (!VFS['/var/run/cap_solved']) {
+                             VFS['/var/run/cap_solved'] = { type: 'file', content: 'TRUE' };
+                             output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: CAPABILITY ESCALATION.\x1b[0m`;
+                         }
+                     }
+                 } else {
+                     output = `tac: ${target}: Permission denied`;
+                 }
+            }
+        }
+        break;
+    }
+    case 'lsmod': {
+        output = 'Module                  Size  Used by\n';
+        output += 'nf_conntrack           131072  2\niptable_filter          16384  1\nip_tables              28672  1 iptable_filter\nx_tables               40960  2 iptable_filter,ip_tables\n';
+        if (LOADED_MODULES.includes('blackbox')) {
+            output += 'blackbox               12288  0\n';
+        }
+        break;
+    }
+    case 'modinfo': {
+        if (args.length < 1) {
+            output = 'usage: modinfo <module_file>';
+        } else {
+            const target = args[0];
+            let node = getNode(resolvePath(cwd, target));
+            
+            // If not found by path, try to find in /lib/modules if just a name is given
+            if (!node && !target.includes('/')) {
+                 node = getNode(`/lib/modules/5.4.0-ghost/kernel/drivers/misc/${target}.ko`);
+            }
+
+            if (!node || node.type !== 'file') {
+                 if (target === 'blackbox') {
+                     output = 'filename:       /lib/modules/5.4.0-ghost/kernel/drivers/misc/blackbox.ko\nlicense:        GPL\ndescription:    Black Box Interface Driver\nauthor:         Unknown\nsrcversion:     B49382098402\ndepends:        \nretpoline:      Y\nname:           blackbox\nvermagic:       5.4.0-ghost SMP mod_unload';
+                 } else {
+                    output = `modinfo: ERROR: Module ${target} not found.`;
+                 }
+            } else {
+                const content = (node as any).content;
+                if (content.startsWith('[KERNEL_MODULE_V1]')) {
+                    output = content.substring(content.indexOf('\n') + 1);
+                } else {
+                     output = `modinfo: ERROR: Module ${target} not found or invalid format.`;
+                }
+            }
+        }
+        break;
+    }
+    case 'insmod': {
+        if (args.length < 1) {
+            output = 'usage: insmod <filename>';
+        } else {
+            const target = args[0];
+            const path = resolvePath(cwd, target);
+            const node = getNode(path);
+            
+            if (!node) {
+                output = `insmod: ERROR: could not insert '${target}': No such file or directory`;
+            } else if (node.type !== 'file') {
+                output = `insmod: ERROR: could not insert '${target}': Is a directory`;
+            } else if (!(node as any).content.startsWith('[KERNEL_MODULE_V1]')) {
+                output = `insmod: ERROR: could not insert '${target}': Invalid module format`;
+            } else {
+                const parts = target.split('/');
+                const filename = parts[parts.length - 1];
+                const modName = filename.replace('.ko', '');
+
+                if (LOADED_MODULES.includes(modName)) {
+                    output = `insmod: ERROR: could not insert '${target}': Module already loaded`;
+                } else {
+                    LOADED_MODULES.push(modName);
+                    output = ''; 
+                    
+                    if (modName === 'blackbox') {
+                        if (!VFS['/dev/blackbox']) {
+                            VFS['/dev/blackbox'] = { type: 'file', content: 'GHOST_ROOT{K3RN3L_HACK3R_V1}\n[DEVICE_STATUS] ONLINE\n[DATA_STREAM] 0x4B3R' };
+                            const dev = getNode('/dev');
+                            if (dev && dev.type === 'dir' && !dev.children.includes('blackbox')) {
+                                dev.children.push('blackbox');
+                            }
+                            if (!VFS['/var/run/insmod_solved']) {
+                                VFS['/var/run/insmod_solved'] = { type: 'file', content: 'TRUE' };
+                                const runDir = getNode('/var/run');
+                                if (runDir && runDir.type === 'dir' && !runDir.children.includes('insmod_solved')) {
+                                    runDir.children.push('insmod_solved');
+                                }
+                                output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: KERNEL MODULE LOADED.\x1b[0m`;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        break;
+    }
+    case 'rmmod': {
+        if (args.length < 1) {
+            output = 'usage: rmmod <modulename>';
+        } else {
+            const name = args[0];
+            if (LOADED_MODULES.includes(name)) {
+                const idx = LOADED_MODULES.indexOf(name);
+                LOADED_MODULES.splice(idx, 1);
+                if (name === 'blackbox') {
+                    delete VFS['/dev/blackbox'];
+                    const dev = getNode('/dev');
+                    if (dev && dev.type === 'dir') {
+                        const i = dev.children.indexOf('blackbox');
+                        if (i > -1) dev.children.splice(i, 1);
+                    }
+                }
+                output = '';
+            } else {
+                output = `rmmod: ERROR: Module ${name} is not currently loaded`;
             }
         }
         break;

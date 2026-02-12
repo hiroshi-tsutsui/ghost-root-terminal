@@ -763,9 +763,21 @@ Click here to claim your prize!
     type: 'file',
     content: '[BLOCK DEVICE: USB_DRIVE_16GB]'
   },
+  '/dev/sdc1': {
+    type: 'file',
+    content: '[BLOCK DEVICE: CORRUPTED_SUPERBLOCK]'
+  },
+  '/mnt/backup': {
+      type: 'dir',
+      children: []
+  },
   '/dev/video0': {
     type: 'file',
     content: '[DEVICE: CAMERA_SYSTEM_V2]'
+  },
+  '/dev/loop0': {
+    type: 'file',
+    content: '[BLOCK DEVICE: LOOP_BACK_FILE]'
   },
   '/dev/vault': {
     type: 'file',
