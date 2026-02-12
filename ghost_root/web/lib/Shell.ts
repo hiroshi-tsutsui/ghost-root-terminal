@@ -325,6 +325,34 @@ export const loadSystemState = () => {
             }
         }
     }
+
+    // Cycle 93 Init (The Cron Job)
+    if (!VFS['/etc/cron.d/malware']) {
+        const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+        const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+
+        ensureDir('/etc'); ensureDir('/etc/cron.d');
+        link('/', 'etc'); link('/etc', 'cron.d');
+
+        VFS['/etc/cron.d/malware'] = {
+            type: 'file',
+            content: '* * * * * root /usr/bin/miner >> /dev/null\n# MALICIOUS JOB - DO NOT REMOVE',
+            permissions: '0644'
+        };
+        link('/etc/cron.d', 'malware');
+
+        // Hint file
+        if (!VFS['/home/ghost/cpu_alert.log']) {
+            VFS['/home/ghost/cpu_alert.log'] = {
+                type: 'file',
+                content: '[ALERT] High CPU usage detected (99%). Suspicious process spawned by CRON.\n[ACTION] Investigate /etc/cron.d for unauthorized jobs.'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('cpu_alert.log')) {
+                home.children.push('cpu_alert.log');
+            }
+        }
+    }
 };
 
 // Helper to reset state
@@ -5810,6 +5838,18 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
                           runDir.children.push('attr_solved');
                       }
                       output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: EVIDENCE SCRUBBED (Immutable Attribute Bypassed).\x1b[0m`;
+                  }
+              }
+
+              // Mission Update for Cycle 93
+              if (path === '/etc/cron.d/malware') {
+                  if (!VFS['/var/run/cron_solved']) {
+                      VFS['/var/run/cron_solved'] = { type: 'file', content: 'TRUE' };
+                      const runDir = getNode('/var/run');
+                      if (runDir && runDir.type === 'dir' && !runDir.children.includes('cron_solved')) {
+                          runDir.children.push('cron_solved');
+                      }
+                      output += `\n[CRON] Reloading configuration... Malicious job removed.\nFLAG: GHOST_ROOT{CR0N_J0B_PURG3D}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SCHEDULED TASK PURGED.\x1b[0m`;
                   }
               }
             } else {
