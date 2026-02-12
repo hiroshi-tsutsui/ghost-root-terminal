@@ -320,7 +320,7 @@ export interface CommandResult {
   data?: any;
 }
 
-const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'jobs', 'fg', 'bg', 'recover_data', 'ghost_update', 'git', 'file', 'openssl', 'beacon', 'fsck', 'docker', 'lsattr', 'chattr', 'backup_service', 'getfattr', 'setfattr', 'mkfifo', 'uplink_service', 'sqlite3', 'gdb', 'jwt_tool', 'php'];
+const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'jobs', 'fg', 'bg', 'recover_data', 'ghost_update', 'git', 'file', 'openssl', 'beacon', 'fsck', 'docker', 'lsattr', 'chattr', 'backup_service', 'getfattr', 'setfattr', 'mkfifo', 'uplink_service', 'sqlite3', 'gdb', 'jwt_tool', 'php', 'access_card', 'sys_monitor'];
 
 export interface MissionStatus {
   objectives: {
@@ -1190,6 +1190,129 @@ int main(int argc, char* argv[]) {
       link('/etc/nginx/sites-enabled', 'internal.conf');
   }
 
+  // Cycle 65 Init (The Sticky Bit)
+  if (!VFS['/usr/local/bin/secure_cleanup']) {
+      // Create the script
+      VFS['/usr/local/bin/secure_cleanup'] = {
+          type: 'file',
+          content: '#!/bin/bash\n# SECURE CLEANUP DAEMON\n# Enforces sticky bit policy on /tmp.\n\n# Check for sticky bit (chmod +t)\nif [ ! -k "/tmp" ]; then\n  echo "[ERROR] /tmp is world-writable but missing sticky bit."\n  echo "[FATAL] Security risk detected. Aborting."\n  exit 1\nfi\n\necho "[SUCCESS] /tmp is secure."\necho "FLAG: GHOST_ROOT{ST1CKY_B1T_S3CUR3D}"',
+          permissions: '0755'
+      };
+      const binDir = getNode('/usr/local/bin');
+      if (binDir && binDir.type === 'dir' && !binDir.children.includes('secure_cleanup')) {
+          binDir.children.push('secure_cleanup');
+      }
+      
+      // Reset /tmp permissions to 0777 (No sticky bit)
+      const tmpNode = getNode('/tmp');
+      if (tmpNode) (tmpNode as any).permissions = '0777';
+  }
+
+  // Cycle 66 Init (The Time Skew)
+  if (!VFS['/usr/bin/otp_gen']) {
+      VFS['/usr/bin/otp_gen'] = {
+          type: 'file',
+          content: '[BINARY_ELF_X86_64] [TOTP_GENERATOR] [TIME_SENSITIVE]',
+          permissions: '0755'
+      };
+      const binDir = getNode('/usr/bin');
+      if (binDir && binDir.type === 'dir' && !binDir.children.includes('otp_gen')) {
+          binDir.children.push('otp_gen');
+      }
+  }
+
+  // Cycle 67 Init (The Environment Injection)
+  if (!VFS['/usr/local/bin/access_card']) {
+      VFS['/usr/local/bin/access_card'] = {
+          type: 'file',
+          content: '[BINARY_ELF_X86_64] [SECURITY_CHECK]\nChecking Environment...\nstrings: CLEARANCE_LEVEL\nstrings: OMEGA\n[ACCESS_DENIED]',
+          permissions: '0755'
+      };
+      const binDir = getNode('/usr/local/bin');
+      if (binDir && binDir.type === 'dir' && !binDir.children.includes('access_card')) {
+          binDir.children.push('access_card');
+      }
+  }
+
+  // Cycle 68 Init (The DNS Tunnel)
+  if (!VFS['/var/log/named.log']) {
+      const logData = [
+          'Oct 23 10:00:01 ns1 named[999]: starting BIND 9.16.1-Ubuntu',
+          'Oct 23 10:00:01 ns1 named[999]: running on IPv4 interface lo, 127.0.0.1#53',
+          'Oct 23 10:05:22 ns1 named[999]: client @0xdeadbeef 192.168.1.5#43210: query: google.com IN A + (127.0.0.1)',
+          'Oct 23 10:06:11 ns1 named[999]: client @0xdeadbeef 192.168.1.5#43211: query: github.com IN A + (127.0.0.1)',
+          'Oct 23 10:15:00 ns1 named[999]: client @0xdeadbeef 192.168.1.99#55555: query: 464c41473a20.c2.exfil.net IN TXT + (127.0.0.1)',
+          'Oct 23 10:15:01 ns1 named[999]: client @0xdeadbeef 192.168.1.99#55555: query: 444e535f5455.c2.exfil.net IN TXT + (127.0.0.1)',
+          'Oct 23 10:15:02 ns1 named[999]: client @0xdeadbeef 192.168.1.99#55555: query: 4e4e454c5f44.c2.exfil.net IN TXT + (127.0.0.1)',
+          'Oct 23 10:15:03 ns1 named[999]: client @0xdeadbeef 192.168.1.99#55555: query: 455445435445.c2.exfil.net IN TXT + (127.0.0.1)',
+          'Oct 23 10:15:04 ns1 named[999]: client @0xdeadbeef 192.168.1.99#55555: query: 445f3737.c2.exfil.net IN TXT + (127.0.0.1)',
+          'Oct 23 10:20:00 ns1 named[999]: client @0xdeadbeef 192.168.1.5#43212: query: stackoverflow.com IN A + (127.0.0.1)'
+      ].join('\\n');
+
+      VFS['/var/log/named.log'] = {
+          type: 'file',
+          content: logData,
+          permissions: '0644'
+      };
+      const logDir = getNode('/var/log');
+      if (logDir && logDir.type === 'dir' && !logDir.children.includes('named.log')) {
+          logDir.children.push('named.log');
+      }
+  }
+
+  // Cycle 69 Init (The Corrupted Binary)
+  if (!VFS['/usr/bin/sys_monitor']) {
+      // Create corrupted binary
+      VFS['/usr/bin/sys_monitor'] = {
+          type: 'file',
+          content: '[BINARY_ELF_X86_64] [CORRUPTED_HEADER] [SEGFAULT_ON_EXEC]\nError: 0xDEADBEEF memory violation.',
+          permissions: '0755'
+      };
+      const binDir = getNode('/usr/bin');
+      if (binDir && binDir.type === 'dir' && !binDir.children.includes('sys_monitor')) {
+          binDir.children.push('sys_monitor');
+      }
+
+      // Create backup
+      if (!VFS['/var/backups/bin']) {
+          // Ensure /var/backups exists
+          if (!VFS['/var/backups']) {
+              VFS['/var/backups'] = { type: 'dir', children: [] };
+              const varNode = getNode('/var');
+              if (varNode && varNode.type === 'dir' && !varNode.children.includes('backups')) {
+                  varNode.children.push('backups');
+              }
+          }
+          VFS['/var/backups/bin'] = { type: 'dir', children: [] };
+          const backups = getNode('/var/backups');
+          if (backups && backups.type === 'dir' && !backups.children.includes('bin')) {
+              backups.children.push('bin');
+          }
+      }
+
+      VFS['/var/backups/bin/sys_monitor'] = {
+          type: 'file',
+          content: '[BINARY_ELF_X86_64] [VALID_HEADER] [SYSTEM_MONITOR_V2]\n[OK] System Integrity Verified.\nFLAG: GHOST_ROOT{MD5_H4SH_R3ST0R3D}',
+          permissions: '0755'
+      };
+      const backBin = getNode('/var/backups/bin');
+      if (backBin && backBin.type === 'dir' && !backBin.children.includes('sys_monitor')) {
+          backBin.children.push('sys_monitor');
+      }
+      
+      // Hint file
+      if (!VFS['/home/ghost/alert_sys_monitor.txt']) {
+          VFS['/home/ghost/alert_sys_monitor.txt'] = {
+              type: 'file',
+              content: '[ALERT] Critical system monitor binary (/usr/bin/sys_monitor) is behaving erratically.\n[ACTION] Please verify integrity against backup in /var/backups/bin.\n[TOOL] Use md5sum to compare hashes.'
+          };
+          const home = getNode('/home/ghost');
+          if (home && home.type === 'dir' && !home.children.includes('alert_sys_monitor.txt')) {
+              home.children.push('alert_sys_monitor.txt');
+          }
+      }
+  }
+
   // 1. Handle Piping (|) recursively
   const segments = splitPipeline(commandLine);
   if (segments.length > 1) {
@@ -1354,9 +1477,31 @@ int main(int argc, char* argv[]) {
           // Permission Check
           if (fileNode.permissions) {
               const mode = fileNode.permissions;
-              const owner = parseInt(mode[0], 10);
-              if (!(owner & 1)) {
+              const ownerChar = mode.length === 4 ? mode[1] : mode[0];
+              const owner = parseInt(ownerChar, 10);
+              // Check execute bit (1) - Odd numbers have exec bit set (1, 3, 5, 7)
+              if (!(owner & 1)) { 
                   return finalize(`bash: ${command}: Permission denied`, newCwd);
+              }
+          }
+
+          if (fileName === 'secure_cleanup') {
+              // Sticky Bit Logic (Cycle 65)
+              const tmpNode = getNode('/tmp');
+              const perms = (tmpNode as any).permissions || '0777';
+              
+              if (perms === '1777' || perms.startsWith('1') || perms.includes('t')) {
+                   if (!VFS['/var/run/sticky_solved']) {
+                       VFS['/var/run/sticky_solved'] = { type: 'file', content: 'TRUE' };
+                       const runDir = getNode('/var/run');
+                       if (runDir && runDir.type === 'dir' && !runDir.children.includes('sticky_solved')) {
+                           runDir.children.push('sticky_solved');
+                       }
+                       return finalize(`[SUCCESS] /tmp is secure (Sticky Bit Detected).\nFLAG: GHOST_ROOT{ST1CKY_B1T_S3CUR3D}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PERMISSION HARDENING.\x1b[0m`, newCwd);
+                   }
+                   return finalize(`[SUCCESS] /tmp is secure.`, newCwd);
+              } else {
+                   return finalize(`[ERROR] /tmp is world-writable but missing sticky bit.\n[FATAL] Security risk detected. Aborting.`, newCwd);
               }
           }
 
@@ -1482,6 +1627,27 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
                   output = `bash: ${command}: Permission denied (Missing execute bit or corrupt header)`;
               }
           } else if (fileNode.content.startsWith('#!/bin/bash')) {
+              if (fileName === 'secure_cleanup') {
+                  const tmpNode = getNode('/tmp');
+                  const perms = (tmpNode as any).permissions || '0777';
+                  // Check sticky bit (bit 1 of first digit)
+                  const special = parseInt(perms.length === 4 ? perms[0] : '0', 10);
+                  
+                  if (special & 1) {
+                      output = `[SECURE_CLEANUP] Verifying /tmp permissions... OK (Sticky Bit Set)\n[SUCCESS] Security Policy Enforced.\n\nFLAG: GHOST_ROOT{ST1CKY_B1T_S3CUR3D}`;
+                      if (!VFS['/var/run/sticky_solved']) {
+                          VFS['/var/run/sticky_solved'] = { type: 'file', content: 'TRUE' };
+                          const runDir = getNode('/var/run');
+                          if (runDir && runDir.type === 'dir' && !runDir.children.includes('sticky_solved')) {
+                              runDir.children.push('sticky_solved');
+                          }
+                          output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: STICKY BIT SECURED.\x1b[0m`;
+                      }
+                  } else {
+                      output = `[SECURE_CLEANUP] Verifying /tmp permissions... FAILED\n[ERROR] /tmp is world-writable (777) but missing Sticky Bit (+t).\n[FATAL] Security Check Failed.`;
+                  }
+                  return { output, newCwd, action: 'delay' };
+              }
               if (fileName === 'net-bridge') {
                  output = `[SYSTEM] Executing net-bridge...\n[ERROR] SEGMENTATION FAULT (core dumped)\n[HINT] View source code to debug.`;
                  return { output: output, newCwd: newCwd, action: 'delay' };
@@ -1688,6 +1854,25 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
            output = 'usage: grep <pattern> [file]';
        }
        break;
+    }
+    case 'sys_monitor': {
+        const node = getNode('/usr/bin/sys_monitor');
+        if (!node) {
+             output = 'bash: sys_monitor: command not found';
+        } else if ((node as any).content.includes('[CORRUPTED_HEADER]')) {
+             output = 'Segmentation fault (core dumped)';
+        } else {
+             output = '[SYSTEM MONITOR] Initializing...\n[OK] CPU: 12%\n[OK] MEM: 45%\n[OK] INTEGRITY: VERIFIED\n\nFLAG: GHOST_ROOT{MD5_H4SH_R3ST0R3D}';
+             if (!VFS['/var/run/sys_monitor_solved']) {
+                 VFS['/var/run/sys_monitor_solved'] = { type: 'file', content: 'TRUE' };
+                 const runDir = getNode('/var/run');
+                 if (runDir && runDir.type === 'dir' && !runDir.children.includes('sys_monitor_solved')) {
+                     runDir.children.push('sys_monitor_solved');
+                 }
+                 output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: BINARY RESTORED.\x1b[0m`;
+             }
+        }
+        break;
     }
     case 'echo': {
        output = args.join(' ');
@@ -2302,15 +2487,17 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
              const group = parseInt(mode[2], 10);
              const other = parseInt(mode[3], 10);
 
-             const rwx = (n: number, s: boolean = false) => {
-                 return (n & 4 ? 'r' : '-') + (n & 2 ? 'w' : '-') + (s ? (n & 1 ? 's' : 'S') : (n & 1 ? 'x' : '-'));
+             const rwx = (n: number, s: boolean, char: string = 's') => {
+                 const lower = char.toLowerCase();
+                 const upper = char.toUpperCase();
+                 return (n & 4 ? 'r' : '-') + (n & 2 ? 'w' : '-') + (s ? (n & 1 ? lower : upper) : (n & 1 ? 'x' : '-'));
              };
              
              const typeChar = isLink ? 'l' : (isDir ? 'd' : '-');
              const pStr = typeChar + 
                           rwx(owner, !!(special & 4)) + 
                           rwx(group, !!(special & 2)) + 
-                          rwx(other, false); // Sticky bit (1) not implemented for simplicity
+                          rwx(other, !!(special & 1), 't');
              
              const realSize = (itemNode && itemNode.type === 'file') ? itemNode.content.length : (isLink ? 16 : 4096);
              const date = 'Oct 23 14:02'; 
@@ -2478,6 +2665,49 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
     case 'pwd':
       output = cwd;
       break;
+    case 'date': {
+        if (args.length > 0 && args[0] === '-s') {
+            const isRoot = !!getNode('/tmp/.root_session');
+            if (!isRoot) {
+                output = 'date: cannot set date: Operation not permitted';
+            } else {
+                output = 'Thu Feb 12 09:00:00 UTC 2026';
+                SYSTEM_TIME_OFFSET = 0; // Fix time
+            }
+        } else {
+            const now = Date.now() + SYSTEM_TIME_OFFSET;
+            output = new Date(now).toString();
+        }
+        break;
+    }
+    case 'ntpdate': {
+        const isRoot = !!getNode('/tmp/.root_session');
+        if (!isRoot) {
+            output = 'ntpdate: bind() fails: Permission denied';
+        } else {
+            if (args.length < 1) {
+                output = 'usage: ntpdate <server>';
+            } else {
+                output = `ntpdate: step time server ${args[0]} offset ${Math.abs(SYSTEM_TIME_OFFSET) / 1000} sec`;
+                SYSTEM_TIME_OFFSET = 0; // Fix time
+            }
+        }
+        break;
+    }
+    case 'rdate': {
+        const isRoot = !!getNode('/tmp/.root_session');
+        if (!isRoot) {
+            output = 'rdate: Permission denied';
+        } else {
+            if (args.length < 1) {
+                output = 'usage: rdate <host>';
+            } else {
+                output = `[rdate] Time synced with ${args[0]}`;
+                SYSTEM_TIME_OFFSET = 0;
+            }
+        }
+        break;
+    }
     case 'whoami':
       output = 'ghost';
       break;
@@ -2605,6 +2835,20 @@ ACCEPT     all  --  anywhere             anywhere`;
                        (node as any).permissions = special.toString() + current.slice(1);
                        output = '';
                    }
+              } else if (mode === '+t' || mode === 'o+t') {
+                   let current = (node as any).permissions || ((node.type === 'dir') ? '0755' : '0644');
+                   if (current.length === 3) current = '0' + current;
+                   
+                   const isRoot = !!getNode('/tmp/.root_session');
+                   // Allow chmod on /tmp specifically for this puzzle
+                   if (path === '/tmp' || isRoot) {
+                       let special = parseInt(current[0], 10);
+                       special |= 1; // Set Sticky bit
+                       (node as any).permissions = special.toString() + current.slice(1);
+                       output = '';
+                   } else {
+                       output = `chmod: changing permissions of '${target}': Operation not permitted`;
+                   }
               } else {
                   output = `chmod: invalid mode: '${mode}'`;
               }
@@ -2629,6 +2873,44 @@ ACCEPT     all  --  anywhere             anywhere`;
             }
         }
         break;
+    }
+    case 'chmod': {
+       if (args.length < 2) {
+           output = 'usage: chmod <mode> <file>';
+       } else {
+           const mode = args[0];
+           const target = args[1];
+           const filePath = resolvePath(cwd, target);
+           const node = getNode(filePath);
+           
+           if (!node) {
+               output = `chmod: cannot access '${target}': No such file or directory`;
+           } else {
+               let newPerms = (node as any).permissions || '0755';
+               
+               // Symbolic mode support (simplified)
+               if (mode === '+t') {
+                   // Add sticky bit (1xxx)
+                   if (newPerms.length === 4) {
+                       newPerms = '1' + newPerms.slice(1);
+                   } else {
+                       newPerms = '1' + newPerms;
+                   }
+               } else if (mode === '-t') {
+                   // Remove sticky bit
+                   if (newPerms.length === 4 && newPerms.startsWith('1')) {
+                       newPerms = '0' + newPerms.slice(1);
+                   }
+               } else if (/^[0-7]{3,4}$/.test(mode)) {
+                   // Octal mode
+                   newPerms = mode.length === 3 ? '0' + mode : mode;
+               }
+               
+               (node as any).permissions = newPerms;
+               output = ''; // Silent success
+           }
+       }
+       break;
     }
     case 'chattr': {
         if (args.length < 2) {
@@ -4860,6 +5142,58 @@ auth.py
         }
         break;
     }
+    case 'php': {
+        // Cycle 63: Web Shell Analysis
+        if (args.length < 1) {
+            output = 'php: usage: php <file>';
+        } else {
+            const fileName = args[0];
+            const filePath = resolvePath(cwd, fileName);
+            const node = getNode(filePath);
+            
+            if (!node || node.type !== 'file') {
+                output = `php: Could not open input file: ${fileName}`;
+            } else {
+                if (fileName.endsWith('.php')) {
+                    if (node.content.includes('eval(base64_decode')) {
+                       // Simulate execution of the specific shell
+                       output = `Flag: GHOST_ROOT{W3B_SH3LL_D3T3CT3D}`;
+                       if (!VFS['/var/run/php_solved']) {
+                           VFS['/var/run/php_solved'] = { type: 'file', content: 'TRUE' };
+                           const runDir = getNode('/var/run');
+                           if (runDir && runDir.type === 'dir' && !runDir.children.includes('php_solved')) {
+                               runDir.children.push('php_solved');
+                           }
+                           output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: WEB SHELL ANALYZED.\x1b[0m`;
+                       }
+                    } else {
+                       // Generic PHP execution simulation (stripped)
+                       output = '[PHP] Script executed (output suppressed)';
+                    }
+                } else {
+                    output = '[PHP] Script executed';
+                }
+            }
+        }
+        break;
+    }
+    case 'access_card': {
+        // Cycle 67: Environment Injection
+        const clearance = ENV_VARS['CLEARANCE_LEVEL'];
+        if (clearance === 'OMEGA') {
+            output = `[ACCESS_CARD] Verifying Clearance Level... OK (OMEGA)\n[ACCESS_CARD] Identity Confirmed.\n[ACCESS_CARD] Unlocking Secure Partition...\n\nFLAG: GHOST_ROOT{ENV_V4R_1NJ3CT10N}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: ENVIRONMENT VARIABLE INJECTED.\x1b[0m`;
+            if (!VFS['/var/run/env_solved']) {
+                VFS['/var/run/env_solved'] = { type: 'file', content: 'TRUE' };
+                const runDir = getNode('/var/run');
+                if (runDir && runDir.type === 'dir' && !runDir.children.includes('env_solved')) {
+                    runDir.children.push('env_solved');
+                }
+            }
+        } else {
+            output = `[ACCESS_CARD] Verifying Clearance Level... FAILED\n[ERROR] Missing or Invalid Environment Variable: CLEARANCE_LEVEL\n[HINT] Use 'export VAR=VALUE' to set required environment variables. Check binary strings for details.`;
+        }
+        break;
+    }
     case 'kill': {
       if (args.length < 1) {
           output = 'kill: usage: kill [-s signal|-p] [-a] <pid>...';
@@ -4986,14 +5320,28 @@ auth.py
           if (destPath.startsWith('/var') && !!getNode('/var/log/overflow.dmp')) {
               output = `cp: error writing '${args[1]}': No space left on device`;
           } else if (srcNode) {
-              const parent = getNode(destPath.substring(0, destPath.lastIndexOf('/')));
+              const parentPath = destPath.substring(0, destPath.lastIndexOf('/'));
+              const parent = getNode(parentPath);
               if (parent && parent.type === 'dir') {
-                  // Simplified: doesn't handle cp dir to dir
                   if (srcNode.type === 'file') {
-                      VFS[destPath] = { type: 'file', content: srcNode.content };
-                      parent.children.push(destPath.substring(destPath.lastIndexOf('/') + 1));
+                      // Create/Update file
+                      VFS[destPath] = { 
+                          type: 'file', 
+                          content: srcNode.content,
+                          permissions: (srcNode as any).permissions // Preserve perms
+                      };
+                      
+                      // Update parent children if new file
+                      const fName = destPath.substring(destPath.lastIndexOf('/') + 1);
+                      if (!parent.children.includes(fName)) {
+                          parent.children.push(fName);
+                      }
                   }
+              } else {
+                  output = `cp: cannot create regular file '${destPath}': No such file or directory`;
               }
+          } else {
+              output = `cp: cannot stat '${args[0]}': No such file or directory`;
           }
       }
       break;
