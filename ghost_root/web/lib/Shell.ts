@@ -487,6 +487,50 @@ export const loadSystemState = () => {
             home.children.push('db_alert.log');
         }
     }
+
+    // Cycle 102 Init (The Stuck Lock File)
+    if (!VFS['/var/lock/deploy.lock']) {
+        if (!VFS['/var/lock']) {
+             VFS['/var/lock'] = { type: 'dir', children: [] };
+             const varNode = getNode('/var');
+             if (varNode && varNode.type === 'dir' && !varNode.children.includes('lock')) {
+                 varNode.children.push('lock');
+             }
+        }
+        
+        VFS['/var/lock/deploy.lock'] = { 
+            type: 'file', 
+            content: '99999', 
+            permissions: '0644' 
+        };
+        const lockDir = getNode('/var/lock');
+        if (lockDir && lockDir.type === 'dir' && !lockDir.children.includes('deploy.lock')) {
+            lockDir.children.push('deploy.lock');
+        }
+
+        if (!VFS['/usr/bin/deploy_tool']) {
+             VFS['/usr/bin/deploy_tool'] = { 
+                 type: 'file', 
+                 content: '[BINARY_ELF_X86_64] [DEPLOYMENT_AGENT_V3]\n[ERROR] Lock file detected.\n',
+                 permissions: '0755'
+             };
+             const binDir = getNode('/usr/bin');
+             if (binDir && binDir.type === 'dir' && !binDir.children.includes('deploy_tool')) {
+                 binDir.children.push('deploy_tool');
+             }
+        }
+
+        if (!VFS['/home/ghost/deploy_error.log']) {
+             VFS['/home/ghost/deploy_error.log'] = { 
+                 type: 'file', 
+                 content: '[ERROR] Deployment failed.\n[REASON] Previous deployment process (PID 99999) did not exit cleanly.\n[ACTION] Remove stale lock file in /var/lock/ to proceed.' 
+             };
+             const home = getNode('/home/ghost');
+             if (home && home.type === 'dir' && !home.children.includes('deploy_error.log')) {
+                 home.children.push('deploy_error.log');
+             }
+        }
+    }
 };
 
 // Helper to reset state
@@ -689,7 +733,7 @@ export interface CommandResult {
   data?: any;
 }
 
-const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'ss', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail',     'strings', 'recover_tool', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'arp', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'zgrep', 'gunzip', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'secure_vault', 'jobs', 'fg', 'bg', 'recover_data', 'ghost_update', 'git', 'file', 'openssl', 'beacon', 'fsck', 'docker', 'lsattr', 'chattr', 'backup_service', 'getfattr', 'setfattr', 'mkfifo', 'uplink_service', 'sqlite3', 'gdb', 'jwt_tool', 'php', 'access_card', 'sys_monitor', 'ln', 'readlink', 'nginx', 'tac', 'getcap', 'sysctl', 'ldd', 'quantum_calc'];
+const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'ss', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail',     'strings', 'recover_tool', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'arp', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'zgrep', 'gunzip', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'secure_vault', 'jobs', 'fg', 'bg', 'recover_data', 'ghost_update', 'git', 'file', 'openssl', 'beacon', 'fsck', 'docker', 'lsattr', 'chattr', 'backup_service', 'getfattr', 'setfattr', 'mkfifo', 'uplink_service', 'sqlite3', 'gdb', 'jwt_tool', 'php', 'access_card', 'sys_monitor', 'ln', 'readlink', 'nginx', 'tac', 'getcap', 'sysctl', 'ldd', 'quantum_calc', 'deploy_tool'];
 
 export interface MissionStatus {
   objectives: {
@@ -879,6 +923,47 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
           return { output: `rbash: ${cmd}: command not found`, newCwd: cwd };
       }
   }
+  // Cycle 103 Init (The Path Hijack)
+  if (!VFS['/tmp/bin/ls']) {
+      if (!VFS['/tmp/bin']) {
+          VFS['/tmp/bin'] = { type: 'dir', children: [] };
+          const tmp = getNode('/tmp');
+          if (tmp && tmp.type === 'dir' && !tmp.children.includes('bin')) tmp.children.push('bin');
+      }
+      VFS['/tmp/bin/ls'] = { 
+          type: 'file', 
+          content: '#!/bin/bash\necho "Ha! You can\'t list files here."', 
+          permissions: '0755' 
+      };
+      const binDir = getNode('/tmp/bin');
+      if (binDir && binDir.type === 'dir' && !binDir.children.includes('ls')) binDir.children.push('ls');
+      
+      // Hijack PATH
+      ENV_VARS['PATH'] = '/tmp/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin';
+      
+      // Create Hint
+      if (!VFS['/home/ghost/path_error.log']) {
+           VFS['/home/ghost/path_error.log'] = {
+               type: 'file',
+               content: '[ERROR] User complaint: "ls" command is broken.\n[DIAGNOSTIC] Command returns garbage output.\n[ACTION] Check environment variables (env or echo $PATH) for unauthorized entries.'
+           };
+           const home = getNode('/home/ghost');
+           if (home && home.type === 'dir' && !home.children.includes('path_error.log')) {
+               home.children.push('path_error.log');
+           }
+      }
+  }
+
+  // Cycle 102 (The Stuck Lock File)
+  const cmd102 = commandLine.trim().split(/\s+/)[0];
+  if (cmd102 === 'deploy_tool' || cmd102 === './deploy_tool' || cmd102 === '/usr/bin/deploy_tool') {
+      if (VFS['/var/lock/deploy.lock']) {
+          return { output: '[ERROR] deploy_tool: Failed to acquire lock (/var/lock/deploy.lock).\n[INFO] Another deployment process (PID 99999) may be running.\n[ACTION] Remove the lock file if this is an error.', newCwd: cwd };
+      } else {
+          return { output: '[DEPLOYMENT] Initializing sequence...\n[STATUS] Environment checked... OK\n[STATUS] Dependencies loaded... OK\n[SUCCESS] Deployment Complete.\nFLAG: GHOST_ROOT{L0CK_F1L3_R3M0V3D}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SYSTEM DEPLOYED.\x1b[0m', newCwd: cwd };
+      }
+  }
+
   // Cycle 74 Init (The Deleted File Handle)
   if (!VFS['/usr/sbin/log_daemon']) {
       // Create binary
@@ -2537,6 +2622,33 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
       }
   }
 
+  // Cycle 103: PATH Hijack
+  if (!command.includes('/') && ENV_VARS['PATH']) {
+      const paths = ENV_VARS['PATH'].split(':');
+      for (const p of paths) {
+          let potentialPath = '';
+          if (p.startsWith('/')) {
+              potentialPath = p.endsWith('/') ? `${p}${command}` : `${p}/${command}`;
+          } else {
+              potentialPath = resolvePath(cwd, `${p}/${command}`);
+          }
+          
+          const node = getNode(potentialPath);
+          if (node && node.type === 'file') {
+               const content = (node as any).content;
+               
+               if (content.startsWith('#!/bin/bash')) {
+                   if (potentialPath === '/tmp/bin/ls') {
+                       output = `Ha! You can't list files here.\n(Try checking your $PATH or using /bin/ls directly)`;
+                   } else {
+                       output = `[EXECUTING ${potentialPath}]...\n` + content.substring(content.indexOf('\n') + 1);
+                   }
+                   return finalize(output, newCwd);
+               }
+          }
+      }
+  }
+
   switch (command) {
     case 'auth_daemon': {
         if (stdin && stdin.length > 16) {
@@ -3536,6 +3648,18 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
              if (isLink) return `${C_CYAN}${item}${C_RESET}`;
              return (itemNode?.type === 'dir') ? `${C_BLUE}${item}${C_RESET}` : item;
           }).join('  ');
+        }
+
+        // Cycle 103 Win Check
+        if (VFS['/tmp/bin/ls'] && ENV_VARS['PATH'] && !ENV_VARS['PATH'].includes('/tmp/bin')) {
+             if (!VFS['/var/run/path_hijack_solved']) {
+                 VFS['/var/run/path_hijack_solved'] = { type: 'file', content: 'TRUE' };
+                 const runDir = getNode('/var/run');
+                 if (runDir && runDir.type === 'dir' && !runDir.children.includes('path_hijack_solved')) {
+                     runDir.children.push('path_hijack_solved');
+                 }
+                 output += `\n\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PATH RESTORED.\x1b[0m\nFLAG: GHOST_ROOT{P4TH_H1J4CK_N3UTR4L1Z3D}`;
+             }
         }
       }
       break;

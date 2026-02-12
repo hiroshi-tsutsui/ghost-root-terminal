@@ -69,3 +69,19 @@
 > CONSTRAINT: `ping database` fails with "Name or service not known".
 > SOLUTION: Edit `/etc/hosts` to add `127.0.0.1 database`.
 > ENCRYPTION: LOW
+
+[2026-02-13 05:25]
+> CHANGES: ghost_root/web/lib/Shell.ts
+> PUZZLE ADDED: "The Stuck Lock File" (Cycle 102).
+> MECHANICS: Added `/var/lock/deploy.lock` (PID 99999).
+> CONSTRAINT: `deploy_tool` fails if lock file exists.
+> SOLUTION: `rm /var/lock/deploy.lock` then run `deploy_tool`.
+> ENCRYPTION: LOW
+
+[2026-02-13 06:15]
+> CHANGES: ghost_root/web/lib/Shell.ts
+> PUZZLE ADDED: "The Path Hijack" (Cycle 103).
+> MECHANICS: Added `/tmp/bin/ls` (fake) and prepended `/tmp/bin` to `PATH`.
+> CONSTRAINT: `ls` returns fake output.
+> SOLUTION: `export PATH=/usr/bin:/bin` (or remove `/tmp/bin`).
+> ENCRYPTION: LOW
