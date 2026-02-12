@@ -861,6 +861,8 @@ const WebTerminal = () => {
              term.clear();
              term.write('\x1b[?25l'); // Hide cursor
              
+             const processList = result.data || [];
+             
              while (isTopModeRef.current) {
                  term.write('\x1b[H'); // Move cursor to home
                  const now = new Date();
@@ -868,17 +870,18 @@ const WebTerminal = () => {
                  const loadAvg = (Math.random() * 2).toFixed(2);
                  const loadAvg2 = ((Math.random() * 0.5) + 0.1).toFixed(2);
                  
-                 const header = `top - ${timeStr} up 14 days,  2:30,  1 user,  load average: ${loadAvg}, ${loadAvg2}, 0.18\r\nTasks:  12 total,   1 running,  11 sleeping,   0 stopped,   0 zombie\r\n%Cpu(s):  ${(Math.random() * 10).toFixed(1)} us,  ${(Math.random() * 5).toFixed(1)} sy,  0.0 ni, ${(80 + Math.random() * 10).toFixed(1)} id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st\r\nMiB Mem :   7961.2 total,   1423.1 free,   2218.5 used,   4319.6 buff/cache\r\nMiB Swap:   2048.0 total,   2048.0 free,      0.0 used.   5321.4 avail Mem\r\n\r\n  PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND`;
+                 const header = `top - ${timeStr} up 14 days,  2:30,  1 user,  load average: ${loadAvg}, ${loadAvg2}, 0.18\r\nTasks:  ${processList.length} total,   1 running,  ${processList.length - 1} sleeping,   0 stopped,   0 zombie\r\n%Cpu(s):  ${(Math.random() * 10).toFixed(1)} us,  ${(Math.random() * 5).toFixed(1)} sy,  0.0 ni, ${(80 + Math.random() * 10).toFixed(1)} id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st\r\nMiB Mem :   7961.2 total,   1423.1 free,   2218.5 used,   4319.6 buff/cache\r\nMiB Swap:   2048.0 total,   2048.0 free,      0.0 used.   5321.4 avail Mem\r\n\r\n  PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND`;
                  
-                 const processes = [
-                    `    1 root      20   0  168.1m  12.2m   9.8m S   0.0   0.1   0:04.21 systemd`,
-                    ` 1337 ghost     20   0   42.0m   2.1m   1.4m S   0.0   0.0  14:02.11 bash`,
-                    `  404 root      20   0  102.4m   5.2m   3.1m S   0.0   0.1   1:22.33 sshd`,
-                    ` 8888 root      20   0   12.0m   1.1m   0.8m S   0.0   0.0   0:00.05 watcher_daemon`,
-                    ` 9999 unknown   20   0   88.8m  44.4m  11.1m R  ${(Math.random() * 20 + 10).toFixed(1)}   0.5   0:10.42 hydra-scan`,
-                    `  666 root      20   0   66.6m   6.6m   6.6m S   0.0   0.1   6:06.06 spectre_kernel`,
-                    ` 2024 root      20   0    8.4m   1.2m   0.9m S   0.0   0.0   0:01.12 cron`
-                 ];
+                 const processes = processList.map((p: any) => {
+                     // Simulate fluctuating CPU for active processes
+                     let cpu = p.cpu;
+                     if (p.stat.includes('R')) {
+                         cpu = (parseFloat(p.cpu) + (Math.random() * 5 - 2.5)).toFixed(1);
+                         if (parseFloat(cpu) < 0) cpu = "0.0";
+                         if (parseFloat(cpu) > 100) cpu = "99.9";
+                     }
+                     return `${p.pid.toString().padStart(5)} ${p.user.padEnd(8)}  20   0   ${(Math.random()*200).toFixed(1)}m   ${(Math.random()*20).toFixed(1)}m   ${(Math.random()*10).toFixed(1)}m ${p.stat.padEnd(1)} ${cpu.toString().padStart(5)}  ${p.mem.toFixed(1)}   ${p.time} ${p.command}`; 
+                 });
                  
                  term.write(header + '\r\n' + processes.join('\r\n'));
                  term.write('\r\n\r\n\x1b[7m[top] Running... Press "q" to exit.\x1b[0m');

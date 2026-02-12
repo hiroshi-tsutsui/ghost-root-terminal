@@ -353,6 +353,98 @@ export const loadSystemState = () => {
             }
         }
     }
+
+    // Cycle 94 Init (The Deleted File Recovery)
+    if (!VFS['/proc/8888/fd/3']) {
+        const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+        const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+
+        ensureDir('/proc'); ensureDir('/proc/8888'); ensureDir('/proc/8888/fd');
+        link('/proc', '8888'); link('/proc/8888', 'fd');
+
+        VFS['/proc/8888/fd/3'] = {
+            type: 'file',
+            content: 'CONF_V1: secret_key=GHOST_ROOT{R3C0V3R_D3L3T3D_F1L3}\n',
+            permissions: '0400' // Read only
+        };
+        link('/proc/8888/fd', '3');
+        
+        // Create Hint
+        if (!VFS['/home/ghost/incident_report.txt']) {
+            VFS['/home/ghost/incident_report.txt'] = {
+                type: 'file',
+                content: '[INCIDENT] secret.conf was accidentally deleted.\n[STATUS] Service (PID 8888) is still running and holding the file handle.\n[ACTION] Recover content from /proc filesystem.'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('incident_report.txt')) {
+                home.children.push('incident_report.txt');
+            }
+        }
+    }
+
+    // Cycle 98 Init (World Writable Cron)
+    if (!VFS['/etc/cron.d/readme']) {
+        if (!VFS['/etc/cron.d']) {
+             VFS['/etc/cron.d'] = { type: 'dir', children: [] };
+             const etc = getNode('/etc');
+             if (etc && etc.type === 'dir' && !etc.children.includes('cron.d')) {
+                 if (etc.children) etc.children.push('cron.d');
+                 else etc.children = ['cron.d'];
+             }
+        }
+        // Explicitly set 777 permissions
+        (VFS['/etc/cron.d'] as any).permissions = '0777'; 
+        
+        VFS['/etc/cron.d/readme'] = { type: 'file', content: '# System Maintenance Scripts\n# WARNING: Ensure this directory is secure!' };
+        const cronD = getNode('/etc/cron.d');
+        if (cronD && cronD.type === 'dir' && !cronD.children.includes('readme')) {
+            cronD.children.push('readme');
+        }
+        
+        // Ensure flag exists
+        if (!VFS['/root/flag.txt']) {
+             VFS['/root/flag.txt'] = { type: 'file', content: 'FLAG: GHOST_ROOT{CR0N_D_WR1T4BL3}', permissions: '0600' };
+             const root = getNode('/root');
+             if (root && root.type === 'dir' && !root.children.includes('flag.txt')) {
+                 root.children.push('flag.txt');
+             }
+        }
+    }
+
+    // Cycle 99 Init (The Disk Quota)
+    if (!VFS['/var/log/syslog.1']) {
+        // Ensure /var/log exists
+        if (!VFS['/var/log']) {
+             VFS['/var/log'] = { type: 'dir', children: [] };
+             const varNode = getNode('/var');
+             if (varNode && varNode.type === 'dir' && !varNode.children.includes('log')) {
+                 varNode.children.push('log');
+             }
+        }
+        
+        // Create the huge file
+        VFS['/var/log/syslog.1'] = { 
+            type: 'file', 
+            content: '[SYSTEM_LOG_ARCHIVE_V1] ... [HUGE_DATA_BLOCK] ...', 
+            permissions: '0640' 
+        };
+        const logDir = getNode('/var/log');
+        if (logDir && logDir.type === 'dir' && !logDir.children.includes('syslog.1')) {
+            logDir.children.push('syslog.1');
+        }
+
+        // Create Hint
+        if (!VFS['/home/ghost/disk_alert.txt']) {
+             VFS['/home/ghost/disk_alert.txt'] = { 
+                 type: 'file', 
+                 content: '[ALERT] System writes failing.\n[ERROR] Disk Quota Exceeded on /var.\n[ACTION] Free up space immediately.' 
+             };
+             const home = getNode('/home/ghost');
+             if (home && home.type === 'dir' && !home.children.includes('disk_alert.txt')) {
+                 home.children.push('disk_alert.txt');
+             }
+        }
+    }
 };
 
 // Helper to reset state
@@ -1900,6 +1992,35 @@ int main(int argc, char* argv[]) {
               binDir.children.push('gunzip');
               VFS['/usr/bin/gunzip'] = { type: 'file', content: '[BINARY_ELF_X86_64]', permissions: '0755' };
           }
+      }
+  }
+
+  // Cycle 80 Init (The Unmounted Partition)
+  if (!VFS['/dev/sdb1']) {
+      if (!VFS['/dev']) {
+           VFS['/dev'] = { type: 'dir', children: [] };
+           addChild('/', 'dev');
+      }
+      // Create block device nodes (simulated as files)
+      VFS['/dev/sda'] = { type: 'file', content: '[BLOCK_DEVICE_8_0]', permissions: '0660' };
+      addChild('/dev', 'sda');
+      VFS['/dev/sda1'] = { type: 'file', content: '[BLOCK_DEVICE_8_1]', permissions: '0660' };
+      addChild('/dev', 'sda1');
+      VFS['/dev/sdb'] = { type: 'file', content: '[BLOCK_DEVICE_8_16]', permissions: '0660' };
+      addChild('/dev', 'sdb');
+      VFS['/dev/sdb1'] = { type: 'file', content: '[BLOCK_DEVICE_8_17]', permissions: '0660' };
+      addChild('/dev', 'sdb1');
+
+      // Hint
+      if (!VFS['/home/ghost/server_status.log']) {
+           VFS['/home/ghost/server_status.log'] = {
+               type: 'file',
+               content: '[STATUS] Main Server Online.\n[WARN] Secondary Storage (sdb) not mounted.\n[ACTION] Mount partition /dev/sdb1 to access backups.'
+           };
+           const home = getNode('/home/ghost');
+           if (home && home.type === 'dir' && !home.children.includes('server_status.log')) {
+               home.children.push('server_status.log');
+           }
       }
   }
 
@@ -5602,6 +5723,7 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
              } else if (p.pid === 404) {
                  outputLines.push(`${cmd.padEnd(9)} ${String(p.pid).padStart(5)} ${p.user.padEnd(5)}    3u  IPv4  22222      0t0  TCP *:22 (LISTEN)`);
              } else if (p.pid === 8888) {
+                 outputLines.push(`${cmd.padEnd(9)} ${String(p.pid).padStart(5)} ${p.user.padEnd(5)}    3r   REG  253,0      42 1337 /home/ghost/secret.conf (deleted)`);
                  outputLines.push(`${cmd.padEnd(9)} ${String(p.pid).padStart(5)} ${p.user.padEnd(5)}    4u  IPv4  88888      0t0  UDP *:68`);
              } else if (p.pid === 9999) {
                  outputLines.push(`${cmd.padEnd(9)} ${String(p.pid).padStart(5)} ${p.user.padEnd(5)}    3u  IPv4  99999      0t0  TCP 192.168.1.105:31337->192.168.1.99:443 (SYN_SENT)`);
@@ -5972,7 +6094,7 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
     case 'top':
       return { output: '', newCwd, action: 'top_sim', data: PROCESSES };
     case 'df': {
-      const overflow = !!getNode('/var/log/overflow.dmp');
+      const overflow = !!getNode('/var/log/overflow.dmp') || !!getNode('/var/log/syslog.1');
       const varUsage = overflow ? '100%' : '12%';
       const varAvail = overflow ? '0' : '440M';
       
@@ -5995,6 +6117,9 @@ tmpfs             815276    1184    814092   1% /run
     }
     case 'du': {
       const overflow = !!getNode('/var/log/overflow.dmp');
+      const syslogBig = !!getNode('/var/log/syslog.1');
+      const isFull = overflow || syslogBig;
+      
       let targetPath = cwd;
       if (args.length > 0 && !args[0].startsWith('-')) {
           targetPath = resolvePath(cwd, args[0]);
@@ -6009,16 +6134,18 @@ tmpfs             815276    1184    814092   1% /run
               let out = '';
               if (human) {
                   if (overflow) out += `500M\t/var/log/overflow.dmp\n`;
+                  if (syslogBig) out += `50G\t/var/log/syslog.1\n`;
                   out += `4.0K\t/var/log/syslog\n`;
                   out += `8.0K\t/var/log/auth.log\n`;
-                  out += `${overflow ? '501M' : '60K'}\t/var/log\n`;
-                  if (targetPath === '/var') out += `${overflow ? '501M' : '1.2M'}\t/var\n`;
+                  out += `${isFull ? (syslogBig ? '50G' : '501M') : '60K'}\t/var/log\n`;
+                  if (targetPath === '/var') out += `${isFull ? (syslogBig ? '50G' : '501M') : '1.2M'}\t/var\n`;
               } else {
                   if (overflow) out += `512000\t/var/log/overflow.dmp\n`;
+                  if (syslogBig) out += `52428800\t/var/log/syslog.1\n`;
                   out += `4\t/var/log/syslog\n`;
                   out += `8\t/var/log/auth.log\n`;
-                  out += `${overflow ? '512040' : '60'}\t/var/log\n`;
-                  if (targetPath === '/var') out += `${overflow ? '512100' : '1200'}\t/var\n`;
+                  out += `${isFull ? (syslogBig ? '52428840' : '512040') : '60'}\t/var/log\n`;
+                  if (targetPath === '/var') out += `${isFull ? (syslogBig ? '52428900' : '512100') : '1200'}\t/var\n`;
               }
               output = out.trim();
           } else {
@@ -6029,17 +6156,7 @@ tmpfs             815276    1184    814092   1% /run
       }
       break;
     }
-    case 'df': {
-        const daemon = PROCESSES.find(p => p.pid === 1001);
-        const usage = daemon ? '100%' : '15%';
-        const avail = daemon ? '0' : '8.1G';
-        
-        output = `Filesystem     1K-blocks    Used Available Use% Mounted on
-/dev/sda1       10485760 1572864   8912896  15% /
-/dev/sda2       10485760 ${daemon ? '10485760' : '1572864'}         ${avail} ${usage} /var
-tmpfs            1024000       0   1024000   0% /tmp`;
-        break;
-    }
+    // Removed duplicate df case
     case 'lsof': {
         const lines = ['COMMAND     PID   USER   FD   TYPE DEVICE SIZE/OFF NODE NAME'];
         // standard mocks
@@ -7678,6 +7795,50 @@ ${validUnits.length} loaded units listed.`;
                } else if (!validUnits.includes(unit)) {
                    output = `Failed to start ${unit}.service: Unit ${unit}.service not found.`;
                } else {
+                   if (unit === 'cron') {
+                       output = 'Restarting cron service...\n';
+                       // Scan /etc/cron.d for exploits
+                       const cronDir = getNode('/etc/cron.d');
+                       if (cronDir && cronDir.type === 'dir') {
+                           for (const child of cronDir.children) {
+                               const jobNode = getNode(`/etc/cron.d/${child}`);
+                               if (jobNode && jobNode.type === 'file') {
+                                   const content = jobNode.content;
+                                   // Check for exploit pattern: cp /root/flag.txt /tmp/flag.txt
+                                   if (content.includes('cp /root/flag.txt') && (content.includes('/tmp') || content.includes('/home/ghost'))) {
+                                        // Execute payload
+                                        const destMatch = content.match(/cp \/root\/flag.txt\s+([^\s;&]+)/);
+                                        if (destMatch) {
+                                            const destPath = destMatch[1];
+                                            VFS[destPath] = { type: 'file', content: 'FLAG: GHOST_ROOT{CR0N_D_WR1T4BL3}' };
+                                            
+                                            // Ensure parent dir knows about it
+                                            const pDirName = destPath.substring(0, destPath.lastIndexOf('/'));
+                                            const pDir = getNode(pDirName);
+                                            const fName = destPath.substring(destPath.lastIndexOf('/') + 1);
+                                            if (pDir && pDir.type === 'dir' && !pDir.children.includes(fName)) {
+                                                if (pDir.children) pDir.children.push(fName);
+                                                else pDir.children = [fName];
+                                            }
+                                            
+                                            output += `[CRON] Executing job "${child}" as root...\n[SUCCESS] Job completed.\n\x1b[1;32m[MISSION UPDATE] Objective Complete: CRON PRIVILEGE ESCALATION.\x1b[0m`;
+                                            
+                                            // Mark solved
+                                            if (!VFS['/var/run/cron_write_solved']) {
+                                                VFS['/var/run/cron_write_solved'] = { type: 'file', content: 'TRUE' };
+                                                const runDir = getNode('/var/run');
+                                                if (runDir && runDir.type === 'dir' && !runDir.children.includes('cron_write_solved')) {
+                                                    runDir.children.push('cron_write_solved');
+                                                }
+                                            }
+                                        }
+                                   }
+                               }
+                           }
+                       }
+                       if (!output.includes('SUCCESS')) output += '[OK] Cron service active.';
+                   }
+
                    if (unit === 'ghost_relay') {
                        if (PROCESSES.find(p => p.pid === 4444)) {
                            output = `Job for ghost_relay.service failed because the control process exited with error code.\nSee "systemctl status ghost_relay.service" and "journalctl -xe" for details.`;
