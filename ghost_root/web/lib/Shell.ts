@@ -37,6 +37,8 @@ const FILE_ATTRIBUTES: Record<string, string[]> = {
     '/var/log/surveillance.log': ['i']
 };
 
+let KNOCK_SEQUENCE: number[] = [];
+
 let ALERT_LEVEL = 0;
 let SYSTEM_TIME_OFFSET = -824900000000; // Set system time to ~1999 (Y2K glitch)
 
@@ -205,7 +207,8 @@ let PROCESSES: Process[] = [
   { pid: 4000, ppid: 1, user: 'root', cpu: 0.1, mem: 0.2, time: '1:00', command: '/usr/bin/vault_guardian', tty: '?', stat: 'Ss' },
   { pid: 4001, ppid: 4000, user: 'root', cpu: 0.0, mem: 0.0, time: '0:00', command: '[vault_worker] <defunct>', tty: '?', stat: 'Z' },
   { pid: 6000, ppid: 1, user: 'root', cpu: 0.5, mem: 1.0, time: '0:10', command: '/usr/bin/overseer', tty: '?', stat: 'Ss' },
-  { pid: 8192, ppid: 1, user: 'root', cpu: 0.0, mem: 0.1, time: '0:00', command: '/usr/bin/keepalive_d', tty: '?', stat: 'Ss' }
+  { pid: 8192, ppid: 1, user: 'root', cpu: 0.0, mem: 0.1, time: '0:00', command: '/usr/bin/keepalive_d', tty: '?', stat: 'Ss' },
+  { pid: 1001, ppid: 1, user: 'root', cpu: 0.1, mem: 4.5, time: '12:00', command: '/usr/sbin/log_daemon', tty: '?', stat: 'Ss' }
 ];
 
 // Mock Network Connections
@@ -514,6 +517,43 @@ export const tabCompletion = (cwd: string, inputBuffer: string): { matches: stri
 };
 
 export const processCommand = (cwd: string, commandLine: string, stdin?: string): CommandResult => {
+  // Cycle 74 Init (The Deleted File Handle)
+  if (!VFS['/usr/sbin/log_daemon']) {
+      // Create binary
+      VFS['/usr/sbin/log_daemon'] = {
+          type: 'file',
+          content: '[BINARY_ELF_X86_64] [DAEMON] [LOG_WRITER]',
+          permissions: '0755'
+      };
+      // Ensure /usr/sbin exists
+      const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+      const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+      ensureDir('/usr');
+      ensureDir('/usr/sbin');
+      link('/usr', 'sbin');
+      link('/usr/sbin', 'log_daemon');
+      
+      // Create Hint
+      if (!VFS['/home/ghost/alert_disk_space.txt']) {
+          VFS['/home/ghost/alert_disk_space.txt'] = {
+              type: 'file',
+              content: '[ALERT] Disk usage critical on /var.\n[SYSTEM] Writes failed: No space left on device.\n[ACTION] Investigate space usage (df -h) and open files (lsof).\n'
+          };
+          const home = getNode('/home/ghost');
+          if (home && home.type === 'dir' && !home.children.includes('alert_disk_space.txt')) {
+              home.children.push('alert_disk_space.txt');
+          }
+      }
+      
+      // Marker for constraint
+      VFS['/var/log/overflow.dmp'] = { type: 'file', content: 'MARKER_FOR_DISK_FULL' }; 
+  }
+  
+  // Clean up marker if puzzle solved
+  if (VFS['/var/run/disk_solved'] && VFS['/var/log/overflow.dmp']) {
+      delete VFS['/var/log/overflow.dmp'];
+  }
+
   // Fix: Ensure .ssh is visible in home directory if it exists (Fixes localStorage persistence issue)
   const ghostHome = getNode('/home/ghost');
   if (ghostHome && ghostHome.type === 'dir' && !ghostHome.children.includes('.ssh')) {
@@ -1333,6 +1373,33 @@ int main(int argc, char* argv[]) {
           const home = getNode('/home/ghost');
           if (home && home.type === 'dir' && !home.children.includes('alert_sys_monitor.txt')) {
               home.children.push('alert_sys_monitor.txt');
+          }
+      }
+  }
+
+  // Cycle 70 Init (The Port Knocking)
+  if (!VFS['/etc/knockd.conf']) {
+      // Create config
+      if (!VFS['/etc']) VFS['/etc'] = { type: 'dir', children: [] };
+      VFS['/etc/knockd.conf'] = {
+          type: 'file',
+          content: '[options]\n    UseSyslog\n\n[openSSH]\n    sequence    = 7000,8000,9000\n    seq_timeout = 5\n    command     = /sbin/iptables -A INPUT -s %IP% -p tcp --dport 22 -j ACCEPT\n    tcpflags    = syn',
+          permissions: '0600'
+      };
+      const etc = getNode('/etc');
+      if (etc && etc.type === 'dir' && !etc.children.includes('knockd.conf')) {
+          etc.children.push('knockd.conf');
+      }
+      
+      // Create hint
+      if (!VFS['/home/ghost/network_security.memo']) {
+          VFS['/home/ghost/network_security.memo'] = {
+              type: 'file',
+              content: 'To: Admin\nFrom: NetSec\n\nWe have implemented Port Knocking on the Gateway (192.168.1.1).\nSSH is closed by default. Check /etc/knockd.conf for the sequence.\n'
+          };
+          const home = getNode('/home/ghost');
+          if (home && home.type === 'dir' && !home.children.includes('network_security.memo')) {
+              home.children.push('network_security.memo');
           }
       }
   }
@@ -4650,7 +4717,43 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
                output = 'usage: nc [options] <host> <port>';
            } else {
                const p = port || '23';
-               if (host === '192.168.1.99' || host === 'black-site.local') {
+               // Check for Cycle 70 (Port Knocking)
+               if (host === '192.168.1.1' || host === 'gateway') {
+                   const pNum = parseInt(p, 10);
+                   
+                   // Port Knocking Logic
+                   if ([7000, 8000, 9000].includes(pNum)) {
+                       // Add to sequence
+                       KNOCK_SEQUENCE.push(pNum);
+                       
+                       // Keep last 3
+                       if (KNOCK_SEQUENCE.length > 3) KNOCK_SEQUENCE.shift();
+                       
+                       // Check if sequence is correct
+                       if (KNOCK_SEQUENCE.join(',') === '7000,8000,9000') {
+                            if (!VFS['/var/run/knock_solved']) {
+                                VFS['/var/run/knock_solved'] = { type: 'file', content: 'TRUE' };
+                                const runDir = getNode('/var/run');
+                                 if (runDir && runDir.type === 'dir' && !runDir.children.includes('knock_solved')) {
+                                     runDir.children.push('knock_solved');
+                                 }
+                                 output = `(UNKNOWN) [192.168.1.1] ${p} (?): Connection refused\n[KNOCKD] Sequence Accepted.\n[KNOCKD] Port 22 Open.\nFLAG: GHOST_ROOT{P0RT_KN0CK1NG_MAST3R}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: FIREWALL BYPASSED.\x1b[0m`;
+                            } else {
+                                output = `(UNKNOWN) [192.168.1.1] ${p} (?): Connection refused`;
+                            }
+                       } else {
+                            output = `(UNKNOWN) [192.168.1.1] ${p} (?): Connection refused`;
+                       }
+                   } else if (p === '22') {
+                       if (VFS['/var/run/knock_solved']) {
+                           output = `(UNKNOWN) [192.168.1.1] 22 (ssh) open\nSSH-2.0-OpenSSH_8.2p1 Ubuntu-4ubuntu0.1\n`;
+                       } else {
+                           output = `(UNKNOWN) [192.168.1.1] 22 (ssh) : Connection refused`;
+                       }
+                   } else {
+                       output = `(UNKNOWN) [192.168.1.1] ${p} (?): Connection refused`;
+                   }
+               } else if (host === '192.168.1.99' || host === 'black-site.local') {
                    if (p === '6667') {
                        output = `(UNKNOWN) [192.168.1.99] 6667 (?) open\n:irc.black-site.local NOTICE * :*** Looking up your hostname...\n:irc.black-site.local NOTICE * :*** Found your hostname\n:irc.black-site.local 001 ghost :Welcome to the Black Site IRC Network ghost!user@ghost-root\n`;
                        return { output, newCwd, action: 'irc_sim', data: { server: host, channel: '#lobby', nick: 'ghost' } };
@@ -4915,6 +5018,42 @@ tmpfs             815276    1184    814092   1% /run
           output = human ? `24K\t${targetPath}` : `24\t${targetPath}`;
       }
       break;
+    }
+    case 'df': {
+        const daemon = PROCESSES.find(p => p.pid === 1001);
+        const usage = daemon ? '100%' : '15%';
+        const avail = daemon ? '0' : '8.1G';
+        
+        output = `Filesystem     1K-blocks    Used Available Use% Mounted on
+/dev/sda1       10485760 1572864   8912896  15% /
+/dev/sda2       10485760 ${daemon ? '10485760' : '1572864'}         ${avail} ${usage} /var
+tmpfs            1024000       0   1024000   0% /tmp`;
+        break;
+    }
+    case 'lsof': {
+        const lines = ['COMMAND     PID   USER   FD   TYPE DEVICE SIZE/OFF NODE NAME'];
+        // standard mocks
+        lines.push('systemd       1   root  cwd    DIR    8,1     4096    2 /');
+        lines.push('sshd        404   root  txt    REG    8,1   853040 1056 /usr/sbin/sshd');
+        
+        // The Puzzle
+        const daemon = PROCESSES.find(p => p.pid === 1001);
+        if (daemon) {
+            lines.push('log_daemon 1001   root  cwd    DIR    8,1     4096    2 /');
+            lines.push('log_daemon 1001   root  txt    REG    8,1    54020 3021 /usr/sbin/log_daemon');
+            lines.push('log_daemon 1001   root    1w   REG    8,1 8589934592 5001 /var/log/syslog (deleted)'); // 8GB file
+        }
+        
+        if (args.includes('+L1') || args.includes('grep')) {
+             if (args.includes('+L1')) {
+                 output = lines.filter(l => l.includes('(deleted)') || l.includes('COMMAND')).join('\n');
+             } else {
+                 output = lines.join('\n');
+             }
+        } else {
+             output = lines.join('\n');
+        }
+        break;
     }
     case 'ps': {
       let procs = [...PROCESSES];
@@ -5311,6 +5450,18 @@ auth.py
                           }
                       } else {
                           output = `[SYSTEM] keepalive_d: Caught signal ${signal || 'SIGTERM'}. Ignoring (critical process).`;
+                      }
+                  } else if (pid === 1001) {
+                      PROCESSES.splice(idx, 1);
+                      if (!VFS['/var/run/disk_solved']) {
+                          VFS['/var/run/disk_solved'] = { type: 'file', content: 'TRUE' };
+                          const runDir = getNode('/var/run');
+                          if (runDir && runDir.type === 'dir' && !runDir.children.includes('disk_solved')) {
+                              runDir.children.push('disk_solved');
+                          }
+                          output = `[SYSTEM] Terminated log_daemon (PID 1001).\n[SYSTEM] Reclaiming disk space... Done.\n\nFLAG: GHOST_ROOT{D1SK_SP4C3_R3CL41M3D}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: DELETED FILE HANDLE.\x1b[0m`;
+                      } else {
+                          output = `[SYSTEM] Terminated log_daemon (PID 1001). Space reclaimed.`;
                       }
                   } else if (pid === 1) {
                       output = 'Attempting to kill init process...';
