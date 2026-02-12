@@ -61,3 +61,11 @@
 > CONSTRAINT: File creation (`touch`, `mkdir`, `echo >`) fails with "No space left on device".
 > SOLUTION: `df -i` to diagnose, then `rm -rf /var/cache/inodes_fill`.
 > ENCRYPTION: LOW
+
+[2026-02-13 04:45]
+> CHANGES: ghost_root/web/lib/Shell.ts
+> PUZZLE ADDED: "The DNS Failure" (Cycle 101).
+> MECHANICS: Added `/home/ghost/db_alert.log` (Hint) + Hostname Resolution Logic.
+> CONSTRAINT: `ping database` fails with "Name or service not known".
+> SOLUTION: Edit `/etc/hosts` to add `127.0.0.1 database`.
+> ENCRYPTION: LOW

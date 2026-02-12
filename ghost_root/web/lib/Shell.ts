@@ -475,6 +475,18 @@ export const loadSystemState = () => {
              }
         }
     }
+
+    // Cycle 101 Init (DNS Failure)
+    if (!VFS['/home/ghost/db_alert.log']) {
+        VFS['/home/ghost/db_alert.log'] = {
+            type: 'file',
+            content: '[ERROR] Database connection failed.\n[HOST] "database"\n[STATUS] Unresolvable hostname.\n[ACTION] Add manual entry to /etc/hosts for loopback (127.0.0.1).'
+        };
+        const home = getNode('/home/ghost');
+        if (home && home.type === 'dir' && !home.children.includes('db_alert.log')) {
+            home.children.push('db_alert.log');
+        }
+    }
 };
 
 // Helper to reset state
@@ -1502,6 +1514,18 @@ int main(int argc, char* argv[]) {
       const evDir = getNode('/home/ghost/evidence');
       if (evDir && evDir.type === 'dir' && !evDir.children.includes('transmission.wav')) {
           evDir.children.push('transmission.wav');
+      }
+
+      // Hint File
+      if (!VFS['/home/ghost/audio_analysis.log']) {
+          VFS['/home/ghost/audio_analysis.log'] = {
+              type: 'file',
+              content: '[ANALYSIS] Suspicious audio file detected: transmission.wav\n[TOOL] Recommended: steghide\n[NOTE] Passphrase may be hidden in metadata or spectogram (Simulated).\nTry: steghide extract -sf transmission.wav -p "specter"'
+          };
+          const home = getNode('/home/ghost');
+          if (home && home.type === 'dir' && !home.children.includes('audio_analysis.log')) {
+              home.children.push('audio_analysis.log');
+          }
       }
   }
 
@@ -5267,6 +5291,27 @@ ${extraRoute}`;
            const ip = hosts[host] || (host.match(/^\d+\.\d+\.\d+\.\d+$/) ? host : null);
            
            if (ip) {
+               // Cycle 101: The DNS Failure
+               if (host === 'database') {
+                   // Ensure it resolves to loopback (127.0.0.1) as per hint
+                   if (ip === '127.0.0.1') {
+                       if (!VFS['/var/run/dns_fixed']) {
+                           VFS['/var/run/dns_fixed'] = { type: 'file', content: 'TRUE' };
+                           const runDir = getNode('/var/run');
+                           if (runDir && runDir.type === 'dir' && !runDir.children.includes('dns_fixed')) {
+                               runDir.children.push('dns_fixed');
+                           }
+                           output = `PING ${host} (${ip}) 56(84) bytes of data.\n64 bytes from ${ip}: icmp_seq=1 ttl=64 time=0.04 ms\n\n[SUCCESS] Internal Database Reachable.\nFLAG: GHOST_ROOT{LOC4L_H0ST_R3SOLV3D}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: DNS CONFIGURATION.\x1b[0m`;
+                       } else {
+                           output = `PING ${host} (${ip}) 56(84) bytes of data.\n64 bytes from ${ip}: icmp_seq=1 ttl=64 time=0.04 ms`;
+                       }
+                       return { output, newCwd, action: 'delay' };
+                   } else {
+                        output = `PING ${host} (${ip}) ... Request Timed Out.\n(Hint: Database listens on loopback interface)`;
+                        return { output, newCwd, action: 'delay' };
+                   }
+               }
+
                // Cycle 56: DNS Spoof Check
                if (host === 'omega-control.net' && ip === '192.168.1.99') {
                    if (!VFS['/var/run/dns_spoofed']) {
@@ -6090,7 +6135,7 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
                        }
                        
                        output = `wrote extracted data to "${payloadName}".`;
-                   } else if (fileTarget.endsWith('transmission.wav') && passphrase === 'frequency') {
+                   } else if (fileTarget.endsWith('transmission.wav') && (passphrase === 'frequency' || passphrase === 'specter')) {
                        // Success (Cycle 57)
                        const payloadName = 'coordinates.txt';
                        const payloadPath = cwd === '/' ? `/${payloadName}` : `${cwd}/${payloadName}`;
