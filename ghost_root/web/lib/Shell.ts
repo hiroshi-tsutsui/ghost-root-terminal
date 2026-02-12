@@ -65,6 +65,7 @@ export const saveSystemState = () => {
         SYSTEM_TIME_OFFSET,
         LOADED_MODULES,
         FILE_ATTRIBUTES, // Added for Cycle 40
+        MOUNTED_DEVICES, // Added for Cycle 83 Persistence
         // Processes and Jobs are volatile (memory only), so we don't save them.
         // History is saved separately in VFS (.bash_history)
     };
@@ -110,9 +111,27 @@ export const loadSystemState = () => {
                 // Merge or replace
                 Object.assign(FILE_ATTRIBUTES, parsed.FILE_ATTRIBUTES);
             }
+            if (parsed.MOUNTED_DEVICES) {
+                // Clear default mounts and restore state
+                for (const key in MOUNTED_DEVICES) delete MOUNTED_DEVICES[key];
+                Object.assign(MOUNTED_DEVICES, parsed.MOUNTED_DEVICES);
+            }
         } catch (e) {
             console.error('Failed to load Shell State', e);
         }
+    }
+    
+    // Cycle 83: The Over-Mounted Directory Init
+    // If not in VFS, create it (handles first run)
+    if (!VFS['/mnt/secret']) {
+        if (!VFS['/mnt']) {
+             VFS['/mnt'] = { type: 'dir', children: [] };
+             addChild('/', 'mnt');
+        }
+        VFS['/mnt/secret'] = { type: 'dir', children: ['dummy_data.tmp', 'cache_v2.db'] };
+        addChild('/mnt', 'secret');
+        VFS['/mnt/secret/dummy_data.tmp'] = { type: 'file', content: 'NON-CRITICAL DATA' };
+        VFS['/mnt/secret/cache_v2.db'] = { type: 'file', content: 'BINARY_CACHE_BLOB' };
     }
     
     // Cycle 40 Init (Ensure surveillance log exists)
@@ -269,7 +288,7 @@ const addChild = (parentPath: string, childName: string) => {
   }
 };
 
-const MOUNTED_DEVICES: Record<string, string> = { '/dev/sdc1': '/mnt/data' };
+const MOUNTED_DEVICES: Record<string, string> = { '/dev/sdc1': '/mnt/data', '/dev/loop2': '/mnt/secret' };
 const MOUNT_OPTIONS: Record<string, string> = { '/mnt/data': 'ro,nosuid,nodev' };
 
 
@@ -347,7 +366,7 @@ export interface CommandResult {
   data?: any;
 }
 
-const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'arp', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'secure_vault', 'jobs', 'fg', 'bg', 'recover_data', 'ghost_update', 'git', 'file', 'openssl', 'beacon', 'fsck', 'docker', 'lsattr', 'chattr', 'backup_service', 'getfattr', 'setfattr', 'mkfifo', 'uplink_service', 'sqlite3', 'gdb', 'jwt_tool', 'php', 'access_card', 'sys_monitor', 'ln', 'readlink', 'nginx', 'tac', 'getcap'];
+const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'ss', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'arp', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'secure_vault', 'jobs', 'fg', 'bg', 'recover_data', 'ghost_update', 'git', 'file', 'openssl', 'beacon', 'fsck', 'docker', 'lsattr', 'chattr', 'backup_service', 'getfattr', 'setfattr', 'mkfifo', 'uplink_service', 'sqlite3', 'gdb', 'jwt_tool', 'php', 'access_card', 'sys_monitor', 'ln', 'readlink', 'nginx', 'tac', 'getcap'];
 
 export interface MissionStatus {
   objectives: {
@@ -1609,6 +1628,18 @@ int main(int argc, char* argv[]) {
       const rootDir = getNode('/root');
       if (rootDir && rootDir.type === 'dir' && !rootDir.children.includes('secret_plan.txt')) {
           rootDir.children.push('secret_plan.txt');
+      }
+
+      // Cycle 82: The Unix Socket
+      const runNode = getNode('/var/run');
+      if (runNode && runNode.type === 'dir' && !runNode.children.includes('ghost.sock')) {
+          runNode.children.push('ghost.sock');
+          VFS['/var/run/ghost.sock'] = { type: 'file', content: '[SOCKET_UNIX_STREAM]', permissions: '0777' };
+      }
+      const logNode = getNode('/var/log');
+      if (logNode && logNode.type === 'dir' && !logNode.children.includes('daemon.log')) {
+          logNode.children.push('daemon.log');
+          VFS['/var/log/daemon.log'] = { type: 'file', content: '[INFO] Starting secure daemon...\n[WARN] Network interfaces disabled for security.\n[INFO] Listening on UNIX domain socket: /var/run/ghost.sock\n[INFO] Use local tools to interact.' };
       }
 
       // Create Hint
@@ -3499,7 +3530,7 @@ Pipe Utils:
   grep, head, tail, sort, uniq, wc, base64, rev, awk, sed, strings
 
 Network Tools:
-  ssh, ssh-keygen, ping, netstat, nmap, nc, scan, netmap, trace, traceroute, wifi, telnet, curl, nslookup, dig, irc, tcpdump, tor, wget, geoip
+  ssh, ssh-keygen, ping, netstat, ss, nmap, nc, scan, netmap, trace, traceroute, wifi, telnet, curl, nslookup, dig, irc, tcpdump, tor, wget, geoip
 
 Security Tools:
   crack, analyze, decrypt, steghide, hydra, camsnap, whois, sqlmap, binwalk
@@ -3926,7 +3957,30 @@ Type "status" for mission objectives.`;
            if (device) {
                delete MOUNTED_DEVICES[device];
                const node = getNode(target);
-               if (node && node.type === 'dir') node.children = [];
+               if (node && node.type === 'dir') {
+                   // Cycle 83: The Over-Mounted Directory
+                   if (target === '/mnt/secret') {
+                       // Reveal the hidden content underneath
+                       node.children = ['blueprint_fragment_3.enc', 'read_me.txt'];
+                       VFS[`${target}/blueprint_fragment_3.enc`] = { type: 'file', content: 'GHOST_ROOT{H1DD3N_M0UNT_R3V3AL3D}' };
+                       VFS[`${target}/read_me.txt`] = { type: 'file', content: 'WARNING: This directory was used as a mount point to hide this data.\n' };
+                       
+                       // Mission Update
+                       if (!VFS['/var/run/overmount_solved']) {
+                           VFS['/var/run/overmount_solved'] = { type: 'file', content: 'TRUE' };
+                           const runDir = getNode('/var/run');
+                           if (runDir && runDir.type === 'dir' && !runDir.children.includes('overmount_solved')) {
+                               runDir.children.push('overmount_solved');
+                           }
+                           output = `umount: ${target} unmounted.\n\x1b[1;32m[MISSION UPDATE] Objective Complete: OVER-MOUNTED DIRECTORY EXPOSED.\x1b[0m`;
+                       } else {
+                           output = `umount: ${target} unmounted.`;
+                       }
+                   } else {
+                       // Standard unmount clears the directory (simulating empty mount point)
+                       node.children = [];
+                   }
+               }
            } else {
                output = `umount: ${target}: not mounted`;
            }
@@ -5023,9 +5077,41 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
        }
        break;
     }
+    case 'ss': {
+       const isUnix = args.includes('-x') || args.includes('-a');
+       const isListen = args.includes('-l') || args.includes('-a');
+       let out = 'Netid  State      Recv-Q Send-Q Local Address:Port               Peer Address:Port\n';
+       if (isUnix) {
+           out += 'u_str  LISTEN     0      0      /var/run/ghost.sock 12345                 * 0\n';
+           out += 'u_str  ESTAB      0      0      /run/systemd/private 11111                * 0\n';
+       }
+       if (!isUnix || args.includes('-t')) {
+           out += 'tcp    LISTEN     0      128    0.0.0.0:22                     0.0.0.0:*\n';
+           out += 'tcp    LISTEN     0      128    0.0.0.0:80                     0.0.0.0:*\n';
+       }
+       output = out.trim();
+       break;
+    }
     case 'nc': {
        const isListen = args.includes('-l');
        const verbose = args.includes('-v');
+       const isUnix = args.includes('-U');
+
+       if (isUnix) {
+           const socketPath = args.find(a => a.startsWith('/') || a.startsWith('./'));
+           if (socketPath === '/var/run/ghost.sock' || socketPath === './ghost.sock') {
+               output = '[CONNECTED] UNIX Domain Socket\n[DAEMON] Welcome to the internal interface.\n[DAEMON] AUTH REQUIRED.\n[DAEMON] BYPASS GRANTED (LOCAL_PEER).\nFLAG: GHOST_ROOT{UN1X_S0CK3T_IPC}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SOCKET INTERCEPTED.\x1b[0m';
+               const runNode = getNode('/var/run');
+               if (runNode && runNode.type === 'dir' && !runNode.children.includes('socket_solved')) {
+                   runNode.children.push('socket_solved');
+                   VFS['/var/run/socket_solved'] = { type: 'file', content: 'TRUE' };
+               }
+           } else {
+               output = `nc: connect to ${socketPath}: No such file or directory`;
+           }
+           break;
+       }
+
        const portIndex = args.indexOf('-p');
        let port = portIndex !== -1 ? args[portIndex + 1] : null;
        
