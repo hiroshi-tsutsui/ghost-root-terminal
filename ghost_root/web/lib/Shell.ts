@@ -258,6 +258,34 @@ export const loadSystemState = () => {
             content: 'Recovered Journal Entry: [INODE 8492]\nStatus: DELETED\nUser: ghost_admin\nAction: KEY_BACKUP\nData: R0hPU1RfUk9PVHtMMFNUX0FORF9GMFVORF9SM0MwVjNSWX0=\n[END_OF_RECORD]' 
         };
     }
+
+    // Cycle 90 Init (The Corrupted Binary)
+    if (!VFS['/usr/bin/recover_tool']) {
+        const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+        const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+
+        ensureDir('/usr'); ensureDir('/usr/bin');
+        link('/usr', 'bin');
+
+        VFS['/usr/bin/recover_tool'] = {
+            type: 'file',
+            content: '[BINARY_ELF_X86_64] [RECOVERY]\n\x00\x00\x00\x01\x02\n[ERROR] Corrupted Header\n\nstrings_table:\n--repair\n--force\n--key\n\n[SECRET_DATA_SECTION]\nFLAG_PART_1: GHOST_ROOT{\nFLAG_PART_2: STR1NGS_R_\nFLAG_PART_3: UR_FR13ND}\n[END_DATA]',
+            permissions: '0755'
+        };
+        link('/usr/bin', 'recover_tool');
+        
+        // Create Hint
+        if (!VFS['/home/ghost/recovery_log.txt']) {
+            VFS['/home/ghost/recovery_log.txt'] = {
+                type: 'file',
+                content: '[SYSTEM_LOG] Critical failure detected in /usr/bin/recover_tool.\n[ACTION] Binary is corrupted. Execute to verify crash. Use analysis tools to recover embedded keys.\n'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('recovery_log.txt')) {
+                home.children.push('recovery_log.txt');
+            }
+        }
+    }
 };
 
 // Helper to reset state
@@ -460,7 +488,7 @@ export interface CommandResult {
   data?: any;
 }
 
-const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'ss', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail', 'strings', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'arp', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'zgrep', 'gunzip', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'secure_vault', 'jobs', 'fg', 'bg', 'recover_data', 'ghost_update', 'git', 'file', 'openssl', 'beacon', 'fsck', 'docker', 'lsattr', 'chattr', 'backup_service', 'getfattr', 'setfattr', 'mkfifo', 'uplink_service', 'sqlite3', 'gdb', 'jwt_tool', 'php', 'access_card', 'sys_monitor', 'ln', 'readlink', 'nginx', 'tac', 'getcap', 'sysctl'];
+const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'ss', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail',     'strings', 'recover_tool', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'arp', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'zgrep', 'gunzip', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'secure_vault', 'jobs', 'fg', 'bg', 'recover_data', 'ghost_update', 'git', 'file', 'openssl', 'beacon', 'fsck', 'docker', 'lsattr', 'chattr', 'backup_service', 'getfattr', 'setfattr', 'mkfifo', 'uplink_service', 'sqlite3', 'gdb', 'jwt_tool', 'php', 'access_card', 'sys_monitor', 'ln', 'readlink', 'nginx', 'tac', 'getcap', 'sysctl'];
 
 export interface MissionStatus {
   objectives: {
@@ -2107,6 +2135,9 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
               } else if (fileName === 'launch_codes.bin' || fileName === './launch_codes.bin') {
                   output = `[SYSTEM] INITIATING LAUNCH SEQUENCE...\n[SYSTEM] AUTHENTICATION VERIFIED (OMEGA-LVL-5)\n[SYSTEM] TARGET: GLOBAL_RESET_PROTOCOL\n\n3...\n2...\n1...\n`;
                   return { output, newCwd, action: 'win_sim' };
+              } else if (fileName === 'recover_tool') {
+                  output = `[RECOVERY] Initializing...\n[ERROR] SEGMENTATION FAULT (core dumped)\n[SYSTEM] Memory dump saved to /var/crash/recover_tool.core`;
+                  return { output, newCwd, action: 'delay' };
               } else if (fileName === 'uplink_service') {
                   // Cycle 54 Logic
                   const pipePath = '/tmp/uplink.pipe';
@@ -3322,6 +3353,10 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
           }
        }
        break;
+    }
+    case 'recover_tool': {
+        output = `[RECOVERY] Initializing...\n[ERROR] SEGMENTATION FAULT (core dumped)\n[SYSTEM] Memory dump saved to /var/crash/recover_tool.core`;
+        break;
     }
     case 'mail': {
        const mailPath = '/var/mail/ghost';
