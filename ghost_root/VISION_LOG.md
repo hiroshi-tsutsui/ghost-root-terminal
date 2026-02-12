@@ -53,3 +53,11 @@
 > CONSTRAINT: Write operations to `/var` or `/home` fail ("No space left on device").
 > SOLUTION: `du -h /var` to find the culprit, then `rm /var/log/syslog.1`.
 > ENCRYPTION: LOW
+
+[2026-02-13 03:59]
+> CHANGES: ghost_root/web/lib/Shell.ts
+> PUZZLE ADDED: "The Inode Exhaustion" (Cycle 100).
+> MECHANICS: Added `/var/cache/inodes_fill` directory causing 100% Inode Usage.
+> CONSTRAINT: File creation (`touch`, `mkdir`, `echo >`) fails with "No space left on device".
+> SOLUTION: `df -i` to diagnose, then `rm -rf /var/cache/inodes_fill`.
+> ENCRYPTION: LOW
