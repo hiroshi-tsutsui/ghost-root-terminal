@@ -445,6 +445,36 @@ export const loadSystemState = () => {
              }
         }
     }
+
+    // Cycle 100 Init (Inode Exhaustion)
+    if (!VFS['/var/cache/inodes_fill']) {
+        // Create the directory that simulates inode exhaustion
+        if (!VFS['/var/cache']) {
+             VFS['/var/cache'] = { type: 'dir', children: [] };
+             const varNode = getNode('/var');
+             if (varNode && varNode.type === 'dir' && !varNode.children.includes('cache')) {
+                 varNode.children.push('cache');
+             }
+        }
+        
+        VFS['/var/cache/inodes_fill'] = { type: 'dir', children: ['dummy'] }; 
+        const cacheDir = getNode('/var/cache');
+        if (cacheDir && cacheDir.type === 'dir' && !cacheDir.children.includes('inodes_fill')) {
+            cacheDir.children.push('inodes_fill');
+        }
+
+        // Create Hint
+        if (!VFS['/home/ghost/inode_alert.txt']) {
+             VFS['/home/ghost/inode_alert.txt'] = { 
+                 type: 'file', 
+                 content: '[ALERT] File creation failing.\n[DIAGNOSTIC] Disk space usage: OK (12%).\n[DIAGNOSTIC] Inode usage: CRITICAL (100%).\n[ACTION] Check inode usage (df -i) and clear cache.' 
+             };
+             const home = getNode('/home/ghost');
+             if (home && home.type === 'dir' && !home.children.includes('inode_alert.txt')) {
+                 home.children.push('inode_alert.txt');
+             }
+        }
+    }
 };
 
 // Helper to reset state
@@ -4198,6 +4228,10 @@ Type "status" for mission objectives.`;
       break;
     }
     case 'mkdir': {
+       if (getNode('/var/cache/inodes_fill')) {
+          output = `mkdir: cannot create directory '${args[0]}': No space left on device`;
+          break;
+       }
        if (args.length < 1) {
           output = 'usage: mkdir <directory>';
        } else {
@@ -5899,6 +5933,10 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
        break;
     }
     case 'touch': {
+      if (getNode('/var/cache/inodes_fill')) {
+         output = `touch: cannot touch '${args[0]}': No space left on device`;
+         break;
+      }
       if (args.length < 1) {
         output = 'usage: touch <file>';
       } else {
@@ -6095,10 +6133,18 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
       return { output: '', newCwd, action: 'top_sim', data: PROCESSES };
     case 'df': {
       const overflow = !!getNode('/var/log/overflow.dmp') || !!getNode('/var/log/syslog.1');
+      const inodeFull = !!getNode('/var/cache/inodes_fill');
       const varUsage = overflow ? '100%' : '12%';
       const varAvail = overflow ? '0' : '440M';
       
-      if (args.includes('-h') || args.includes('-H')) {
+      if (args.includes('-i')) {
+          output = `Filesystem      Inodes  IUsed   IFree IUse% Mounted on
+udev           1015007    499 1014508    1% /dev
+tmpfs           203819    822  202997    1% /run
+/dev/sda1      1966080 156822 1809258    8% /
+tmpfs           203819      1  203818    1% /dev/shm
+/dev/sdb1        32768  ${inodeFull ? '32768' : '1500'}      ${inodeFull ? '0' : '31268'}  ${inodeFull ? '100%' : '5%'} /var`;
+      } else if (args.includes('-h') || args.includes('-H')) {
           output = `Filesystem      Size  Used Avail Use% Mounted on
 udev            3.9G     0  3.9G   0% /dev
 tmpfs           797M  1.2M  796M   1% /run
