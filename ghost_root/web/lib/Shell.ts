@@ -286,6 +286,45 @@ export const loadSystemState = () => {
             }
         }
     }
+
+    // Cycle 91 Init (The Missing Library)
+    if (!VFS['/usr/bin/quantum_calc']) {
+        const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+        const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+
+        ensureDir('/usr'); ensureDir('/usr/bin');
+        link('/usr', 'bin');
+
+        VFS['/usr/bin/quantum_calc'] = {
+            type: 'file',
+            content: '[BINARY_ELF_X86_64] [DYNAMIC_LINKED]\nNEEDED: libquantum.so.1',
+            permissions: '0755'
+        };
+        link('/usr/bin', 'quantum_calc');
+
+        // Create the missing library in a hidden location
+        ensureDir('/opt'); ensureDir('/opt/libs');
+        link('/', 'opt'); link('/opt', 'libs');
+
+        VFS['/opt/libs/libquantum.so.1'] = {
+            type: 'file',
+            content: '[ELF_SHARED_OBJ] [QUANTUM_MATH_LIB]',
+            permissions: '0644'
+        };
+        link('/opt/libs', 'libquantum.so.1');
+
+        // Hint file
+        if (!VFS['/home/ghost/error.log']) {
+            VFS['/home/ghost/error.log'] = {
+                type: 'file',
+                content: '[ERROR] quantum_calc: error while loading shared libraries: libquantum.so.1: cannot open shared object file: No such file or directory\n[HINT] Use ldd to check dependencies. Locate the library and add its path to LD_LIBRARY_PATH.'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('error.log')) {
+                home.children.push('error.log');
+            }
+        }
+    }
 };
 
 // Helper to reset state
@@ -488,7 +527,7 @@ export interface CommandResult {
   data?: any;
 }
 
-const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'ss', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail',     'strings', 'recover_tool', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'arp', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'zgrep', 'gunzip', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'secure_vault', 'jobs', 'fg', 'bg', 'recover_data', 'ghost_update', 'git', 'file', 'openssl', 'beacon', 'fsck', 'docker', 'lsattr', 'chattr', 'backup_service', 'getfattr', 'setfattr', 'mkfifo', 'uplink_service', 'sqlite3', 'gdb', 'jwt_tool', 'php', 'access_card', 'sys_monitor', 'ln', 'readlink', 'nginx', 'tac', 'getcap', 'sysctl'];
+const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'ss', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail',     'strings', 'recover_tool', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'arp', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'zgrep', 'gunzip', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'secure_vault', 'jobs', 'fg', 'bg', 'recover_data', 'ghost_update', 'git', 'file', 'openssl', 'beacon', 'fsck', 'docker', 'lsattr', 'chattr', 'backup_service', 'getfattr', 'setfattr', 'mkfifo', 'uplink_service', 'sqlite3', 'gdb', 'jwt_tool', 'php', 'access_card', 'sys_monitor', 'ln', 'readlink', 'nginx', 'tac', 'getcap', 'sysctl', 'ldd', 'quantum_calc'];
 
 export interface MissionStatus {
   objectives: {
@@ -4294,6 +4333,52 @@ Type "status" for mission objectives.`;
             } else {
                 output = `sysctl: cannot stat /proc/sys/${arg}: No such file or directory`;
             }
+        }
+        break;
+    }
+    case 'ldd': {
+        if (args.length < 1) {
+            output = 'usage: ldd <binary>';
+        } else {
+            const target = args[0];
+            const node = getNode(resolvePath(cwd, target));
+            
+            if (!node || node.type !== 'file') {
+                 output = `ldd: ${target}: No such file`;
+            } else {
+                if (target.includes('quantum_calc')) {
+                    const ldPath = ENV_VARS['LD_LIBRARY_PATH'] || '';
+                    const libFound = ldPath.includes('/opt/libs');
+                    
+                    output = `\tlinux-vdso.so.1 (0x00007ffc5b1e3000)
+\tlibquantum.so.1 => ${libFound ? '/opt/libs/libquantum.so.1 (0x00007f8b9c2a1000)' : 'not found'}
+\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f8b9c0af000)
+\t/lib64/ld-linux-x86-64.so.2 (0x00007f8b9c2b5000)`;
+                } else if ((node as any).content.includes('BINARY_ELF')) {
+                    output = `\tlinux-vdso.so.1 (0x00007ffc5b1e3000)
+\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f8b9c0af000)
+\t/lib64/ld-linux-x86-64.so.2 (0x00007f8b9c2b5000)`;
+                } else {
+                    output = `\tnot a dynamic executable`;
+                }
+            }
+        }
+        break;
+    }
+    case 'quantum_calc': {
+        const ldPath = ENV_VARS['LD_LIBRARY_PATH'] || '';
+        if (ldPath.includes('/opt/libs')) {
+             output = `[QUANTUM_CALC] Initializing...\n[OK] Library loaded.\n[CALC] Result: 42\n\nFLAG: GHOST_ROOT{LD_L1BR4RY_P4TH_F1X}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SHARED LIBRARY LINKED.\x1b[0m`;
+             
+             if (!VFS['/var/run/ldd_solved']) {
+                 VFS['/var/run/ldd_solved'] = { type: 'file', content: 'TRUE' };
+                 const runDir = getNode('/var/run');
+                 if (runDir && runDir.type === 'dir' && !runDir.children.includes('ldd_solved')) {
+                     runDir.children.push('ldd_solved');
+                 }
+             }
+        } else {
+             output = `quantum_calc: error while loading shared libraries: libquantum.so.1: cannot open shared object file: No such file or directory`;
         }
         break;
     }
