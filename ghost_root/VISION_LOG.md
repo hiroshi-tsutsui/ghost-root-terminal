@@ -25,3 +25,20 @@
 > CONSTRAINT: File is text, not executable.
 > SOLUTION: `base64 -d suspicious.txt > binary` -> `chmod +x binary` -> `./binary`.
 > ENCRYPTION: LOW
+
+[2026-02-14 06:33]
+> CHANGES: ghost_root/web/lib/Shell.ts
+> PUZZLE ADDED: "The SetUID Binary" (Cycle 138).
+> MECHANICS: Added `/usr/bin/backdoor` (SUID 4755). Added `find -perm` support.
+> CONSTRAINT: Access denied to certain operations unless SUID binary is neutralized.
+> SOLUTION: `find / -perm -4000` -> `chmod u-s /usr/bin/backdoor`.
+> ENCRYPTION: LOW
+
+[2026-02-14 06:58]
+> CHANGES: ghost_root/web/lib/Shell.ts
+> PUZZLE ADDED: "The Swap Space" (Cycle 139).
+> MECHANICS: Added `/dev/sdb2` (RAW_PARTITION) and OOM Killer log.
+> COMMANDS: `mkswap` (Format partition), `swapon` (Enable swap), `free` (Display memory).
+> CONSTRAINT: System running out of RAM (Simulated OOM in dmesg).
+> SOLUTION: `mkswap /dev/sdb2` -> `swapon /dev/sdb2`.
+> ENCRYPTION: LOW

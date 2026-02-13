@@ -12470,6 +12470,60 @@ postgres            14-alpine 1234567890ab   5 days ago     214MB`;
         }
         break;
     }
+    case 'mkswap': {
+        if (args.length < 1) {
+            output = 'usage: mkswap <device>';
+        } else {
+            const device = args[0];
+            const node = getNode(resolvePath(cwd, device));
+            if (!node || node.type !== 'file') {
+                output = `mkswap: cannot open ${device}: No such file or directory`;
+            } else if (device !== '/dev/sdb2') {
+                output = `mkswap: error: ${device} is mounted; will not make swapspace.`;
+            } else {
+                (node as any).content = '[SWAP_SPACE_FORMATTED]';
+                output = `Setting up swapspace version 1, size = 2 GiB (2147483648 bytes)\nno label, UUID=12345678-1234-1234-1234-123456789abc`;
+            }
+        }
+        break;
+    }
+    case 'swapon': {
+        if (args.length < 1) {
+            output = 'usage: swapon [options] [<spec>]';
+        } else {
+            const device = args[0];
+            const node = getNode(resolvePath(cwd, device));
+            if (!node || node.type !== 'file') {
+                output = `swapon: stat failed ${device}: No such file or directory`;
+            } else if ((node as any).content !== '[SWAP_SPACE_FORMATTED]') {
+                output = `swapon: ${device}: read swap header failed`;
+            } else {
+                if (!VFS['/var/run/swap_active']) {
+                    VFS['/var/run/swap_active'] = { type: 'file', content: 'TRUE' };
+                    const runDir = getNode('/var/run');
+                    if (runDir && runDir.type === 'dir' && !runDir.children.includes('swap_active')) {
+                        runDir.children.push('swap_active');
+                    }
+                    output = ''; 
+                    output += `\x1b[1;32m[MISSION UPDATE] Objective Complete: SWAP SPACE ENABLED.\x1b[0m`;
+                } else {
+                    output = `swapon: ${device}: swapspace already active`;
+                }
+            }
+        }
+        break;
+    }
+    case 'free': {
+        const isSwap = !!VFS['/var/run/swap_active'];
+        const swapTotal = isSwap ? '2097152' : '0';
+        const swapUsed  = isSwap ? '0' : '0';
+        const swapFree  = isSwap ? '2097152' : '0';
+        
+        output = `              total        used        free      shared  buff/cache   available
+Mem:        8167848     7854321      123456       42123      190071      123456
+Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)}`;
+        break;
+    }
     default:
       output = `bash: ${command}: command not found`;
   }
