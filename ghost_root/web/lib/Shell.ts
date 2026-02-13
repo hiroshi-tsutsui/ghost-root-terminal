@@ -1478,6 +1478,64 @@ export const loadSystemState = () => {
             }
         }
     }
+
+    // Cycle 138 Init (The Shadow File)
+    if (!VFS['/etc/shadow.bak']) {
+        if (!VFS['/etc']) VFS['/etc'] = { type: 'dir', children: [] };
+        
+        // Backup of shadow file (readable by root only usually, but we make it readable for the puzzle if they escalate or find it)
+        // Actually, 'unshadow' needs both passwd and shadow.
+        // Let's ensure /etc/passwd and /etc/shadow exist.
+        
+        if (!VFS['/etc/passwd']) {
+            VFS['/etc/passwd'] = { 
+                type: 'file', 
+                content: 'root:x:0:0:root:/root:/bin/bash\nghost:x:1000:1000:ghost:/home/ghost:/bin/bash\nadmin:x:1001:1001:Admin:/home/admin:/bin/bash\n',
+                permissions: '0644' 
+            };
+            const etc = getNode('/etc');
+            if (etc && etc.type === 'dir' && !etc.children.includes('passwd')) etc.children.push('passwd');
+        }
+        
+        if (!VFS['/etc/shadow']) {
+            // "admin" has a weak hash
+            VFS['/etc/shadow'] = { 
+                type: 'file', 
+                content: 'root:$6$rounds=656000$....:19760:0:99999:7:::\nghost:$6$rounds=656000$....:19760:0:99999:7:::\nadmin:$1$528392$D7.F7/203.493:19760:0:99999:7:::\n',
+                permissions: '0600' // Only root
+            };
+            const etc = getNode('/etc');
+            if (etc && etc.type === 'dir' && !etc.children.includes('shadow')) etc.children.push('shadow');
+        }
+        
+        // Hint: Leak a backup that is readable? Or force them to use sudo/root logic from previous steps?
+        // Let's create a readable backup in /var/backups to simulate a leak.
+        if (!VFS['/var/backups/shadow.bak']) {
+             if (!VFS['/var/backups']) {
+                 VFS['/var/backups'] = { type: 'dir', children: [] };
+                 const varNode = getNode('/var');
+                 if (varNode && varNode.type === 'dir' && !varNode.children.includes('backups')) varNode.children.push('backups');
+             }
+             VFS['/var/backups/shadow.bak'] = { 
+                 type: 'file', 
+                 content: 'admin:$1$528392$D7.F7/203.493:19760:0:99999:7:::\n', // MD5 hash for '123456' or similar
+                 permissions: '0644' // Readable!
+             };
+             const backups = getNode('/var/backups');
+             if (backups && backups.type === 'dir' && !backups.children.includes('shadow.bak')) backups.children.push('shadow.bak');
+        }
+
+        if (!VFS['/home/ghost/crack_alert.txt']) {
+            VFS['/home/ghost/crack_alert.txt'] = {
+                type: 'file',
+                content: '[ALERT] Shadow file backup detected with weak permissions.\n[RISK] Password hashes exposed.\n[ACTION] Combine with passwd using "unshadow" and crack using "john".'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('crack_alert.txt')) {
+                home.children.push('crack_alert.txt');
+            }
+        }
+    }
 };
 
 // Helper to reset state
@@ -1704,7 +1762,7 @@ export interface CommandResult {
   data?: any;
 }
 
-const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'ss', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail',     'strings', 'recover_tool', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'arp', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'zgrep', 'gunzip', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'secure_vault', 'jobs', 'fg', 'bg', 'recover_data', 'ghost_update', 'git', 'file', 'openssl', 'beacon', 'fsck', 'docker', 'lsattr', 'chattr', 'backup_service', 'getfattr', 'setfattr', 'mkfifo', 'uplink_service', 'sqlite3', 'gdb', 'jwt_tool', 'php', 'access_card', 'sys_monitor', 'ln', 'readlink', 'nginx', 'tac', 'getcap', 'sysctl', 'ldd', 'quantum_calc', 'deploy_tool', 'ghost_relay', 'groups', 'usermod', 'access_silo', 'satellite_uplink'];
+const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'ss', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail',     'strings', 'recover_tool', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'arp', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'zgrep', 'gunzip', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'secure_vault', 'jobs', 'fg', 'bg', 'recover_data', 'ghost_update', 'git', 'file', 'openssl', 'beacon', 'fsck', 'docker', 'lsattr', 'chattr', 'backup_service', 'getfattr', 'setfattr', 'mkfifo', 'uplink_service', 'sqlite3', 'gdb', 'jwt_tool', 'php', 'access_card', 'sys_monitor', 'ln', 'readlink', 'nginx', 'tac', 'getcap', 'sysctl', 'ldd', 'quantum_calc', 'deploy_tool', 'ghost_relay', 'groups', 'usermod', 'access_silo', 'satellite_uplink', 'unshadow', 'john'];
 
 export interface MissionStatus {
   objectives: {
@@ -5227,6 +5285,73 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
         }
         break;
     }
+    case 'unshadow': {
+        // Mock unshadow
+        if (args.length < 2) {
+            output = 'usage: unshadow <passwd-file> <shadow-file>';
+        } else {
+            const passwdFile = args[0];
+            const shadowFile = args[1];
+            
+            const passwdNode = getNode(resolvePath(cwd, passwdFile));
+            const shadowNode = getNode(resolvePath(cwd, shadowFile));
+            
+            if (!passwdNode || passwdNode.type !== 'file') {
+                output = `unshadow: ${passwdFile}: No such file or directory`;
+            } else if (!shadowNode || shadowNode.type !== 'file') {
+                output = `unshadow: ${shadowFile}: No such file or directory`;
+            } else {
+                // Combine them
+                const passwdLines = passwdNode.content.split('\n').filter(Boolean);
+                const shadowLines = shadowNode.content.split('\n').filter(Boolean);
+                
+                let unshadowed = '';
+                for (const line of passwdLines) {
+                    const parts = line.split(':');
+                    const user = parts[0];
+                    const shadowLine = shadowLines.find(l => l.startsWith(`${user}:`));
+                    if (shadowLine) {
+                        const hash = shadowLine.split(':')[1];
+                        unshadowed += `${user}:${hash}:${parts[2]}:${parts[3]}:${parts[4]}:${parts[5]}:${parts[6]}\n`;
+                    }
+                }
+                output = unshadowed;
+            }
+        }
+        break;
+    }
+    case 'john': {
+        // Mock john
+        if (args.length < 1) {
+            output = 'usage: john <password-file>';
+        } else {
+            const targetFile = args[args.length - 1]; // Last arg is usually the file
+            const fileNode = getNode(resolvePath(cwd, targetFile));
+            
+            if (!fileNode || fileNode.type !== 'file') {
+                output = `john: ${targetFile}: No such file or directory`;
+            } else {
+                const content = fileNode.content;
+                output = `Created directory: /home/ghost/.john\nUsing default input encoding: UTF-8\nLoaded 3 password hashes with 3 different salts (crypt, generic crypt(3) [? 64/64])\nPress 'q' or Ctrl-C to abort, almost any other key for status\n`;
+                
+                if (content.includes('admin:$1$528392$D7.F7/203.493')) {
+                    output += `123456           (admin)\n`;
+                    output += `\n1g 0:00:00:00 DONE 2/3 (2026-02-14 06:00) 4.333g/s 416.6p/s 416.6c/s 416.6C/s 123456..google\nUse the "--show" option to display all of the cracked passwords reliably\nSession completed.\n\nFLAG: GHOST_ROOT{SH4D0W_F1L3_CR4CK3D}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PASSWORD CRACKED.\x1b[0m`;
+                    
+                    if (!VFS['/var/run/john_solved']) {
+                        VFS['/var/run/john_solved'] = { type: 'file', content: 'TRUE' };
+                        const runDir = getNode('/var/run');
+                        if (runDir && runDir.type === 'dir' && !runDir.children.includes('john_solved')) {
+                            runDir.children.push('john_solved');
+                        }
+                    }
+                } else {
+                    output += `\n0g 0:00:00:05 DONE 0/3 (2026-02-14 06:00) 0g/s 300p/s 300c/s 300C/s\nSession completed.`;
+                }
+            }
+        }
+        break;
+    }
     case 'ls': {
       const flags = args.filter(arg => arg.startsWith('-'));
       const paths = args.filter(arg => !arg.startsWith('-'));
@@ -5759,6 +5884,18 @@ DROP       icmp --  10.10.99.1           anywhere`;
                
                (node as any).permissions = newPerms;
                output = ''; // Silent success
+               
+               // Cycle 138 Win Condition
+               if (filePath === '/usr/bin/backdoor' && !newPerms.startsWith('4')) {
+                   if (!VFS['/var/run/suid_solved']) {
+                       VFS['/var/run/suid_solved'] = { type: 'file', content: 'TRUE' };
+                       const runDir = getNode('/var/run');
+                       if (runDir && runDir.type === 'dir' && !runDir.children.includes('suid_solved')) {
+                           runDir.children.push('suid_solved');
+                       }
+                       output = `[SUCCESS] SUID bit removed.\n[SYSTEM] Backdoor neutralized.\nFLAG: GHOST_ROOT{SU1D_B1T_CL3AR3D}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SUID BINARY SECURED.\x1b[0m`;
+                   }
+               }
            }
        }
        break;
@@ -9150,6 +9287,7 @@ auth.py
       let searchPath = cwd;
       let namePattern: RegExp | null = null;
       let typeFilter: 'f' | 'd' | null = null;
+      let permFilter: string | null = null;
       
       let argIdx = 0;
       // Check if first arg is a path (doesn't start with -)
@@ -9185,6 +9323,15 @@ auth.py
                   error = 'find: unknown argument to `-type\'';
                   break;
               }
+          } else if (arg === '-perm') {
+              const perm = args[argIdx + 1];
+              if (perm) {
+                  permFilter = perm;
+                  argIdx += 2;
+              } else {
+                  error = 'find: missing argument to `-perm\'';
+                  break;
+              }
           } else {
                error = `find: unknown predicate \`${arg}'`;
                break;
@@ -9212,6 +9359,22 @@ auth.py
                
                if (namePattern) {
                    if (!namePattern.test(fileName)) continue;
+               }
+
+               if (permFilter) {
+                   // Check permissions
+                   const perms = (node as any).permissions || (node.type === 'dir' ? '0755' : '0644');
+                   const mode = parseInt(perms, 8);
+                   let target = parseInt(permFilter.replace('-', ''), 8);
+                   
+                   // Simplified permission check (exact or mask if starts with -)
+                   if (permFilter.startsWith('-') || permFilter.startsWith('/')) {
+                       // Mask check: all bits in target must be set in mode (treating / as - for simplicity)
+                       if ((mode & target) !== target) continue;
+                   } else {
+                       // Exact match
+                       if (mode !== target) continue;
+                   }
                }
                
                results.push(key);
