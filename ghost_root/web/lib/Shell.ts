@@ -1333,6 +1333,56 @@ export const loadSystemState = () => {
              }
          }
     }
+
+    // Cycle 134 Init (The Truncated Log)
+    if (!VFS['/var/log/httpd/access.log']) {
+        if (!VFS['/var/log/httpd']) {
+             if (!VFS['/var/log']) VFS['/var/log'] = { type: 'dir', children: [] };
+             VFS['/var/log/httpd'] = { type: 'dir', children: [] };
+             const log = getNode('/var/log');
+             if (log && log.type === 'dir' && !log.children.includes('httpd')) log.children.push('httpd');
+        }
+        
+        // Large content
+        let hugeLog = '';
+        for(let i=0; i<5000; i++) hugeLog += '192.168.1.1 - - [14/Feb/2026:04:00:00 +0000] "GET /index.html HTTP/1.1" 200 1024\n';
+        
+        VFS['/var/log/httpd/access.log'] = {
+            type: 'file',
+            content: hugeLog
+        };
+        const httpdDir = getNode('/var/log/httpd');
+        if (httpdDir && httpdDir.type === 'dir' && !httpdDir.children.includes('access.log')) {
+            httpdDir.children.push('access.log');
+        }
+
+        // Spawn Process
+        if (!PROCESSES.find(p => p.pid === 4040)) {
+            PROCESSES.push({
+                pid: 4040,
+                ppid: 1,
+                user: 'www-data',
+                cpu: 5.0,
+                mem: 12.0,
+                time: '24:00',
+                command: '/usr/sbin/httpd',
+                tty: '?',
+                stat: 'Ss'
+            });
+        }
+
+        // Hint
+        if (!VFS['/home/ghost/disk_alert_v2.txt']) {
+            VFS['/home/ghost/disk_alert_v2.txt'] = {
+                type: 'file',
+                content: '[ALERT] Disk usage critical on /var.\n[DIAGNOSTIC] Log rotation failed.\n[ACTION] Free up space immediately without stopping the service.'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('disk_alert_v2.txt')) {
+                home.children.push('disk_alert_v2.txt');
+            }
+        }
+    }
 };
 
 // Helper to reset state
@@ -3377,6 +3427,34 @@ int main(int argc, char* argv[]) {
           // DISK QUOTA SIMULATION (Cycle 122)
           if (filePath.startsWith('/home') && !!getNode('/home/ghost/.cache/browser/garbage.dat')) {
              return { output: `bash: write error: Disk quota exceeded`, newCwd: nCwd, action: act, data: dat, newPrompt: prompt };
+          }
+
+          // Cycle 134: Truncate Log
+          if (filePath === '/var/log/httpd/access.log') {
+              if (out.length < 50) { // Truncating
+                  // Win condition: Truncated log
+                  // We need to actually update content first
+                  let newContent = out;
+                  if (redirectMode === 'append') {
+                     const existingNode = getNode(filePath);
+                     if (existingNode && existingNode.type === 'file') {
+                         newContent = existingNode.content + '\n' + out;
+                     }
+                  }
+                  VFS[filePath] = { type: 'file', content: newContent };
+                  
+                  if (!VFS['/var/run/log_trunc_solved']) {
+                      VFS['/var/run/log_trunc_solved'] = { type: 'file', content: 'TRUE' };
+                      const runDir = getNode('/var/run');
+                      if (runDir && runDir.type === 'dir' && !runDir.children.includes('log_trunc_solved')) {
+                          runDir.children.push('log_trunc_solved');
+                      }
+                      
+                      const flagMsg = `[SYSTEM] Log truncated.\n[KERNEL] Disk space reclaimed.\nFLAG: GHOST_ROOT{C0PYTRUNC4T3_M4ST3R}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SPACE RECLAIMED (TRUNCATION).\x1b[0m`;
+                      return { output: flagMsg, newCwd: nCwd, action: act, data: dat, newPrompt: prompt };
+                  }
+                  return { output: '', newCwd: nCwd, action: act, data: dat, newPrompt: prompt };
+              }
           }
 
           // FIFO Check (Cycle 54)
@@ -7587,6 +7665,12 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
                  outputLines.push(`${cmd.padEnd(9)} ${String(p.pid).padStart(5)} ${p.user.padEnd(5)}    4u  IPv4  88888      0t0  UDP *:68`);
              } else if (p.pid === 9999) {
                  outputLines.push(`${cmd.padEnd(9)} ${String(p.pid).padStart(5)} ${p.user.padEnd(5)}    3u  IPv4  99999      0t0  TCP 192.168.1.105:31337->192.168.1.99:443 (SYN_SENT)`);
+             } else if (p.pid === 4040) {
+                 if (VFS['/var/run/ghost_log_deleted']) {
+                     outputLines.push(`${cmd.padEnd(9)} ${String(p.pid).padStart(5)} ${p.user.padEnd(5)}    3w   REG  253,0 10485760 8888 /var/log/httpd/access.log (deleted)`);
+                 } else if (VFS['/var/log/httpd/access.log']) {
+                     outputLines.push(`${cmd.padEnd(9)} ${String(p.pid).padStart(5)} ${p.user.padEnd(5)}    3w   REG  253,0 10485760 8888 /var/log/httpd/access.log`);
+                 }
              } else if (p.pid === 1337) {
                  outputLines.push(`${cmd.padEnd(9)} ${String(p.pid).padStart(5)} ${p.user.padEnd(5)}  255u   CHR  136,0      0t0    3 /dev/pts/0`);
              } else if (p.pid === 555) {
@@ -7859,6 +7943,20 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
               delete VFS[path];
               parentNode.children = parentNode.children.filter(c => c !== fileName);
               
+              // Cycle 134: Deleted log held by process
+              if (path === '/var/log/httpd/access.log') {
+                  // Only set if process 4040 exists
+                  if (PROCESSES.find(p => p.pid === 4040)) {
+                      if (!VFS['/var/run/ghost_log_deleted']) {
+                          VFS['/var/run/ghost_log_deleted'] = { type: 'file', content: 'TRUE' };
+                          const runDir = getNode('/var/run');
+                          if (runDir && runDir.type === 'dir' && !runDir.children.includes('ghost_log_deleted')) {
+                              runDir.children.push('ghost_log_deleted');
+                          }
+                      }
+                  }
+              }
+
               // Mission Update for Cycle 40
               if (path === '/var/log/surveillance.log') {
                   if (!VFS['/var/run/attr_solved']) {
@@ -8022,8 +8120,14 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
     case 'df': {
       const overflow = !!getNode('/var/log/overflow.dmp') || !!getNode('/var/log/syslog.1');
       const inodeFull = !!getNode('/var/cache/inodes_fill');
-      const varUsage = overflow ? '100%' : '12%';
-      const varAvail = overflow ? '0' : '440M';
+      
+      // Cycle 134 Logic
+      const logNode = getNode('/var/log/httpd/access.log');
+      const logDeleted = !!getNode('/var/run/ghost_log_deleted');
+      const logBig = (logNode && (logNode as any).content.length > 5000) || logDeleted;
+      
+      const varUsage = (overflow || logBig) ? '100%' : '12%';
+      const varAvail = (overflow || logBig) ? '0' : '440M';
       
       // Cycle 122: Home Quota
       const homeBig = !!getNode('/home/ghost/.cache/browser/garbage.dat');
@@ -8640,6 +8744,35 @@ auth.py
                           if (runDir && runDir.type === 'dir' && !runDir.children.includes('disk_solved')) {
                               runDir.children.push('disk_solved');
                           }
+                      }
+                  } else if (pid === 4040) {
+                      // Cycle 134: Kill httpd
+                      // If we send SIGHUP (-1), we rotate/truncate. If we kill (-9), we restart/stop.
+                      // Let's assume standard kill restarts or stops.
+                      PROCESSES.splice(idx, 1);
+                      
+                      // Check if we solved the deleted file issue
+                      if (VFS['/var/run/ghost_log_deleted']) {
+                          delete VFS['/var/run/ghost_log_deleted'];
+                          const runDir = getNode('/var/run');
+                          if (runDir && runDir.type === 'dir') {
+                              runDir.children = runDir.children.filter(c => c !== 'ghost_log_deleted');
+                          }
+                          
+                          if (!VFS['/var/run/log_solved']) {
+                              VFS['/var/run/log_solved'] = { type: 'file', content: 'TRUE' };
+                              const runDir = getNode('/var/run');
+                              if (runDir && runDir.type === 'dir' && !runDir.children.includes('log_solved')) {
+                                  runDir.children.push('log_solved');
+                              }
+                              output = `[SYSTEM] Terminated httpd (PID 4040).\n[KERNEL] Releasing file handles... Done.\nFLAG: GHOST_ROOT{L0G_R0T4T3_SUCC3SS}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SPACE RECLAIMED (PROCESS RESTART).\x1b[0m`;
+                          } else {
+                              output = `[SYSTEM] Terminated httpd (PID 4040).`;
+                          }
+                      } else {
+                          output = `[SYSTEM] Terminated httpd (PID 4040).`;
+                      }
+                  }
                           output = `[SYSTEM] Terminated log_daemon (PID 1001).\n[SYSTEM] Reclaiming disk space... Done.\n\nFLAG: GHOST_ROOT{D1SK_SP4C3_R3CL41M3D}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: DELETED FILE HANDLE.\x1b[0m`;
                       } else {
                           output = `[SYSTEM] Terminated log_daemon (PID 1001). Space reclaimed.`;
@@ -9821,7 +9954,7 @@ An optional company name []:
            const cmd = args[0];
            const unit = args[1];
            
-           const validUnits = ['sshd', 'tor', 'apache2', 'postgresql', 'cron', 'networking', 'bluetooth', 'ghost_relay', 'overseer', 'web_server'];
+           const validUnits = ['sshd', 'tor', 'apache2', 'postgresql', 'cron', 'networking', 'bluetooth', 'ghost_relay', 'overseer', 'web_server', 'httpd'];
            const runDir = '/var/run';
            if (!VFS[runDir]) VFS[runDir] = { type: 'dir', children: [] };
            
@@ -10028,6 +10161,50 @@ ${validUnits.length} loaded units listed.`;
            } else if (cmd === 'restart') {
                 if (!unit) { output = 'systemctl: unit name required'; }
                 else {
+                    // Cycle 134: httpd restart
+                    if (unit === 'httpd') {
+                        // Kill process 4040
+                        const idx = PROCESSES.findIndex(p => p.pid === 4040);
+                        if (idx !== -1) {
+                            PROCESSES.splice(idx, 1);
+                            
+                            // Start new
+                            PROCESSES.push({
+                               pid: 4045,
+                               ppid: 1,
+                               user: 'www-data',
+                               cpu: 1.0,
+                               mem: 5.0,
+                               time: '0:00',
+                               command: '/usr/sbin/httpd',
+                               tty: '?',
+                               stat: 'Ss'
+                            });
+                            
+                            // Clear deleted flag
+                            if (VFS['/var/run/ghost_log_deleted']) {
+                               delete VFS['/var/run/ghost_log_deleted'];
+                               const rdNode = VFS[runDir];
+                               if (rdNode && rdNode.type === 'dir') rdNode.children = rdNode.children.filter(c => c !== 'ghost_log_deleted');
+                               
+                               if (!VFS['/var/run/log_solved_restart']) {
+                                   VFS['/var/run/log_solved_restart'] = { type: 'file', content: 'TRUE' };
+                                   const rd = getNode('/var/run');
+                                   if (rd && rd.type === 'dir' && !rd.children.includes('log_solved_restart')) {
+                                       rd.children.push('log_solved_restart');
+                                   }
+                                   output = `[SYSTEM] Restarting httpd...\n[OK] Service restarted.\n[KERNEL] Released deleted file handles.\nFLAG: GHOST_ROOT{S3RV1C3_R3ST4RT_CL34NUP}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SPACE RECLAIMED (RESTART).\x1b[0m`;
+                                   return { output, newCwd };
+                               }
+                            }
+                            output = `[OK] Restarted ${unit}.service.`;
+                            return { output, newCwd };
+                        } else {
+                            output = `Failed to restart ${unit}.service: Unit not found.`;
+                            return { output, newCwd };
+                        }
+                    }
+
                     // Stop logic
                     const pidFile = `${unit}.pid`;
                     const rdNode = VFS[runDir];
