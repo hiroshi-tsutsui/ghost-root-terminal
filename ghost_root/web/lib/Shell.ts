@@ -1395,6 +1395,49 @@ export const loadSystemState = () => {
             home.children.push('kernel_panic.log');
         }
     }
+
+    // Cycle 136 Init (The Blocked Signal)
+    if (!PROCESSES.find(p => p.pid === 10000)) {
+        PROCESSES.push({
+            pid: 10000,
+            ppid: 1,
+            user: 'root',
+            cpu: 5.0,
+            mem: 2.0,
+            time: '99:99',
+            command: '/usr/bin/immortal_service',
+            tty: '?',
+            stat: 'Ss'
+        });
+        
+        if (!VFS['/usr/bin/immortal_service']) {
+             if (!VFS['/usr/bin']) {
+                 VFS['/usr/bin'] = { type: 'dir', children: [] };
+                 const usr = getNode('/usr');
+                 if (usr && usr.type === 'dir' && !usr.children.includes('bin')) usr.children.push('bin');
+             }
+             VFS['/usr/bin/immortal_service'] = { 
+                 type: 'file', 
+                 content: '[BINARY_ELF_X86_64] [DAEMON] [SIG_IGN: SIGTERM, SIGINT]\n[STATUS] Running...\n', 
+                 permissions: '0755' 
+             };
+             const binDir = getNode('/usr/bin');
+             if (binDir && binDir.type === 'dir' && !binDir.children.includes('immortal_service')) {
+                 binDir.children.push('immortal_service');
+             }
+        }
+
+        if (!VFS['/home/ghost/service_error.log']) {
+            VFS['/home/ghost/service_error.log'] = {
+                type: 'file',
+                content: '[ERROR] Failed to stop immortal_service.\n[DIAGNOSTIC] Process is ignoring termination signals (SIGTERM).\n[ACTION] Force kill the process using a stronger signal.'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('service_error.log')) {
+                home.children.push('service_error.log');
+            }
+        }
+    }
 };
 
 // Helper to reset state
@@ -8854,6 +8897,22 @@ auth.py
                       } else {
                           output = `[SYSTEM] Terminated httpd (PID 4040).`;
                       }
+                  } else if (pid === 10000) {
+                      // Cycle 136: The Blocked Signal
+                      if (isSigKill) {
+                          PROCESSES.splice(idx, 1);
+                          output = `[KERNEL] Force kill signal (SIGKILL) sent to PID 10000.\n[SYSTEM] immortal_service terminated.\nFLAG: GHOST_ROOT{K1LL_9_1S_TH3_ONLY_W4Y}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: UNKILLABLE PROCESS TERMINATED.\x1b[0m`;
+                          
+                          if (!VFS['/var/run/kill9_solved']) {
+                              VFS['/var/run/kill9_solved'] = { type: 'file', content: 'TRUE' };
+                              const runDir = getNode('/var/run');
+                              if (runDir && runDir.type === 'dir' && !runDir.children.includes('kill9_solved')) {
+                                  runDir.children.push('kill9_solved');
+                              }
+                          }
+                      } else {
+                          output = `[WARN] immortal_service: Caught SIGTERM. Ignoring.\n[HINT] This process is blocking standard termination signals. Try a more forceful signal (-9).`;
+                      }
                   } else if (pid === 1001) {
                       PROCESSES.splice(idx, 1);
                       if (!VFS['/var/run/disk_solved']) {
@@ -8958,6 +9017,21 @@ auth.py
                           output = `[31337] Killed (SIGKILL).\n[SYSTEM] Watcher Daemon terminated. Lock released.`;
                       } else {
                           output = `kill: (${pid}) - Process is a zombie (defunct). Use SIGKILL (-9) to force termination.`;
+                      }
+                  } else if (pid === 10000) {
+                      if (isSigKill) {
+                          PROCESSES.splice(idx, 1);
+                          output = `[SYSTEM] Terminated immortal_service (PID 10000).\n[KERNEL] Process killed (SIGKILL).\nFLAG: GHOST_ROOT{S1GK1LL_F0RC3_ST0P}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: STUCK PROCESS KILLED.\x1b[0m`;
+                          
+                          if (!VFS['/var/run/sigkill_solved']) {
+                              VFS['/var/run/sigkill_solved'] = { type: 'file', content: 'TRUE' };
+                              const runDir = getNode('/var/run');
+                              if (runDir && runDir.type === 'dir' && !runDir.children.includes('sigkill_solved')) {
+                                  runDir.children.push('sigkill_solved');
+                              }
+                          }
+                      } else {
+                          output = `[SYSTEM] immortal_service (PID 10000): Caught signal ${signal || 'SIGTERM'}. Ignored.`;
                       }
                   } else {
                       PROCESSES.splice(idx, 1);
