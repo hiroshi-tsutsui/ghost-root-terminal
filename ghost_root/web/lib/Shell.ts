@@ -1707,7 +1707,7 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
            return { output: `bash: ${cmd127}: Permission denied`, newCwd: cwd };
        }
        
-       if (node.content.includes('#!BINARY_SIM_V1')) {
+       if (node.type === 'file' && (node as any).content.includes('#!BINARY_SIM_V1')) {
            let output = '[SYSTEM] Executing binary...\n[SUCCESS] Payload Delivered.\nFLAG: GHOST_ROOT{B4S364_D3C0D3_RUN}';
            if (!VFS['/var/run/base64_run_solved']) {
                VFS['/var/run/base64_run_solved'] = { type: 'file', content: 'TRUE' };
