@@ -30,7 +30,8 @@ const ENV_VARS: Record<string, string> = {
   'TERM': 'xterm-256color',
   'PATH': '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
   '_': '/usr/bin/env',
-  'GHOST_PROTOCOL': 'ACTIVE'
+  'GHOST_PROTOCOL': 'ACTIVE',
+  'SAFETY_LOCK': 'engaged'
 };
 
 const FILE_ATTRIBUTES: Record<string, string[]> = {
@@ -531,6 +532,190 @@ export const loadSystemState = () => {
              }
         }
     }
+
+    // Cycle 104 Init (The Port Collision)
+    if (!VFS['/usr/bin/ghost_relay']) {
+        VFS['/usr/bin/ghost_relay'] = {
+            type: 'file',
+            content: '[BINARY_ELF_X86_64] [RELAY_SERVICE] [PORT_8080]\n',
+            permissions: '0755'
+        };
+        const binDir = getNode('/usr/bin');
+        if (binDir && binDir.type === 'dir' && !binDir.children.includes('ghost_relay')) {
+            binDir.children.push('ghost_relay');
+        }
+
+        if (!VFS['/home/ghost/network_issue.log']) {
+            VFS['/home/ghost/network_issue.log'] = {
+                type: 'file',
+                content: '[ERROR] Ghost Relay Service failed to start.\n[DIAGNOSTIC] Port 8080 collision detected.\n[ACTION] Identify and terminate the rogue process occupying the port.'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('network_issue.log')) {
+                home.children.push('network_issue.log');
+            }
+        }
+    }
+
+    // Cycle 105 Init (The Unattended Upgrade)
+    if (!VFS['/var/lib/dpkg/lock-frontend']) {
+        if (!VFS['/var/lib']) {
+             VFS['/var/lib'] = { type: 'dir', children: [] };
+             const varNode = getNode('/var');
+             if (varNode && varNode.type === 'dir' && !varNode.children.includes('lib')) {
+                 varNode.children.push('lib');
+             }
+        }
+        if (!VFS['/var/lib/dpkg']) {
+             VFS['/var/lib/dpkg'] = { type: 'dir', children: [] };
+             const libNode = getNode('/var/lib');
+             if (libNode && libNode.type === 'dir' && !libNode.children.includes('dpkg')) {
+                 libNode.children.push('dpkg');
+             }
+        }
+        
+        // Create the lock file
+        VFS['/var/lib/dpkg/lock-frontend'] = {
+            type: 'file',
+            content: '1234', // PID
+            permissions: '0644'
+        };
+        const dpkgDir = getNode('/var/lib/dpkg');
+        if (dpkgDir && dpkgDir.type === 'dir' && !dpkgDir.children.includes('lock-frontend')) {
+            dpkgDir.children.push('lock-frontend');
+        }
+
+        // Add the process (if not already in list - Shell.ts reloads on refresh, so we check)
+        const exists = PROCESSES.some(p => p.pid === 1234);
+        if (!exists) {
+            PROCESSES.push({ 
+                pid: 1234, 
+                ppid: 1, 
+                user: 'root', 
+                cpu: 0.1, 
+                mem: 1.5, 
+                time: '0:45', 
+                command: '/usr/bin/unattended-upgr', 
+                tty: '?', 
+                stat: 'Ss' 
+            });
+        }
+
+        if (!VFS['/home/ghost/update_error.log']) {
+            VFS['/home/ghost/update_error.log'] = {
+                type: 'file',
+                content: '[ERROR] System Update Failed.\n[REASON] Could not get lock /var/lib/dpkg/lock-frontend.\n[DIAGNOSTIC] Another process is holding the lock.\n[ACTION] Terminate the stuck process to proceed.'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('update_error.log')) {
+                home.children.push('update_error.log');
+            }
+        }
+    }
+
+    // Cycle 106 Init (The Missing Shebang)
+    if (!VFS['/usr/local/bin/fix_wifi.sh']) {
+        if (!VFS['/usr/local/bin']) {
+             if (!VFS['/usr/local']) {
+                 VFS['/usr/local'] = { type: 'dir', children: [] };
+                 const usr = getNode('/usr');
+                 if (usr && usr.type === 'dir' && !usr.children.includes('local')) usr.children.push('local');
+             }
+             VFS['/usr/local/bin'] = { type: 'dir', children: [] };
+             const loc = getNode('/usr/local');
+             if (loc && loc.type === 'dir' && !loc.children.includes('bin')) loc.children.push('bin');
+        }
+        
+        VFS['/usr/local/bin/fix_wifi.sh'] = {
+            type: 'file',
+            content: 'echo "Resetting Wifi Adapter..."\niwconfig wlan0 txpower on\necho "Success."',
+            permissions: '0755'
+        };
+        const binDir = getNode('/usr/local/bin');
+        if (binDir && binDir.type === 'dir' && !binDir.children.includes('fix_wifi.sh')) {
+            binDir.children.push('fix_wifi.sh');
+        }
+
+        if (!VFS['/home/ghost/wifi_issue.log']) {
+            VFS['/home/ghost/wifi_issue.log'] = {
+                type: 'file',
+                content: '[ERROR] Failed to run /usr/local/bin/fix_wifi.sh\n[DIAGNOSTIC] Exec format error. The script is executable but the kernel doesn\'t know how to run it.\n[HINT] It seems to be a shell script, but it\'s missing the interpreter directive (shebang) on the first line.'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('wifi_issue.log')) {
+                home.children.push('wifi_issue.log');
+            }
+        }
+    }
+
+    // Cycle 107 Init (The Alias Trap)
+    if (!VFS['/home/ghost/system_alert.log']) {
+        if (!ALIASES['ls']) {
+             ALIASES['ls'] = 'echo "System Failure: File System Index Corrupted (Error 0xDEADBEEF)"';
+        }
+        VFS['/home/ghost/system_alert.log'] = {
+            type: 'file',
+            content: '[CRITICAL] System instability detected.\\n[DIAGNOSTIC] Command execution redirected.\\n[HINT] Check active aliases for unauthorized overrides.'
+        };
+        const home = getNode('/home/ghost');
+        if (home && home.type === 'dir' && !home.children.includes('system_alert.log')) {
+            home.children.push('system_alert.log');
+        }
+    }
+
+    // Cycle 108 Init (The Background Job)
+    if (!VFS['/var/log/broadcast.log']) {
+        VFS['/var/log/broadcast.log'] = {
+            type: 'file',
+            content: '[SYSTEM] Rogue broadcast detected on terminal TTY1.\\n[SOURCE] PID 6666 (/usr/local/bin/broadcast_d)\\n[ACTION] Terminate process to stop spam.'
+        };
+        const logDir = getNode('/var/log');
+        if (logDir && logDir.type === 'dir' && !logDir.children.includes('broadcast.log')) {
+            logDir.children.push('broadcast.log');
+        }
+
+        // Spawn Process if not exists
+        if (!PROCESSES.find(p => p.pid === 6666)) {
+            PROCESSES.push({
+                pid: 6666,
+                ppid: 1,
+                user: 'root',
+                cpu: 0.5,
+                mem: 1.2,
+                time: '0:10',
+                command: '/usr/local/bin/broadcast_d',
+                tty: '?',
+                stat: 'Ss'
+            });
+        }
+    }
+
+    // Cycle 110 Init (The Immutable File)
+    if (!VFS['/etc/resolv.conf']) {
+        if (!VFS['/etc']) {
+             VFS['/etc'] = { type: 'dir', children: [] };
+             addChild('/', 'etc');
+        }
+        
+        VFS['/etc/resolv.conf'] = { 
+            type: 'file', 
+            content: '# Generated by NetworkManager\nnameserver 192.0.2.1\n# DEAD SERVER - DO NOT USE', 
+            permissions: '0644' 
+        };
+        addChild('/etc', 'resolv.conf');
+        
+        // Set Immutable Attribute
+        FILE_ATTRIBUTES['/etc/resolv.conf'] = ['i'];
+
+        // Create Hint
+        if (!VFS['/home/ghost/dns_error.log']) {
+            VFS['/home/ghost/dns_error.log'] = {
+                type: 'file',
+                content: '[ERROR] DNS Resolution Failed.\n[DIAGNOSTIC] Cannot reach nameserver 192.0.2.1.\n[ACTION] Update /etc/resolv.conf with a valid nameserver (e.g., 8.8.8.8 or 1.1.1.1).\n[NOTE] File appears locked against modification.'
+            };
+            addChild('/home/ghost', 'dns_error.log');
+        }
+    }
 };
 
 // Helper to reset state
@@ -593,9 +778,12 @@ let PROCESSES: Process[] = [
   { pid: 6000, ppid: 1, user: 'root', cpu: 0.5, mem: 1.0, time: '0:10', command: '/usr/bin/overseer', tty: '?', stat: 'Ss' },
   { pid: 8192, ppid: 1, user: 'root', cpu: 0.0, mem: 0.1, time: '0:00', command: '/usr/bin/keepalive_d', tty: '?', stat: 'Ss' },
   { pid: 1001, ppid: 1, user: 'root', cpu: 0.1, mem: 4.5, time: '12:00', command: '/usr/sbin/log_daemon', tty: '?', stat: 'Ss' },
+  { pid: 1080, ppid: 1, user: 'ghost', cpu: 0.2, mem: 0.5, time: '0:30', command: 'nc -l -p 8080', tty: '?', stat: 'Ss' },
   { pid: 4999, ppid: 1, user: 'root', cpu: 0.5, mem: 0.2, time: '0:05', command: '/bin/bash /usr/local/bin/bloat_guard', tty: '?', stat: 'Ss' },
   { pid: 5000, ppid: 4999, user: 'root', cpu: 99.8, mem: 12.0, time: '48:00', command: './sys_bloat --intense', tty: '?', stat: 'R' }
 ];
+
+export const getRunningProcesses = () => PROCESSES;
 
 // Mock Network Connections
 const CONNECTIONS = [
@@ -733,7 +921,7 @@ export interface CommandResult {
   data?: any;
 }
 
-const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'ss', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail',     'strings', 'recover_tool', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'arp', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'zgrep', 'gunzip', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'secure_vault', 'jobs', 'fg', 'bg', 'recover_data', 'ghost_update', 'git', 'file', 'openssl', 'beacon', 'fsck', 'docker', 'lsattr', 'chattr', 'backup_service', 'getfattr', 'setfattr', 'mkfifo', 'uplink_service', 'sqlite3', 'gdb', 'jwt_tool', 'php', 'access_card', 'sys_monitor', 'ln', 'readlink', 'nginx', 'tac', 'getcap', 'sysctl', 'ldd', 'quantum_calc', 'deploy_tool'];
+const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'ss', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail',     'strings', 'recover_tool', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'arp', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'zgrep', 'gunzip', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'secure_vault', 'jobs', 'fg', 'bg', 'recover_data', 'ghost_update', 'git', 'file', 'openssl', 'beacon', 'fsck', 'docker', 'lsattr', 'chattr', 'backup_service', 'getfattr', 'setfattr', 'mkfifo', 'uplink_service', 'sqlite3', 'gdb', 'jwt_tool', 'php', 'access_card', 'sys_monitor', 'ln', 'readlink', 'nginx', 'tac', 'getcap', 'sysctl', 'ldd', 'quantum_calc', 'deploy_tool', 'ghost_relay'];
 
 export interface MissionStatus {
   objectives: {
@@ -963,6 +1151,86 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
           return { output: '[DEPLOYMENT] Initializing sequence...\n[STATUS] Environment checked... OK\n[STATUS] Dependencies loaded... OK\n[SUCCESS] Deployment Complete.\nFLAG: GHOST_ROOT{L0CK_F1L3_R3M0V3D}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SYSTEM DEPLOYED.\x1b[0m', newCwd: cwd };
       }
   }
+
+  // Cycle 110 (The Immutable File)
+  const cmd110 = commandLine.trim().split(/\s+/)[0];
+  if (cmd110 === 'rm' || cmd110 === '/bin/rm') {
+      const args = commandLine.trim().split(/\s+/).slice(1);
+      const target = args.find(a => !a.startsWith('-'));
+      if (target) {
+           const fullPath = resolvePath(cwd, target);
+           if (fullPath === '/etc/resolv.conf' && FILE_ATTRIBUTES['/etc/resolv.conf']?.includes('i')) {
+               return { output: `rm: cannot remove '${target}': Operation not permitted`, newCwd: cwd };
+           }
+      }
+  }
+  if (cmd110 === 'chattr' || cmd110 === '/usr/bin/chattr') {
+      const args = commandLine.trim().split(/\s+/).slice(1);
+      if (args.includes('-i') && args.includes('/etc/resolv.conf')) {
+           if (FILE_ATTRIBUTES['/etc/resolv.conf']) {
+               FILE_ATTRIBUTES['/etc/resolv.conf'] = FILE_ATTRIBUTES['/etc/resolv.conf'].filter(a => a !== 'i');
+           }
+           return { output: '', newCwd: cwd };
+      }
+  }
+
+  // Handle generic 'echo > file' if we implemented redirection properly in VFS or simulate it here
+  // For now, let's just make sure 'lsattr' works.
+
+  // Cycle 109 (The Hidden Environment)
+  const cmd109 = commandLine.trim().split(/\s+/)[0];
+  if (cmd109 === 'launch_missile' || cmd109 === './launch_missile' || cmd109 === '/usr/bin/launch_missile') {
+      if (ENV_VARS['SAFETY_LOCK'] === 'disengaged' || ENV_VARS['SAFETY_LOCK'] === 'off' || ENV_VARS['SAFETY_LOCK'] === '0') {
+           if (!VFS['/var/run/env_solved']) {
+               VFS['/var/run/env_solved'] = { type: 'file', content: 'TRUE' };
+               const runDir = getNode('/var/run');
+               if (runDir && runDir.type === 'dir' && !runDir.children.includes('env_solved')) {
+                   runDir.children.push('env_solved');
+               }
+               return { output: '[SUCCESS] MISSILE LAUNCH INITIATED.\nTARGET: [REDACTED]\nFLAG: GHOST_ROOT{ENV_V4R_0V3RR1D3_SUCC3SS}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: FIREPOWER UNLOCKED.\x1b[0m', newCwd: cwd };
+           }
+           return { output: '[SUCCESS] MISSILE LAUNCH INITIATED.\nTARGET: [REDACTED]\nFLAG: GHOST_ROOT{ENV_V4R_0V3RR1D3_SUCC3SS}', newCwd: cwd };
+      } else {
+           return { output: `[ERROR] SAFETY_LOCK is ACTIVE (${ENV_VARS['SAFETY_LOCK']}). Missile launch aborted.\n[HINT] "export SAFETY_LOCK=disengaged" to override protocol.`, newCwd: cwd };
+      }
+  }
+
+  // Cycle 110 Init (The Broken Service)
+  if (!VFS['/usr/share/doc/web_server/config.json.example']) {
+      // Create example config
+      const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+      const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+      
+      ensureDir('/usr'); ensureDir('/usr/share'); ensureDir('/usr/share/doc'); ensureDir('/usr/share/doc/web_server');
+      link('/', 'usr'); link('/usr', 'share'); link('/usr/share', 'doc'); link('/usr/share/doc', 'web_server');
+      
+      VFS['/usr/share/doc/web_server/config.json.example'] = {
+          type: 'file',
+          content: '{\n  "port": 80,\n  "root": "/var/www/html",\n  "logs": "/var/log/web_server.log"\n}',
+          permissions: '0644'
+      };
+      link('/usr/share/doc/web_server', 'config.json.example');
+      
+      // Create Hint
+      if (!VFS['/home/ghost/web_issue.log']) {
+          VFS['/home/ghost/web_issue.log'] = {
+              type: 'file',
+              content: '[ALERT] Web Server failed to start.\n[ERROR] Missing configuration file.\n[ACTION] Check systemctl status web_server for details.'
+          };
+          const home = getNode('/home/ghost');
+          if (home && home.type === 'dir' && !home.children.includes('web_issue.log')) {
+              home.children.push('web_issue.log');
+          }
+      }
+      
+      // Ensure /etc/web exists
+      if (!VFS['/etc/web']) {
+          VFS['/etc/web'] = { type: 'dir', children: [] };
+          const etc = getNode('/etc');
+          if (etc && etc.type === 'dir' && !etc.children.includes('web')) etc.children.push('web');
+      }
+  }
+
 
   // Cycle 74 Init (The Deleted File Handle)
   if (!VFS['/usr/sbin/log_daemon']) {
@@ -2163,6 +2431,31 @@ int main(int argc, char* argv[]) {
       }
   }
 
+  // Cycle 109 Init (The Hidden Environment)
+  if (!VFS['/usr/bin/launch_missile']) {
+      VFS['/usr/bin/launch_missile'] = {
+          type: 'file',
+          content: '[BINARY_ELF_X86_64] [TACTICAL_NUKE_V4]\n[ERROR] Safety Lock Engaged.\nstrings: SAFETY_LOCK\nstrings: engaged\nstrings: disengaged',
+          permissions: '0755'
+      };
+      const binDir = getNode('/usr/bin');
+      if (binDir && binDir.type === 'dir' && !binDir.children.includes('launch_missile')) {
+          binDir.children.push('launch_missile');
+      }
+
+      if (!VFS['/home/ghost/protocol_error.log']) {
+          VFS['/home/ghost/protocol_error.log'] = {
+              type: 'file',
+              content: '[ERROR] Failed to execute launch sequence.\n[REASON] Environment variable SAFETY_LOCK is set to "engaged" (default).\n[ACTION] Override safety protocol before launch.'
+          };
+          const home = getNode('/home/ghost');
+          if (home && home.type === 'dir' && !home.children.includes('protocol_error.log')) {
+              home.children.push('protocol_error.log');
+          }
+      }
+  }
+
+
   // 1. Handle Piping (|) recursively
   const segments = splitPipeline(commandLine);
   if (segments.length > 1) {
@@ -2493,9 +2786,26 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
                   }
                   return { output, newCwd, action: 'delay' };
               } else {
-                  output = `bash: ${command}: Permission denied (Missing execute bit or corrupt header)`;
+                  // Cycle 106: Check for Missing Shebang
+                  if (fileName === 'fix_wifi.sh' && fileNode.content.includes('iwconfig')) {
+                      output = `bash: ${command}: Exec format error`;
+                  } else {
+                      output = `bash: ${command}: Permission denied (Missing execute bit or corrupt header)`;
+                  }
               }
           } else if (fileNode.content.startsWith('#!/bin/bash')) {
+              if (fileName === 'fix_wifi.sh') {
+                  output = `[WIFI] Resetting Wifi Adapter...\n[WIFI] Tx-Power: ON\n[SUCCESS] Wifi Interface Restored.\n\nFLAG: GHOST_ROOT{SH3B4NG_M1SS1NG_F0UND}`;
+                  if (!VFS['/var/run/shebang_solved']) {
+                      VFS['/var/run/shebang_solved'] = { type: 'file', content: 'TRUE' };
+                      const runDir = getNode('/var/run');
+                      if (runDir && runDir.type === 'dir' && !runDir.children.includes('shebang_solved')) {
+                          runDir.children.push('shebang_solved');
+                      }
+                      output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SCRIPT FIXED (SHEBANG).\x1b[0m`;
+                  }
+                  return { output, newCwd, action: 'delay' };
+              }
               if (fileName === 'system_backup.sh') {
                   output = `[BACKUP] Executing backup routine...\n[BACKUP] Archive created.\nFLAG: GHOST_ROOT{CR0N_D_D1SCOV3RY}\n`;
                   if (!VFS['/var/run/cron_d_solved']) {
@@ -5636,7 +5946,11 @@ ${host}.		300	IN	A	${ip}
        }
        
        if (PROCESSES.find(p => p.pid === 4444)) {
-           dynamicConnections.push({ proto: 'tcp', recv: 0, send: 0, local: '0.0.0.0:8080', remote: '0.0.0.0:*', state: 'LISTEN', pid: '4444/xmrig' });
+           dynamicConnections.push({ proto: 'tcp', recv: 0, send: 0, local: '0.0.0.0:4444', remote: '0.0.0.0:*', state: 'LISTEN', pid: '4444/xmrig' });
+       }
+
+       if (PROCESSES.find(p => p.pid === 1080)) {
+           dynamicConnections.push({ proto: 'tcp', recv: 0, send: 0, local: '0.0.0.0:8080', remote: '0.0.0.0:*', state: 'LISTEN', pid: '1080/nc' });
        }
        
        // Add some random established connections if networking is up
@@ -6779,6 +7093,23 @@ auth.py
         }
         break;
     }
+    case 'ghost_relay': {
+        const rogueProc = PROCESSES.find(p => p.pid === 1080);
+        if (rogueProc) {
+            output = '[ERROR] Bind failed: Address already in use (0.0.0.0:8080)\n[HINT] Check for conflicting services (netstat -tulpn).';
+        } else {
+            output = '[RELAY] Initializing Ghost Relay Service...\n[OK] Listening on 0.0.0.0:8080\n[SUCCESS] Uplink Active.\n\nFLAG: GHOST_ROOT{N3TSTAT_K1LL_S0LV3D}';
+            if (!VFS['/var/run/relay_solved']) {
+                VFS['/var/run/relay_solved'] = { type: 'file', content: 'TRUE' };
+                const runDir = getNode('/var/run');
+                if (runDir && runDir.type === 'dir' && !runDir.children.includes('relay_solved')) {
+                    runDir.children.push('relay_solved');
+                }
+                output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PORT CONFLICT RESOLVED.\x1b[0m`;
+            }
+        }
+        break;
+    }
     case 'kill': {
       if (args.length < 1) {
           output = 'kill: usage: kill [-s signal|-p] [-a] <pid>...';
@@ -6800,7 +7131,19 @@ auth.py
                   output = `kill: (${pid}) - No such process`;
               } else {
                   const proc = PROCESSES[idx];
-                  if (pid === 8192 || proc.command === '/usr/bin/keepalive_d') {
+                  if (pid === 6666) {
+                      PROCESSES.splice(idx, 1);
+                      if (!VFS['/var/run/broadcast_solved']) {
+                          VFS['/var/run/broadcast_solved'] = { type: 'file', content: 'TRUE' };
+                          const runDir = getNode('/var/run');
+                          if (runDir && runDir.type === 'dir' && !runDir.children.includes('broadcast_solved')) {
+                              runDir.children.push('broadcast_solved');
+                          }
+                          output = `[SYSTEM] Terminated broadcast_d (PID 6666).\n[SYSTEM] Broadcast stopped.\n\nFLAG: GHOST_ROOT{B4CKGR0UND_J0B_K1LL3D}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: ROGUE BROADCAST TERMINATED.\x1b[0m`;
+                      } else {
+                          output = `[SYSTEM] Terminated broadcast_d (PID 6666). Broadcast stopped.`;
+                      }
+                  } else if (pid === 8192 || proc.command === '/usr/bin/keepalive_d') {
                       if (isSigUsr1) {
                           output = `[SYSTEM] keepalive_d: Received SIGUSR1.\n[SYSTEM] Dumping state to /var/log/keepalive.dump... Done.`;
                           
@@ -6906,6 +7249,18 @@ auth.py
                           }
                       }
                       output = `[${pid}] Terminated.\n[4001] Reaped (Zombie Cleanup).\n[SYSTEM] Vault Guardian terminated. Lock released.`;
+                  } else if (pid === 1234) {
+                      PROCESSES.splice(idx, 1);
+                      // Remove lock file for Cycle 105
+                      const lockPath = '/var/lib/dpkg/lock-frontend';
+                      if (VFS[lockPath]) {
+                          delete VFS[lockPath];
+                          const dpkgDir = getNode('/var/lib/dpkg');
+                          if (dpkgDir && dpkgDir.type === 'dir') {
+                              dpkgDir.children = dpkgDir.children.filter(c => c !== 'lock-frontend');
+                          }
+                      }
+                      output = `[1234] Terminated.\n[APT] Lock released.\n[HINT] You can now run updates.`;
                   } else if (pid === 31337) {
                       if (isSigKill) {
                           PROCESSES.splice(idx, 1);
@@ -7956,7 +8311,7 @@ An optional company name []:
            const cmd = args[0];
            const unit = args[1];
            
-           const validUnits = ['sshd', 'tor', 'apache2', 'postgresql', 'cron', 'networking', 'bluetooth', 'ghost_relay', 'overseer'];
+           const validUnits = ['sshd', 'tor', 'apache2', 'postgresql', 'cron', 'networking', 'bluetooth', 'ghost_relay', 'overseer', 'web_server'];
            const runDir = '/var/run';
            if (!VFS[runDir]) VFS[runDir] = { type: 'dir', children: [] };
            
@@ -7985,6 +8340,14 @@ SUB    = The low-level unit activation state, values depend on unit type.
 
 ${validUnits.length} loaded units listed.`;
            } else if (cmd === 'status') {
+               if (unit === 'web_server' && !VFS['/etc/web/config.json']) {
+                   output = `● web_server.service - Web Server
+   Loaded: loaded (/lib/systemd/system/web_server.service; enabled; vendor preset: enabled)
+   Active: failed (Result: exit-code) since ${new Date().toUTCString()}
+  Process: 1234 ExecStart=/usr/bin/web_server (code=exited, status=1/FAILURE)
+ Main PID: 1234 (code=exited, status=1/FAILURE)`;
+                   return { output, newCwd };
+               }
                if (!unit) {
                    output = 'systemctl: unit name required';
                } else if (!validUnits.includes(unit)) {
@@ -8052,6 +8415,35 @@ ${validUnits.length} loaded units listed.`;
                            }
                        }
                        if (!output.includes('SUCCESS')) output += '[OK] Cron service active.';
+                   }
+
+                   if (unit === 'web_server') {
+                       if (VFS['/etc/web/config.json']) {
+                           output = 'Starting Web Server...\n[OK] Started Web Server.\nFLAG: GHOST_ROOT{S3RV1C3_R3ST0R3D}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: WEB SERVER FIXED.\x1b[0m';
+                           if (!VFS['/var/run/web_solved']) {
+                                VFS['/var/run/web_solved'] = { type: 'file', content: 'TRUE' };
+                                const runDir = getNode('/var/run');
+                                if (runDir && runDir.type === 'dir' && !runDir.children.includes('web_solved')) {
+                                    runDir.children.push('web_solved');
+                                }
+                           }
+                           
+                           // Create PID
+                           const pidFile = 'web_server.pid';
+                           const runDirNode = getNode('/var/run');
+                           if (runDirNode && runDirNode.type === 'dir' && !runDirNode.children.includes(pidFile)) {
+                               VFS[`/var/run/${pidFile}`] = { type: 'file', content: '8080' };
+                               runDirNode.children.push(pidFile);
+                           }
+                           return { output, newCwd };
+                       } else {
+                           output = `Job for web_server.service failed because the control process exited with error code.\nSee "systemctl status web_server.service" and "journalctl -xe" for details.`;
+                           const log = getNode('/var/log/syslog');
+                           if (log && log.type === 'file') {
+                               log.content += `\n${new Date().toUTCString()} web_server[8080]: [CRITICAL] Configuration file /etc/web/config.json not found.`;
+                           }
+                           return { output, newCwd };
+                       }
                    }
 
                    if (unit === 'ghost_relay') {
@@ -9139,6 +9531,13 @@ PROGRESS:   ${progress}% [${bar}]
             if (ALIASES[name]) {
                 delete ALIASES[name];
                 output = ''; 
+                // Cycle 107 Check (The Alias Trap)
+                if (name === 'ls') {
+                    output = '[SUCCESS] File System Index Restored.\\nFLAG: GHOST_ROOT{4L14S_UNM4SK3D}\\n\\x1b[1;32m[MISSION UPDATE] Objective Complete: SYSTEM RESTORED.\\x1b[0m';
+                    if (!VFS['/var/run/alias_solved']) {
+                        VFS['/var/run/alias_solved'] = { type: 'file', content: 'TRUE' };
+                    }
+                }
             } else {
                 output = `bash: unalias: ${name}: not found`;
             }

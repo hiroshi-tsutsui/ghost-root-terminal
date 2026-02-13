@@ -1,87 +1,37 @@
-[2026-02-12 23:35]
+# VISION LOG
+
+[2026-02-13 08:35]
 > CHANGES: ghost_root/web/lib/Shell.ts
-> PUZZLE ADDED: "The Restricted Shell" (rbash).
-> MECHANICS: Added `ssh restricted@192.168.1.5` -> sets `RESTRICTED_SHELL` mode.
-> CONSTRAINT: In restricted mode, commands with `/`, `>`, `|` are blocked.
-> SOLUTION: Use `vi` command injection (`vi -c ':!/bin/bash'`) to break out.
+> PUZZLE ADDED: "The Alias Trap" (Cycle 107).
+> MECHANICS: Aliased `ls` to a fake error message. Added `system_alert.log` hint.
+> COMMANDS: Updated `unalias` to detect puzzle solution.
+> CONSTRAINT: User sees "File System Corrupted" on `ls`.
+> SOLUTION: `type ls` or `alias` -> `unalias ls`.
 > ENCRYPTION: LOW
 
-[2026-02-13 00:05]
-> CHANGES: ghost_root/web/lib/Shell.ts
-> PUZZLE ADDED: "The Corrupted Binary" (Cycle 90).
-> MECHANICS: Added `/usr/bin/recover_tool` with binary junk and hidden strings.
-> CONSTRAINT: Execution causes segmentation fault. `cat` shows binary garbage.
-> SOLUTION: Use `strings recover_tool` to extract the hidden flag.
+[2026-02-13 08:52]
+> CHANGES: ghost_root/web/lib/Shell.ts, ghost_root/web/components/Terminal.tsx
+> PUZZLE ADDED: "The Background Job" (Cycle 108).
+> MECHANICS: Annoying broadcast message disrupts terminal every 10 seconds.
+> COMMANDS: `ps`, `kill`. Updated `kill` to handle rogue PID 6666.
+> CONSTRAINT: User is spammed with "[BROADCAST] SYSTEM COMPROMISED".
+> SOLUTION: `ps` to find PID, `kill 6666`.
 > ENCRYPTION: LOW
 
-[2026-02-13 00:35]
+[2026-02-13 09:14]
 > CHANGES: ghost_root/web/lib/Shell.ts
-> PUZZLE ADDED: "The Missing Library" (Cycle 91).
-> MECHANICS: Added `/usr/bin/quantum_calc` which depends on `/opt/libs/libquantum.so.1`.
-> CONSTRAINT: Execution fails with "error while loading shared libraries".
-> SOLUTION: `export LD_LIBRARY_PATH=/opt/libs` before running.
+> PUZZLE ADDED: "The Hidden Environment" (Cycle 109).
+> MECHANICS: Added `SAFETY_LOCK` environment variable logic.
+> COMMANDS: Added `/usr/bin/launch_missile`.
+> CONSTRAINT: User must override `SAFETY_LOCK` via `export`.
+> SOLUTION: `export SAFETY_LOCK=disengaged` -> `launch_missile`.
 > ENCRYPTION: LOW
 
-[2026-02-13 01:05]
+[2026-02-13 10:55]
 > CHANGES: ghost_root/web/lib/Shell.ts
-> PUZZLE ADDED: "The Scheduled Task" (Cycle 93).
-> MECHANICS: Added `/etc/cron.d/malware` causing high CPU load.
-> CONSTRAINT: Malware respawns or persists.
-> SOLUTION: Find the malicious cron job and `rm /etc/cron.d/malware`.
-> ENCRYPTION: LOW
-
-[2026-02-13 01:58]
-> CHANGES: ghost_root/web/lib/Shell.ts
-> PUZZLE ADDED: "The Deleted File" (Cycle 94).
-> MECHANICS: Added deleted config file held by process 8888.
-> CONSTRAINT: File `/home/ghost/secret.conf` is deleted but open.
-> SOLUTION: Check `lsof -p 8888` (fd 3) then `cp /proc/8888/fd/3 recovered.conf`.
-> ENCRYPTION: LOW
-
-[2026-02-13 02:34]
-> CHANGES: ghost_root/web/lib/Shell.ts
-> PUZZLE ADDED: "The World-Writable Cron" (Cycle 98).
-> MECHANICS: Added /etc/cron.d (777) + systemctl cron check.
-> CONSTRAINT: User must create a job to copy /root/flag.txt to /tmp.
-> SOLUTION: echo "* * * * * root cp /root/flag.txt /tmp/flag" > /etc/cron.d/pwn; systemctl restart cron
-> ENCRYPTION: LOW
-
-[2026-02-13 03:20]
-> CHANGES: ghost_root/web/lib/Shell.ts
-> PUZZLE ADDED: "The Disk Quota" (Cycle 99).
-> MECHANICS: Added 50GB file `/var/log/syslog.1` filling `/var`.
-> CONSTRAINT: Write operations to `/var` or `/home` fail ("No space left on device").
-> SOLUTION: `du -h /var` to find the culprit, then `rm /var/log/syslog.1`.
-> ENCRYPTION: LOW
-
-[2026-02-13 03:59]
-> CHANGES: ghost_root/web/lib/Shell.ts
-> PUZZLE ADDED: "The Inode Exhaustion" (Cycle 100).
-> MECHANICS: Added `/var/cache/inodes_fill` directory causing 100% Inode Usage.
-> CONSTRAINT: File creation (`touch`, `mkdir`, `echo >`) fails with "No space left on device".
-> SOLUTION: `df -i` to diagnose, then `rm -rf /var/cache/inodes_fill`.
-> ENCRYPTION: LOW
-
-[2026-02-13 04:45]
-> CHANGES: ghost_root/web/lib/Shell.ts
-> PUZZLE ADDED: "The DNS Failure" (Cycle 101).
-> MECHANICS: Added `/home/ghost/db_alert.log` (Hint) + Hostname Resolution Logic.
-> CONSTRAINT: `ping database` fails with "Name or service not known".
-> SOLUTION: Edit `/etc/hosts` to add `127.0.0.1 database`.
-> ENCRYPTION: LOW
-
-[2026-02-13 05:25]
-> CHANGES: ghost_root/web/lib/Shell.ts
-> PUZZLE ADDED: "The Stuck Lock File" (Cycle 102).
-> MECHANICS: Added `/var/lock/deploy.lock` (PID 99999).
-> CONSTRAINT: `deploy_tool` fails if lock file exists.
-> SOLUTION: `rm /var/lock/deploy.lock` then run `deploy_tool`.
-> ENCRYPTION: LOW
-
-[2026-02-13 06:15]
-> CHANGES: ghost_root/web/lib/Shell.ts
-> PUZZLE ADDED: "The Path Hijack" (Cycle 103).
-> MECHANICS: Added `/tmp/bin/ls` (fake) and prepended `/tmp/bin` to `PATH`.
-> CONSTRAINT: `ls` returns fake output.
-> SOLUTION: `export PATH=/usr/bin:/bin` (or remove `/tmp/bin`).
+> PUZZLE ADDED: "The Broken Service" (Cycle 110).
+> MECHANICS: Added `systemctl` logic for `web_server`. Missing config file prevents start.
+> COMMANDS: `systemctl status web_server`, `systemctl start web_server`, `cp`.
+> CONSTRAINT: Service fails to start with "exit-code 1".
+> SOLUTION: Check status -> Read logs -> `cp /usr/share/doc/web_server/config.json.example /etc/web/config.json` -> `systemctl start web_server`.
 > ENCRYPTION: LOW
