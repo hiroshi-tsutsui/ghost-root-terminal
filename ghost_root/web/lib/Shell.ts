@@ -1635,6 +1635,79 @@ export const loadSystemState = () => {
             }
         }
     }
+
+    // Cycle 142 Init (The Sticky Bit)
+    if (!VFS['/tmp/public']) {
+        if (!VFS['/tmp']) VFS['/tmp'] = { type: 'dir', children: [] };
+        
+        VFS['/tmp/public'] = { type: 'dir', children: ['user_ghost.tmp', 'user_admin.tmp'] };
+        const tmp = getNode('/tmp');
+        if (tmp && tmp.type === 'dir' && !tmp.children.includes('public')) tmp.children.push('public');
+        
+        // Initial permissions: 0777 (No sticky bit)
+        (VFS['/tmp/public'] as any).permissions = '0777'; 
+        
+        VFS['/tmp/public/user_ghost.tmp'] = { type: 'file', content: 'GHOST_DATA', permissions: '0644' };
+        VFS['/tmp/public/user_admin.tmp'] = { type: 'file', content: 'ADMIN_DATA', permissions: '0644' };
+        
+        // Hint
+        if (!VFS['/home/ghost/sticky_alert.txt']) {
+            VFS['/home/ghost/sticky_alert.txt'] = {
+                type: 'file',
+                content: '[ALERT] /tmp/public is insecure.\n[ISSUE] Users can delete each other\'s files.\n[ACTION] Set the sticky bit on /tmp/public to restrict deletion to file owners.\n[CMD] chmod +t /tmp/public'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('sticky_alert.txt')) {
+                home.children.push('sticky_alert.txt');
+            }
+        }
+    }
+
+    // Cycle 143 Init (The Dangling Symlink)
+    if (!VFS['/opt/libs/libghost.so']) {
+        const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+        const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+
+        ensureDir('/opt'); ensureDir('/opt/libs');
+        link('/', 'opt'); link('/opt', 'libs');
+
+        // Create Real Library (v1.0)
+        VFS['/opt/libs/libghost.so.1.0'] = {
+            type: 'file',
+            content: '[ELF_SHARED_OBJ] [GHOST_LIB_V1]\nFunction: ghost_protocol_init()\nStatus: ACTIVE',
+            permissions: '0644'
+        };
+        link('/opt/libs', 'libghost.so.1.0');
+
+        // Create Broken Symlink (pointing to v2.0)
+        VFS['/opt/libs/libghost.so'] = {
+            type: 'symlink',
+            target: '/opt/libs/libghost.so.2.0',
+            permissions: '0777'
+        } as any;
+        link('/opt/libs', 'libghost.so');
+
+        // Create Binary that depends on it
+        if (!VFS['/usr/bin']) ensureDir('/usr/bin');
+        VFS['/usr/bin/ghost_service'] = {
+            type: 'file',
+            content: '[BINARY_ELF_X86_64] [DEPENDENCY_CHECK]\nNEEDED: libghost.so\n[ERROR] Library load failed.\n',
+            permissions: '0755'
+        };
+        link('/usr/bin', 'ghost_service');
+
+        // Hint
+        if (!VFS['/home/ghost/link_error.log']) {
+            VFS['/home/ghost/link_error.log'] = {
+                type: 'file',
+                content: '[ERROR] ghost_service: error while loading shared libraries: libghost.so: cannot open shared object file: No such file or directory\n[DIAGNOSTIC] The library file exists, but the symlink might be broken.\n[ACTION] Find the broken link (find / -type l) and fix it (ln -sf).'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('link_error.log')) {
+                home.children.push('link_error.log');
+            }
+        }
+    }
 };
 
 // Helper to reset state
@@ -5337,7 +5410,25 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
                 if (!parentNode.children.includes(fileName!)) {
                     parentNode.children.push(fileName!);
                 }
-                output = ''; 
+                
+                // Cycle 143 Win Condition
+                if (linkPath === '/opt/libs/libghost.so' && target === '/opt/libs/libghost.so.1.0') {
+                    if (!VFS['/var/run/symlink_solved']) {
+                        VFS['/var/run/symlink_solved'] = { type: 'file', content: 'TRUE' };
+                        const runDir = getNode('/var/run');
+                        if (runDir && runDir.type === 'dir' && !runDir.children.includes('symlink_solved')) {
+                            runDir.children.push('symlink_solved');
+                        }
+                        output = `[SUCCESS] Symlink repaired.\n[SYSTEM] Library libghost.so now points to valid version 1.0.\nFLAG: GHOST_ROOT{D4NGL1NG_SYML1NK_F1X3D}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: BROKEN LINK REPAIRED.\x1b[0m`;
+                    } else {
+                        output = '';
+                    }
+                } else {
+                    output = '';
+                } 
+                } else {
+                    output = '';
+                } 
             }
         }
         break;
@@ -5863,69 +5954,75 @@ DROP       icmp --  10.10.99.1           anywhere`;
           if (!node) {
               output = `chmod: cannot access '${target}': No such file or directory`;
           } else {
-              // Basic numeric mode validation (e.g., 755, 644, 400)
-              if (/^[0-7]{3,4}$/.test(mode)) {
-                  let newMode = mode;
-                  if (mode.length === 3) newMode = '0' + mode;
-                  
-                  // In a real system, only owner can chmod. Here we assume ghost owns everything in /home/ghost,
-                  // but maybe we simulate permission error for system files.
+              let applied = false;
+              let newMode = '';
+              let current = (node as any).permissions || ((node.type === 'dir') ? '0755' : '0644');
+              if (current.length === 3) current = '0' + current;
+
+              // Symbolic mode support
+              if (mode === 'u+s' || mode === '+s') {
+                   let special = parseInt(current[0], 10);
+                   special |= 4; // Set SUID bit
+                   newMode = special.toString() + current.slice(1);
+              } else if (mode === 'u-s' || mode === '-s') {
+                   let special = parseInt(current[0], 10);
+                   special &= ~4; // Clear SUID bit
+                   newMode = special.toString() + current.slice(1);
+              } else if (mode === '+t' || mode === 'o+t') {
+                   let special = parseInt(current[0], 10);
+                   special |= 1; // Set Sticky bit
+                   newMode = special.toString() + current.slice(1);
+              } else if (mode === '-t') {
+                   let special = parseInt(current[0], 10);
+                   special &= ~1; // Clear Sticky bit
+                   newMode = special.toString() + current.slice(1);
+              } else if (/^[0-7]{3,4}$/.test(mode)) {
+                   newMode = mode.length === 3 ? '0' + mode : mode;
+              } else {
+                  output = `chmod: invalid mode: '${mode}'`;
+                  applied = true; // Error set
+              }
+
+              if (!applied && output === '') {
                   const isSystemFile = path.startsWith('/bin') || path.startsWith('/usr') || path.startsWith('/etc') || path === '/';
                   const isRoot = !!getNode('/tmp/.root_session');
+                  
+                  // Allow chmod on /tmp and /tmp/public specifically for puzzles
+                  const isAllowed = path === '/tmp' || path === '/tmp/public' || isRoot;
 
-                  if (isSystemFile && !isRoot) {
+                  if (isSystemFile && !isAllowed) {
                       output = `chmod: changing permissions of '${target}': Operation not permitted`;
                   } else {
                       // Apply permission
                       (node as any).permissions = newMode;
                       output = ''; // Silent success
+                      
+                      // Cycle 138 Win Condition (SUID Removal)
+                      if (path === '/usr/bin/backdoor' && !newMode.startsWith('4')) {
+                           if (!VFS['/var/run/suid_solved']) {
+                               VFS['/var/run/suid_solved'] = { type: 'file', content: 'TRUE' };
+                               const runDir = getNode('/var/run');
+                               if (runDir && runDir.type === 'dir' && !runDir.children.includes('suid_solved')) {
+                                   if (runDir.children) runDir.children.push('suid_solved');
+                               }
+                               output = `[SUCCESS] SUID bit removed.\n[SYSTEM] Backdoor neutralized.\nFLAG: GHOST_ROOT{SU1D_B1T_CL3AR3D}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SUID BINARY SECURED.\x1b[0m`;
+                           }
+                      }
+                      
+                      // Cycle 142 Win Condition (Sticky Bit Set)
+                      // Sticky bit is 1xxx (e.g. 1777). First digit has bit 1 set (1, 3, 5, 7)
+                      const firstDigit = parseInt(newMode[0], 10);
+                      if (path === '/tmp/public' && (firstDigit & 1)) {
+                           if (!VFS['/var/run/sticky_solved']) {
+                               VFS['/var/run/sticky_solved'] = { type: 'file', content: 'TRUE' };
+                               const runDir = getNode('/var/run');
+                               if (runDir && runDir.type === 'dir' && !runDir.children.includes('sticky_solved')) {
+                                   if (runDir.children) runDir.children.push('sticky_solved');
+                               }
+                               output = `[SUCCESS] Sticky bit set on /tmp/public.\n[SYSTEM] Directory secured against unauthorized deletion.\nFLAG: GHOST_ROOT{ST1CKY_B1T_S3CUR3D}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SECURE PUBLIC DIR.\x1b[0m`;
+                           }
+                      }
                   }
-              } else if (mode === 'u+s' || mode === '+s') {
-                   let current = (node as any).permissions || ((node.type === 'dir') ? '0755' : '0644');
-                   if (current.length === 3) current = '0' + current;
-                   
-                   const isSystemFile = path.startsWith('/bin') || path.startsWith('/usr') || path.startsWith('/etc') || path === '/';
-                   const isRoot = !!getNode('/tmp/.root_session');
-                   
-                   if (isSystemFile && !isRoot) {
-                       output = `chmod: changing permissions of '${target}': Operation not permitted`;
-                   } else {
-                       let special = parseInt(current[0], 10);
-                       special |= 4; // Set SUID bit
-                       (node as any).permissions = special.toString() + current.slice(1);
-                       output = '';
-                   }
-              } else if (mode === 'u-s' || mode === '-s') {
-                   let current = (node as any).permissions || ((node.type === 'dir') ? '0755' : '0644');
-                   if (current.length === 3) current = '0' + current;
-                   
-                   const isSystemFile = path.startsWith('/bin') || path.startsWith('/usr') || path.startsWith('/etc') || path === '/';
-                   const isRoot = !!getNode('/tmp/.root_session');
-
-                   if (isSystemFile && !isRoot) {
-                       output = `chmod: changing permissions of '${target}': Operation not permitted`;
-                   } else {
-                       let special = parseInt(current[0], 10);
-                       special &= ~4; // Clear SUID bit
-                       (node as any).permissions = special.toString() + current.slice(1);
-                       output = '';
-                   }
-              } else if (mode === '+t' || mode === 'o+t') {
-                   let current = (node as any).permissions || ((node.type === 'dir') ? '0755' : '0644');
-                   if (current.length === 3) current = '0' + current;
-                   
-                   const isRoot = !!getNode('/tmp/.root_session');
-                   // Allow chmod on /tmp specifically for this puzzle
-                   if (path === '/tmp' || isRoot) {
-                       let special = parseInt(current[0], 10);
-                       special |= 1; // Set Sticky bit
-                       (node as any).permissions = special.toString() + current.slice(1);
-                       output = '';
-                   } else {
-                       output = `chmod: changing permissions of '${target}': Operation not permitted`;
-                   }
-              } else {
-                  output = `chmod: invalid mode: '${mode}'`;
               }
           }
        }
@@ -5949,56 +6046,8 @@ DROP       icmp --  10.10.99.1           anywhere`;
         }
         break;
     }
-    case 'chmod': {
-       if (args.length < 2) {
-           output = 'usage: chmod <mode> <file>';
-       } else {
-           const mode = args[0];
-           const target = args[1];
-           const filePath = resolvePath(cwd, target);
-           const node = getNode(filePath);
-           
-           if (!node) {
-               output = `chmod: cannot access '${target}': No such file or directory`;
-           } else {
-               let newPerms = (node as any).permissions || '0755';
-               
-               // Symbolic mode support (simplified)
-               if (mode === '+t') {
-                   // Add sticky bit (1xxx)
-                   if (newPerms.length === 4) {
-                       newPerms = '1' + newPerms.slice(1);
-                   } else {
-                       newPerms = '1' + newPerms;
-                   }
-               } else if (mode === '-t') {
-                   // Remove sticky bit
-                   if (newPerms.length === 4 && newPerms.startsWith('1')) {
-                       newPerms = '0' + newPerms.slice(1);
-                   }
-               } else if (/^[0-7]{3,4}$/.test(mode)) {
-                   // Octal mode
-                   newPerms = mode.length === 3 ? '0' + mode : mode;
-               }
-               
-               (node as any).permissions = newPerms;
-               output = ''; // Silent success
-               
-               // Cycle 138 Win Condition
-               if (filePath === '/usr/bin/backdoor' && !newPerms.startsWith('4')) {
-                   if (!VFS['/var/run/suid_solved']) {
-                       VFS['/var/run/suid_solved'] = { type: 'file', content: 'TRUE' };
-                       const runDir = getNode('/var/run');
-                       if (runDir && runDir.type === 'dir' && !runDir.children.includes('suid_solved')) {
-                           runDir.children.push('suid_solved');
-                       }
-                       output = `[SUCCESS] SUID bit removed.\n[SYSTEM] Backdoor neutralized.\nFLAG: GHOST_ROOT{SU1D_B1T_CL3AR3D}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SUID BINARY SECURED.\x1b[0m`;
-                   }
-               }
-           }
-       }
-       break;
-    }
+    // Duplicate chmod handler removed
+
     case 'chattr': {
         if (args.length < 2) {
             output = 'usage: chattr [-+=][mode] <file>';
@@ -9442,13 +9491,26 @@ auth.py
     case 'find': {
       let searchPath = cwd;
       let namePattern: RegExp | null = null;
-      let typeFilter: 'f' | 'd' | null = null;
+      let typeFilter: 'f' | 'd' | 'l' | null = null;
       let permFilter: string | null = null;
+      let followSymlinks = false; // -L option
       
       let argIdx = 0;
-      // Check if first arg is a path (doesn't start with -)
-      if (args.length > 0 && !args[0].startsWith('-')) {
-          searchPath = resolvePath(cwd, args[0]);
+      
+      // Handle global options before path (e.g., -L)
+      while (argIdx < args.length && args[argIdx].startsWith('-') && args[argIdx].length === 2 && /^[a-zA-Z]+$/.test(args[argIdx].slice(1))) {
+          const opt = args[argIdx];
+          if (opt === '-L') {
+              followSymlinks = true;
+              argIdx++;
+          } else {
+              break; // Not a global option we handle here, might be a predicate
+          }
+      }
+
+      // Check if next arg is a path (doesn't start with -)
+      if (argIdx < args.length && !args[argIdx].startsWith('-')) {
+          searchPath = resolvePath(cwd, args[argIdx]);
           argIdx++;
       }
       
@@ -9472,8 +9534,8 @@ auth.py
               }
           } else if (arg === '-type') {
               const type = args[argIdx + 1];
-              if (type === 'f' || type === 'd') {
-                  typeFilter = type;
+              if (type === 'f' || type === 'd' || type === 'l') {
+                  typeFilter = type as any;
                   argIdx += 2;
               } else {
                   error = 'find: unknown argument to `-type\'';
@@ -9508,9 +9570,40 @@ auth.py
                const node = VFS[key];
                const fileName = key.substring(key.lastIndexOf('/') + 1);
                
+               // Cycle 143: -L -type l (Find broken symlinks? No, find files THROUGH symlinks)
+               // But usually "find -L ... -type l" finds symlinks if -L follows them? 
+               // Actually "find -L . -type l" finds symlinks that point to symlinks (loops) or broken ones?
+               // Wait, if -L is set, 'find' follows symlinks. The test '-type l' matches files that ARE symlinks.
+               // If -L is on, symlinks are followed, so '-type l' only matches broken links (where stat fails but lstat works) 
+               // or links to links. 
+               
+               // In our VFS, let's simplify:
+               // If typeFilter is 'l', we check if node.type is 'symlink'.
+               // If followSymlinks is true (-L), we resolve the target.
+               // If the target DOES NOT EXIST, it's a "dangling" symlink.
+               
+               let effectiveType = node.type;
+               let isBroken = false;
+               
+               if (node.type === 'symlink') {
+                   const target = (node as any).target;
+                   const targetNode = getNode(target); // Simple resolve
+                   if (!targetNode) isBroken = true;
+                   
+                   if (followSymlinks && !isBroken) {
+                       effectiveType = targetNode!.type as any;
+                   }
+               }
+
                if (typeFilter) {
-                   if (typeFilter === 'f' && node.type !== 'file') continue;
-                   if (typeFilter === 'd' && node.type !== 'dir') continue;
+                   if (followSymlinks && typeFilter === 'l') {
+                       // With -L, -type l searches for broken symlinks
+                       if (node.type !== 'symlink' || !isBroken) continue;
+                   } else {
+                       if (typeFilter === 'f' && effectiveType !== 'file') continue;
+                       if (typeFilter === 'd' && effectiveType !== 'dir') continue;
+                       if (typeFilter === 'l' && effectiveType !== 'symlink') continue;
+                   }
                }
                
                if (namePattern) {
