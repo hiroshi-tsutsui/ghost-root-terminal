@@ -1438,6 +1438,46 @@ export const loadSystemState = () => {
             }
         }
     }
+
+    // Cycle 137 Init (The Cron Reboot)
+    if (!VFS['/var/spool/cron/crontabs/root']) {
+        if (!VFS['/var/spool/cron/crontabs']) {
+             const spool = getNode('/var/spool');
+             if (!spool) {
+                 if (!VFS['/var/spool']) VFS['/var/spool'] = { type: 'dir', children: [] };
+                 const v = getNode('/var');
+                 if (v && v.type === 'dir' && !v.children.includes('spool')) v.children.push('spool');
+             }
+             if (!VFS['/var/spool/cron']) {
+                 VFS['/var/spool/cron'] = { type: 'dir', children: [] };
+                 const s = getNode('/var/spool');
+                 if (s && s.type === 'dir' && !s.children.includes('cron')) s.children.push('cron');
+             }
+             VFS['/var/spool/cron/crontabs'] = { type: 'dir', children: [] };
+             const c = getNode('/var/spool/cron');
+             if (c && c.type === 'dir' && !c.children.includes('crontabs')) c.children.push('crontabs');
+        }
+        
+        VFS['/var/spool/cron/crontabs/root'] = {
+            type: 'file',
+            content: '# SYSTEM CRONTAB\n@reboot /usr/bin/malware_init\n# [ERROR] Persistence detected.\n',
+            permissions: '0600'
+        };
+        const tabs = getNode('/var/spool/cron/crontabs');
+        if (tabs && tabs.type === 'dir' && !tabs.children.includes('root')) tabs.children.push('root');
+
+        // Hint
+        if (!VFS['/home/ghost/reboot_alert.txt']) {
+            VFS['/home/ghost/reboot_alert.txt'] = {
+                type: 'file',
+                content: '[ALERT] Malware persists after reboot.\n[ANALYSIS] Check scheduled tasks, specifically @reboot directives in crontabs.\n[ACTION] Inspect "crontab -l" (as root) or /var/spool/cron/crontabs/root.'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('reboot_alert.txt')) {
+                home.children.push('reboot_alert.txt');
+            }
+        }
+    }
 };
 
 // Helper to reset state
@@ -9271,7 +9311,52 @@ auth.py
       break;
     }
     case 'crontab': {
-      output = 'no crontab for ghost';
+      if (args.includes('-e')) {
+          if (args.includes('-u') && args.includes('root') && !getNode('/tmp/.root_session')) {
+              output = 'crontab: must be privileged to use -u';
+          } else {
+              output = 'Opening editor...';
+              return { output, newCwd, action: 'edit_file', data: { file: '/var/spool/cron/crontabs/root' } }; // Simplified for puzzle
+          }
+      } else if (args.includes('-l')) {
+          const isRoot = !!getNode('/tmp/.root_session');
+          if (isRoot) {
+              const rootCron = getNode('/var/spool/cron/crontabs/root');
+              if (rootCron && rootCron.type === 'file') {
+                  output = rootCron.content;
+              } else {
+                  output = 'no crontab for root';
+              }
+          } else {
+              output = 'no crontab for ghost';
+          }
+      } else if (args.includes('-r')) {
+          const isRoot = !!getNode('/tmp/.root_session');
+          if (isRoot) {
+              if (VFS['/var/spool/cron/crontabs/root']) {
+                  delete VFS['/var/spool/cron/crontabs/root'];
+                  const tabs = getNode('/var/spool/cron/crontabs');
+                  if (tabs && tabs.type === 'dir') tabs.children = tabs.children.filter(c => c !== 'root');
+                  
+                  if (!VFS['/var/run/reboot_solved']) {
+                      VFS['/var/run/reboot_solved'] = { type: 'file', content: 'TRUE' };
+                      const runDir = getNode('/var/run');
+                      if (runDir && runDir.type === 'dir' && !runDir.children.includes('reboot_solved')) {
+                          runDir.children.push('reboot_solved');
+                      }
+                      output = `[SUCCESS] Crontab removed.\n[KERNEL] Persistence disabled.\nFLAG: GHOST_ROOT{R3B00T_P3RS1ST3NC3_K1LL3D}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: REBOOT PERSISTENCE REMOVED.\x1b[0m`;
+                  } else {
+                      output = `[SUCCESS] Crontab removed.`;
+                  }
+              } else {
+                  output = 'no crontab for root';
+              }
+          } else {
+              output = 'no crontab for ghost';
+          }
+      } else {
+          output = 'usage: crontab [-u user] [-l | -r | -e]';
+      }
       break;
     }
     case 'vi':
