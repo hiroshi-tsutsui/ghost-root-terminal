@@ -1271,6 +1271,45 @@ export const loadSystemState = () => {
             }
         }
     }
+
+    // Cycle 132 Init (The Fork Bomb)
+    if (!PROCESSES.find(p => p.pid === 3333)) {
+        PROCESSES.push({
+            pid: 3333,
+            ppid: 1,
+            user: 'root',
+            cpu: 99.9,
+            mem: 80.0,
+            time: '00:01',
+            command: ':(){ :|:& };:',
+            tty: '?',
+            stat: 'R'
+        });
+        PROCESSES.push({
+            pid: 3334,
+            ppid: 3333,
+            user: 'root',
+            cpu: 50.0,
+            mem: 40.0,
+            time: '00:00',
+            command: ':(){ :|:& };:',
+            tty: '?',
+            stat: 'R'
+        });
+        
+        // Alert Log
+        if (!VFS['/var/log/kernel.log']) {
+             if (!VFS['/var/log']) VFS['/var/log'] = { type: 'dir', children: [] };
+             VFS['/var/log/kernel.log'] = { 
+                 type: 'file', 
+                 content: '[KERNEL] PID 3333: fork rejected (resource temporary unavailable)\n[KERNEL] System load critical.\n[HINT] Fork bomb detected. Use `ulimit -u` to restrict user processes and kill the parent.' 
+             };
+             const logDir = getNode('/var/log');
+             if (logDir && logDir.type === 'dir' && !logDir.children.includes('kernel.log')) {
+                 logDir.children.push('kernel.log');
+             }
+        }
+    }
 };
 
 // Helper to reset state
@@ -5632,7 +5671,8 @@ Active Traces: ${ALERT_LEVEL * 2}
         const limitType = args[0];
         const value = args[1];
         
-        let current = parseInt(ENV_VARS['_ULIMIT_N'] || '1024', 10);
+        let currentN = parseInt(ENV_VARS['_ULIMIT_N'] || '1024', 10);
+        let currentU = parseInt(ENV_VARS['_ULIMIT_U'] || '3702', 10);
         
         if (args.length === 0) {
             output = `unlimited`; 
@@ -5646,7 +5686,35 @@ Active Traces: ${ALERT_LEVEL * 2}
                     output = `ulimit: invalid number: ${value}`;
                 }
             } else {
-                output = current.toString();
+                output = currentN.toString();
+            }
+        } else if (limitType === '-u') {
+            if (value) {
+                const limit = parseInt(value, 10);
+                if (!isNaN(limit)) {
+                    ENV_VARS['_ULIMIT_U'] = limit.toString();
+                    output = '';
+                    
+                    // Cycle 132 Win Condition
+                    // If we have an active fork bomb (PID 3333 usually), reducing the limit kills it.
+                    const bomb = PROCESSES.find(p => p.pid === 3333);
+                    if (bomb && limit < 100) {
+                        PROCESSES = PROCESSES.filter(p => p.pid !== 3333 && p.pid !== 3334);
+                        output = `[KERNEL] Fork bomb containment protocol active.\n[SYSTEM] Killing process 3333 (fork_bomb)... Done.\n[SYSTEM] Killing process 3334 (child)... Done.\nFLAG: GHOST_ROOT{UL1M1T_F0RK_B0MB_D3FUS3D}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PROCESS LIMIT ENFORCED.\x1b[0m`;
+                        
+                        if (!VFS['/var/run/forkbomb_solved']) {
+                            VFS['/var/run/forkbomb_solved'] = { type: 'file', content: 'TRUE' };
+                            const runDir = getNode('/var/run');
+                            if (runDir && runDir.type === 'dir' && !runDir.children.includes('forkbomb_solved')) {
+                                runDir.children.push('forkbomb_solved');
+                            }
+                        }
+                    }
+                } else {
+                    output = `ulimit: invalid number: ${value}`;
+                }
+            } else {
+                output = currentU.toString();
             }
         } else if (limitType === '-a') {
             output = `core file size          (blocks, -c) 0
@@ -5656,13 +5724,13 @@ file size               (blocks, -f) unlimited
 pending signals                 (-i) 7777
 max locked memory       (kbytes, -l) 65536
 max memory size         (kbytes, -m) unlimited
-open files                      (-n) ${current}
+open files                      (-n) ${currentN}
 pipe size            (512 bytes, -p) 8
 POSIX message queues     (bytes, -q) 819200
 real-time priority              (-r) 0
 stack size              (kbytes, -s) 8192
 cpu time               (seconds, -t) unlimited
-max user processes              (-u) 3702
+max user processes              (-u) ${currentU}
 virtual memory          (kbytes, -v) unlimited
 file locks                      (-x) unlimited`;
         } else {
