@@ -1596,6 +1596,45 @@ export const loadSystemState = () => {
             if (h && h.type === 'dir' && !h.children.includes('git_error.log')) h.children.push('git_error.log');
         }
     }
+
+    // Cycle 141 Init (The Bind Mount)
+    if (!VFS['/home/ghost/check_bind.sh']) {
+        const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+        const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+
+        ensureDir('/opt'); ensureDir('/opt/private');
+        link('/', 'opt'); link('/opt', 'private');
+        
+        VFS['/opt/private/flag.txt'] = {
+            type: 'file',
+            content: 'FLAG: GHOST_ROOT{B1ND_M0UNT_BYP4SS_OK}'
+        };
+        link('/opt/private', 'flag.txt');
+
+        ensureDir('/mnt'); ensureDir('/mnt/bind_target');
+        link('/', 'mnt'); link('/mnt', 'bind_target');
+
+        VFS['/home/ghost/check_bind.sh'] = {
+            type: 'file',
+            content: '#!/bin/bash\n# VERIFY ACCESS\n\nif [ -f "/mnt/bind_target/flag.txt" ]; then\n  echo "[SUCCESS] Target verification passed."\n  cat /mnt/bind_target/flag.txt\nelse\n  echo "[ERROR] Target empty. Mount the private sector here."\nfi',
+            permissions: '0755'
+        };
+        const home = getNode('/home/ghost');
+        if (home && home.type === 'dir' && !home.children.includes('check_bind.sh')) {
+            home.children.push('check_bind.sh');
+        }
+        
+        // Hint
+        if (!VFS['/home/ghost/mount_task.txt']) {
+            VFS['/home/ghost/mount_task.txt'] = {
+                type: 'file',
+                content: '[TASK] Access /opt/private/flag.txt via /mnt/bind_target.\n[CONSTRAINT] Direct access to /opt is monitored. Use a bind mount to alias the directory.\n[CMD] mount --bind <source> <target>'
+            };
+            if (home && home.type === 'dir' && !home.children.includes('mount_task.txt')) {
+                home.children.push('mount_task.txt');
+            }
+        }
+    }
 };
 
 // Helper to reset state
@@ -6548,6 +6587,40 @@ Type "status" for mission objectives.`;
            }
        } else if (args.length < 2) {
            output = 'usage: mount <source> <target>';
+       } else if (args.includes('--bind') || args.includes('-B') || (args.includes('-o') && args[args.indexOf('-o')+1] === 'bind')) {
+           // Cycle 141: Bind Mount
+           const nonFlagArgs = args.filter(a => !a.startsWith('-') && a !== 'bind');
+           if (nonFlagArgs.length < 2) {
+               output = 'usage: mount --bind <olddir> <newdir>';
+           } else {
+               const source = resolvePath(cwd, nonFlagArgs[0]);
+               const target = resolvePath(cwd, nonFlagArgs[1]);
+               const sourceNode = getNode(source);
+               const targetNode = getNode(target);
+               
+               if (!sourceNode || sourceNode.type !== 'dir') {
+                   output = `mount: ${source}: Not a directory`;
+               } else if (!targetNode || targetNode.type !== 'dir') {
+                   output = `mount: ${target}: Not a directory (or does not exist)`;
+               } else {
+                   // Perform bind
+                   VFS[target] = VFS[source]; 
+                   MOUNTED_DEVICES[source] = target;
+                   output = `mount: ${source} bound to ${target}.`;
+                   
+                   // Mission Update
+                   if (source === '/opt/private' && target === '/mnt/bind_target') {
+                        if (!VFS['/var/run/bind_solved']) {
+                            VFS['/var/run/bind_solved'] = { type: 'file', content: 'TRUE' };
+                            const runDir = getNode('/var/run');
+                            if (runDir && runDir.type === 'dir' && !runDir.children.includes('bind_solved')) {
+                                runDir.children.push('bind_solved');
+                            }
+                            output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: DIRECTORY ALIASED.\x1b[0m`;
+                        }
+                   }
+               }
+           }
        } else {
            const source = args[0];
            const target = resolvePath(cwd, args[1]);

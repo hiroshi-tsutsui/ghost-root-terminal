@@ -234,3 +234,28 @@
   - [x] Cycle 109: "The Hidden Environment" (env / export). (Status: DEPLOYED).
   - [x] Cycle 110: "The Broken Service" (systemctl / cp). (Status: DEPLOYED).
   - [x] Cycle 110: "The Immutable File" (chattr +i). (Status: DEPLOYED).
+  - [x] Cycle 112: "The Bad Gateway" (route / gateway). (Status: DEPLOYED).
+  - [x] Cycle 113: "The Read-Only System" (mount -o remount,rw). (Status: DEPLOYED).
+  - [x] Cycle 114: "The Dead Link" (ln -sf). (Status: DEPLOYED).
+  - [x] Cycle 115: "The Hidden Port" (netstat / nc). (Status: DEPLOYED).
+  - [x] Cycle 116: "The Group Permission" (usermod / groups). (Status: DEPLOYED).
+  - [x] Cycle 117: "The Input/Output Error" (dd / conv=noerror). (Status: DEPLOYED).
+  - [x] Cycle 118: "The Grep Search" (grep / auth.log). (Status: DEPLOYED).
+  - [x] Cycle 119: "The Debug Trap" (ENV VAR / Segfault). (Status: DEPLOYED).
+  - [x] Cycle 120: "The Resource Limit" (ulimit / file descriptors). (Status: DEPLOYED).
+  - [x] Cycle 126: "The Zombie Process" (kill PPID). (Status: DEPLOYED).
+  - [x] Cycle 127: "The Corrupted Archive" (tar -z / file command). (Status: DEPLOYED).
+  - [x] Cycle 128: "The Encoded Binary" (base64 -d / chmod +x). (Status: DEPLOYED).
+  - [x] Cycle 129: "The Magic SysRq" (echo c > /proc/sysrq-trigger). (Status: DEPLOYED).
+  - [x] Cycle 130: "The Dash Filename" (cat ./-dash). (Status: DEPLOYED).
+  - [x] Cycle 131: "The Overwritten MBR" (dd / restore bootloader). (Status: DEPLOYED).
+  - [x] Cycle 132: "The Fork Bomb" (kill -9 -1 / ulimit -u). (Status: DEPLOYED).
+  - [x] Cycle 133: "The Corrupted Superblock" (fsck / e2fsck -b). (Status: DEPLOYED).
+  - [x] Cycle 134: "The Truncated Log" (logrotate / copytruncate). (Status: DEPLOYED).
+  - [x] Cycle 135: "The Kernel Ring Buffer" (dmesg / hidden error). (Status: DEPLOYED).
+  - [x] Cycle 136: "The Blocked Signal" (kill -9 vs kill -15). (Status: DEPLOYED).
+  - [x] Cycle 137: "The Cron Reboot" (@reboot in crontab). (Status: DEPLOYED).
+  - [x] Cycle 138: "The Shadow File" (unshadow / john). (Status: DEPLOYED).
+  - [x] Cycle 139: "The Swap Space" (mkswap / swapon). (Status: DEPLOYED).
+  - [x] Cycle 140: "The Corrupted Git" (git fsck / git reflog). (Status: DEPLOYED).
+  - [x] Cycle 141: "The Bind Mount" (mount --bind).
