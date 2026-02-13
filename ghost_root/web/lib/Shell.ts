@@ -1194,6 +1194,83 @@ export const loadSystemState = () => {
             }
         }
     }
+
+    // Cycle 131 Init (The Overwritten MBR)
+    if (!VFS['/var/backups/boot.mbr']) {
+      // Create backup directory if needed
+      if (!VFS['/var/backups']) {
+          VFS['/var/backups'] = { type: 'dir', children: [] };
+          const varNode = getNode('/var');
+          if (varNode && varNode.type === 'dir' && !varNode.children.includes('backups')) {
+              varNode.children.push('backups');
+          }
+      }
+      
+      VFS['/var/backups/boot.mbr'] = {
+          type: 'file',
+          content: 'MBR_V1:[BOOTLOADER_CODE]...[PARTITION_TABLE_OK]...[SIGNATURE_55AA]',
+          permissions: '0600'
+      };
+      const backupDir = getNode('/var/backups');
+      if (backupDir && backupDir.type === 'dir' && !backupDir.children.includes('boot.mbr')) {
+          backupDir.children.push('boot.mbr');
+      }
+
+      // Corrupt /dev/sda if it exists (or create it)
+      if (!VFS['/dev/sda']) {
+           if (!VFS['/dev']) VFS['/dev'] = { type: 'dir', children: [] };
+           VFS['/dev/sda'] = { type: 'file', content: '[CORRUPTED_MBR_DATA]...[NO_PARTITIONS]', permissions: '0660' };
+           const dev = getNode('/dev');
+           if (dev && dev.type === 'dir' && !dev.children.includes('sda')) dev.children.push('sda');
+      } else {
+           // Overwrite existing content to simulate corruption
+           const sda = getNode('/dev/sda');
+           if (sda) (sda as any).content = '[CORRUPTED_MBR_DATA]...[NO_PARTITIONS]';
+      }
+
+      // Hint
+      if (!VFS['/home/ghost/boot_error.log']) {
+          VFS['/home/ghost/boot_error.log'] = {
+              type: 'file',
+              content: '[FATAL] No bootable medium found.\n[DIAGNOSTIC] Master Boot Record (MBR) on /dev/sda appears corrupted.\n[ACTION] Restore MBR from /var/backups/boot.mbr using \'dd\'.'
+          };
+          const home = getNode('/home/ghost');
+          if (home && home.type === 'dir' && !home.children.includes('boot_error.log')) {
+              home.children.push('boot_error.log');
+          }
+      }
+    }
+
+    // Cycle 131 Init (The Space in Filename)
+    if (!VFS['/home/ghost/suspicious file.txt']) {
+        if (!VFS['/home/ghost']) {
+             VFS['/home/ghost'] = { type: 'dir', children: [] };
+             const home = getNode('/home');
+             if (home && home.type === 'dir' && !home.children.includes('ghost')) {
+                 home.children.push('ghost');
+             }
+        }
+        
+        VFS['/home/ghost/suspicious file.txt'] = {
+            type: 'file',
+            content: 'FLAG: GHOST_ROOT{SP4C3_INV4D3R_SQU4SH3D}'
+        };
+        const homeDir = getNode('/home/ghost');
+        if (homeDir && homeDir.type === 'dir' && !homeDir.children.includes('suspicious file.txt')) {
+            homeDir.children.push('suspicious file.txt');
+        }
+
+        // Hint File
+        if (!VFS['/home/ghost/space_alert.txt']) {
+            VFS['/home/ghost/space_alert.txt'] = {
+                type: 'file',
+                content: '[ALERT] Malformed filename detected: "suspicious file.txt"\n[ERROR] Command arguments splitting on whitespace.\n[HINT] Wrap the filename in quotes.'
+            };
+            if (homeDir && homeDir.type === 'dir' && !homeDir.children.includes('space_alert.txt')) {
+                homeDir.children.push('space_alert.txt');
+            }
+        }
+    }
 };
 
 // Helper to reset state
@@ -4149,6 +4226,16 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
                          runDir.children.push('dash_solved');
                      }
                      output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: DASH FILENAME ACCESSED.\x1b[0m`;
+                 }
+             }
+             if (content === 'FLAG: GHOST_ROOT{SP4C3_INV4D3R_SQU4SH3D}') {
+                 if (!VFS['/var/run/space_solved']) {
+                     VFS['/var/run/space_solved'] = { type: 'file', content: 'TRUE' };
+                     const runDir = getNode('/var/run');
+                     if (runDir && runDir.type === 'dir' && !runDir.children.includes('space_solved')) {
+                         runDir.children.push('space_solved');
+                     }
+                     output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: QUOTED FILENAME ACCESSED.\x1b[0m`;
                  }
              }
           }
@@ -7652,14 +7739,32 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
     case 'dd': {
         const ifArg = args.find(a => a.startsWith('if='));
         const ofArg = args.find(a => a.startsWith('of='));
+        
         if (ifArg && ofArg) {
+            const inFile = ifArg.split('=')[1];
             const outFile = ofArg.split('=')[1];
             const outPath = resolvePath(cwd, outFile);
             
             if (outPath === '/dev/sda' || outPath === '/dev/hda' || outPath === '/dev/disk0') {
-                 const isRoot = !!getNode('/tmp/.root_session');
-                 if (isRoot) {
-                     output = 'dd: writing to disk...';
+                 const isRoot = !!getNode('/tmp/.root_session') || !!getNode('/root'); // Simplified root check (simulation)
+                 
+                 // Cycle 131: Restore MBR
+                 if (inFile === '/var/backups/boot.mbr') {
+                     output = `1+0 records in\n1+0 records out\n512 bytes copied, 0.00034 s, 1.5 MB/s\n[SYSTEM] MBR Restored Successfully.\n[BOOT] Partition table valid.\nFLAG: GHOST_ROOT{MBR_R3ST0R3D_S4F3LY}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: BOOTLOADER REPAIRED.\x1b[0m`;
+                     
+                     // Restore /dev/sda content
+                     const sda = getNode('/dev/sda');
+                     if (sda) (sda as any).content = 'MBR_V1:[BOOTLOADER_CODE]...[PARTITION_TABLE_OK]...[SIGNATURE_55AA]';
+                     
+                     if (!VFS['/var/run/mbr_solved']) {
+                         VFS['/var/run/mbr_solved'] = { type: 'file', content: 'TRUE' };
+                         const runDir = getNode('/var/run');
+                         if (runDir && runDir.type === 'dir' && !runDir.children.includes('mbr_solved')) {
+                             runDir.children.push('mbr_solved');
+                         }
+                     }
+                 } else if (isRoot) {
+                     output = 'dd: writing to disk... [WARNING] DATA DESTRUCTION IMMINENT';
                      return { output, newCwd, action: 'kernel_panic' };
                  } else {
                      output = `dd: ${outFile}: Permission denied`;
