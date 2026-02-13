@@ -3,7 +3,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Terminal } from '@xterm/xterm';
 import { FitAddon } from '@xterm/addon-fit';
-import { processCommand, tabCompletion, getMissionStatus, MissionStatus, loadSystemState } from '../lib/Shell';
+import { processCommand, tabCompletion, getMissionStatus, MissionStatus, loadSystemState, getRunningProcesses } from '../lib/Shell';
 import VFS from '../lib/VFS';
 import '@xterm/xterm/css/xterm.css';
 
@@ -108,6 +108,26 @@ const WebTerminal = () => {
         prevProgressRef.current = mission.progress;
     }
   }, [mission]);
+
+  // Cycle 108: Broadcast Effect
+  useEffect(() => {
+    const interval = setInterval(() => {
+        const procs = getRunningProcesses();
+        const hasBroadcast = procs.find(p => p.pid === 6666);
+        
+        if (hasBroadcast && termRef.current) {
+            // Write directly to terminal without clearing line, to simulate interference
+            termRef.current.writeln('\r\n\x1b[1;31m[BROADCAST] SYSTEM COMPROMISED. UPLOAD IN PROGRESS... (Use kill 6666 to abort)\x1b[0m');
+            
+            const cwd = cwdRef.current;
+            const p = promptRef.current;
+            const buffer = inputBufferRef.current;
+            termRef.current.write(`${p}:\x1b[1;34m${cwd}\x1b[0m$ ${buffer}`);
+        }
+    }, 10000); // Every 10 seconds
+
+    return () => clearInterval(interval);
+  }, []);
 
   const renderSearch = () => {
       const term = termRef.current;

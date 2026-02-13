@@ -31,7 +31,8 @@ const ENV_VARS: Record<string, string> = {
   'PATH': '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
   '_': '/usr/bin/env',
   'GHOST_PROTOCOL': 'ACTIVE',
-  'SAFETY_LOCK': 'engaged'
+  'SAFETY_LOCK': 'engaged',
+  'GATEWAY_IP': '192.168.1.50' // Cycle 112: Bad Gateway
 };
 
 const FILE_ATTRIBUTES: Record<string, string[]> = {
@@ -716,6 +717,72 @@ export const loadSystemState = () => {
             addChild('/home/ghost', 'dns_error.log');
         }
     }
+
+    // Cycle 112 Init (The Bad Gateway)
+    if (!VFS['/home/ghost/network_alert.log']) {
+        VFS['/home/ghost/network_alert.log'] = {
+            type: 'file',
+            content: '[CRITICAL] Network Unreachable.\n[DIAGNOSTIC] Packet loss: 100%.\n[Reason] Gateway timeout.\n[ACTION] Check routing table (route -n) and verify default gateway is 192.168.1.1.'
+        };
+        addChild('/home/ghost', 'network_alert.log');
+    }
+
+    // Cycle 113 Init (The Read-Only System)
+    if (MOUNT_OPTIONS['/'] !== 'rw') {
+        // Default to read-only unless solved
+        if (!VFS['/var/run/rw_solved']) {
+             MOUNT_OPTIONS['/'] = 'ro,noatime,errors=remount-ro';
+             
+             // Create Hint
+             if (!VFS['/home/ghost/fs_error.log']) {
+                 VFS['/home/ghost/fs_error.log'] = {
+                     type: 'file',
+                     content: '[ERROR] Filesystem mounted read-only.\n[DIAGNOSTIC] Write operations failing on /.\n[ACTION] Remount root filesystem as read-write (mount -o remount,rw /).'
+                 };
+                 addChild('/home/ghost', 'fs_error.log');
+             }
+        }
+    }
+
+    // Cycle 114 Init (The Dead Link)
+    if (!VFS['/usr/bin/connect_uplink']) {
+        const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+        const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+        
+        ensureDir('/usr'); ensureDir('/usr/bin');
+        link('/usr', 'bin');
+
+        // Create the broken symlink
+        VFS['/usr/bin/connect_uplink'] = {
+            type: 'symlink',
+            target: '/opt/dead_link',
+            permissions: '0777'
+        } as any;
+        link('/usr/bin', 'connect_uplink');
+
+        // Create the real binary in a hidden/alternate location
+        ensureDir('/opt'); ensureDir('/opt/bin');
+        link('/', 'opt'); link('/opt', 'bin');
+        
+        VFS['/opt/bin/connect_uplink_v2'] = {
+            type: 'file',
+            content: '#!/bin/bash\n# UPLINK CONNECTION V2\n[SYSTEM] Establishing secure connection...\n[SUCCESS] Uplink Active.\nFLAG: GHOST_ROOT{SYML1NK_R3P41R_M4ST3R}',
+            permissions: '0755'
+        };
+        link('/opt/bin', 'connect_uplink_v2');
+
+        // Create Hint
+        if (!VFS['/home/ghost/uplink_error.log']) {
+            VFS['/home/ghost/uplink_error.log'] = {
+                type: 'file',
+                content: '[ERROR] connect_uplink: No such file or directory\n[DIAGNOSTIC] The command exists in /usr/bin, but execution fails.\n[HINT] Check if it is a symbolic link (ls -l) and verify its target.'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('uplink_error.log')) {
+                home.children.push('uplink_error.log');
+            }
+        }
+    }
 };
 
 // Helper to reset state
@@ -828,6 +895,27 @@ const resolvePath = (currentPath: string, targetPath: string): string => {
     resolved = resolved.slice(0, -1);
   }
   return resolved || '/';
+};
+
+// Helper: Check if path is on a read-only mount
+const isReadOnly = (path: string): boolean => {
+    // Find longest matching mount point
+    let longestMount = '';
+    for (const mountPoint of Object.keys(MOUNT_OPTIONS)) {
+        if (path.startsWith(mountPoint)) {
+            if (mountPoint.length > longestMount.length) {
+                // Ensure it's a full path match (e.g. /mnt vs /mnt-data)
+                if (path === mountPoint || path.startsWith(`${mountPoint}/`) || mountPoint === '/') {
+                    longestMount = mountPoint;
+                }
+            }
+        }
+    }
+    
+    if (longestMount && MOUNT_OPTIONS[longestMount].includes('ro')) {
+        return true;
+    }
+    return false;
 };
 
 const getNode = (vfsPath: string): VFSNode | undefined => {
@@ -2944,17 +3032,51 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
           }
           
           const node = getNode(potentialPath);
-          if (node && node.type === 'file') {
-               const content = (node as any).content;
-               
-               if (content.startsWith('#!/bin/bash')) {
-                   if (potentialPath === '/tmp/bin/ls') {
-                       output = `Ha! You can't list files here.\n(Try checking your $PATH or using /bin/ls directly)`;
-                   } else {
-                       output = `[EXECUTING ${potentialPath}]...\n` + content.substring(content.indexOf('\n') + 1);
+          if (node) {
+              let executableContent = '';
+              let resolvedPath = potentialPath;
+              let isBrokenLink = false;
+
+              if (node.type === 'file') {
+                  executableContent = (node as any).content;
+              } else if (node.type === 'symlink') {
+                  const target = (node as any).target;
+                  const targetNode = getNode(target);
+                  if (targetNode && targetNode.type === 'file') {
+                      executableContent = (targetNode as any).content;
+                      resolvedPath = target;
+                  } else {
+                      isBrokenLink = true;
+                  }
+              }
+
+              if (isBrokenLink) {
+                  output = `bash: ${potentialPath}: No such file or directory`;
+                  return finalize(output, newCwd);
+              }
+
+              if (executableContent) {
+                   if (executableContent.startsWith('#!/bin/bash')) {
+                       if (potentialPath === '/tmp/bin/ls') {
+                           output = `Ha! You can't list files here.\n(Try checking your $PATH or using /bin/ls directly)`;
+                       } else if (resolvedPath === '/opt/bin/connect_uplink_v2') {
+                           // Cycle 114 Win Condition
+                           if (!VFS['/var/run/uplink_solved']) {
+                               VFS['/var/run/uplink_solved'] = { type: 'file', content: 'TRUE' };
+                               const runDir = getNode('/var/run');
+                               if (runDir && runDir.type === 'dir' && !runDir.children.includes('uplink_solved')) {
+                                   runDir.children.push('uplink_solved');
+                               }
+                               output = `[SYSTEM] Establishing secure connection...\n[SUCCESS] Uplink Active.\nFLAG: GHOST_ROOT{SYML1NK_R3P41R_M4ST3R}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SYMLINK REPAIRED.\x1b[0m`;
+                           } else {
+                               output = `[SYSTEM] Establishing secure connection...\n[SUCCESS] Uplink Active.\nFLAG: GHOST_ROOT{SYML1NK_R3P41R_M4ST3R}`;
+                           }
+                       } else {
+                           output = `[EXECUTING ${resolvedPath}]...\n` + executableContent.substring(executableContent.indexOf('\n') + 1);
+                       }
+                       return finalize(output, newCwd);
                    }
-                   return finalize(output, newCwd);
-               }
+              }
           }
       }
   }
@@ -3833,39 +3955,40 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
        break;
     }
     case 'ln': {
-        if (args.length < 2) {
-            output = 'usage: ln -s <target> <link_name>';
-        } else if (!args[0].startsWith('-s')) {
+        const flags = args.filter(a => a.startsWith('-'));
+        const operands = args.filter(a => !a.startsWith('-'));
+        
+        const isSymlink = flags.some(f => f.includes('s'));
+        const isForce = flags.some(f => f.includes('f'));
+        
+        if (!isSymlink) {
             output = 'ln: currently only supports symbolic links (-s)';
+        } else if (operands.length < 2) {
+            output = 'usage: ln -s [-f] <target> <link_name>';
         } else {
-            const force = args[0].includes('f');
-            const target = args[1];
-            const linkName = args[2];
+            const target = operands[0];
+            const linkName = operands[1];
             
-            if (!linkName) {
-                output = 'usage: ln -s <target> <link_name>';
+            const linkPath = resolvePath(cwd, linkName);
+            const parentDir = resolvePath(linkPath, '..');
+            const fileName = linkPath.split('/').pop();
+            
+            const parentNode = getNode(parentDir);
+            if (!parentNode || parentNode.type !== 'dir') {
+                output = `ln: failed to create symbolic link '${linkName}': No such directory`;
+            } else if (parentNode.children.includes(fileName!) && !isForce) {
+                output = `ln: failed to create symbolic link '${linkName}': File exists`;
             } else {
-                const linkPath = resolvePath(cwd, linkName);
-                const parentDir = resolvePath(linkPath, '..');
-                const fileName = linkPath.split('/').pop();
+                VFS[linkPath] = {
+                    type: 'symlink',
+                    target: target,
+                    permissions: '777'
+                } as any;
                 
-                const parentNode = getNode(parentDir);
-                if (!parentNode || parentNode.type !== 'dir') {
-                    output = `ln: failed to create symbolic link '${linkName}': No such directory`;
-                } else if (parentNode.children.includes(fileName!) && !force) {
-                    output = `ln: failed to create symbolic link '${linkName}': File exists`;
-                } else {
-                    VFS[linkPath] = {
-                        type: 'symlink',
-                        target: target,
-                        permissions: '777'
-                    } as any;
-                    
-                    if (!parentNode.children.includes(fileName!)) {
-                        parentNode.children.push(fileName!);
-                    }
-                    output = ''; 
+                if (!parentNode.children.includes(fileName!)) {
+                    parentNode.children.push(fileName!);
                 }
+                output = ''; 
             }
         }
         break;
@@ -4686,6 +4809,11 @@ Type "status" for mission objectives.`;
       break;
     }
     case 'mkdir': {
+       const dirPath = resolvePath(cwd, args[0]);
+       if (isReadOnly(dirPath)) {
+            output = `mkdir: cannot create directory '${args[0]}': Read-only file system`;
+            break;
+       }
        if (getNode('/var/cache/inodes_fill')) {
           output = `mkdir: cannot create directory '${args[0]}': No space left on device`;
           break;
@@ -5725,6 +5853,23 @@ ${extraRoute}`;
            const ip = hosts[host] || (host.match(/^\d+\.\d+\.\d+\.\d+$/) ? host : null);
            
            if (ip) {
+               // Cycle 112: Bad Gateway Check
+               const currentGw = ENV_VARS['GATEWAY_IP'];
+               // Block external traffic if gateway is wrong
+               if (!ip.startsWith('192.168.1.') && !ip.startsWith('127.') && !ip.startsWith('10.10.99.')) {
+                   if (currentGw !== '192.168.1.1') {
+                       output = `ping: connect: Network is unreachable`;
+                       return { output, newCwd };
+                   }
+                   // Set flag if fixed
+                   if (!VFS['/var/run/gateway_fixed']) {
+                        VFS['/var/run/gateway_fixed'] = { type: 'file', content: 'TRUE' };
+                        const runDir = getNode('/var/run');
+                        if (runDir && runDir.type === 'dir' && !runDir.children.includes('gateway_fixed')) {
+                            runDir.children.push('gateway_fixed');
+                        }
+                   }
+               }
                // Cycle 101: The DNS Failure
                if (host === 'database') {
                    // Ensure it resolves to loopback (127.0.0.1) as per hint
@@ -6416,6 +6561,11 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
        break;
     }
     case 'touch': {
+      const path = resolvePath(cwd, args[0]);
+      if (isReadOnly(path)) {
+          output = `touch: cannot touch '${args[0]}': Read-only file system`;
+          break;
+      }
       if (getNode('/var/cache/inodes_fill')) {
          output = `touch: cannot touch '${args[0]}': No space left on device`;
          break;
@@ -6424,7 +6574,7 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
         output = 'usage: touch <file>';
       } else {
         const target = args[0];
-        const path = resolvePath(cwd, target);
+        // const path = resolvePath(cwd, target); // Already resolved above
         
         if (path.startsWith('/var') && !!getNode('/var/log/overflow.dmp')) {
             output = `touch: cannot touch '${target}': No space left on device`;
@@ -6448,6 +6598,13 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
       } else {
         const target = args[0];
         const path = resolvePath(cwd, target);
+        
+        // Cycle 113: Read Only Check
+        if (isReadOnly(path)) {
+            output = `rm: cannot remove '${target}': Read-only file system`;
+            break;
+        }
+
         const isRoot = !!getNode('/tmp/.root_session');
 
         // Check Attributes (Cycle 40)
@@ -7288,8 +7445,13 @@ auth.py
     case 'cp': {
       if (args.length < 2) output = 'usage: cp <source> <dest>';
       else {
-          const srcNode = getNode(resolvePath(cwd, args[0]));
           const destPath = resolvePath(cwd, args[1]);
+          if (isReadOnly(destPath)) {
+              output = `cp: cannot create regular file '${args[1]}': Read-only file system`;
+              break;
+          }
+          
+          const srcNode = getNode(resolvePath(cwd, args[0]));
           
           if (destPath.startsWith('/var') && !!getNode('/var/log/overflow.dmp')) {
               output = `cp: error writing '${args[1]}': No space left on device`;
@@ -7323,8 +7485,14 @@ auth.py
     case 'mv': {
       if (args.length < 2) output = 'usage: mv <source> <dest>';
       else {
-          // Simplified move logic
-          output = 'mv: done'; 
+          const destPath = resolvePath(cwd, args[1]);
+          const srcPath = resolvePath(cwd, args[0]);
+          if (isReadOnly(destPath) || isReadOnly(srcPath)) {
+              output = `mv: cannot move '${args[0]}' to '${args[1]}': Read-only file system`;
+          } else {
+              // Simplified move logic stub
+              output = 'mv: done'; 
+          }
       }
       break;
     }
