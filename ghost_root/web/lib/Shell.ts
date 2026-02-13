@@ -1536,6 +1536,38 @@ export const loadSystemState = () => {
             }
         }
     }
+
+    // Cycle 139 Init (The Swap Space)
+    if (!VFS['/dev/sdb2']) {
+        if (!VFS['/dev']) VFS['/dev'] = { type: 'dir', children: [] };
+        
+        VFS['/dev/sdb2'] = { 
+            type: 'file', 
+            content: '[RAW_PARTITION_DATA_UNFORMATTED]',
+            permissions: '0660' 
+        };
+        const dev = getNode('/dev');
+        if (dev && dev.type === 'dir' && !dev.children.includes('sdb2')) dev.children.push('sdb2');
+
+        // Hint: System OOM
+        if (!VFS['/var/log/kern.log']) {
+             if (!VFS['/var/log']) VFS['/var/log'] = { type: 'dir', children: [] };
+             
+             // Check if kern.log exists, append or create
+             let content = 'Out of memory: Kill process 1337 (node) score 950 or sacrifice child\nKilled process 1337 (node) total-vm:2048kB, anon-rss:1024kB, file-rss:0kB\n[HINT] System is running out of RAM. Initialize swap space on /dev/sdb2 (mkswap, swapon).';
+             const existing = getNode('/var/log/kern.log');
+             if (existing && existing.type === 'file') {
+                 // Append if not already there
+                 if (!existing.content.includes('Out of memory')) {
+                     existing.content += '\n' + content;
+                 }
+             } else {
+                 VFS['/var/log/kern.log'] = { type: 'file', content: content };
+                 const logDir = getNode('/var/log');
+                 if (logDir && logDir.type === 'dir' && !logDir.children.includes('kern.log')) logDir.children.push('kern.log');
+             }
+        }
+    }
 };
 
 // Helper to reset state
@@ -1762,7 +1794,7 @@ export interface CommandResult {
   data?: any;
 }
 
-const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'ss', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail',     'strings', 'recover_tool', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'arp', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'zgrep', 'gunzip', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'secure_vault', 'jobs', 'fg', 'bg', 'recover_data', 'ghost_update', 'git', 'file', 'openssl', 'beacon', 'fsck', 'docker', 'lsattr', 'chattr', 'backup_service', 'getfattr', 'setfattr', 'mkfifo', 'uplink_service', 'sqlite3', 'gdb', 'jwt_tool', 'php', 'access_card', 'sys_monitor', 'ln', 'readlink', 'nginx', 'tac', 'getcap', 'sysctl', 'ldd', 'quantum_calc', 'deploy_tool', 'ghost_relay', 'groups', 'usermod', 'access_silo', 'satellite_uplink', 'unshadow', 'john'];
+const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'ss', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail',     'strings', 'recover_tool', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'arp', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'zgrep', 'gunzip', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'secure_vault', 'jobs', 'fg', 'bg', 'recover_data', 'ghost_update', 'git', 'file', 'openssl', 'beacon', 'fsck', 'docker', 'lsattr', 'chattr', 'backup_service', 'getfattr', 'setfattr', 'mkfifo', 'uplink_service', 'sqlite3', 'gdb', 'jwt_tool', 'php', 'access_card', 'sys_monitor', 'ln', 'readlink', 'nginx', 'tac', 'getcap', 'sysctl', 'ldd', 'quantum_calc', 'deploy_tool', 'ghost_relay', 'groups', 'usermod', 'access_silo', 'satellite_uplink', 'unshadow', 'john', 'mkswap', 'swapon', 'free'];
 
 export interface MissionStatus {
   objectives: {
@@ -11568,6 +11600,87 @@ Device     Boot Start      End  Sectors Size Id Type
 /dev/sdb1        2048 67108863 67106816  32G 83 Linux`;
        } else {
            output = 'fdisk: permission denied (try -l to list partition tables)';
+       }
+       break;
+    }
+    case 'mkswap': {
+       if (args.length < 1) {
+           output = 'usage: mkswap <device>';
+       } else {
+           const dev = args[0];
+           const path = resolvePath(cwd, dev);
+           const node = getNode(path);
+           
+           if (!node) {
+               output = `mkswap: cannot open ${dev}: No such file or directory`;
+           } else if (path !== '/dev/sdb2') {
+               output = `mkswap: error: ${dev} is mounted; will not make swapspace.`;
+           } else {
+               // Update content signature
+               (node as any).content = 'SWAPSPACE2';
+               output = `Setting up swapspace version 1, size = 4 GiB (4294967296 bytes)\nno label, UUID=a1b2c3d4-e5f6-7890-1234-567890abcdef`;
+           }
+       }
+       break;
+    }
+    case 'swapon': {
+       if (args.length < 1) {
+           if (args.includes('-s')) {
+               if (VFS['/var/run/swap_active']) {
+                   output = `Filename\t\t\t\tType\t\tSize\tUsed\tPriority\n/dev/sdb2\t\t\t\tpartition\t4194300\t0\t-2`;
+               } else {
+                   output = `Filename\t\t\t\tType\t\tSize\tUsed\tPriority`;
+               }
+           } else {
+               output = 'usage: swapon <device>';
+           }
+       } else {
+           const dev = args[0];
+           if (dev === '-s') return { output, newCwd }; // handled above if args check logic was different, but here args[0] is -s
+           
+           const path = resolvePath(cwd, dev);
+           const node = getNode(path);
+           
+           if (!node) {
+               output = `swapon: cannot open ${dev}: No such file or directory`;
+           } else {
+               const content = (node as any).content;
+               if (content !== 'SWAPSPACE2') {
+                   output = `swapon: ${dev}: read swap header failed`;
+               } else {
+                   output = ''; // Silent success
+                   
+                   if (!VFS['/var/run/swap_active']) {
+                        VFS['/var/run/swap_active'] = { type: 'file', content: 'TRUE' };
+                        const runDir = getNode('/var/run');
+                        if (runDir && runDir.type === 'dir' && !runDir.children.includes('swap_active')) {
+                            runDir.children.push('swap_active');
+                        }
+                        
+                        if (!VFS['/var/run/swap_solved']) {
+                            VFS['/var/run/swap_solved'] = { type: 'file', content: 'TRUE' };
+                            const runDir = getNode('/var/run');
+                            if (runDir && runDir.type === 'dir' && !runDir.children.includes('swap_solved')) {
+                                runDir.children.push('swap_solved');
+                            }
+                            output = `\x1b[1;32m[MISSION UPDATE] Objective Complete: MEMORY PRESSURE RELIEVED.\x1b[0m\nFLAG: GHOST_ROOT{SW4P_SP4C3_SAV10R}`;
+                        }
+                   }
+               }
+           }
+       }
+       break;
+    }
+    case 'free': {
+       const isSwap = !!VFS['/var/run/swap_active'];
+       if (args.includes('-h')) {
+           output = `              total        used        free      shared  buff/cache   available
+Mem:           1.9G        1.8G         50M         12M        100M         20M
+Swap:          ${isSwap ? '4.0G' : '0B'}          0B        ${isSwap ? '4.0G' : '0B'}`;
+       } else {
+           output = `              total        used        free      shared  buff/cache   available
+Mem:        2048000     1887436       51200       12288      102400       20480
+Swap:       ${isSwap ? '4194304' : '0'}           0     ${isSwap ? '4194304' : '0'}`;
        }
        break;
     }
