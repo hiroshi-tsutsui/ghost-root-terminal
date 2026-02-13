@@ -11,6 +11,7 @@ const C_RESET = '\x1b[0m';
 const STORAGE_KEY_VFS = 'ghost_root_vfs_v1';
 const STORAGE_KEY_SHELL = 'ghost_root_shell_v1';
 const STORAGE_KEY_ATTRS = 'ghost_root_attrs_v1';
+const STORAGE_KEY_GROUPS = 'ghost_root_groups_v1';
 
 const ALIASES: Record<string, string> = {
   'l': 'ls -la',
@@ -43,6 +44,7 @@ let KNOCK_SEQUENCE: number[] = [];
 
 let ALERT_LEVEL = 0;
 let SYSTEM_TIME_OFFSET = -824900000000; // Set system time to ~1999 (Y2K glitch)
+export const USER_GROUPS: string[] = ['ghost', 'adm', 'cdrom', 'dip', 'plugdev'];
 
 const LOADED_MODULES: string[] = [];
 
@@ -73,6 +75,7 @@ export const saveSystemState = () => {
     };
     try {
         localStorage.setItem(STORAGE_KEY_SHELL, JSON.stringify(shellState));
+        localStorage.setItem(STORAGE_KEY_GROUPS, JSON.stringify(USER_GROUPS));
     } catch (e) {
         console.error('Failed to save Shell State', e);
     }
@@ -120,6 +123,17 @@ export const loadSystemState = () => {
             }
         } catch (e) {
             console.error('Failed to load Shell State', e);
+        }
+    }
+    
+    // Load Groups
+    const savedGroups = localStorage.getItem(STORAGE_KEY_GROUPS);
+    if (savedGroups) {
+        try {
+            USER_GROUPS.length = 0;
+            USER_GROUPS.push(...JSON.parse(savedGroups));
+        } catch (e) {
+            console.error('Failed to load Groups', e);
         }
     }
     
@@ -783,6 +797,305 @@ export const loadSystemState = () => {
             }
         }
     }
+
+    // Cycle 115 Init (The Hidden Port)
+    if (!VFS['/usr/bin/hidden_service']) {
+        VFS['/usr/bin/hidden_service'] = {
+            type: 'file',
+            content: '[BINARY_ELF_X86_64] [HIDDEN_LISTENER]\n[PORT] 31337\n[STATUS] Active',
+            permissions: '0700'
+        };
+        const binDir = getNode('/usr/bin');
+        if (binDir && binDir.type === 'dir' && !binDir.children.includes('hidden_service')) {
+            binDir.children.push('hidden_service');
+        }
+
+        if (!VFS['/home/ghost/port_scan.log']) {
+            VFS['/home/ghost/port_scan.log'] = {
+                type: 'file',
+                content: '[SCAN_RESULT] Nmap scan report for localhost (127.0.0.1)\n[PORT] 31337/tcp open  unknown\n[ACTION] Connect to verify service.'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('port_scan.log')) {
+                home.children.push('port_scan.log');
+            }
+        }
+    }
+
+    // Cycle 116 Init (The Group Permission)
+    if (!VFS['/usr/bin/access_silo']) {
+        VFS['/usr/bin/access_silo'] = {
+            type: 'file',
+            content: '[BINARY_ELF_X86_64] [RESTRICTED_ACCESS]\n[GROUP] silo_admin\n',
+            permissions: '0750'
+        };
+        const binDir = getNode('/usr/bin');
+        if (binDir && binDir.type === 'dir' && !binDir.children.includes('access_silo')) {
+            binDir.children.push('access_silo');
+        }
+
+        if (!VFS['/etc/group']) {
+            if (!VFS['/etc']) VFS['/etc'] = { type: 'dir', children: [] };
+            VFS['/etc/group'] = {
+                type: 'file',
+                content: 'root:x:0:\nghost:x:1000:\nadm:x:4:syslog,ghost\ncdrom:x:24:ghost\nsudo:x:27:ghost\ndip:x:30:ghost\nplugdev:x:46:ghost\nsilo_admin:x:1002:\n',
+                permissions: '0644'
+            };
+            const etc = getNode('/etc');
+            if (etc && etc.type === 'dir' && !etc.children.includes('group')) {
+                etc.children.push('group');
+            }
+        }
+
+        if (!VFS['/home/ghost/silo_issue.log']) {
+            VFS['/home/ghost/silo_issue.log'] = {
+                type: 'file',
+                content: '[ERROR] Access Denied to Silo Control.\n[REASON] User \'ghost\' is not in the required group \'silo_admin\'.\n[ACTION] Update group membership (usermod) to gain access.'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('silo_issue.log')) {
+                home.children.push('silo_issue.log');
+            }
+        }
+    }
+
+    // Cycle 117 Init (The Input/Output Error)
+    if (!VFS['/home/ghost/evidence/sector_009.dat']) {
+        if (!VFS['/home/ghost/evidence']) {
+             VFS['/home/ghost/evidence'] = { type: 'dir', children: [] };
+             const home = getNode('/home/ghost');
+             if (home && home.type === 'dir' && !home.children.includes('evidence')) {
+                 home.children.push('evidence');
+             }
+        }
+        
+        VFS['/home/ghost/evidence/sector_009.dat'] = {
+            type: 'file',
+            content: '[DATA_RECOVERY_MODE]\n[SECTOR_START] 0x009\n[ERROR] Bad Sector Detected.\n[DATA] ...CORRUPTED... \n[RECOVERY_HINT] GHOST_ROOT{DD_R3SCU3_M1SS10N}\n[SECTOR_END]',
+            permissions: '0644'
+        };
+        const evDir = getNode('/home/ghost/evidence');
+        if (evDir && evDir.type === 'dir' && !evDir.children.includes('sector_009.dat')) {
+            evDir.children.push('sector_009.dat');
+        }
+
+        if (!VFS['/usr/bin/recover_dd']) {
+            VFS['/usr/bin/recover_dd'] = {
+                type: 'file',
+                content: '[BINARY_ELF_X86_64] [DD_CLONE]\n',
+                permissions: '0755'
+            };
+            const binDir = getNode('/usr/bin');
+            if (binDir && binDir.type === 'dir' && !binDir.children.includes('recover_dd')) {
+                binDir.children.push('recover_dd');
+            }
+        }
+
+        if (!VFS['/home/ghost/io_error.log']) {
+            VFS['/home/ghost/io_error.log'] = {
+                type: 'file',
+                content: '[KERNEL] Block device error on sector 009.\n[ERROR] Input/output error reading file.\n[ACTION] Use low-level copy tool (dd) with error conversion (conv=noerror) to salvage data.'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('io_error.log')) {
+                home.children.push('io_error.log');
+            }
+        }
+    }
+
+    // Cycle 118 Init (The Grep Search)
+    if (!VFS['/var/log/auth.log']) {
+        if (!VFS['/var/log']) {
+             VFS['/var/log'] = { type: 'dir', children: [] };
+             const varNode = getNode('/var');
+             if (varNode && varNode.type === 'dir' && !varNode.children.includes('log')) {
+                 varNode.children.push('log');
+             }
+        }
+        
+        let logContent = '';
+        const ips = ['192.168.1.5', '10.0.0.4', '172.16.0.2', '8.8.8.8'];
+        for(let i=0; i<500; i++) {
+            const ip = ips[Math.floor(Math.random() * ips.length)];
+            logContent += `Feb 13 ${String(Math.floor(Math.random()*23)).padStart(2,'0')}:${String(Math.floor(Math.random()*59)).padStart(2,'0')}:${String(Math.floor(Math.random()*59)).padStart(2,'0')} ghost-root sshd[${1000+i}]: Failed password for invalid user admin from ${ip} port ${Math.floor(Math.random()*60000)} ssh2\n`;
+        }
+        // The Needle
+        logContent += `Feb 13 14:02:42 ghost-root sshd[1337]: Accepted publickey for root from 10.10.99.1 port 54321 ssh2\n`;
+        // More hay
+        for(let i=0; i<100; i++) {
+             logContent += `Feb 13 15:${String(Math.floor(Math.random()*59)).padStart(2,'0')}:${String(Math.floor(Math.random()*59)).padStart(2,'0')} ghost-root sshd[${2000+i}]: Connection closed by 192.168.1.1\n`;
+        }
+
+        VFS['/var/log/auth.log'] = { 
+            type: 'file', 
+            content: logContent,
+            permissions: '0640'
+        };
+        const logDir = getNode('/var/log');
+        if (logDir && logDir.type === 'dir' && !logDir.children.includes('auth.log')) {
+            logDir.children.push('auth.log');
+        }
+
+        if (!VFS['/home/ghost/grep_alert.txt']) {
+            VFS['/home/ghost/grep_alert.txt'] = {
+                type: 'file',
+                content: '[SECURITY ALERT] Unauthorized root login detected.\n[ACTION] Analyze /var/log/auth.log to find the source IP.\n[HINT] Use \'grep\' to search for "Accepted".'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('grep_alert.txt')) {
+                home.children.push('grep_alert.txt');
+            }
+        }
+    }
+
+    // Cycle 119 Init (The Debug Trap)
+    if (!VFS['/usr/local/bin/deploy_alpha']) {
+        if (!VFS['/usr/local/bin']) {
+             if (!VFS['/usr/local']) { 
+                 VFS['/usr/local'] = { type: 'dir', children: ['bin'] }; 
+                 const usr = getNode('/usr');
+                 if (usr && usr.type === 'dir' && !usr.children.includes('local')) usr.children.push('local');
+             }
+             const local = getNode('/usr/local');
+             if (local && local.type === 'dir' && !local.children.includes('bin')) local.children.push('bin');
+             if (!VFS['/usr/local/bin']) VFS['/usr/local/bin'] = { type: 'dir', children: [] };
+        }
+        
+        VFS['/usr/local/bin/deploy_alpha'] = {
+            type: 'file',
+            content: '#!/bin/bash\n# DEPLOYMENT SCRIPT v1.0\n# AUTHOR: admin@black_ops\n\necho "[+] Initializing sequence..."\nif [ "$DEBUG_MODE" != "1" ]; then\n  echo "Segmentation fault (core dumped)"\n  exit 139\nfi\necho "[DEBUG] Bypass active."\necho "[SUCCESS] Deployment authorized."\necho "FLAG: GHOST_ROOT{ENV_V4R_D3BUG_M0D3}"',
+            permissions: '0755'
+        };
+        const binDir = getNode('/usr/local/bin');
+        if (binDir && binDir.type === 'dir' && !binDir.children.includes('deploy_alpha')) {
+            binDir.children.push('deploy_alpha');
+        }
+
+        if (!VFS['/home/ghost/deploy_error.log']) {
+            VFS['/home/ghost/deploy_error.log'] = {
+                type: 'file',
+                content: '[ERROR] deploy_alpha crashed.\n[DIAGNOSTIC] Segfault at address 0x000000.\n[HINT] Inspect the binary script for debug triggers.'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('deploy_error.log')) {
+                home.children.push('deploy_error.log');
+            }
+        }
+    }
+
+    // Cycle 120 Init (The Resource Limit)
+    if (!VFS['/usr/bin/mass_scanner']) {
+        VFS['/usr/bin/mass_scanner'] = {
+            type: 'file',
+            content: '[BINARY_ELF_X86_64] [SCANNER_V4]\n[REQ] ulimit -n >= 4096\n',
+            permissions: '0755'
+        };
+        const binDir = getNode('/usr/bin');
+        if (binDir && binDir.type === 'dir' && !binDir.children.includes('mass_scanner')) {
+            binDir.children.push('mass_scanner');
+        }
+
+        if (!VFS['/home/ghost/limit_alert.log']) {
+            VFS['/home/ghost/limit_alert.log'] = {
+                type: 'file',
+                content: '[ERROR] mass_scanner failed to start.\n[REASON] Too many open files.\n[DIAGNOSTIC] Current file descriptor limit (ulimit -n) is too low for this operation.\n[ACTION] Increase the limit to at least 4096.'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('limit_alert.log')) {
+                home.children.push('limit_alert.log');
+            }
+        }
+        
+        // Initialize default limit if not present (simulated via ENV for persistence)
+        if (!ENV_VARS['_ULIMIT_N']) {
+            ENV_VARS['_ULIMIT_N'] = '1024';
+        }
+    }
+
+    // Cycle 122 Init (The Disk Quota)
+    if (!VFS['/home/ghost/.cache/browser/garbage.dat']) {
+        if (!VFS['/home/ghost/.cache']) {
+             if (!VFS['/home/ghost']) { // Basic check, though usually present
+                 VFS['/home/ghost'] = { type: 'dir', children: [] };
+             }
+             VFS['/home/ghost/.cache'] = { type: 'dir', children: [] };
+             const home = getNode('/home/ghost');
+             if (home && home.type === 'dir' && !home.children.includes('.cache')) {
+                 home.children.push('.cache');
+             }
+        }
+        if (!VFS['/home/ghost/.cache/browser']) {
+             VFS['/home/ghost/.cache/browser'] = { type: 'dir', children: [] };
+             const cache = getNode('/home/ghost/.cache');
+             if (cache && cache.type === 'dir' && !cache.children.includes('browser')) {
+                 cache.children.push('browser');
+             }
+        }
+        
+        // The culprit
+        VFS['/home/ghost/.cache/browser/garbage.dat'] = { 
+            type: 'file', 
+            content: '[CACHE_DUMP] ... [4.8GB_DATA_BLOCK] ...', 
+            permissions: '0600' 
+        };
+        const browser = getNode('/home/ghost/.cache/browser');
+        if (browser && browser.type === 'dir' && !browser.children.includes('garbage.dat')) {
+            browser.children.push('garbage.dat');
+        }
+
+        // Create Hint
+        if (!VFS['/home/ghost/quota_alert.log']) {
+             VFS['/home/ghost/quota_alert.log'] = { 
+                 type: 'file', 
+                 content: '[ALERT] User disk quota exceeded (100%).\n[DIAGNOSTIC] Write operations failing in /home/ghost.\n[ACTION] Check disk usage (df -h) and directory sizes (du -h) to clear space.' 
+             };
+             const home = getNode('/home/ghost');
+             if (home && home.type === 'dir' && !home.children.includes('quota_alert.log')) {
+                 home.children.push('quota_alert.log');
+             }
+        }
+    }
+
+    // Cycle 123 Init (The Corrupted Binary)
+    if (!VFS['/usr/bin/satellite_uplink']) {
+        const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+        const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+
+        ensureDir('/usr'); ensureDir('/usr/bin'); link('/usr', 'bin');
+        ensureDir('/var'); ensureDir('/var/backups'); link('/var', 'backups');
+
+        VFS['/usr/bin/satellite_uplink'] = {
+            type: 'file',
+            content: '[BINARY_ELF_X86_64] [UPLINK_CONTROL]\n[ERROR] CRITICAL: BINARY CORRUPTION DETECTED.\n[DIAGNOSTIC] Checksum mismatch.\n',
+            permissions: '0755'
+        };
+        link('/usr/bin', 'satellite_uplink');
+
+        VFS['/var/backups/satellite_uplink.bak'] = {
+            type: 'file',
+            content: '[BINARY_ELF_X86_64] [UPLINK_CONTROL_V4]\n[STATUS] OPERATIONAL.\n[AUTHOR] admin@black_ops\n',
+            permissions: '0755'
+        };
+        link('/var/backups', 'satellite_uplink.bak');
+
+        VFS['/usr/bin/satellite_uplink.md5'] = {
+            type: 'file',
+            content: 'cafebabe12345678cafebabe12345678  /usr/bin/satellite_uplink',
+            permissions: '0644'
+        };
+        link('/usr/bin', 'satellite_uplink.md5');
+
+        if (!VFS['/home/ghost/integrity_alert.log']) {
+            VFS['/home/ghost/integrity_alert.log'] = {
+                type: 'file',
+                content: '[ALERT] satellite_uplink binary corrupted.\n[ACTION] Verify integrity using md5sum against known good hash.\n[HINT] Check /var/backups for a clean copy.'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('integrity_alert.log')) {
+                home.children.push('integrity_alert.log');
+            }
+        }
+    }
 };
 
 // Helper to reset state
@@ -1009,7 +1322,7 @@ export interface CommandResult {
   data?: any;
 }
 
-const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'ss', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail',     'strings', 'recover_tool', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'arp', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'zgrep', 'gunzip', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'secure_vault', 'jobs', 'fg', 'bg', 'recover_data', 'ghost_update', 'git', 'file', 'openssl', 'beacon', 'fsck', 'docker', 'lsattr', 'chattr', 'backup_service', 'getfattr', 'setfattr', 'mkfifo', 'uplink_service', 'sqlite3', 'gdb', 'jwt_tool', 'php', 'access_card', 'sys_monitor', 'ln', 'readlink', 'nginx', 'tac', 'getcap', 'sysctl', 'ldd', 'quantum_calc', 'deploy_tool', 'ghost_relay'];
+const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'ss', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail',     'strings', 'recover_tool', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'arp', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'zgrep', 'gunzip', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'secure_vault', 'jobs', 'fg', 'bg', 'recover_data', 'ghost_update', 'git', 'file', 'openssl', 'beacon', 'fsck', 'docker', 'lsattr', 'chattr', 'backup_service', 'getfattr', 'setfattr', 'mkfifo', 'uplink_service', 'sqlite3', 'gdb', 'jwt_tool', 'php', 'access_card', 'sys_monitor', 'ln', 'readlink', 'nginx', 'tac', 'getcap', 'sysctl', 'ldd', 'quantum_calc', 'deploy_tool', 'ghost_relay', 'groups', 'usermod', 'access_silo', 'satellite_uplink'];
 
 export interface MissionStatus {
   objectives: {
@@ -1259,6 +1572,19 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
                FILE_ATTRIBUTES['/etc/resolv.conf'] = FILE_ATTRIBUTES['/etc/resolv.conf'].filter(a => a !== 'i');
            }
            return { output: '', newCwd: cwd };
+      }
+  }
+
+  // Cycle 117 (The Input/Output Error)
+  const cmd117 = commandLine.trim().split(/\s+/)[0];
+  if (['cat', 'cp', 'mv', '/bin/cat', '/bin/cp', '/bin/mv'].includes(cmd117)) {
+      const args = commandLine.trim().split(/\s+/).slice(1);
+      const target = args.find(a => !a.startsWith('-')); // Find first non-flag arg
+      if (target) {
+           const fullPath = resolvePath(cwd, target);
+           if (fullPath.endsWith('sector_009.dat')) {
+               return { output: `${cmd117}: ${target}: Input/output error`, newCwd: cwd };
+           }
       }
   }
 
@@ -2643,6 +2969,11 @@ int main(int argc, char* argv[]) {
              return { output: `bash: write error: No space left on device`, newCwd: nCwd, action: act, data: dat, newPrompt: prompt };
           }
 
+          // DISK QUOTA SIMULATION (Cycle 122)
+          if (filePath.startsWith('/home') && !!getNode('/home/ghost/.cache/browser/garbage.dat')) {
+             return { output: `bash: write error: Disk quota exceeded`, newCwd: nCwd, action: act, data: dat, newPrompt: prompt };
+          }
+
           // FIFO Check (Cycle 54)
           const existingNode = getNode(filePath);
           if (existingNode && existingNode.type === 'file' && (existingNode as any).xattrs && (existingNode as any).xattrs.type === 'fifo') {
@@ -3055,6 +3386,41 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
                   return finalize(output, newCwd);
               }
 
+              // Cycle 121 Init (The Missing Shared Object)
+              if (!VFS['/usr/bin/decrypt_core']) {
+                  const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+                  const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+                  ensureDir('/usr'); ensureDir('/usr/bin'); link('/usr', 'bin');
+
+                  VFS['/usr/bin/decrypt_core'] = {
+                      type: 'file',
+                      content: '[BINARY_ELF_X86_64] [ENCRYPTED_DATA_ACCESS]\nNEEDED: libcrypto.so.3',
+                      permissions: '0755'
+                  };
+                  link('/usr/bin', 'decrypt_core');
+
+                  ensureDir('/opt'); ensureDir('/opt/secure'); ensureDir('/opt/secure/libs');
+                  link('/', 'opt'); link('/opt', 'secure'); link('/opt/secure', 'libs');
+
+                  VFS['/opt/secure/libs/libcrypto.so.3'] = {
+                      type: 'file',
+                      content: '[ELF_SHARED_OBJ] [CRYPTO_LIB_V3]',
+                      permissions: '0644'
+                  };
+                  link('/opt/secure/libs', 'libcrypto.so.3');
+
+                  if (!VFS['/home/ghost/decrypt_error.log']) {
+                      VFS['/home/ghost/decrypt_error.log'] = {
+                          type: 'file',
+                          content: '[ERROR] decrypt_core: error while loading shared libraries: libcrypto.so.3: cannot open shared object file: No such file or directory\n[HINT] Use ldd to check dependencies. Locate the library and add its path to LD_LIBRARY_PATH.'
+                      };
+                      const home = getNode('/home/ghost');
+                      if (home && home.type === 'dir' && !home.children.includes('decrypt_error.log')) {
+                          home.children.push('decrypt_error.log');
+                      }
+                  }
+              }
+
               if (executableContent) {
                    if (executableContent.startsWith('#!/bin/bash')) {
                        if (potentialPath === '/tmp/bin/ls') {
@@ -3071,6 +3437,40 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
                            } else {
                                output = `[SYSTEM] Establishing secure connection...\n[SUCCESS] Uplink Active.\nFLAG: GHOST_ROOT{SYML1NK_R3P41R_M4ST3R}`;
                            }
+                       } else if (resolvedPath === '/usr/bin/decrypt_core') {
+                           output = `[EXECUTING ${resolvedPath}]...\n`;
+                           const libPath = ENV_VARS['LD_LIBRARY_PATH'] || '';
+                           if (libPath.includes('/opt/secure/libs')) {
+                               output += `[DECIPHER_V3] Loading libraries... OK\n[SUCCESS] Decryption Complete.\nFLAG: GHOST_ROOT{SH4R3D_L1B_L0AD3D}`;
+                               if (!VFS['/var/run/ldd_solved']) {
+                                   VFS['/var/run/ldd_solved'] = { type: 'file', content: 'TRUE' };
+                                   const runDir = getNode('/var/run');
+                                   if (runDir && runDir.type === 'dir' && !runDir.children.includes('ldd_solved')) {
+                                       runDir.children.push('ldd_solved');
+                                   }
+                                   output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SHARED LIBRARY LINKED.\x1b[0m`;
+                               }
+                           } else {
+                               output += `decrypt_core: error while loading shared libraries: libcrypto.so.3: cannot open shared object file: No such file or directory`;
+                           }
+                           return finalize(output, newCwd);
+                       } else if (resolvedPath === '/usr/local/bin/deploy_alpha') {
+                           output = `[EXECUTING ${resolvedPath}]...\n[+] Initializing sequence...\n`;
+                           if (ENV_VARS['DEBUG_MODE'] !== '1') {
+                               output += `Segmentation fault (core dumped)`;
+                           } else {
+                               output += `[DEBUG] Bypass active.\n[SUCCESS] Deployment authorized.\nFLAG: GHOST_ROOT{ENV_V4R_D3BUG_M0D3}`;
+                               
+                               if (!VFS['/var/run/debug_solved']) {
+                                   VFS['/var/run/debug_solved'] = { type: 'file', content: 'TRUE' };
+                                   const runDir = getNode('/var/run');
+                                   if (runDir && runDir.type === 'dir' && !runDir.children.includes('debug_solved')) {
+                                       runDir.children.push('debug_solved');
+                                   }
+                                   output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: DEBUG MODE ACTIVATED.\x1b[0m`;
+                               }
+                           }
+                           return finalize(output, newCwd);
                        } else {
                            output = `[EXECUTING ${resolvedPath}]...\n` + executableContent.substring(executableContent.indexOf('\n') + 1);
                        }
@@ -3151,6 +3551,78 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
         }
         break;
     }
+    case 'dd': {
+        const ifArg = args.find(a => a.startsWith('if='));
+        const ofArg = args.find(a => a.startsWith('of='));
+        const convArg = args.find(a => a.startsWith('conv='));
+        
+        if (!ifArg || !ofArg) {
+            output = 'dd: missing operand';
+        } else {
+            const inputFile = ifArg.split('=')[1];
+            const outputFile = ofArg.split('=')[1];
+            const conv = convArg ? convArg.split('=')[1] : '';
+            
+            const fullInputPath = resolvePath(cwd, inputFile);
+            
+            // Check full path or relative path ending
+            if (fullInputPath.endsWith('sector_009.dat')) {
+                if (conv.includes('noerror')) {
+                    output = `dd: error reading '${inputFile}': Input/output error\n0+1 records in\n0+1 records out\n128 bytes copied, 0.0003 s, 420 kB/s\n[SUCCESS] Data Recovered.\nFLAG: GHOST_ROOT{DD_R3SCU3_M1SS10N}`;
+                    
+                    // Create output file
+                    const resolvedOut = resolvePath(cwd, outputFile);
+                    // Handle parent path for output
+                    let parentPath = '/';
+                    let fileName = outputFile;
+                    
+                    if (resolvedOut.includes('/')) {
+                        parentPath = resolvedOut.substring(0, resolvedOut.lastIndexOf('/')) || '/';
+                        fileName = resolvedOut.substring(resolvedOut.lastIndexOf('/') + 1);
+                    }
+                    
+                    const parentNode = getNode(parentPath);
+                    if (parentNode && parentNode.type === 'dir') {
+                         VFS[resolvedOut] = { 
+                             type: 'file', 
+                             content: 'RECOVERED_DATA: [SECTOR_009_PAYLOAD]\nFLAG: GHOST_ROOT{DD_R3SCU3_M1SS10N}\n[END_OF_SECTOR]' 
+                         };
+                         if (!parentNode.children.includes(fileName)) parentNode.children.push(fileName);
+                    }
+                    
+                    if (!VFS['/var/run/dd_solved']) {
+                        VFS['/var/run/dd_solved'] = { type: 'file', content: 'TRUE' };
+                        const runDir = getNode('/var/run');
+                        if (runDir && runDir.type === 'dir' && !runDir.children.includes('dd_solved')) {
+                            runDir.children.push('dd_solved');
+                        }
+                        output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: DATA RECOVERED (DD).\x1b[0m`;
+                    }
+                } else {
+                    output = `dd: error reading '${inputFile}': Input/output error\n0+0 records in\n0+0 records out\n0 bytes copied.`;
+                }
+            } else {
+                // Generic dd simulation
+                output = `1+0 records in\n1+0 records out\n512 bytes copied.`;
+                
+                // Create dummy output file
+                const resolvedOut = resolvePath(cwd, outputFile);
+                let parentPath = '/';
+                let fileName = outputFile;
+                if (resolvedOut.includes('/')) {
+                    parentPath = resolvedOut.substring(0, resolvedOut.lastIndexOf('/')) || '/';
+                    fileName = resolvedOut.substring(resolvedOut.lastIndexOf('/') + 1);
+                }
+
+                const parentNode = getNode(parentPath);
+                if (parentNode && parentNode.type === 'dir') {
+                    VFS[resolvedOut] = { type: 'file', content: '[DD_OUTPUT]' };
+                    if (!parentNode.children.includes(fileName)) parentNode.children.push(fileName);
+                }
+            }
+        }
+        break;
+    }
     case 'git': {
         const subCmd = args[0];
         if (!subCmd) {
@@ -3182,6 +3654,84 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
             }
         } else {
             output = `git: '${subCmd}' is not a git command. See 'git --help'.`;
+        }
+        break;
+    }
+    case 'groups': {
+        const user = args[0] || 'ghost';
+        if (user === 'ghost') {
+            output = `${user} : ${USER_GROUPS.join(' ')}`;
+        } else {
+            output = `${user} : ${user}`;
+        }
+        break;
+    }
+    case 'usermod': {
+        const isRoot = !!getNode('/tmp/.root_session');
+        if (!isRoot) {
+            output = 'usermod: Permission denied. (Root required)';
+        } else {
+            if (args.includes('-aG')) {
+                const groupIdx = args.indexOf('-aG') + 1;
+                const userIdx = args.length - 1;
+                const group = args[groupIdx];
+                const user = args[userIdx];
+                
+                if (group && user === 'ghost') {
+                    if (!USER_GROUPS.includes(group)) {
+                        USER_GROUPS.push(group);
+                        // Save state immediately
+                        try {
+                            localStorage.setItem(STORAGE_KEY_GROUPS, JSON.stringify(USER_GROUPS));
+                        } catch (e) { console.error(e); }
+                    }
+                    output = ''; // Silent success
+                } else {
+                    output = 'usage: usermod -aG <group> <user>';
+                }
+            } else {
+                output = 'usage: usermod -aG <group> <user>';
+            }
+        }
+        break;
+    }
+    case 'access_silo': {
+        if (USER_GROUPS.includes('silo_admin')) {
+             if (!VFS['/var/run/silo_solved']) {
+                 VFS['/var/run/silo_solved'] = { type: 'file', content: 'TRUE' };
+                 const runDir = getNode('/var/run');
+                 if (runDir && runDir.type === 'dir' && !runDir.children.includes('silo_solved')) {
+                     runDir.children.push('silo_solved');
+                 }
+                 output = `[ACCESS GRANTED] SILO ACCESS CODE: GHOST_ROOT{GR0UP_P0L1CY_BYP4SS}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: ACCESS CONTROL BYPASS.\x1b[0m`;
+             } else {
+                 output = `[ACCESS GRANTED] SILO ACCESS CODE: GHOST_ROOT{GR0UP_P0L1CY_BYP4SS}`;
+             }
+        } else {
+             output = `[ACCESS DENIED] User 'ghost' is not a member of group 'silo_admin'.`;
+        }
+        break;
+    }
+    case 'satellite_uplink': {
+        const binPath = '/usr/bin/satellite_uplink';
+        const node = getNode(binPath);
+        if (node && node.type === 'file') {
+             if (node.content.includes('UPLINK_CONTROL_V4')) {
+                 if (!VFS['/var/run/uplink_solved']) {
+                     VFS['/var/run/uplink_solved'] = { type: 'file', content: 'TRUE' };
+                     const runDir = getNode('/var/run');
+                     if (runDir && runDir.type === 'dir' && !runDir.children.includes('uplink_solved')) {
+                         runDir.children.push('uplink_solved');
+                     }
+                     output = `[UPLINK] Handshake Initiated...\n[SUCCESS] Connection Established.\n[DATA] DECRYPTED PAYLOAD: GHOST_ROOT{MD5_H4SH_V3R1F13D}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: INTEGRITY CHECK PASSED.\x1b[0m`;
+                 } else {
+                     output = `[UPLINK] Status: ACTIVE\n[DATA] DECRYPTED PAYLOAD: GHOST_ROOT{MD5_H4SH_V3R1F13D}`;
+                 }
+             } else {
+                 output = `[ERROR] Binary integrity verification failed.\n[DIAGNOSTIC] MD5 mismatch detected. Execution halted for security.`;
+             }
+        } else {
+             output = `bash: /usr/bin/satellite_uplink: No such file or directory`;
         }
         break;
     }
@@ -3739,6 +4289,10 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
                              if (f === 'dump_v2.bin') hash = 'e5d0979f87654321deadbeef00000000';
                              else if (f === 'dump_v1.bin') hash = 'a1b2c3d4e5f67890123456789abcdef0';
                              else if (f === 'dump_v3.bin') hash = 'f0e1d2c3b4a596877890abcdef123456';
+                             else if (f === 'satellite_uplink' || f === 'satellite_uplink.bak') {
+                                 if ((node as any).content.includes('CORRUPTED')) hash = 'bad1dea7bad1dea7bad1dea7bad1dea7';
+                                 else hash = 'cafebabe12345678cafebabe12345678';
+                             }
                              else {
                                  // Simple hash of content length + name
                                  hash = (node.content.length + f).split('').map(c => c.charCodeAt(0).toString(16)).join('').substring(0, 32).padEnd(32, '0');
@@ -3762,6 +4316,10 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
              if (f === 'dump_v2.bin') hash = 'e5d0979f87654321deadbeef00000000';
              else if (f === 'dump_v1.bin') hash = 'a1b2c3d4e5f67890123456789abcdef0';
              else if (f === 'dump_v3.bin') hash = 'f0e1d2c3b4a596877890abcdef123456';
+             else if (f === 'satellite_uplink' || f === 'satellite_uplink.bak') {
+                 if ((node as any).content.includes('CORRUPTED')) hash = 'bad1dea7bad1dea7bad1dea7bad1dea7';
+                 else hash = 'cafebabe12345678cafebabe12345678';
+             }
              else {
                  hash = ((node as any).content.length + f).split('').map(c => c.charCodeAt(0).toString(16)).join('').substring(0, 32).padEnd(32, '0');
              }
@@ -3894,7 +4452,10 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
             const key = args[0];
             output = ENV_VARS[key] || '';
         } else {
-            output = Object.entries(ENV_VARS).map(([k, v]) => `${k}=${v}`).join('\n');
+            output = Object.entries(ENV_VARS)
+                .filter(([k]) => !k.startsWith('_'))
+                .map(([k, v]) => `${k}=${v}`)
+                .join('\n');
         }
         break;
     }
@@ -3953,6 +4514,24 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
           return { output, newCwd, action: 'intercept_sim', data: { freq } };
        }
        break;
+    }
+    case 'ldd': {
+        if (args.length < 1) {
+            output = 'usage: ldd [OPTION]... FILE...';
+        } else {
+            const target = args[0];
+            const resolved = resolvePath(cwd, target);
+            if (resolved === '/usr/bin/decrypt_core') {
+                const libPath = ENV_VARS['LD_LIBRARY_PATH'] || '';
+                const found = libPath.includes('/opt/secure/libs');
+                output = `\tlinux-vdso.so.1 (0x00007ffe12345000)\n\tlibcrypto.so.3 => ${found ? '/opt/secure/libs/libcrypto.so.3 (0x00007f89abcdef00)' : 'not found'}\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f89a1234000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f89b5678000)`;
+            } else if (VFS[resolved] && VFS[resolved].type === 'file') {
+                 output = '\tnot a dynamic executable';
+            } else {
+                 output = `ldd: ${target}: No such file or directory`;
+            }
+        }
+        break;
     }
     case 'ln': {
         const flags = args.filter(a => a.startsWith('-'));
@@ -4654,6 +5233,67 @@ Active Traces: ${ALERT_LEVEL * 2}
       }
       break;
     }
+    case 'ulimit': {
+        const limitType = args[0];
+        const value = args[1];
+        
+        let current = parseInt(ENV_VARS['_ULIMIT_N'] || '1024', 10);
+        
+        if (args.length === 0) {
+            output = `unlimited`; 
+        } else if (limitType === '-n') {
+            if (value) {
+                const limit = parseInt(value, 10);
+                if (!isNaN(limit)) {
+                    ENV_VARS['_ULIMIT_N'] = limit.toString();
+                    output = '';
+                } else {
+                    output = `ulimit: invalid number: ${value}`;
+                }
+            } else {
+                output = current.toString();
+            }
+        } else if (limitType === '-a') {
+            output = `core file size          (blocks, -c) 0
+data seg size           (kbytes, -d) unlimited
+scheduling priority             (-e) 0
+file size               (blocks, -f) unlimited
+pending signals                 (-i) 7777
+max locked memory       (kbytes, -l) 65536
+max memory size         (kbytes, -m) unlimited
+open files                      (-n) ${current}
+pipe size            (512 bytes, -p) 8
+POSIX message queues     (bytes, -q) 819200
+real-time priority              (-r) 0
+stack size              (kbytes, -s) 8192
+cpu time               (seconds, -t) unlimited
+max user processes              (-u) 3702
+virtual memory          (kbytes, -v) unlimited
+file locks                      (-x) unlimited`;
+        } else {
+            output = `ulimit: invalid option: ${limitType}`;
+        }
+        break;
+    }
+    case 'mass_scanner': {
+        const currentLimit = parseInt(ENV_VARS['_ULIMIT_N'] || '1024', 10);
+        
+        if (currentLimit < 4096) {
+             output = `[SCANNER] Initializing...\n[ERROR] socket() failed: Too many open files.\n[DIAGNOSTIC] Current limit: ${currentLimit}. Required: 4096.\n[HINT] Check 'ulimit -n'.`;
+        } else {
+             if (!VFS['/var/run/ulimit_solved']) {
+                 VFS['/var/run/ulimit_solved'] = { type: 'file', content: 'TRUE' };
+                 const runDir = getNode('/var/run');
+                 if (runDir && runDir.type === 'dir' && !runDir.children.includes('ulimit_solved')) {
+                     runDir.children.push('ulimit_solved');
+                 }
+                 output = `[SCANNER] Initializing...\n[SUCCESS] Sockets allocated: 4096/4096.\n[SCANNING] Target range 10.0.0.0/8...\n[RESULT] 24 hosts up.\n\nFLAG: GHOST_ROOT{R3S0URC3_L1M1T_BYP4SS3D}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: RESOURCE LIMITS ADJUSTED.\x1b[0m`;
+             } else {
+                 output = `[SCANNER] Initializing...\n[SUCCESS] Sockets allocated: 4096/4096.\nFLAG: GHOST_ROOT{R3S0URC3_L1M1T_BYP4SS3D}`;
+             }
+        }
+        break;
+    }
     case 'help':
       output = `GHOST_ROOT Recovery Shell v1.0 (Pipes Enabled)
 
@@ -4814,8 +5454,13 @@ Type "status" for mission objectives.`;
             output = `mkdir: cannot create directory '${args[0]}': Read-only file system`;
             break;
        }
-       if (getNode('/var/cache/inodes_fill')) {
+       if (!!getNode('/var/cache/inodes_fill')) {
           output = `mkdir: cannot create directory '${args[0]}': No space left on device`;
+          break;
+       }
+       // Cycle 122: Home Quota
+       if (!!getNode('/home/ghost/.cache/browser/garbage.dat') && dirPath.startsWith('/home')) {
+          output = `mkdir: cannot create directory '${args[0]}': Disk quota exceeded`;
           break;
        }
        if (args.length < 1) {
@@ -6111,6 +6756,11 @@ ${host}.		300	IN	A	${ip}
            dynamicConnections.push({ proto: 'udp', recv: 0, send: 0, local: '0.0.0.0:1337', remote: '10.10.10.99:53', state: 'ESTABLISHED', pid: '9000/beacon' });
        }
 
+       // Cycle 115
+       if (VFS['/usr/bin/hidden_service']) {
+           dynamicConnections.push({ proto: 'tcp', recv: 0, send: 0, local: '127.0.0.1:31337', remote: '0.0.0.0:*', state: 'LISTEN', pid: '31337/hidden_service' });
+       }
+
        const header = 'Active Internet connections (servers and established)';
        const table = dynamicConnections.map(c => {
          return `${c.proto}  ${String(c.recv).padStart(6)} ${String(c.send).padStart(6)}  ${c.local.padEnd(20)} ${c.remote.padEnd(20)} ${c.state.padEnd(12)} ${c.pid}`;
@@ -6549,6 +7199,16 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
                } else if (host === 'localhost' || host === '127.0.0.1') {
                    if (p === '1337') {
                        output = `localhost [127.0.0.1] 1337 (?): open\n[BACKDOOR_LISTENER_V2]\n> Awaiting Payload...`;
+                   } else if (p === '31337') {
+                       // Cycle 115
+                       output = `(UNKNOWN) [127.0.0.1] 31337 (?) open\n[HIDDEN_SERVICE_V1] AUTH_REQUIRED\n[SYSTEM] Handshake Accepted.\nFLAG: GHOST_ROOT{H1DD3N_P0RT_F0UND}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: HIDDEN PORT DISCOVERED.\x1b[0m`;
+                       if (!VFS['/var/run/port_solved']) {
+                           VFS['/var/run/port_solved'] = { type: 'file', content: 'TRUE' };
+                           const runDir = getNode('/var/run');
+                           if (runDir && runDir.type === 'dir' && !runDir.children.includes('port_solved')) {
+                               runDir.children.push('port_solved');
+                           }
+                       }
                    } else {
                        output = `localhost [127.0.0.1] ${p} (?): Connection refused`;
                    }
@@ -6569,6 +7229,10 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
       if (getNode('/var/cache/inodes_fill')) {
          output = `touch: cannot touch '${args[0]}': No space left on device`;
          break;
+      }
+      if (!!getNode('/home/ghost/.cache/browser/garbage.dat') && path.startsWith('/home')) {
+          output = `touch: cannot touch '${args[0]}': Disk quota exceeded`;
+          break;
       }
       if (args.length < 1) {
         output = 'usage: touch <file>';
@@ -6777,6 +7441,11 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
       const varUsage = overflow ? '100%' : '12%';
       const varAvail = overflow ? '0' : '440M';
       
+      // Cycle 122: Home Quota
+      const homeBig = !!getNode('/home/ghost/.cache/browser/garbage.dat');
+      const homeUsage = homeBig ? '100%' : '5%';
+      const homeAvail = homeBig ? '0' : '4.7G';
+      
       if (args.includes('-i')) {
           output = `Filesystem      Inodes  IUsed   IFree IUse% Mounted on
 udev           1015007    499 1014508    1% /dev
@@ -6791,13 +7460,15 @@ tmpfs           797M  1.2M  796M   1% /run
 /dev/sda1        30G   12G   17G  42% /
 tmpfs           3.9G     0  3.9G   0% /dev/shm
 tmpfs           5.0M  4.0K  5.0M   1% /run/lock
-/dev/sdb1       500M  ${overflow ? '500M' : '60M'}  ${varAvail}  ${varUsage} /var`;
+/dev/sdb1       500M  ${overflow ? '500M' : '60M'}  ${varAvail}  ${varUsage} /var
+/dev/sdc1       5.0G  ${homeBig ? '5.0G' : '256M'}  ${homeAvail}  ${homeUsage} /home`;
       } else {
           output = `Filesystem     1K-blocks    Used Available Use% Mounted on
 udev             4060028       0   4060028   0% /dev
 tmpfs             815276    1184    814092   1% /run
 /dev/sda1       30832548 12345678 16893324  42% /
-/dev/sdb1         512000  ${overflow ? '512000' : '61440'}    ${overflow ? '0' : '450560'}  ${varUsage} /var`;
+/dev/sdb1         512000  ${overflow ? '512000' : '61440'}    ${overflow ? '0' : '450560'}  ${varUsage} /var
+/dev/sdc1        5242880  ${homeBig ? '5242880' : '262144'}    ${homeBig ? '0' : '4980736'}  ${homeUsage} /home`;
       }
       break;
     }
@@ -6806,6 +7477,8 @@ tmpfs             815276    1184    814092   1% /run
       const syslogBig = !!getNode('/var/log/syslog.1');
       const isFull = overflow || syslogBig;
       
+      const homeBig = !!getNode('/home/ghost/.cache/browser/garbage.dat'); // Cycle 122
+
       let targetPath = cwd;
       if (args.length > 0 && !args[0].startsWith('-')) {
           targetPath = resolvePath(cwd, args[0]);
@@ -6837,6 +7510,22 @@ tmpfs             815276    1184    814092   1% /run
           } else {
               output = human ? `4.0K\t${targetPath}` : `4\t${targetPath}`;
           }
+      } else if (homeBig && (targetPath.startsWith('/home') || targetPath === '.' || targetPath === '/')) {
+          // Cycle 122 Logic
+          let out = '';
+          const absPath = targetPath === '.' ? cwd : targetPath;
+          
+          if (absPath.includes('.cache/browser') || absPath.includes('garbage.dat')) {
+               out = human ? `4.8G\t${absPath.includes('garbage.dat') ? absPath : absPath + '/garbage.dat'}` : `5033164\t${absPath.includes('garbage.dat') ? absPath : absPath + '/garbage.dat'}`;
+          } else if (absPath.includes('.cache')) {
+               out = human ? `4.8G\t${absPath}/browser` : `5033164\t${absPath}/browser`;
+          } else if (absPath === '/home/ghost' || absPath === '/home' || absPath === '/') {
+               if (absPath !== '/') out += human ? `4.8G\t${absPath}/.cache\n` : `5033164\t${absPath}/.cache\n`;
+               out += human ? `4.9G\t${absPath}` : `5138022\t${absPath}`;
+          } else {
+               out = human ? `24K\t${targetPath}` : `24\t${targetPath}`;
+          }
+          output = out.trim();
       } else {
           output = human ? `24K\t${targetPath}` : `24\t${targetPath}`;
       }
@@ -7450,6 +8139,10 @@ auth.py
               output = `cp: cannot create regular file '${args[1]}': Read-only file system`;
               break;
           }
+          if (!!getNode('/home/ghost/.cache/browser/garbage.dat') && destPath.startsWith('/home')) {
+              output = `cp: cannot create regular file '${args[1]}': Disk quota exceeded`;
+              break;
+          }
           
           const srcNode = getNode(resolvePath(cwd, args[0]));
           
@@ -7489,6 +8182,8 @@ auth.py
           const srcPath = resolvePath(cwd, args[0]);
           if (isReadOnly(destPath) || isReadOnly(srcPath)) {
               output = `mv: cannot move '${args[0]}' to '${args[1]}': Read-only file system`;
+          } else if (!!getNode('/home/ghost/.cache/browser/garbage.dat') && destPath.startsWith('/home')) {
+              output = `mv: cannot move '${args[0]}' to '${args[1]}': Disk quota exceeded`;
           } else {
               // Simplified move logic stub
               output = 'mv: done'; 
@@ -10378,6 +11073,51 @@ postgres            14-alpine 1234567890ab   5 days ago     214MB`;
                 output = '';
             } else {
                 output = `rmmod: ERROR: Module ${name} is not currently loaded`;
+            }
+        }
+        break;
+    }
+    case 'grep': {
+        const pattern = args[0];
+        let content = '';
+        let fileName = '';
+
+        if (!pattern) {
+            output = 'usage: grep <pattern> [file]';
+        } else {
+            // Check if file provided or use stdin
+            if (args.length > 1) {
+                fileName = args[1];
+                const node = getNode(resolvePath(cwd, fileName));
+                if (node && node.type === 'file') {
+                    content = node.content;
+                } else {
+                    output = `grep: ${fileName}: No such file or directory`;
+                    return finalize(output, newCwd);
+                }
+            } else if (stdin !== undefined) {
+                content = stdin;
+            } else {
+                output = 'usage: grep <pattern> [file]';
+                return finalize(output, newCwd);
+            }
+
+            const lines = content.split('\n');
+            // Remove quotes from pattern if present
+            let searchPattern = pattern;
+            if ((pattern.startsWith('"') && pattern.endsWith('"')) || (pattern.startsWith("'") && pattern.endsWith("'"))) {
+                searchPattern = pattern.slice(1, -1);
+            }
+            
+            const matches = lines.filter(l => l.includes(searchPattern));
+            output = matches.join('\n');
+            
+            // Cycle 118 Win Condition
+            if (fileName.includes('auth.log') && searchPattern === 'Accepted') {
+                 if (!VFS['/var/run/grep_solved']) {
+                     VFS['/var/run/grep_solved'] = { type: 'file', content: 'TRUE' };
+                     output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: LOG ANALYSIS (GREP).\x1b[0m`;
+                 }
             }
         }
         break;
