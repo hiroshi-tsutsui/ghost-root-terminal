@@ -1568,6 +1568,34 @@ export const loadSystemState = () => {
              }
         }
     }
+
+    // Cycle 140 Init (The Corrupted Git)
+    if (!VFS['/home/ghost/project/.git']) {
+        if (!VFS['/home/ghost/project']) {
+             if (!VFS['/home/ghost']) VFS['/home/ghost'] = { type: 'dir', children: [] };
+             VFS['/home/ghost/project'] = { type: 'dir', children: [] };
+             const h = getNode('/home/ghost');
+             if (h && h.type === 'dir' && !h.children.includes('project')) h.children.push('project');
+        }
+        
+        VFS['/home/ghost/project/.git'] = { type: 'dir', children: ['HEAD', 'objects', 'refs'] };
+        const p = getNode('/home/ghost/project');
+        if (p && p.type === 'dir' && !p.children.includes('.git')) p.children.push('.git');
+        
+        VFS['/home/ghost/project/.git/HEAD'] = { type: 'file', content: 'ref: refs/heads/master' };
+        VFS['/home/ghost/project/source.c'] = { type: 'file', content: '// TODO: Commit the fix.' };
+        if (p && p.type === 'dir' && !p.children.includes('source.c')) p.children.push('source.c');
+
+        // Hint
+        if (!VFS['/home/ghost/git_error.log']) {
+            VFS['/home/ghost/git_error.log'] = {
+                type: 'file',
+                content: '[ERROR] git: fatal: your current branch appears to be broken\n[DIAGNOSTIC] HEAD points to an invalid ref.\n[ACTION] Use "git fsck" to check integrity or "git reflog" to find lost commits.'
+            };
+            const h = getNode('/home/ghost');
+            if (h && h.type === 'dir' && !h.children.includes('git_error.log')) h.children.push('git_error.log');
+        }
+    }
 };
 
 // Helper to reset state
@@ -7098,6 +7126,29 @@ Type "status" for mission objectives.`;
             // Check for .git or fallback logic (e.g. parent dir has .git)
             const parentGit = resolvePath(cwd, '../.git');
             const hasGit = getNode(gitDir) || getNode(parentGit) || (cwd.includes('project_alpha') || cwd.includes('repo') || cwd.includes('dev'));
+
+            // Cycle 140: Corrupted Git Repo
+            if (cwd === '/home/ghost/project' && VFS['/home/ghost/project/.git']) {
+                if (subcmd === 'fsck') {
+                    output = `Checking object directories: 100% (256/256), done.\nChecking objects: 100% (52/52), done.\ndangling commit 4b825dc642cb6eb9a060e54bf8d69288fbee4904\nmissing tree 1234...`;
+                } else if (subcmd === 'reflog') {
+                    output = `a1b2c3d (HEAD -> master) HEAD@{0}: commit: Update source.c\n4b825dc HEAD@{1}: commit: Fix critical bug (lost)\n9876543 HEAD@{2}: clone: from https://github.com/ghost/project.git`;
+                } else if (subcmd === 'show' || subcmd === 'checkout') {
+                    const hash = args[1];
+                    if (hash && (hash.startsWith('4b82') || hash === 'HEAD@{1}')) {
+                        output = `commit 4b825dc642cb6eb9a060e54bf8d69288fbee4904\nAuthor: Ghost <ghost@local>\nDate:   Today\n\n    Fix critical bug\n\n    FLAG: GHOST_ROOT{G1T_R3FL0G_S4V3S_L1V3S}\n\n\x1b[1;32m[MISSION UPDATE] Objective Complete: REPOSITORY RECOVERED.\x1b[0m`;
+                        
+                        if (!VFS['/var/run/git_fsck_solved']) {
+                            VFS['/var/run/git_fsck_solved'] = { type: 'file', content: 'TRUE' };
+                            const runDir = getNode('/var/run');
+                            if (runDir && runDir.type === 'dir' && !runDir.children.includes('git_fsck_solved')) {
+                                runDir.children.push('git_fsck_solved');
+                            }
+                        }
+                        return { output, newCwd };
+                    }
+                }
+            }
 
             if (!hasGit && subcmd !== 'clone' && subcmd !== 'init') {
                 output = 'fatal: not a git repository (or any of the parent directories): .git';
