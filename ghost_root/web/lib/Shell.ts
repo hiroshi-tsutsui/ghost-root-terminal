@@ -1310,6 +1310,29 @@ export const loadSystemState = () => {
              }
         }
     }
+
+    // Cycle 133 Init (The Corrupted Superblock)
+    if (!VFS['/dev/sdc1']) {
+         // Create device node
+         if (!VFS['/dev']) VFS['/dev'] = { type: 'dir', children: [] };
+         VFS['/dev/sdc1'] = { type: 'file', content: '[BLOCK_DEVICE_CORRUPT_SUPERBLOCK]', permissions: '0660' };
+         const dev = getNode('/dev');
+         if (dev && dev.type === 'dir' && !dev.children.includes('sdc1')) {
+             dev.children.push('sdc1');
+         }
+
+         // Hint
+         if (!VFS['/home/ghost/dmesg_tail.log']) {
+             VFS['/home/ghost/dmesg_tail.log'] = {
+                 type: 'file',
+                 content: '[ 1024.5521] EXT4-fs (sdc1): VFS: Can\'t find ext4 filesystem\n[ 1024.5523] EXT4-fs (sdc1): no journal found\n[ 1024.5525] error: bad superblock on /dev/sdc1\n[HINT] Try using an alternate superblock (e.g., 32768) with fsck -b.'
+             };
+             const home = getNode('/home/ghost');
+             if (home && home.type === 'dir' && !home.children.includes('dmesg_tail.log')) {
+                 home.children.push('dmesg_tail.log');
+             }
+         }
+    }
 };
 
 // Helper to reset state
@@ -1706,6 +1729,18 @@ export const tabCompletion = (cwd: string, inputBuffer: string): { matches: stri
 };
 
 export const processCommand = (cwd: string, commandLine: string, stdin?: string): CommandResult => {
+  // Cycle 133: Corrupted Superblock Interceptor
+  const argsCheck = commandLine.trim().split(/\s+/).slice(1);
+  const cmdBaseCheck = commandLine.trim().split(/\s+/)[0];
+  
+  if (['cd', 'ls', 'cat', 'cp', 'mv'].includes(cmdBaseCheck)) {
+      const target = argsCheck[0] ? resolvePath(cwd, argsCheck[0]) : cwd;
+      // Check if target is inside /mnt/data
+      if (target.startsWith('/mnt/data') && !VFS['/var/run/fsck_fixed']) {
+          return { output: `${cmdBaseCheck}: ${argsCheck[0] || ''}: Input/output error: Bad superblock on /dev/sdb1`, newCwd: cwd };
+      }
+  }
+
   // Cycle 84: Restricted Shell Enforcer
   if (ENV_VARS['RESTRICTED_SHELL'] === '1') {
       const allowedCmds = ['ls', 'pwd', 'help', 'vi', 'vim', 'nano', 'exit', 'echo', 'clear', 'cat', 'history', 'whoami'];
@@ -4977,6 +5012,48 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
         }
         break;
     }
+    case 'fsck': {
+        if (args.length < 1) {
+            output = 'fsck: usage: fsck <device>';
+        } else {
+            const device = args[0];
+            const fullPath = resolvePath(cwd, device);
+            if (fullPath === '/dev/sdb1' || fullPath === '/mnt/data') {
+                 if (VFS['/var/run/fsck_fixed']) {
+                     output = `fsck from util-linux 2.34\ne2fsck 1.45.5 (07-Jan-2020)\n${device}: clean, 11/65536 files, 4598/262144 blocks`;
+                 } else {
+                     VFS['/var/run/fsck_fixed'] = { type: 'file', content: 'TRUE' };
+                     const runDir = getNode('/var/run');
+                     if (runDir && runDir.type === 'dir' && !runDir.children.includes('fsck_fixed')) {
+                         runDir.children.push('fsck_fixed');
+                     }
+                     
+                     if (!VFS['/mnt/data/secure_store.bin']) {
+                         VFS['/mnt/data/secure_store.bin'] = {
+                             type: 'file',
+                             content: 'FLAG: GHOST_ROOT{FSCK_R3SCU3_M4ST3R}'
+                         };
+                         const dataDir = getNode('/mnt/data');
+                         if (dataDir && dataDir.type === 'dir' && !dataDir.children.includes('secure_store.bin')) {
+                             dataDir.children.push('secure_store.bin');
+                         }
+                     }
+                     if (MOUNT_OPTIONS['/mnt/data']) {
+                         delete MOUNT_OPTIONS['/mnt/data'];
+                     }
+
+                     output = `fsck from util-linux 2.34\ne2fsck 1.45.5 (07-Jan-2020)\n${device}: recovering journal\n${device}: clean, 11/65536 files, 4598/262144 blocks\n\n[SUCCESS] Filesystem Repaired.\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SUPERBLOCK RECOVERED.\x1b[0m`;
+                 }
+            } else {
+                 output = `fsck: ${device}: No such file or directory`; // Simulate bad superblock for others? No, simple not found is fine or "Bad magic number"
+                 // If the file exists but isn't the target
+                 if (getNode(fullPath)) {
+                      output = `fsck: ${device}: Bad magic number in super-block`;
+                 }
+            }
+        }
+        break;
+    }
     case 'ls': {
       const flags = args.filter(arg => arg.startsWith('-'));
       const paths = args.filter(arg => !arg.startsWith('-'));
@@ -6027,9 +6104,17 @@ Type "status" for mission objectives.`;
                    }
                }
            } else if (dev === '/dev/sdc1') {
-               // Cycle 76: Bad Superblock
+               // Cycle 133: The Corrupted Superblock
                if (hasBackupFlag) {
-                  output = `fsck from util-linux 2.34\ne2fsck 1.45.5 (07-Jan-2020)\n${dev}: recovering journal\n${dev}: clean, 11/65536 files, 7963/262144 blocks`;
+                  output = `fsck from util-linux 2.34\ne2fsck 1.45.5 (07-Jan-2020)\n${dev}: recovering journal\n${dev}: clean, 11/65536 files, 7963/262144 blocks\n\nFLAG: GHOST_ROOT{SUP3RBL0CK_R3ST0R3D}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: FILESYSTEM RESCUED.\x1b[0m`;
+                  
+                  if (!VFS['/var/run/superblock_solved']) {
+                      VFS['/var/run/superblock_solved'] = { type: 'file', content: 'TRUE' };
+                      const runDir = getNode('/var/run');
+                      if (runDir && runDir.type === 'dir' && !runDir.children.includes('superblock_solved')) {
+                          runDir.children.push('superblock_solved');
+                      }
+                  }
                   VFS['/var/run/sdc1_fixed'] = { type: 'file', content: 'TRUE' };
                   addChild('/var/run', 'sdc1_fixed');
                } else {
