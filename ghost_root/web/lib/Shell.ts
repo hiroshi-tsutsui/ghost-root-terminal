@@ -1383,6 +1383,18 @@ export const loadSystemState = () => {
             }
         }
     }
+
+    // Cycle 135 Init (The Kernel Ring Buffer)
+    if (!VFS['/home/ghost/kernel_panic.log']) {
+        VFS['/home/ghost/kernel_panic.log'] = {
+            type: 'file',
+            content: '[ALERT] Kernel instability detected during boot.\n[DIAGNOSTIC] Critical error messages suppressed in console.\n[ACTION] Inspect kernel ring buffer (dmesg) for hidden error codes.'
+        };
+        const home = getNode('/home/ghost');
+        if (home && home.type === 'dir' && !home.children.includes('kernel_panic.log')) {
+            home.children.push('kernel_panic.log');
+        }
+    }
 };
 
 // Helper to reset state
@@ -8112,9 +8124,79 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
       output = 'Cracking...';
       return { output, newCwd, action: 'crack_sim', data: { target: args[0], user: args[1], success: false } };
     }
-    case 'dmesg':
-      output = '[    0.000000] Linux version 5.4.0-ghost (root@mainframe) (gcc version 9.3.0)\n[    0.420000] pci 0000:00:1f.2: [sda] 134217728 512-byte logical blocks: (68.7 GB/64.0 GiB)\n[    0.420420] pci 0000:00:1f.3: [sdb] Attached SCSI disk (Hidden)\n[    0.420666] sdb: sdb1\n[    1.337000] EXT4-fs (sdb1): mounted filesystem with ordered data mode. Opts: (null)\n[    2.100000] sd 2:0:0:0: [sdc] 16777216 512-byte logical blocks: (8.5 GB/7.9 GiB)\n[    2.100420] sdc: sdc1\n[    2.150000] EXT4-fs (sdc1): VFS: Can\'t find ext4 filesystem';
+    case 'dmesg': {
+      let dmesgOutput = '';
+      const messages = [
+          'Linux version 5.4.0-ghost (root@mainframe) (gcc version 9.3.0)',
+          'Command line: BOOT_IMAGE=/boot/vmlinuz-5.4.0-ghost root=UUID=dead-beef ro quiet splash',
+          'KERNEL supported cpus:',
+          '  Intel GenuineIntel',
+          '  AMD AuthenticAMD',
+          '  Centaur CentaurHauls',
+          'x86/fpu: Supporting XSAVE feature 0x001: \'x87 floating point registers\'',
+          'x86/fpu: Supporting XSAVE feature 0x002: \'SSE registers\'',
+          'x86/fpu: Supporting XSAVE feature 0x004: \'AVX registers\'',
+          'pci 0000:00:1f.2: [sda] 134217728 512-byte logical blocks: (68.7 GB/64.0 GiB)',
+          'pci 0000:00:1f.3: [sdb] Attached SCSI disk (Hidden)',
+          'sdb: sdb1',
+          'EXT4-fs (sdb1): mounted filesystem with ordered data mode. Opts: (null)',
+          'sd 2:0:0:0: [sdc] 16777216 512-byte logical blocks: (8.5 GB/7.9 GiB)',
+          'sdc: sdc1',
+          'EXT4-fs (sdc1): VFS: Can\'t find ext4 filesystem',
+          'systemd[1]: Detected architecture x86-64.',
+          'systemd[1]: Set hostname to <ghost-root>.',
+          'systemd[1]: Initializing machine ID from random generator.',
+          '[SECURITY] AppArmor initialized',
+          '[SECURITY] SELinux:  Disabled at boot.',
+          'NET: Registered protocol family 10',
+          'Segment Routing with IPv6',
+          'NET: Registered protocol family 17',
+          'IPI: frequency of the interrupt process (2000 Hz)',
+          'random: fast init done',
+          'logips2: IBM Logips2 mouse driver',
+          'input: AT Translated Set 2 keyboard as /devices/platform/i8042/serio0/input/input0',
+          'r8169 0000:03:00.0 enp3s0: Link is Up - 1Gbps/Full - flow control rx/tx',
+          'IPv6: ADDRCONF(NETDEV_CHANGE): enp3s0: link becomes ready',
+          'usb 1-1: new high-speed USB device number 2 using xhci_hcd',
+          'usb 1-1: New USB device found, idVendor=8087, idProduct=0029, bcdDevice= 0.01',
+          'usb 1-1: New USB device strings: Mfr=0, Product=0, SerialNumber=0',
+          'hub 1-1:1.0: USB hub found',
+          'hub 1-1:1.0: 8 ports detected',
+          'input: Power Button as /devices/LNXSYSTM:00/LNXPWRBN:00/input/input1',
+          'ACPI: Power Button [PWRF]',
+          'input: Power Button as /devices/LNXSYSTM:00/LNXSYBUS:00/PNP0C0C:00/input/input2',
+          'ACPI: Power Button [PWRB]',
+          'Non-volatile memory driver v1.3'
+      ];
+
+      // Generate noise
+      let currentTime = 0.0;
+      for (const msg of messages) {
+          currentTime += Math.random() * 0.5;
+          dmesgOutput += `[    ${currentTime.toFixed(6)}] ${msg}\n`;
+      }
+
+      // The Needle
+      dmesgOutput += `[   42.000000] [ERROR] ghost_kernel: Critical failure at addr 0xDEADBEEF. Dump: GHOST_ROOT{DM3SG_H1DD3N_MSG}\n`;
+      
+      // More noise
+      for (let i = 0; i < 20; i++) {
+          currentTime += Math.random() * 0.5;
+          dmesgOutput += `[    ${currentTime.toFixed(6)}] [INFO] System stability check: OK\n`;
+      }
+      
+      output = dmesgOutput;
+      
+      if (!VFS['/var/run/dmesg_solved']) {
+           VFS['/var/run/dmesg_solved'] = { type: 'file', content: 'TRUE' };
+           const runDir = getNode('/var/run');
+           if (runDir && runDir.type === 'dir' && !runDir.children.includes('dmesg_solved')) {
+               runDir.children.push('dmesg_solved');
+           }
+           output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: KERNEL ERROR FOUND.\x1b[0m`;
+      }
       break;
+    }
     case 'top':
       return { output: '', newCwd, action: 'top_sim', data: PROCESSES };
     case 'df': {
@@ -8772,7 +8854,14 @@ auth.py
                       } else {
                           output = `[SYSTEM] Terminated httpd (PID 4040).`;
                       }
-                  }
+                  } else if (pid === 1001) {
+                      PROCESSES.splice(idx, 1);
+                      if (!VFS['/var/run/disk_solved']) {
+                          VFS['/var/run/disk_solved'] = { type: 'file', content: 'TRUE' };
+                          const runDir = getNode('/var/run');
+                          if (runDir && runDir.type === 'dir' && !runDir.children.includes('disk_solved')) {
+                              runDir.children.push('disk_solved');
+                          }
                           output = `[SYSTEM] Terminated log_daemon (PID 1001).\n[SYSTEM] Reclaiming disk space... Done.\n\nFLAG: GHOST_ROOT{D1SK_SP4C3_R3CL41M3D}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: DELETED FILE HANDLE.\x1b[0m`;
                       } else {
                           output = `[SYSTEM] Terminated log_daemon (PID 1001). Space reclaimed.`;
