@@ -1131,6 +1131,38 @@ export const loadSystemState = () => {
             }
         }
     }
+
+    // Cycle 129 Init (The Magic SysRq)
+    if (!VFS['/proc/sysrq-trigger']) {
+        // Ensure /proc exists
+        if (!VFS['/proc']) {
+             VFS['/proc'] = { type: 'dir', children: [] };
+             const root = getNode('/');
+             if (root && root.type === 'dir' && !root.children.includes('proc')) root.children.push('proc');
+        }
+        
+        VFS['/proc/sysrq-trigger'] = { 
+            type: 'file', 
+            content: '', 
+            permissions: '0200' 
+        };
+        const proc = getNode('/proc');
+        if (proc && proc.type === 'dir' && !proc.children.includes('sysrq-trigger')) {
+            proc.children.push('sysrq-trigger');
+        }
+
+        // Create Hint
+        if (!VFS['/home/ghost/crash.txt']) {
+            VFS['/home/ghost/crash.txt'] = {
+                type: 'file',
+                content: '[SYSADMIN LOG]\nSystem is unresponsive. SSH daemon is zombie.\nI might have to trigger a manual kernel panic to get the core dump.\nRemember: echo the trigger code (c) to the proc file.\n- Admin'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('crash.txt')) {
+                home.children.push('crash.txt');
+            }
+        }
+    }
 };
 
 // Helper to reset state
@@ -3125,6 +3157,28 @@ int main(int argc, char* argv[]) {
 
       if (redirectFile && out) {
           const filePath = resolvePath(cwd, redirectFile);
+
+          // Cycle 129: Magic SysRq Trigger
+          if (filePath === '/proc/sysrq-trigger') {
+              const trigger = out.trim().toLowerCase();
+              if (trigger === 'c') {
+                  const panicMsg = `[  13.370000] SysRq : Trigger a crash\n[  13.371000] Kernel panic - not syncing: sysrq triggered crash\n[  13.372000] CPU: 0 PID: 1 Comm: bash Not tainted 5.4.0-ghost #1\n[  13.373000] Call Trace:\n[  13.374000]  <IRQ>\n[  13.375000]  dump_stack+0x6d/0x9a\n[  13.376000]  panic+0x101/0x2b3\n[  13.380000] FLAG: GHOST_ROOT{SYSRQ_TR1GG3R_H4CK}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: KERNEL PANIC INDUCED.\x1b[0m\n[  13.381000] Rebooting in 5 seconds...`;
+                  
+                  if (!VFS['/var/run/sysrq_solved']) {
+                      VFS['/var/run/sysrq_solved'] = { type: 'file', content: 'TRUE' };
+                      const runDir = getNode('/var/run');
+                      if (runDir && runDir.type === 'dir' && !runDir.children.includes('sysrq_solved')) {
+                          runDir.children.push('sysrq_solved');
+                      }
+                  }
+                  return { output: panicMsg, newCwd: nCwd, action: 'kernel_panic', data: dat, newPrompt: prompt };
+              } else if (trigger === 'b') {
+                  return { output: '[  13.370000] SysRq : Resetting', newCwd: nCwd, action: 'kernel_panic', data: dat, newPrompt: prompt };
+              } else {
+                  // Unknown trigger
+                  return { output: `[  13.370000] SysRq : HELP : loglevel(0-9) reBoot Crash terminate-all-tasks(e) memory-full-oom-kill(f) kill-all-tasks(i) saK show-backtrace-all-active-cpus(l) show-memory-usage(m) nice-all-RT-tasks(n) powerOff show-registers(p) show-all-timers(q) unRaw Sync show-task-states(t) Unmount show-blocked-tasks(w) dump-ftrace-buffer(z)`, newCwd: nCwd, action: 'delay', data: dat, newPrompt: prompt };
+              }
+          }
           
           // READ-ONLY MOUNT SIMULATION
           for (const [mp, opts] of Object.entries(MOUNT_OPTIONS)) {
