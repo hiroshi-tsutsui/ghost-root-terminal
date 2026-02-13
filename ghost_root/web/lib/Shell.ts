@@ -1163,6 +1163,37 @@ export const loadSystemState = () => {
             }
         }
     }
+
+    // Cycle 130 Init (The Dash Filename)
+    if (!VFS['/home/ghost/-dash']) {
+        if (!VFS['/home/ghost']) {
+             VFS['/home/ghost'] = { type: 'dir', children: [] };
+             const home = getNode('/home');
+             if (home && home.type === 'dir' && !home.children.includes('ghost')) {
+                 home.children.push('ghost');
+             }
+        }
+        
+        VFS['/home/ghost/-dash'] = {
+            type: 'file',
+            content: 'FLAG: GHOST_ROOT{D4SH_3SC4P3_M4ST3R}'
+        };
+        const homeDir = getNode('/home/ghost');
+        if (homeDir && homeDir.type === 'dir' && !homeDir.children.includes('-dash')) {
+            homeDir.children.push('-dash');
+        }
+
+        // Hint File
+        if (!VFS['/home/ghost/dash_alert.txt']) {
+            VFS['/home/ghost/dash_alert.txt'] = {
+                type: 'file',
+                content: '[ALERT] Malformed filename detected: "-dash"\n[ERROR] Unable to delete or read using standard tools.\n[HINT] Tools interpret filenames starting with "-" as options. Use explicit path "./-dash" or end-of-options separator "--".'
+            };
+            if (homeDir && homeDir.type === 'dir' && !homeDir.children.includes('dash_alert.txt')) {
+                homeDir.children.push('dash_alert.txt');
+            }
+        }
+    }
 };
 
 // Helper to reset state
@@ -4075,7 +4106,21 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
               output = 'usage: cat <file>';
           }
       } else {
-        const fileTarget = args[0];
+        let fileTarget = args[0];
+        
+        // Cycle 130: Dash Filename (Prevent flag parsing issues)
+        if (fileTarget.startsWith('-')) {
+            if (fileTarget === '--') {
+                if (args.length > 1) fileTarget = args[1];
+                else { output = 'cat: argument expected after --'; break; }
+            } else if (fileTarget.startsWith('./') || fileTarget.startsWith('/')) {
+                // Explicit path is OK
+            } else {
+                output = `cat: invalid option -- '${fileTarget.substring(1)}'\nTry 'cat --help' for more information.`;
+                break;
+            }
+        }
+
         const filePath = resolvePath(cwd, fileTarget);
         const fileNode = getNode(filePath);
         if (!fileNode) {
@@ -4095,6 +4140,17 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
              output = `(standard input): binary file matches`;
           } else {
              output = content || '';
+             // Check for win condition
+             if (content === 'FLAG: GHOST_ROOT{D4SH_3SC4P3_M4ST3R}') {
+                 if (!VFS['/var/run/dash_solved']) {
+                     VFS['/var/run/dash_solved'] = { type: 'file', content: 'TRUE' };
+                     const runDir = getNode('/var/run');
+                     if (runDir && runDir.type === 'dir' && !runDir.children.includes('dash_solved')) {
+                         runDir.children.push('dash_solved');
+                     }
+                     output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: DASH FILENAME ACCESSED.\x1b[0m`;
+                 }
+             }
           }
         }
       }
@@ -7512,7 +7568,25 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
       if (args.length < 1) {
         output = 'usage: rm <file>';
       } else {
-        const target = args[0];
+        let target = args[0];
+        
+        // Cycle 130: Dash Filename
+        if (target.startsWith('-')) {
+            // Check for flags (simplified)
+            if (target === '-rf' || target === '-r' || target === '-f') {
+                if (args.length > 1) target = args[1];
+                else { output = 'rm: missing operand'; break; }
+            } else if (target === '--') {
+                if (args.length > 1) target = args[1];
+                else { output = 'rm: missing operand'; break; }
+            } else if (target.startsWith('./') || target.startsWith('/')) {
+                // OK
+            } else {
+                output = `rm: invalid option -- '${target.substring(1)}'\nTry 'rm --help' for more information.`;
+                break;
+            }
+        }
+
         const path = resolvePath(cwd, target);
         
         // Cycle 113: Read Only Check
