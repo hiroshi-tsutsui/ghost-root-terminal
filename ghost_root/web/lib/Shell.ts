@@ -1056,6 +1056,41 @@ export const loadSystemState = () => {
         }
     }
 
+    // Cycle 128 Init (The Encoded Binary)
+    if (!VFS['/home/ghost/downloads/suspicious.txt']) {
+        if (!VFS['/home/ghost/downloads']) {
+             VFS['/home/ghost/downloads'] = { type: 'dir', children: [] };
+             const home = getNode('/home/ghost');
+             if (home && home.type === 'dir' && !home.children.includes('downloads')) {
+                 home.children.push('downloads');
+             }
+        }
+        
+        const payload = '#!BINARY_SIM_V1\\n[SYSTEM] Executing binary...\\n[SUCCESS] Payload Delivered.\\nFLAG: GHOST_ROOT{B4S364_D3C0D3_RUN}';
+        
+        VFS['/home/ghost/downloads/suspicious.txt'] = {
+            type: 'file',
+            content: typeof btoa !== 'undefined' ? btoa(payload) : 'IyhQSU5BUllfU0lNX1YxCltTWVNURU1dIEV4ZWN1dGluZy4uLgpGTEFHOiBHMhPU1RfUk9PVHtCNFMzNjRfRDNDMEQzX1JVTn0=',
+            permissions: '0644'
+        };
+        const dlDir = getNode('/home/ghost/downloads');
+        if (dlDir && dlDir.type === 'dir' && !dlDir.children.includes('suspicious.txt')) {
+            dlDir.children.push('suspicious.txt');
+        }
+
+        // Hint
+        if (!VFS['/home/ghost/scan_alert.log']) {
+            VFS['/home/ghost/scan_alert.log'] = {
+                type: 'file',
+                content: '[ALERT] Suspicious file detected in ~/downloads.\\n[ANALYSIS] File appears to be Base64 encoded executable code.\\n[ACTION] Decode and execute to analyze payload.\\n[HINT] cat file | base64 -d > binary && chmod +x binary && ./binary'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('scan_alert.log')) {
+                home.children.push('scan_alert.log');
+            }
+        }
+    }
+
     // Cycle 123 Init (The Corrupted Binary)
     if (!VFS['/usr/bin/satellite_uplink']) {
         const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
@@ -1590,6 +1625,40 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
 
   // Handle generic 'echo > file' if we implemented redirection properly in VFS or simulate it here
   // For now, let's just make sure 'lsattr' works.
+
+  // Cycle 127 (The Corrupted Archive)
+  const cmd127 = commandLine.trim().split(/\s+/)[0];
+  if (cmd127 === 'executable' || cmd127 === './executable' || cmd127.endsWith('/executable')) {
+       const args = commandLine.trim().split(/\s+/).slice(1);
+       const target = cmd127.startsWith('./') ? cmd127.substring(2) : cmd127.split('/').pop() || 'executable';
+       
+       const node = getNode(resolvePath(cwd, cmd127));
+       if (!node) {
+           return { output: `bash: ${cmd127}: No such file or directory`, newCwd: cwd };
+       }
+       
+       const perms = (node as any).permissions || '0644';
+       const isExec = perms.includes('7') || perms.includes('5') || perms.includes('1'); // Very rough check for 'x'
+       
+       if (!isExec) {
+           return { output: `bash: ${cmd127}: Permission denied`, newCwd: cwd };
+       }
+       
+       if (node.content.includes('#!BINARY_SIM_V1')) {
+           let output = '[SYSTEM] Executing binary...\n[SUCCESS] Payload Delivered.\nFLAG: GHOST_ROOT{B4S364_D3C0D3_RUN}';
+           if (!VFS['/var/run/base64_run_solved']) {
+               VFS['/var/run/base64_run_solved'] = { type: 'file', content: 'TRUE' };
+               const runDir = getNode('/var/run');
+               if (runDir && runDir.type === 'dir' && !runDir.children.includes('base64_run_solved')) {
+                   runDir.children.push('base64_run_solved');
+               }
+               output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: BINARY DECODED & EXECUTED.\x1b[0m`;
+           }
+           return { output, newCwd: cwd };
+       } else {
+           return { output: `[ERROR] Format error: Exec format error.`, newCwd: cwd };
+       }
+  }
 
   // Cycle 109 (The Hidden Environment)
   const cmd109 = commandLine.trim().split(/\s+/)[0];
@@ -2868,6 +2937,106 @@ int main(int argc, char* argv[]) {
           }
       }
   }
+
+  // Cycle 125 Init (The Firewall Rule)
+  if (!VFS['/var/run/firewall_alert_sent']) {
+      // Create firewall log
+      if (!VFS['/home/ghost/firewall_alert.log']) {
+          VFS['/home/ghost/firewall_alert.log'] = {
+              type: 'file',
+              content: '[SECURITY] Packet Dropped: SRC=192.168.1.5 DST=192.168.1.105 PROTO=TCP DPT=80\n[ERROR] Incoming HTTP traffic blocked by firewall.\n[ACTION] Use iptables to delete the blocking rule.'
+          };
+          const home = getNode('/home/ghost');
+          if (home && home.type === 'dir' && !home.children.includes('firewall_alert.log')) {
+              home.children.push('firewall_alert.log');
+          }
+      }
+      VFS['/var/run/firewall_alert_sent'] = { type: 'file', content: 'TRUE' };
+      const runDir = getNode('/var/run');
+      if (runDir && runDir.type === 'dir' && !runDir.children.includes('firewall_alert_sent')) {
+          runDir.children.push('firewall_alert_sent');
+      }
+  }
+
+  // Cycle 126 Init (The Zombie Process)
+  if (!PROCESSES.find(p => p.pid === 3000)) {
+      PROCESSES.push({
+          pid: 3000,
+          ppid: 1,
+          user: 'root',
+          cpu: 0.1,
+          mem: 0.5,
+          time: '10:00',
+          command: '/usr/bin/zombie_maker',
+          tty: '?',
+          stat: 'Ss'
+      });
+  }
+  if (!PROCESSES.find(p => p.pid === 3001)) {
+      PROCESSES.push({
+          pid: 3001,
+          ppid: 3000,
+          user: 'root',
+          cpu: 0.0,
+          mem: 0.0,
+          time: '0:00',
+          command: '[child_worker] <defunct>',
+          tty: '?',
+          stat: 'Z' // Zombie State
+      });
+  }
+  if (!VFS['/var/log/syslog']) {
+       if (!VFS['/var/log']) {
+           VFS['/var/log'] = { type: 'dir', children: [] };
+           const varNode = getNode('/var');
+           if (varNode && varNode.type === 'dir' && !varNode.children.includes('log')) {
+               varNode.children.push('log');
+           }
+       }
+       VFS['/var/log/syslog'] = { type: 'file', content: '' };
+       const logDir = getNode('/var/log');
+       if (logDir && logDir.type === 'dir' && !logDir.children.includes('syslog')) {
+           logDir.children.push('syslog');
+       }
+  }
+  const syslog = getNode('/var/log/syslog');
+  if (syslog && syslog.type === 'file' && !syslog.content.includes('zombie_maker')) {
+      syslog.content += `\nFeb 14 01:00:00 ghost-root kernel: [ 123.456] zombie_maker[3000]: Child process 3001 became zombie. Parent refused to wait().`;
+  }
+
+  // Cycle 127 Init (The Corrupted Archive)
+  if (!VFS['/home/ghost/backup.tar.gz']) {
+      // Ensure home exists
+      if (!VFS['/home/ghost']) {
+          VFS['/home/ghost'] = { type: 'dir', children: [] };
+          const home = getNode('/home');
+          if (home && home.type === 'dir' && !home.children.includes('ghost')) {
+              home.children.push('ghost');
+          }
+      }
+      
+      // Create the file: A TAR archive named as .gz
+      VFS['/home/ghost/backup.tar.gz'] = {
+          type: 'file',
+          content: 'TAR_V1:{secret.txt:RkxBRzogR0hPU1RfUk9PVHtHWklQX0hFQURFUl9GSVhFRH0=}' // Base64 for "FLAG: GHOST_ROOT{GZIP_HEADER_FIXED}"
+      };
+      const homeDir = getNode('/home/ghost');
+      if (homeDir && homeDir.type === 'dir' && !homeDir.children.includes('backup.tar.gz')) {
+          homeDir.children.push('backup.tar.gz');
+      }
+
+      // Hint File
+      if (!VFS['/home/ghost/archive_error.log']) {
+          VFS['/home/ghost/archive_error.log'] = {
+              type: 'file',
+              content: '[ERROR] Automated backup failed extraction.\n[DIAGNOSTIC] "gzip: stdin: not in gzip format"\n[HINT] The file extension might be misleading. Use "file" to check the actual type.'
+          };
+          if (homeDir && homeDir.type === 'dir' && !homeDir.children.includes('archive_error.log')) {
+              homeDir.children.push('archive_error.log');
+          }
+      }
+  }
+
 
 
   // 1. Handle Piping (|) recursively
@@ -4912,34 +5081,63 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
     case 'iptables': {
         const isRoot = !!getNode('/tmp/.root_session');
         const firewallFlushed = !!getNode('/var/run/firewall_flushed');
+        const port80Deleted = !!getNode('/var/run/iptables_80_deleted');
 
-        if (args.length === 0 || args[0] === '-L') {
+        if (args.length === 0 || args[0] === '-L' || (args.length > 1 && args[1] === '-L')) {
             if (firewallFlushed) {
                 output = `Chain INPUT (policy ACCEPT)
 target     prot opt source               destination
 ACCEPT     all  --  anywhere             anywhere`;
             } else {
-                output = `Chain INPUT (policy DROP)
+                let rules = `Chain INPUT (policy DROP)
 target     prot opt source               destination
 DROP       tcp  --  10.10.99.1           anywhere             tcp dpt:ssh
-DROP       icmp --  10.10.99.1           anywhere
-ACCEPT     all  --  anywhere             anywhere`;
+DROP       icmp --  10.10.99.1           anywhere`;
+                if (!port80Deleted) {
+                    rules += `\nDROP       tcp  --  anywhere             anywhere             tcp dpt:http`;
+                }
+                rules += `\nACCEPT     all  --  anywhere             anywhere`;
+                output = rules;
             }
         } else if (args[0] === '-F' || args[0] === '--flush') {
             if (isRoot) {
                 VFS['/var/run/firewall_flushed'] = { type: 'file', content: 'TRUE' };
+                const runDir = getNode('/var/run');
+                if (runDir && runDir.type === 'dir' && !runDir.children.includes('firewall_flushed')) runDir.children.push('firewall_flushed');
                 output = 'iptables: flushing firewall rules... done.\nChain INPUT policy changed to ACCEPT.';
             } else {
                 output = 'iptables: Permission denied (you must be root)';
             }
-        } else if (args[0] === '-A' || args[0] === '-I' || args[0] === '-D') {
+        } else if (args[0] === '-D') {
+             if (isRoot) {
+                 const cmdStr = args.join(' ');
+                 // iptables -D INPUT -p tcp --dport 80 -j DROP
+                 if (cmdStr.includes('tcp') && (cmdStr.includes('80') || cmdStr.includes('http')) && cmdStr.includes('DROP')) {
+                     VFS['/var/run/iptables_80_deleted'] = { type: 'file', content: 'TRUE' };
+                     const runDir = getNode('/var/run');
+                     if (runDir && runDir.type === 'dir' && !runDir.children.includes('iptables_80_deleted')) runDir.children.push('iptables_80_deleted');
+                     
+                     output = `iptables: rule deleted.\nFLAG: GHOST_ROOT{F1R3W4LL_RUL3_D3L3T3D}`;
+                     
+                     if (!VFS['/var/run/iptables_solved']) {
+                         VFS['/var/run/iptables_solved'] = { type: 'file', content: 'TRUE' };
+                         if (runDir && runDir.type === 'dir' && !runDir.children.includes('iptables_solved')) runDir.children.push('iptables_solved');
+                         output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: FIREWALL BYPASSED.\x1b[0m`;
+                     }
+                 } else {
+                     output = `iptables: Bad rule (does a matching rule exist in that chain?).`;
+                 }
+             } else {
+                 output = 'iptables: Permission denied (you must be root)';
+             }
+        } else if (args[0] === '-A' || args[0] === '-I') {
              if (isRoot) {
                  output = `iptables: rule updated (simulated).`;
              } else {
                  output = 'iptables: Permission denied (you must be root)';
              }
         } else {
-            output = 'usage: iptables [-L|--list] [-F|--flush] [-A chain rule]';
+            output = 'usage: iptables [-L|--list] [-F|--flush] [-D chain rule]';
         }
         break;
     }
@@ -7989,6 +8187,37 @@ auth.py
                       } else {
                           output = `[SYSTEM] Terminated broadcast_d (PID 6666). Broadcast stopped.`;
                       }
+                  } else if (pid === 3001) { // Zombie
+                      output = `bash: kill: (${pid}) - Operation not permitted (Zombie process)`;
+                  } else if (pid === 3000) { // Parent
+                      // Kill parent
+                      PROCESSES.splice(idx, 1);
+                      // Kill zombie child
+                      const childIdx = PROCESSES.findIndex(p => p.pid === 3001);
+                      if (childIdx !== -1) PROCESSES.splice(childIdx, 1);
+                      
+                      // Spawn clean replacement
+                      PROCESSES.push({
+                          pid: 3002,
+                          ppid: 1,
+                          user: 'root',
+                          cpu: 0.1,
+                          mem: 0.5,
+                          time: '0:00',
+                          command: '/usr/bin/zombie_maker --clean',
+                          tty: '?',
+                          stat: 'Ss'
+                      });
+
+                      output = `[SYSTEM] Terminated zombie_maker (PID 3000).\n[KERNEL] Reaping zombie process 3001... Done.\n[SYSTEM] Service restarted (PID 3002).\n\nFLAG: GHOST_ROOT{Z0MB13_PR0C3SS_R34P3D}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: ZOMBIE CLEANUP.\x1b[0m`;
+                      
+                      if (!VFS['/var/run/zombie_solved']) {
+                          VFS['/var/run/zombie_solved'] = { type: 'file', content: 'TRUE' };
+                          const runDir = getNode('/var/run');
+                          if (runDir && runDir.type === 'dir' && !runDir.children.includes('zombie_solved')) {
+                              runDir.children.push('zombie_solved');
+                          }
+                      }
                   } else if (pid === 8192 || proc.command === '/usr/bin/keepalive_d') {
                       if (isSigUsr1) {
                           output = `[SYSTEM] keepalive_d: Received SIGUSR1.\n[SYSTEM] Dumping state to /var/log/keepalive.dump... Done.`;
@@ -8371,7 +8600,18 @@ auth.py
     }
     case 'apt':
     case 'apt-get': {
-      output = 'apt: done';
+      // Cycle 124: The Stuck Lock File
+      if (getNode('/var/lib/dpkg/lock-frontend')) {
+         output = `E: Could not get lock /var/lib/dpkg/lock-frontend. It is held by process 1234 (apt-get).\nE: Unable to acquire the dpkg frontend lock (/var/lib/dpkg/lock-frontend), is another process using it?`;
+      } else {
+          if (args.length > 0 && args[0] === 'update') {
+               output = `Get:1 http://security.ghost.network/ghost-security focal-security InRelease [107 kB]\nGet:2 http://us.archive.ghost.network/ghost focal InRelease [265 kB]\nReading package lists... Done\n[SUCCESS] System Index Updated.\nFLAG: GHOST_ROOT{APT_UNL0CK3D}`;
+          } else if (args.length > 0 && args[0] === 'install') {
+               output = `Reading package lists... Done\nBuilding dependency tree\nReading state information... Done\n0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.`;
+          } else {
+               output = `apt 2.0.2 (amd64)\nUsage: apt-get [options] command\n       apt-get [options] install|remove pkg1 [pkg2 ...]`;
+          }
+      }
       break;
     }
     case 'hydra': {
@@ -8874,7 +9114,16 @@ The key's randomart image is:
                    output = `tar: ${archiveName}: Is a symbolic link`;
                } else {
                    const content = (node as any).content;
-                   if (content.startsWith('TAR_V1:')) {
+                   
+                   // Cycle 127: Gzip Check
+                   const isGzip = archiveName.endsWith('.tar.gz') || archiveName.endsWith('.tgz') || flags.includes('z');
+                   if (isGzip && !content.startsWith('GZIP_V1:')) {
+                        if (content.startsWith('TAR_V1:')) {
+                            output = `gzip: stdin: not in gzip format\ntar: Child returned status 1\ntar: Error is not recoverable: exiting now`;
+                        } else {
+                            output = `gzip: stdin: not in gzip format`;
+                        }
+                   } else if (content.startsWith('TAR_V1:')) {
                        const payload = content.substring(7);
                        const matches = payload.match(/\{([^:]+):([^}]+)\}/g);
                        let extracted: string[] = [];
@@ -8894,12 +9143,24 @@ The key's randomart image is:
                                            fParentNode.children.push(baseName);
                                        }
                                        extracted.push(fname);
+                                       
+                                       // Cycle 127 Win
+                                       if (fname === 'secret.txt' && fcontent.includes('GHOST_ROOT{')) {
+                                           if (!VFS['/var/run/gzip_solved']) {
+                                               VFS['/var/run/gzip_solved'] = { type: 'file', content: 'TRUE' };
+                                               const runDir = getNode('/var/run');
+                                               if (runDir && runDir.type === 'dir' && !runDir.children.includes('gzip_solved')) {
+                                                   runDir.children.push('gzip_solved');
+                                               }
+                                               output = (output || '') + `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: ARCHIVE REPAIRED.\x1b[0m`;
+                                           }
+                                       }
                                    }
                                }
                            }
                        }
                        if (flags.includes('v')) {
-                           output = extracted.join('\n');
+                           output = (output ? output + '\n' : '') + extracted.join('\n');
                        }
                    } else {
                        output = `tar: This does not look like a tar archive`;
