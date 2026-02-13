@@ -1,16 +1,6 @@
 # HEARTBEAT.md
 
-- [x] Debug voice-call UI missing despite plugin enabled. (Found: Plugin enabled but unconfigured; Gateway on HTTP loopback).
-- [x] Monitor Batch Job V11 Fix (`v11-depth-fusion-fix-002`). (Status: SUCCEEDED).
-- [x] Monitor Batch Job V11 Render (`v11-depth-fusion-render-001`). (Status: SUCCEEDED - 701 Videos Generated).
-- [x] Download V11 Results (`~/Downloads/yolo-gcp/eagle/infer/output/v11_depth_fusion_experiment/`). (Status: DONE).
-- [x] Monitor Batch Job V12 Resume (`v12-depth-only-experiment-resume-001`). (Status: SUCCEEDED - 701 Videos Generated).
-- [x] Download V12 Results (`~/Downloads/yolo-gcp/eagle/infer/output/v12_depth_only_experiment/`). (Status: DONE).
-- [x] Monitor Batch Job V13 Lite (`v13-depth-real-lite-test`). (Status: KILLED - 292 Videos).
-- [x] Download V13 Lite Samples (`~/Downloads/yolo-gcp/eagle/infer/output/v13_depth_real_lite/`). (Status: DONE).
-- [x] Monitor Batch Job V14 Lite (`v14-depth-real-lite`). (Status: KILLED - Wrong Model).
-- [x] Monitor Batch Job V15 Lite (`v15-depth-real-lite`). (Status: KILLED - 52 Videos - Calibration Issue).
-- [x] Monitor Batch Job V16 Viz (`job-v16-real-viz-001`). (Status: SUCCEEDED - 10 Tasks Complete - Cloud Batch).
+- [ ] [PAUSED] Monitor Batch Jobs (User Instruction: Do not use Google Batch).
 - [x] Monitor Sub-agent: `omega-tony-pedagogy-2`. (Status: COMPLETE - Data Module Localized).
 - [x] Monitor Sub-agent: `omega-tony-calculus`. (Status: COMPLETE - Calculus Module Localized).
 - [x] Monitor Sub-agent: `omega-tony-vectors`. (Status: COMPLETE - Vectors Module Localized).
@@ -38,12 +28,12 @@
     - [x] Result: 266 Danger / 368 Total. Recall: ~72%.
   - [ ] Action: Proceed to Retraining Configuration.
     - [x] Action: Copy Data to Retraining Bucket (784 Videos).
-    - [x] Action: Monitor Label Gen Job FP (`retraining-v1-label-gen-fp-001`) - FAILED (Fixed in v2).
-    - [x] Action: Monitor Label Gen Job TP (`retraining-v1-label-gen-tp-001`) - FAILED (Fixed in v2).
-    - [x] Action: Monitor Label Gen Job FP V2 (`retraining-v1-label-gen-fp-002`) - FAILED (Exit Code 1).
-    - [x] Action: Monitor Label Gen Job TP V2 (`retraining-v1-label-gen-tp-002`) - FAILED (Exit Code 1).
-    - [x] Action: Monitor Label Gen Job FP V3 (`retraining-v1-label-gen-fp-003`) - FAILED (Exit Code 1).
-    - [x] Action: Monitor Label Gen Job TP V3 (`retraining-v1-label-gen-tp-003`) - FAILED (Exit Code 1).
+    - [x] Action: Monitor Label Gen Job FP V5 (`retraining-v1-label-gen-fp-005`) - DELETION_IN_PROGRESS (Startup Error?).
+    - [x] Action: Monitor Label Gen Job TP V5 (`retraining-v1-label-gen-tp-005`) - FAILED (Script Missing/Environment).
+    - [x] Action: Investigate Batch Image (batch-custom-image vs yolo:latest). (Status: FOUND - `us-central1-docker.pkg.dev/dev-dotsfty/rf/rf:latest` lacked dependencies).
+    - [x] Action: Rebuild Image (`us-central1-docker.pkg.dev/dev-dotsfty/rf/rf:v1-retrain`) with `ultralytics`, `opencv`, `torch`. (Status: COMPLETE - SUCCESS).
+    - [ ] Action: Submit Label Gen Job FP V6 (`job_fp_label_gen_v6.json`).
+    - [ ] Action: Submit Label Gen Job TP V6 (`job_tp_label_gen_v6.json`).
     - [x] Action: Monitor Source Fetch Job (`fetch-source-v1`) - FAILED (Exit Code 1).
     - [x] Action: Monitor Environment Probe (`env-probe-v1`) - FAILED (Exit Code 1 - Diagnosed: Disk Full).
     - [x] Action: Monitor Python3 Fix Job (`following-distance-infer-fp-jan19-feb5-v5...`) - SUCCEEDED (Multiple jobs completed).
@@ -53,7 +43,6 @@
     - [x] Action: **NEXT** Launch True Positive Validation (`following-distance-infer-threshold-tp-v1`) - SUCCEEDED.
       - [x] Result: 197 Danger / 368 Total. Recall: ~53% (Dropped from 72%).
       - [x] Trade-off: FP reduced by ~38%, but Recall dropped by ~19%.
-    - [ ] Action: Investigate Batch Image (`batch-custom-image` vs `yolo:latest`).
 - [x] Update Ghost Root: Added `ssh-keygen` and `awk` commands. (Status: DEPLOYED).
     - [x] Verify Project Omega Deployment (Manual Override). (Status: LIVE - Force Deployment Complete).
     - [x] Monitor Sub-agent: `vision-ghost-root-autopilot`. (Status: COMPLETE - Implemented Narrative Convergence: Win State via Decrypt).
@@ -146,8 +135,6 @@
 - [x] Update Ghost Root: Implemented Visual Progression Feedback System (Rank, Toasts, Sidebar). (Status: DEPLOYED - Commit `af332f1`).
 - [x] Update Ghost Root: Implemented "System Feedback Protocol" v2.0 (Terminal Feedback, Hints, Discovery). (Status: DEPLOYED - Commit `a2ebad8`).
 - [x] Monitor Batch Sweep V6 (`sweep-v6-*`). (Checked: No active jobs found).
-- [x] Investigate Batch Image (`batch-custom-image` vs `yolo:latest`). (Status: FOUND - `us-central1-docker.pkg.dev/dev-dotsfty/rf/rf:latest`).
-  - [ ] Action: Rebuild image with `ultralytics`, `torch`, `torchvision`. (Dockerfile found at `.../dotsfty-hub/dot-sfty-core-analytics/Dockerfile`).
 - [x] Monitor Batch Sweep V4 (`sweep-v4-*`). (Status: COMPLETE/MISSING - Jobs cleared from list. Data for 01-08 secured. V4-1 series finished?).
   - [x] Action: Verified `sweep-v4-exp-01` through `08` results.
   - [x] Action: Downloaded available results to `~/Downloads/yolo-gcp/eagle/infer/output/sweep_v4/`.
@@ -223,7 +210,7 @@
   - [x] Cycle 54: "The Named Pipe" (mkfifo).
   - [x] Cycle 55: "The Unreachable Network" (Route / Gateway).
   - [x] Cycle 56: "The DNS Spoof" (Hosts File / DNS Poisoning).
-  - [ ] Cycle 57: "The Hidden Archive" (Steganography / Wav File).
+  - [x] Cycle 57: "The Hidden Archive" (Steganography / Wav File). (Status: COMPLETE - Implemented).
   - [x] Fix: Restored `vercel` CLI (Global Install) & Fixed TypeScript Error in `Shell.ts`. (Status: DEPLOYED).
   - [x] Fix: Repaired "MISSION STATUS" UI layout (Added `flex` to sidebar). (Status: DEPLOYED).
   - [x] Fix: Prevent horizontal scrolling (Added `overflow-hidden` to main container). (Status: DEPLOYED).
@@ -231,4 +218,19 @@
   - [x] Fix: Resolved build errors in `Terminal.tsx` (useEffect scope, duplicates, handleKeyDown visibility) & `Shell.ts` (Interface). (Status: DEPLOYED).
   - [x] Fix: Added `0451` to `steghide` password list. (Status: DEPLOYED).
   - [x] Fix: `.ssh` directory visibility (localStorage persistence bug). (Status: DEPLOYED).
-  - [x] Fix: SSH connection to `192.168.1.99` (Routing/Mapping issue). (Status: DEPLOYED).
+  - [x] Fix: SSH connection to `192.168.1.99` (Routing/Mapping issue). (Status: DEPLOYED).  - [x] Cycle 80: "The Unmounted Partition" (lsblk / mount loop).
+  - [x] Cycle 81: "The Kernel Module" (lsmod / insmod).
+  - [x] Cycle 82: "The ARP Spoof" (Network Anomaly).
+  - [x] Cycle 83: "The Unix Socket" (ss / nc -U).
+  - [x] Cycle 84: "The Restricted Shell" (rbash / vi escape).
+  - [x] Cycle 101: "The DNS Failure" (Hosts File / DNS Poisoning). (Status: DEPLOYED).
+  - [x] Cycle 102: "The Stuck Lock File" (rm /var/lock/deploy.lock). (Status: DEPLOYED).
+  - [x] Cycle 103: "The Path Hijack" (PATH env var / fake ls). (Status: DEPLOYED).
+  - [x] Cycle 104: "The Port Collision" (netstat / kill / ghost_relay). (Status: DEPLOYED).
+  - [x] Cycle 105: "The Unattended Upgrade" (kill 1234 / ghost_update). (Status: DEPLOYED).
+  - [x] Cycle 106: "The Missing Shebang" (Exec Format Error / fix_wifi.sh). (Status: DEPLOYED).
+  - [x] Cycle 107: "The Alias Trap" (ls aliased to error / unalias ls). (Status: DEPLOYED).
+  - [x] Cycle 108: "The Background Job" (ps / kill 6666). (Status: DEPLOYED).
+  - [x] Cycle 109: "The Hidden Environment" (env / export). (Status: DEPLOYED).
+  - [x] Cycle 110: "The Broken Service" (systemctl / cp). (Status: DEPLOYED).
+  - [x] Cycle 110: "The Immutable File" (chattr +i). (Status: DEPLOYED).
