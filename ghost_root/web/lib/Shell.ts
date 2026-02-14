@@ -2343,6 +2343,98 @@ export const loadSystemState = () => {
             }
         }
     }
+
+    // Cycle 167 Init (The Corrupted Script)
+    if (!VFS['/usr/local/bin/deploy_legacy.sh']) {
+        // Ensure /usr/local/bin exists
+        if (!VFS['/usr/local/bin']) {
+             if (!VFS['/usr/local']) {
+                 VFS['/usr/local'] = { type: 'dir', children: ['bin'] };
+                 const usr = getNode('/usr');
+                 if (usr && usr.type === 'dir' && !usr.children.includes('local')) usr.children.push('local');
+             }
+             const local = getNode('/usr/local');
+             if (local && local.type === 'dir' && !local.children.includes('bin')) local.children.push('bin');
+             if (!VFS['/usr/local/bin']) VFS['/usr/local/bin'] = { type: 'dir', children: [] };
+        }
+
+        VFS['/usr/local/bin/deploy_legacy.sh'] = {
+            type: 'file',
+            content: '#!/bin/bash\n# LEGACY DEPLOYMENT SCRIPT v0.1\n\necho "[DEPLOY] Initiating..."\n# CORRUPTED_BLOCK_X99\n# <binary garbage>\n# MANUAL_OVERRIDE:\n# To deploy manually, set the auth key:\n# export DEPLOY_KEY=OMEGA_V2\n# Then run the connector tool: ./remote_connect\n',
+            permissions: '0755'
+        };
+        const binDir = getNode('/usr/local/bin');
+        if (binDir && binDir.type === 'dir' && !binDir.children.includes('deploy_legacy.sh')) {
+            binDir.children.push('deploy_legacy.sh');
+        }
+
+        // The tool referenced in the script
+        VFS['/usr/local/bin/remote_connect'] = {
+            type: 'file',
+            content: '[BINARY_ELF_X86_64] [CONNECTOR]\n[CHECK] ENV: DEPLOY_KEY',
+            permissions: '0755'
+        };
+        if (binDir && binDir.type === 'dir' && !binDir.children.includes('remote_connect')) {
+            binDir.children.push('remote_connect');
+        }
+
+        // Hint in home
+        if (!VFS['/home/ghost/deploy_log.txt']) {
+            VFS['/home/ghost/deploy_log.txt'] = {
+                type: 'file',
+                content: '[ERROR] deploy_legacy.sh crashed.\n[DIAGNOSTIC] Syntax error at line 4.\n[ACTION] Inspect the script content to find the manual override procedure.'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('deploy_log.txt')) {
+                home.children.push('deploy_log.txt');
+            }
+        }
+    }
+
+    // Cycle 168 Init (The Log Anomalies)
+    if (!VFS['/var/log/kernel_panic.log']) {
+        // Ensure /var/log exists (it should, but safety first)
+        if (!VFS['/var/log']) {
+             if (!VFS['/var']) {
+                 VFS['/var'] = { type: 'dir', children: ['log'] };
+                 addChild('/', 'var');
+             }
+             addChild('/var', 'log');
+        }
+
+        let logContent = '';
+        for (let i = 0; i < 500; i++) {
+            const ts = (1400 + (i * 0.0023)).toFixed(4);
+            logContent += `[${ts}] KERNEL_INFO: Process ${Math.floor(Math.random() * 9000)} started.\n`;
+            if (i === 412) {
+                logContent += `[${ts}] KERNEL_PANIC_CODE: 0xDEADBEEF\n`;
+            }
+        }
+
+        VFS['/var/log/kernel_panic.log'] = {
+            type: 'file',
+            content: logContent,
+            permissions: '0640'
+        };
+        addChild('/var/log', 'kernel_panic.log');
+
+        // The recovery tool
+        VFS['/usr/bin/kernel_recover'] = {
+            type: 'file',
+            content: '[BINARY_ELF_X86_64] [RECOVERY]\nUsage: kernel_recover <PANIC_CODE>',
+            permissions: '0755'
+        };
+        addChild('/usr/bin', 'kernel_recover');
+
+        // Hint in home
+        if (!VFS['/home/ghost/sys_alert.txt']) {
+            VFS['/home/ghost/sys_alert.txt'] = {
+                type: 'file',
+                content: '[ALERT] System unstable. Kernel panic detected.\n[ACTION] Locate the panic code in /var/log/kernel_panic.log and run "kernel_recover <CODE>" to stabilize.'
+            };
+            addChild('/home/ghost', 'sys_alert.txt');
+        }
+    }
 };
 
 // Helper to reset state
@@ -2959,6 +3051,23 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
            // Create insecure file anyway to punish them? Nah, just fail.
        }
        return { output: out, newCwd: cwd };
+  }
+
+  // Cycle 167 (The Corrupted Script)
+  if (cmdBase === 'deploy_legacy.sh' || cmdBase === './deploy_legacy.sh' || cmdBase === '/usr/local/bin/deploy_legacy.sh') {
+       return { output: '[DEPLOY] Initiating...\n/usr/local/bin/deploy_legacy.sh: line 4: syntax error near unexpected token `newline\'\n/usr/local/bin/deploy_legacy.sh: line 4: `# <binary garbage>\'', newCwd: cwd };
+  }
+
+  if (cmdBase === 'remote_connect' || cmdBase === './remote_connect' || cmdBase === '/usr/local/bin/remote_connect') {
+       if (ENV_VARS['DEPLOY_KEY'] === 'OMEGA_V2') {
+           if (!VFS['/var/run/cycle167_solved']) {
+               VFS['/var/run/cycle167_solved'] = { type: 'file', content: 'TRUE' };
+               return { output: '[CONNECT] Auth Key Verified.\n[CONNECT] Uplink Established.\n[SUCCESS] Deployment Finalized.\nFLAG: GHOST_ROOT{SCR1PT_R34D1NG_1S_FUND4M3NT4L}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: MANUAL DEPLOYMENT SUCCESS.\x1b[0m', newCwd: cwd };
+           }
+           return { output: '[CONNECT] Auth Key Verified.\n[CONNECT] Uplink Established.\n[SUCCESS] Deployment Finalized.\nFLAG: GHOST_ROOT{SCR1PT_R34D1NG_1S_FUND4M3NT4L}', newCwd: cwd };
+       } else {
+           return { output: '[CONNECT] Error: Authentication Failed.\n[HINT] Check environment variable DEPLOY_KEY.', newCwd: cwd };
+       }
   }
 
   // Cycle 159 (The History Leak)
@@ -14224,6 +14333,24 @@ postgres            14-alpine 1234567890ab   5 days ago     214MB`;
                      output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: LOG ANALYSIS (GREP).\x1b[0m`;
                  }
             }
+        }
+        break;
+    }
+    case 'kernel_recover': {
+        const code = args[0];
+        if (!code) {
+            output = 'Usage: kernel_recover <PANIC_CODE>';
+        } else if (code === '0xDEADBEEF') {
+            output = '[SYSTEM] Validating Panic Code: 0xDEADBEEF...\n[SUCCESS] Kernel Panic Resolved.\n[RECOVERY] Services Restored.\n\nFLAG: GHOST_ROOT{GR3P_M4ST3R_0xDEADBEEF}\n\n\x1b[1;32m[MISSION UPDATE] Objective Complete: KERNEL STABILIZED.\x1b[0m';
+            if (!VFS['/var/run/kernel_solved']) {
+                VFS['/var/run/kernel_solved'] = { type: 'file', content: 'TRUE' };
+                const runDir = getNode('/var/run');
+                if (runDir && runDir.type === 'dir' && !runDir.children.includes('kernel_solved')) {
+                    runDir.children.push('kernel_solved');
+                }
+            }
+        } else {
+            output = `[ERROR] Invalid Panic Code: ${code}. Check /var/log/kernel_panic.log again.`;
         }
         break;
     }
