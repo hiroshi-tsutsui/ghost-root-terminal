@@ -1158,6 +1158,30 @@ export const loadSystemState = () => {
         }
     }
 
+    // Cycle 148 Init (The SUID Path Injection)
+    if (!VFS['/usr/bin/backup_manager']) {
+        VFS['/usr/bin/backup_manager'] = {
+            type: 'file',
+            content: '[BINARY_ELF_X86_64] [SUID_ROOT]\n[FUNCTION] System Backup Service\n[WARNING] This binary runs with root privileges.',
+            permissions: '4755'
+        };
+        const binDir = getNode('/usr/bin');
+        if (binDir && binDir.type === 'dir' && !binDir.children.includes('backup_manager')) {
+            binDir.children.push('backup_manager');
+        }
+
+        if (!VFS['/home/ghost/suid_alert.log']) {
+            VFS['/home/ghost/suid_alert.log'] = {
+                type: 'file',
+                content: '[SECURITY AUDIT]\n[ALERT] Found SUID binary: /usr/bin/backup_manager\n[RISK] If this binary executes commands without absolute paths, it is vulnerable to PATH injection.\n[ACTION] Analyze binary behavior.'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('suid_alert.log')) {
+                home.children.push('suid_alert.log');
+            }
+        }
+    }
+
     // Cycle 129 Init (The Magic SysRq)
     if (!VFS['/proc/sysrq-trigger']) {
         // Ensure /proc exists
@@ -1899,6 +1923,79 @@ export const loadSystemState = () => {
             }
         }
     }
+
+    // Cycle 153 Init (The Missing Loopback)
+    if (!VFS['/home/ghost/network_fail.log']) {
+        VFS['/home/ghost/network_fail.log'] = {
+            type: 'file',
+            content: '[ERROR] Localhost connection refused.\n[DIAGNOSTIC] ping 127.0.0.1 -> Network is unreachable.\n[ACTION] Check network interfaces (ifconfig). The loopback interface (lo) might be down.'
+        };
+        const home = getNode('/home/ghost');
+        if (home && home.type === 'dir' && !home.children.includes('network_fail.log')) {
+            home.children.push('network_fail.log');
+        }
+    }
+
+    // Cycle 154 Init (The LD_PRELOAD Injection)
+    if (!VFS['/usr/lib/libmon.so']) {
+        const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+        const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+
+        ensureDir('/usr'); ensureDir('/usr/lib');
+        link('/usr', 'lib');
+
+        VFS['/usr/lib/libmon.so'] = {
+            type: 'file',
+            content: '[ELF_SHARED_OBJ] [SYSTEM_MONITOR_HOOK]\n[FUNCTION] log_exec()',
+            permissions: '0644'
+        };
+        link('/usr/lib', 'libmon.so');
+
+        // Inject the variable if not present
+        if (!ENV_VARS['LD_PRELOAD']) {
+            ENV_VARS['LD_PRELOAD'] = '/usr/lib/libmon.so';
+        }
+
+        // Hint
+        if (!VFS['/home/ghost/slow_shell.log']) {
+            VFS['/home/ghost/slow_shell.log'] = {
+                type: 'file',
+                content: '[WARNING] Shell performance degraded.\n[ANALYSIS] Every command is being intercepted by a shared library.\n[DIAGNOSTIC] Check environment variables (env) for LD_PRELOAD.\n[ACTION] Unset the variable to disable monitoring.'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('slow_shell.log')) {
+                home.children.push('slow_shell.log');
+            }
+        }
+    }
+
+    // Cycle 155 Init (The Broken Pipe)
+    if (!VFS['/usr/bin/data_processor']) {
+        const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+        const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+
+        ensureDir('/usr'); ensureDir('/usr/bin');
+        link('/usr', 'bin');
+
+        VFS['/usr/bin/data_processor'] = {
+            type: 'file',
+            content: '[BINARY_ELF_X86_64] [DATA_PIPELINE_TOOL]\n[REQUIREMENT] Input via STDIN.\n',
+            permissions: '0755'
+        };
+        link('/usr/bin', 'data_processor');
+
+        // Hint
+        if (!VFS['/home/ghost/pipeline_error.log']) {
+            VFS['/home/ghost/pipeline_error.log'] = {
+                type: 'file',
+                content: '[ERROR] data_processor: input stream empty.\n[DIAGNOSTIC] This tool expects data via standard input (stdin).\n[HINT] Use a pipe (|) to feed data into the command.\nExample: echo "DATA" | data_processor'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('pipeline_error.log')) {
+                home.children.push('pipeline_error.log');
+            }
+        }
+    }
 };
 
 // Helper to reset state
@@ -2299,6 +2396,29 @@ export const tabCompletion = (cwd: string, inputBuffer: string): { matches: stri
 export const processCommand = (cwd: string, commandLine: string, stdin?: string): CommandResult => {
   const cmdTokens = commandLine.trim().split(/\s+/);
   const cmdBase = cmdTokens[0];
+
+  // Cycle 154 (The LD_PRELOAD Injection)
+  if (ENV_VARS['LD_PRELOAD']) {
+      const blocked = ['ssh', 'scp', 'deploy_tool', 'sat', 'hydra', 'nmap', 'nc', 'curl', 'wget', 'python', 'python3', 'gcc', 'make'];
+      if (blocked.includes(cmdBase) || cmdBase.endsWith('deploy_tool')) {
+          return { output: `[LD_PRELOAD] ${ENV_VARS['LD_PRELOAD']}: loaded.\n[MONITOR] Suspicious activity detected: ${cmdBase}\n[ACTION] Execution blocked by monitoring policy.\n[HINT] Disable the preloaded library (unset LD_PRELOAD) to bypass checks.`, newCwd: cwd };
+      }
+      // For allowed commands, we just print a warning if it's 'ls' or 'cd' to be annoying but functional
+      if (cmdBase === 'ls') {
+          // We can't easily prepend to 'ls' output without rewriting 'ls' logic.
+          // So we return a special result? No, let's just let 'ls' run but maybe return a warning if it's empty?
+          // Actually, let's just block the 'cool' stuff.
+      }
+  }
+
+  // Cycle 155 (The Broken Pipe)
+  if (cmdBase === 'data_processor' || cmdBase === '/usr/bin/data_processor') {
+      if (stdin && stdin.length > 0) {
+           return { output: `[PROCESSING] Data stream received: "${stdin}"\n[ANALYSIS] Validating input...\n[SUCCESS] Pipeline integrity verified.\nFLAG: GHOST_ROOT{P1P3L1N3_M4ST3R}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: DATA PIPELINE RESTORED.\x1b[0m`, newCwd: cwd };
+      } else {
+           return { output: 'data_processor: error: no input data provided.\nUsage: <command> | data_processor', newCwd: cwd };
+      }
+  }
 
   // Cycle 151 (The Missing Shared Object)
   if (cmdBase === 'decipher' || cmdBase === '/usr/bin/decipher') {
@@ -6486,8 +6606,10 @@ DROP       icmp --  10.10.99.1           anywhere`;
         } else {
             const pair = args.join(' ');
             if (pair.includes('=')) {
-                const [key, val] = pair.split('=');
-                if (key && val) {
+                const parts = pair.split('=');
+                const key = parts[0];
+                const val = parts.slice(1).join('=');
+                if (key) {
                     ENV_VARS[key.trim()] = val.trim();
                     output = ''; // Silent
                 } else {
@@ -6496,6 +6618,18 @@ DROP       icmp --  10.10.99.1           anywhere`;
             } else {
                 output = 'export: invalid format';
             }
+        }
+        break;
+    }
+    case 'unset': {
+        if (args.length < 1) {
+            output = 'usage: unset VAR';
+        } else {
+            const key = args[0];
+            if (ENV_VARS[key]) {
+                delete ENV_VARS[key];
+            }
+            output = '';
         }
         break;
     }
@@ -7947,6 +8081,12 @@ Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
            const ip = hosts[host] || (host.match(/^\d+\.\d+\.\d+\.\d+$/) ? host : null);
            
            if (ip) {
+               // Cycle 153: The Missing Loopback
+               if ((ip === '127.0.0.1' || ip.startsWith('127.')) && !VFS['/var/run/loopback_up']) {
+                   output = `ping: connect: Network is unreachable`;
+                   return { output, newCwd };
+               }
+
                // Cycle 112: Bad Gateway Check
                const currentGw = ENV_VARS['GATEWAY_IP'];
                // Block external traffic if gateway is wrong
@@ -8527,9 +8667,30 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
         }
         break;
     }
-    case 'ifconfig':
-       output = 'eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>...';
+    case 'ifconfig': {
+       if (args.length > 0 && args[0] === 'lo' && args[1] === 'up') {
+           VFS['/var/run/loopback_up'] = { type: 'file', content: 'TRUE' };
+           const runDir = getNode('/var/run');
+           if (runDir && runDir.type === 'dir' && !runDir.children.includes('loopback_up')) {
+               runDir.children.push('loopback_up');
+           }
+           output = ''; // Silent success
+           if (!VFS['/var/run/lo_solved']) {
+               VFS['/var/run/lo_solved'] = { type: 'file', content: 'TRUE' };
+               if (runDir && runDir.type === 'dir' && !runDir.children.includes('lo_solved')) {
+                   runDir.children.push('lo_solved');
+               }
+               output = `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: LOCALHOST RESTORED.\x1b[0m\nFLAG: GHOST_ROOT{L00PB4CK_1NT3RF4C3_UP}`;
+           }
+       } else {
+           output = 'eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500\n        inet 192.168.1.105  netmask 255.255.255.0  broadcast 192.168.1.255\n        inet6 fe80::5054:ff:fe12:3456  prefixlen 64  scopeid 0x20<link>\n        ether 00:50:56:c0:00:08  txqueuelen 1000  (Ethernet)\n        RX packets 1337  bytes 123456 (120.5 KiB)\n        RX errors 0  dropped 0  overruns 0  frame 0\n        TX packets 42  bytes 4096 (4.0 KiB)\n        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0';
+           
+           if (VFS['/var/run/loopback_up']) {
+               output = `lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536\n        inet 127.0.0.1  netmask 255.0.0.0\n        inet6 ::1  prefixlen 128  scopeid 0x10<host>\n        loop  txqueuelen 1000  (Local Loopback)\n        RX packets 0  bytes 0 (0.0 B)\n        RX errors 0  dropped 0  overruns 0  frame 0\n        TX packets 0  bytes 0 (0.0 B)\n        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0\n\n` + output;
+           }
+       }
        break;
+    }
     case 'beacon': {
        if (isBackground) {
            const pid = Math.floor(Math.random() * 30000) + 2000;
@@ -8585,6 +8746,12 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
        const nonFlagArgs = args.filter((a, i) => !a.startsWith('-') && (i === 0 || args[i-1] !== '-p'));
        const host = nonFlagArgs[0];
        if (!port && nonFlagArgs[1]) port = nonFlagArgs[1];
+
+       // Cycle 153 Check
+       if (!isListen && host && (host === 'localhost' || host === '127.0.0.1') && !VFS['/var/run/loopback_up']) {
+           output = `nc: connect to ${host} port ${port || 'any'} (tcp) failed: Connection refused`;
+           break;
+       }
 
        if (isListen) {
            if (!port) {
@@ -10146,6 +10313,12 @@ auth.py
       if (!url) {
         output = 'curl: try \'curl --help\' or \'curl --manual\' for more information';
       } else {
+        // Cycle 153 Check
+        if ((url.includes('localhost') || url.includes('127.0.0.1')) && !VFS['/var/run/loopback_up']) {
+            output = `curl: (7) Failed to connect to ${url}: Connection refused`;
+            return finalize(output, newCwd);
+        }
+
         // SSL Certificate Check Logic for secure.ghost.network
         if (url.includes('secure.ghost.network')) {
              if (args.includes('-k') || args.includes('--insecure')) {
@@ -13376,6 +13549,64 @@ postgres            14-alpine 1234567890ab   5 days ago     214MB`;
         output = `              total        used        free      shared  buff/cache   available
 Mem:        8167848     7854321      123456       42123      190071      123456
 Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)}`;
+        break;
+    }
+    case 'backup_manager': {
+        output = '[BACKUP_MANAGER] Initializing...\n[INFO] Running: tar -cf /tmp/backup.tar /home/ghost/data\n';
+        
+        // PATH Injection Simulation
+        const pathEnv = ENV_VARS['PATH'] || '';
+        const paths = pathEnv.split(':');
+        
+        // Find the first 'tar' in PATH
+        let foundTar = null;
+        let tarPath = '';
+        
+        for (const p of paths) {
+            // Handle relative paths (., ..) and tilde (~)
+            let searchDir = p;
+            if (p === '.') searchDir = cwd;
+            else if (p === '~') searchDir = '/home/ghost';
+            else if (p.startsWith('/')) searchDir = p;
+            else searchDir = resolvePath(cwd, p); // Resolve relative to cwd
+            
+            const potentialTar = resolvePath(searchDir, 'tar');
+            const node = getNode(potentialTar);
+            
+            if (node && node.type === 'file') {
+                foundTar = node;
+                tarPath = potentialTar;
+                break;
+            }
+        }
+        
+        if (foundTar) {
+            if (tarPath === '/bin/tar' || tarPath === '/usr/bin/tar') {
+                output += '[SUCCESS] Backup created at /tmp/backup.tar (Simulated)';
+            } else {
+                // Malicious TAR execution
+                output += `[WARNING] Executing user-defined tar at ${tarPath}...\n`;
+                output += `[ROOT ACCESS GRANTED]\n`;
+                
+                const content = (foundTar as any).content;
+                if (content.includes('cat') && content.includes('/root/flag.txt')) {
+                    output += `FLAG: GHOST_ROOT{PATH_1NJ3CT10N_SUCC3SS}\n`;
+                    output += `\x1b[1;32m[MISSION UPDATE] Objective Complete: SUID PATH INJECTION.\x1b[0m`;
+                    
+                    if (!VFS['/var/run/suid_solved']) {
+                        VFS['/var/run/suid_solved'] = { type: 'file', content: 'TRUE' };
+                        const runDir = getNode('/var/run');
+                        if (runDir && runDir.type === 'dir' && !runDir.children.includes('suid_solved')) {
+                            runDir.children.push('suid_solved');
+                        }
+                    }
+                } else {
+                    output += `[EXEC] ${content}\n(Hint: You have root access, but didn't read the flag.)`;
+                }
+            }
+        } else {
+            output += '[ERROR] tar command not found in PATH.';
+        }
         break;
     }
     default:
