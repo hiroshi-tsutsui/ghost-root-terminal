@@ -475,6 +475,20 @@ exit`
     type: 'file',
     content: '# UPLINK CONFIGURATION v2.0\n# --------------------------\n# SECURITY ALERT: HARDCODED KEYS REMOVED.\n#\n# To establish a connection, you must set the session environment variable:\n# export UPLINK_KEY=XJ9-SAT-442\n#\n# Then run: uplink_connect'
   },
+  '/etc/xinetd.d': {
+    type: 'dir',
+    children: ['irc_backdoor']
+  },
+  '/etc/xinetd.d/irc_backdoor': {
+    type: 'file',
+    content: '# default: on\n# description: Legacy IRC backdoor service\nservice irc_backdoor\n{\n        socket_type     = stream\n        protocol        = tcp\n        port            = 6667\n        wait            = no\n        user            = root\n        server          = /usr/sbin/ircc\n        disable         = no\n}',
+    permissions: '600'
+  },
+  '/usr/sbin/ircc': {
+    type: 'file',
+    content: '[BINARY_ELF_X86_64]\n[IRC_DAEMON_V1]\nUsage: ircc -d',
+    permissions: '755'
+  },
   '/etc/tor': {
     type: 'dir',
     children: ['torrc']

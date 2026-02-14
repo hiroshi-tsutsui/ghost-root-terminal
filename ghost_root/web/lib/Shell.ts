@@ -1772,7 +1772,9 @@ let PROCESSES: Process[] = [
   { pid: 1001, ppid: 1, user: 'root', cpu: 0.1, mem: 4.5, time: '12:00', command: '/usr/sbin/log_daemon', tty: '?', stat: 'Ss' },
   { pid: 1080, ppid: 1, user: 'ghost', cpu: 0.2, mem: 0.5, time: '0:30', command: 'nc -l -p 8080', tty: '?', stat: 'Ss' },
   { pid: 4999, ppid: 1, user: 'root', cpu: 0.5, mem: 0.2, time: '0:05', command: '/bin/bash /usr/local/bin/bloat_guard', tty: '?', stat: 'Ss' },
-  { pid: 5000, ppid: 4999, user: 'root', cpu: 99.8, mem: 12.0, time: '48:00', command: './sys_bloat --intense', tty: '?', stat: 'R' }
+  { pid: 5000, ppid: 4999, user: 'root', cpu: 99.8, mem: 12.0, time: '48:00', command: './sys_bloat --intense', tty: '?', stat: 'R' },
+  { pid: 1111, ppid: 1, user: 'root', cpu: 0.1, mem: 0.5, time: '00:10', command: '/usr/sbin/respawn_d', tty: '?', stat: 'Ss' },
+  { pid: 2222, ppid: 1111, user: 'root', cpu: 99.0, mem: 10.0, time: '10:00', command: '[malware_agent]', tty: '?', stat: 'R' }
 ];
 
 export const getRunningProcesses = () => PROCESSES;
@@ -5425,10 +5427,7 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
                     }
                 } else {
                     output = '';
-                } 
-                } else {
-                    output = '';
-                } 
+                }
             }
         }
         break;
@@ -7823,6 +7822,10 @@ ${host}.		300	IN	A	${ip}
        if (VFS['/usr/bin/hidden_service']) {
            dynamicConnections.push({ proto: 'tcp', recv: 0, send: 0, local: '127.0.0.1:31337', remote: '0.0.0.0:*', state: 'LISTEN', pid: '31337/hidden_service' });
        }
+       
+       if (VFS['/etc/xinetd.d/irc_backdoor']) {
+           dynamicConnections.push({ proto: 'tcp', recv: 0, send: 0, local: '127.0.0.1:6667', remote: '0.0.0.0:*', state: 'LISTEN', pid: '6667/ircc' });
+       }
 
        const header = 'Active Internet connections (servers and established)';
        const table = dynamicConnections.map(c => {
@@ -8277,6 +8280,21 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
                            if (runDir && runDir.type === 'dir' && !runDir.children.includes('port_solved')) {
                                runDir.children.push('port_solved');
                            }
+                       }
+                   } else if (p === '6667') {
+                       // Cycle 145: The Hidden Service
+                       if (VFS['/etc/xinetd.d/irc_backdoor']) {
+                            output = `(UNKNOWN) [127.0.0.1] 6667 (irc) open\n:irc.local 001 ghost :Welcome to the Local IRC Backdoor\n:irc.local 251 ghost :There are 1 users and 0 invisible on 1 servers\n:irc.local 372 ghost :- This is a private system.\n:irc.local 376 ghost :End of MOTD command.\n\n:irc.local JOIN #shadow\n:irc.local 332 ghost #shadow :TOPIC: GHOST_ROOT{X1NETD_B4CKD00R_D1SCOV3R3D}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: HIDDEN SERVICE ACCESSED.\x1b[0m`;
+                            
+                            if (!VFS['/var/run/service_solved']) {
+                                VFS['/var/run/service_solved'] = { type: 'file', content: 'TRUE' };
+                                const runDir = getNode('/var/run');
+                                if (runDir && runDir.type === 'dir' && !runDir.children.includes('service_solved')) {
+                                    runDir.children.push('service_solved');
+                                }
+                            }
+                       } else {
+                            output = `localhost [127.0.0.1] ${p} (?): Connection refused`;
                        }
                    } else {
                        output = `localhost [127.0.0.1] ${p} (?): Connection refused`;
@@ -8771,6 +8789,35 @@ tmpfs             815276    1184    814092   1% /run
               const ppid = p.ppid;
               return `${p.user.padEnd(8)} ${String(p.pid).padStart(5)} ${String(ppid).padStart(5)}  0 14:02 ${p.tty.padEnd(8)} ${p.time.padStart(8)} ${p.command}`;
           }).join('\n');
+      } else if (args.includes('-o')) {
+          const oIndex = args.indexOf('-o');
+          const format = args[oIndex + 1];
+          if (format) {
+              const cols = format.split(',').map(c => c.trim().toLowerCase());
+              // Pad headers
+              const headers = cols.map(c => {
+                  if (c === 'pid' || c === 'ppid') return c.toUpperCase().padEnd(5);
+                  if (c === 'user') return c.toUpperCase().padEnd(8);
+                  if (c === 'tty') return c.toUpperCase().padEnd(8);
+                  if (c === 'time') return c.toUpperCase().padEnd(8);
+                  return c.toUpperCase();
+              }).join(' ');
+
+              output = headers + '\n' +
+              procs.map(p => {
+                  return cols.map(c => {
+                      if (c === 'pid') return String(p.pid).padStart(5);
+                      if (c === 'ppid') return String(p.ppid).padStart(5);
+                      if (c === 'user') return p.user.padEnd(8);
+                      if (c === 'cmd' || c === 'command') return p.command;
+                      if (c === 'tty') return p.tty.padEnd(8);
+                      if (c === 'time') return p.time.padStart(8);
+                      return '?';
+                  }).join(' ');
+              }).join('\n');
+          } else {
+              output = 'ps: option requires an argument -- o';
+          }
       } else {
           // Default minimal output
           output = '  PID TTY          TIME CMD\n' +
@@ -9183,6 +9230,45 @@ auth.py
                           output = `[SYSTEM] Terminated broadcast_d (PID 6666).\n[SYSTEM] Broadcast stopped.\n\nFLAG: GHOST_ROOT{B4CKGR0UND_J0B_K1LL3D}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: ROGUE BROADCAST TERMINATED.\x1b[0m`;
                       } else {
                           output = `[SYSTEM] Terminated broadcast_d (PID 6666). Broadcast stopped.`;
+                      }
+                  } else if (pid === 1111) { // Respawn Daemon (Parent)
+                      PROCESSES.splice(idx, 1);
+                      // Kill child if exists
+                      const childIdx = PROCESSES.findIndex(p => p.ppid === 1111);
+                      if (childIdx !== -1) {
+                          PROCESSES.splice(childIdx, 1);
+                      }
+                      output = `[SYSTEM] Terminated respawn_d (PID 1111).\n[SYSTEM] Child processes orphaned and terminated.\n\nFLAG: GHOST_ROOT{PP1D_HUN73R_SUCC3SS}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: ORPHANED PROCESS STOPPED.\x1b[0m`;
+                      
+                      if (!VFS['/var/run/orphan_solved']) {
+                          VFS['/var/run/orphan_solved'] = { type: 'file', content: 'TRUE' };
+                          const runDir = getNode('/var/run');
+                          if (runDir && runDir.type === 'dir' && !runDir.children.includes('orphan_solved')) {
+                              runDir.children.push('orphan_solved');
+                          }
+                      }
+                  } else if (pid === 2222 || (proc.ppid === 1111)) { // Malware Agent (Child)
+                      // Check if parent exists
+                      const parent = PROCESSES.find(p => p.pid === 1111);
+                      if (parent) {
+                          PROCESSES.splice(idx, 1);
+                          const newPid = Math.floor(Math.random() * 5000) + 3000;
+                          PROCESSES.push({ 
+                              pid: newPid, 
+                              ppid: 1111, 
+                              user: 'root', 
+                              cpu: 99.0, 
+                              mem: 10.0, 
+                              time: '0:00', 
+                              command: '[malware_agent]', 
+                              tty: '?', 
+                              stat: 'R' 
+                          });
+                          output = `[SYSTEM] Terminated process ${pid}.\n[ALERT] Process respawned with PID ${newPid} by parent daemon.\n[HINT] Find the parent process (PPID) to stop the cycle.`;
+                      } else {
+                          // Parent dead, just kill
+                          PROCESSES.splice(idx, 1);
+                          output = `[SYSTEM] Terminated process ${pid}.`;
                       }
                   } else if (pid === 3001) { // Zombie
                       output = `bash: kill: (${pid}) - Operation not permitted (Zombie process)`;
