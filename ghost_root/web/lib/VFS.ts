@@ -304,7 +304,13 @@ KEY_ID: GHOST_PROTOCOL_INIT_V2
   },
   '/home/ghost': {
     type: 'dir',
-    children: ['project_alpha', 'secrets', '.bash_history', '.ssh', 'wifi_note.txt', 'journal', 'evidence.jpg', 'surveillance.jpg', 'tools', 'tools.zip', 'capture.cap', 'drone_manual.txt', 'beacon_protocol.txt', 'hashes.txt', 'wordlist.txt', 'operations']
+    children: ['project_alpha', 'secrets', '.bash_history', '.ssh', 'wifi_note.txt', 'journal', 'evidence.jpg', 'surveillance.jpg', 'tools', 'tools.zip', 'capture.cap', 'drone_manual.txt', 'beacon_protocol.txt', 'hashes.txt', 'wordlist.txt', 'operations', 'security_alert.txt']
+  },
+  '/home/ghost/security_alert.txt': {
+      type: 'file',
+      content: `[ALERT] Unauthorized access detected from an unknown IP in the 10.0.0.x range.
+Please check /var/log/auth.log for the exact address.
+Once identified, use the 'firewall_bypass --ip <IP>' tool to isolate the connection.`
   },
   '/home/ghost/operations': {
     type: 'dir',
@@ -716,11 +722,18 @@ COMMIT
   },
   '/var/log/auth.log': {
       type: 'file',
-      content: `Oct 23 10:00:00 ghost-root sshd[404]: Accepted publickey for root from 192.168.1.5
-Oct 23 11:15:22 ghost-root camsnap[888]: Camera 03 access granted. Token used: SPECTRE_EYE
-Oct 23 11:16:00 ghost-root camsnap[888]: Session closed.
-Oct 23 12:15:32 ghost-root sshd[404]: Failed password for invalid user kirov_reporting from 192.168.1.5 port 54322 ssh2
-Oct 23 12:15:35 ghost-root sshd[404]: Failed password for invalid user kirov_reporting from 192.168.1.5 port 54322 ssh2`
+      content: `Oct 23 00:01:23 ghost-root sshd[404]: Failed password for invalid user admin from 192.168.1.5 port 54322 ssh2
+Oct 23 00:01:25 ghost-root sshd[404]: Failed password for invalid user root from 192.168.1.5 port 54324 ssh2
+Oct 23 00:01:28 ghost-root sshd[404]: Failed password for invalid user test from 192.168.1.5 port 54326 ssh2
+Oct 23 00:02:00 ghost-root sshd[404]: Received disconnect from 192.168.1.5 port 54326:11: Bye Bye [preauth]
+Oct 23 01:15:22 ghost-root camsnap[888]: Camera 03 access granted. Token used: SPECTRE_EYE
+Oct 23 01:16:00 ghost-root camsnap[888]: Session closed.
+Oct 23 02:00:01 ghost-root sshd[404]: Invalid user guest from 10.0.0.5
+Oct 23 02:00:02 ghost-root sshd[404]: Invalid user support from 10.0.0.5
+Oct 23 03:14:15 ghost-root sshd[1337]: Accepted publickey for ghost from 10.0.0.99 port 443 ssh2
+Oct 23 03:14:16 ghost-root sshd[1337]: pam_unix(sshd:session): session opened for user ghost by (uid=0)
+Oct 23 04:00:00 ghost-root sshd[404]: Failed password for invalid user kirov_reporting from 192.168.1.5 port 54322 ssh2
+Oct 23 04:00:05 ghost-root sshd[404]: Failed password for invalid user kirov_reporting from 192.168.1.5 port 54322 ssh2`
   },
   '/var/log/trace.log': {
       type: 'file',

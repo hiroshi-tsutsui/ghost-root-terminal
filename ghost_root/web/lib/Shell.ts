@@ -44,6 +44,7 @@ let KNOCK_SEQUENCE: number[] = [];
 
 let ALERT_LEVEL = 0;
 let SYSTEM_TIME_OFFSET = -824900000000; // Set system time to ~1999 (Y2K glitch)
+let UMASK = '0022'; // Cycle 165: Default umask
 export const USER_GROUPS: string[] = ['ghost', 'adm', 'cdrom', 'dip', 'plugdev'];
 
 const LOADED_MODULES: string[] = [];
@@ -67,6 +68,7 @@ export const saveSystemState = () => {
         ENV_VARS,
         ALERT_LEVEL,
         SYSTEM_TIME_OFFSET,
+        UMASK,
         LOADED_MODULES,
         FILE_ATTRIBUTES, // Added for Cycle 40
         MOUNTED_DEVICES, // Added for Cycle 83 Persistence
@@ -108,6 +110,7 @@ export const loadSystemState = () => {
             if (parsed.ENV_VARS) Object.assign(ENV_VARS, parsed.ENV_VARS);
             if (parsed.ALERT_LEVEL !== undefined) ALERT_LEVEL = parsed.ALERT_LEVEL;
             if (parsed.SYSTEM_TIME_OFFSET !== undefined) SYSTEM_TIME_OFFSET = parsed.SYSTEM_TIME_OFFSET;
+            if (parsed.UMASK !== undefined) UMASK = parsed.UMASK;
             if (parsed.LOADED_MODULES) {
                 LOADED_MODULES.length = 0;
                 LOADED_MODULES.push(...parsed.LOADED_MODULES);
@@ -2056,6 +2059,290 @@ export const loadSystemState = () => {
             }
         }
     }
+
+    // Cycle 159 Init (The History Leak)
+    if (!VFS['/home/ghost/secure.zip']) {
+        if (!VFS['/home/ghost']) {
+             VFS['/home/ghost'] = { type: 'dir', children: [] };
+             const home = getNode('/home');
+             if (home && home.type === 'dir' && !home.children.includes('ghost')) {
+                 home.children.push('ghost');
+             }
+        }
+        
+        VFS['/home/ghost/secure.zip'] = {
+            type: 'file',
+            content: '[ENCRYPTED_ZIP_DATA]',
+            permissions: '0644'
+        };
+        const homeDir = getNode('/home/ghost');
+        if (homeDir && homeDir.type === 'dir' && !homeDir.children.includes('secure.zip')) {
+            homeDir.children.push('secure.zip');
+        }
+
+        // Leak password in history
+        if (VFS['/home/ghost/.bash_history']) {
+            const hist = VFS['/home/ghost/.bash_history'];
+            if (hist.type === 'file' && !hist.content.includes('Hunter2')) {
+                (hist as any).content += '\nzip -e secure.zip -P "Hunter2" data.txt\nrm data.txt\n';
+            }
+        } else {
+            VFS['/home/ghost/.bash_history'] = {
+                type: 'file',
+                content: 'ls -la\ncd /var/log\ncat syslog\nzip -e secure.zip -P "Hunter2" data.txt\nrm data.txt\n',
+                permissions: '0600'
+            };
+            if (homeDir && homeDir.type === 'dir' && !homeDir.children.includes('.bash_history')) {
+                homeDir.children.push('.bash_history');
+            }
+        }
+
+        // Hint File
+        if (!VFS['/home/ghost/reminder.txt']) {
+            VFS['/home/ghost/reminder.txt'] = {
+                type: 'file',
+                content: 'TODO: Clean up shell history before logging out.\nCannot leave plain text passwords lying around.'
+            };
+            if (homeDir && homeDir.type === 'dir' && !homeDir.children.includes('reminder.txt')) {
+                homeDir.children.push('reminder.txt');
+            }
+        }
+    }
+
+    // Cycle 160 Init (The Env Var Injection)
+    if (!VFS['/usr/bin/reactor_control']) {
+        const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+        const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+
+        ensureDir('/usr'); ensureDir('/usr/bin');
+        link('/usr', 'bin');
+        
+        VFS['/usr/bin/reactor_control'] = {
+            type: 'file',
+            content: '[BINARY_ELF_X86_64] [REACTOR_CORE_V4]\n[CHECK] ENV: SAFETY_OVERRIDE\n[WARN] INTERLOCK ACTIVE',
+            permissions: '0755'
+        };
+        link('/usr/bin', 'reactor_control');
+
+        // Hint
+        if (!VFS['/home/ghost/reactor_manual.txt']) {
+            VFS['/home/ghost/reactor_manual.txt'] = {
+                type: 'file',
+                content: '[MANUAL] Reactor Start Procedure\n------------------------------\n1. Ensure cooling pumps are active.\n2. Set environment variable SAFETY_OVERRIDE=1 to bypass mechanical interlocks.\n3. Run /usr/bin/reactor_control.'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('reactor_manual.txt')) {
+                home.children.push('reactor_manual.txt');
+            }
+        }
+    }
+
+    // Cycle 161 Init (The Manual Override)
+    if (!VFS['/usr/bin/signal_jammer']) {
+        const binDir = getNode('/usr/bin');
+        if (binDir && binDir.type === 'dir' && !binDir.children.includes('signal_jammer')) {
+            binDir.children.push('signal_jammer');
+        }
+        VFS['/usr/bin/signal_jammer'] = {
+            type: 'file',
+            content: '[BINARY_ELF_X86_64] [JAMMER_V1]\n[ERROR] Missing parameters.\nSee man page for details.',
+            permissions: '0755'
+        };
+        
+        // Hint in home
+        if (!VFS['/home/ghost/drone_alert.log']) {
+             VFS['/home/ghost/drone_alert.log'] = {
+                 type: 'file',
+                 content: '[ALERT] Surveillance Drone Detected.\n[ACTION] Use signal_jammer to disrupt control link.\n[NOTE] Consult manual for correct frequency and gain settings.'
+             };
+             const home = getNode('/home/ghost');
+             if (home && home.type === 'dir' && !home.children.includes('drone_alert.log')) {
+                 home.children.push('drone_alert.log');
+             }
+        }
+    }
+
+    // Cycle 162 Init (The Permissions Check)
+    if (!VFS['/usr/local/bin/deploy_beta.sh']) {
+        if (!VFS['/usr/local/bin']) {
+             if (!VFS['/usr/local']) { 
+                 VFS['/usr/local'] = { type: 'dir', children: ['bin'] }; 
+                 const usr = getNode('/usr');
+                 if (usr && usr.type === 'dir' && !usr.children.includes('local')) usr.children.push('local');
+             }
+             const local = getNode('/usr/local');
+             if (local && local.type === 'dir' && !local.children.includes('bin')) local.children.push('bin');
+             if (!VFS['/usr/local/bin']) VFS['/usr/local/bin'] = { type: 'dir', children: [] };
+        }
+        
+        VFS['/usr/local/bin/deploy_beta.sh'] = {
+            type: 'file',
+            content: '#!/bin/bash\\n# BETA DEPLOYMENT SCRIPT\\n# Check permissions before executing.\\n[DEPLOY] Initiating Beta Deployment...\\n[SUCCESS] Systems Online.\\nFLAG: GHOST_ROOT{CHM0D_PLUS_X_FTW}',
+            permissions: '0644'
+        };
+        const binDir = getNode('/usr/local/bin');
+        if (binDir && binDir.type === 'dir' && !binDir.children.includes('deploy_beta.sh')) {
+            binDir.children.push('deploy_beta.sh');
+        }
+
+        if (!VFS['/home/ghost/deploy_failure.log']) {
+            VFS['/home/ghost/deploy_failure.log'] = {
+                type: 'file',
+                content: '[ERROR] Failed to execute /usr/local/bin/deploy_beta.sh.\\n[REASON] Permission denied.\\n[ACTION] Verify file is executable (ls -l) and fix permissions (chmod +x).'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('deploy_failure.log')) {
+                home.children.push('deploy_failure.log');
+            }
+        }
+    }
+
+    // Cycle 163 Init (The SSH Key Permission)
+    if (!VFS['/usr/bin/secure_connect']) {
+        const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+        const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+
+        ensureDir('/usr'); ensureDir('/usr/bin');
+        link('/usr', 'bin');
+
+        VFS['/usr/bin/secure_connect'] = {
+            type: 'file',
+            content: '[BINARY_ELF_X86_64] [SSH_CLIENT_WRAPPER]\n[CONFIG] IdentityFile: ~/.ssh/id_rsa.pem\n[ERROR] Connection failed.',
+            permissions: '0755'
+        };
+        link('/usr/bin', 'secure_connect');
+
+        // Create the backup key
+        ensureDir('/opt'); ensureDir('/opt/backup'); ensureDir('/opt/backup/keys');
+        link('/', 'opt'); link('/opt', 'backup'); link('/opt/backup', 'keys');
+
+        VFS['/opt/backup/keys/id_rsa.pem.bak'] = {
+            type: 'file',
+            content: '-----BEGIN RSA PRIVATE KEY-----\nMIIEogIBAAKCAQEA...[SECRET_KEY]...3f8a\n-----END RSA PRIVATE KEY-----',
+            permissions: '0644'
+        };
+        link('/opt/backup/keys', 'id_rsa.pem.bak');
+
+        // Ensure ~/.ssh exists but is empty
+        ensureDir('/home/ghost/.ssh');
+        link('/home/ghost', '.ssh');
+
+        // Hint
+        if (!VFS['/home/ghost/ssh_issue.log']) {
+            VFS['/home/ghost/ssh_issue.log'] = {
+                type: 'file',
+                content: '[ERROR] secure_connect: Identity file not found.\n[DIAGNOSTIC] The tool expects a private key at ~/.ssh/id_rsa.pem.\n[ACTION] Restore the key from backups (/opt/backup/keys) and ensure permissions are secure (0600).'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('ssh_issue.log')) {
+                home.children.push('ssh_issue.log');
+            }
+        }
+    }
+
+    // Cycle 164 Init (The Environ Leak)
+    if (!VFS['/proc/5555/environ']) {
+        const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+        const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+
+        ensureDir('/proc'); ensureDir('/proc/5555');
+        link('/', 'proc'); link('/proc', '5555');
+
+        VFS['/proc/5555/environ'] = {
+            type: 'file',
+            content: 'SHELL=/bin/bash\0USER=daemon\0PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\0DB_PASS=GHOST_ROOT{PR0C_3NV_L34K}\0PWD=/\0',
+            permissions: '0400'
+        };
+        link('/proc/5555', 'environ');
+
+        VFS['/proc/5555/cmdline'] = {
+            type: 'file',
+            content: '/usr/sbin/daemon_v2 --secure',
+            permissions: '0444'
+        };
+        link('/proc/5555', 'cmdline');
+        
+        // Hint
+        if (!VFS['/home/ghost/daemon_alert.log']) {
+             VFS['/home/ghost/daemon_alert.log'] = {
+                 type: 'file',
+                 content: '[ALERT] daemon_v2 (PID 5555) started with insecure environment variables.\\n[RISK] Sensitive data (DB_PASS) might be exposed in /proc.\\n[ACTION] Inspect process environment using /proc filesystem or "strings /proc/5555/environ".'
+             };
+             const home = getNode('/home/ghost');
+             if (home && home.type === 'dir' && !home.children.includes('daemon_alert.log')) {
+                 home.children.push('daemon_alert.log');
+             }
+        }
+        
+        // Spawn Process if not exists
+        if (!PROCESSES.find(p => p.pid === 5555)) {
+            PROCESSES.push({
+                pid: 5555,
+                ppid: 1,
+                user: 'daemon',
+                cpu: 0.1,
+                mem: 1.5,
+                time: '04:20',
+                command: '/usr/sbin/daemon_v2 --secure',
+                tty: '?',
+                stat: 'Ss'
+            });
+        }
+    }
+
+    // Cycle 165 Init (The Umask Mystery)
+    if (!VFS['/usr/bin/secure_generator']) {
+        const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+        const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+
+        ensureDir('/usr'); ensureDir('/usr/bin');
+        link('/usr', 'bin');
+
+        VFS['/usr/bin/secure_generator'] = {
+            type: 'file',
+            content: '[BINARY_ELF_X86_64] [KEY_GEN_V1]\n[FUNCTION] Generates secret_key.txt\n[CHECK] Verifies file permissions (must be 0600).',
+            permissions: '0755'
+        };
+        link('/usr/bin', 'secure_generator');
+
+        if (!VFS['/home/ghost/security_policy.txt']) {
+            VFS['/home/ghost/security_policy.txt'] = {
+                type: 'file',
+                content: '[SECURITY POLICY] All generated keys must be readable ONLY by the owner (0600).\n[NOTICE] The generator tool respects the current umask.\n[ACTION] Set umask appropriately before running /usr/bin/secure_generator.'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('security_policy.txt')) {
+                home.children.push('security_policy.txt');
+            }
+        }
+    }
+
+    // Cycle 166 Init (The Corrupted Binary)
+    if (!VFS['/usr/bin/legacy_auth']) {
+        const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+        const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+
+        ensureDir('/usr'); ensureDir('/usr/bin');
+        link('/usr', 'bin');
+
+        VFS['/usr/bin/legacy_auth'] = {
+            type: 'file',
+            content: '\x7fELF\x02\x01\x01\x00\x00...[GARBAGE]...DEBUG_MODE_ENABLE=1...[GARBAGE]\x00\x00',
+            permissions: '0755'
+        };
+        link('/usr/bin', 'legacy_auth');
+
+        if (!VFS['/home/ghost/legacy_error.log']) {
+            VFS['/home/ghost/legacy_error.log'] = {
+                type: 'file',
+                content: '[ERROR] legacy_auth failed to start.\n[DIAGNOSTIC] Segmentation fault.\n[HINT] The binary contains hidden configuration strings. Use "strings" to analyze it.'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('legacy_error.log')) {
+                home.children.push('legacy_error.log');
+            }
+        }
+    }
 };
 
 // Helper to reset state
@@ -2284,7 +2571,7 @@ export interface CommandResult {
   data?: any;
 }
 
-const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'ss', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail',     'strings', 'recover_tool', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'arp', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'zgrep', 'gunzip', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'secure_vault', 'jobs', 'fg', 'bg', 'recover_data', 'ghost_update', 'git', 'file', 'openssl', 'beacon', 'fsck', 'docker', 'lsattr', 'chattr', 'backup_service', 'getfattr', 'setfattr', 'mkfifo', 'uplink_service', 'sqlite3', 'gdb', 'jwt_tool', 'php', 'access_card', 'sys_monitor', 'ln', 'readlink', 'nginx', 'tac', 'getcap', 'sysctl', 'ldd', 'quantum_calc', 'deploy_tool', 'ghost_relay', 'groups', 'usermod', 'access_silo', 'satellite_uplink', 'unshadow', 'john', 'mkswap', 'swapon', 'free', 'hostname', 'runlevel', 'telinit', 'init', 'screen'];
+const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'ss', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail',     'strings', 'recover_tool', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'arp', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'zgrep', 'gunzip', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'secure_vault', 'jobs', 'fg', 'bg', 'recover_data', 'ghost_update', 'git', 'file', 'openssl', 'beacon', 'fsck', 'docker', 'lsattr', 'chattr', 'backup_service', 'getfattr', 'setfattr', 'mkfifo', 'uplink_service', 'sqlite3', 'gdb', 'jwt_tool', 'php', 'access_card', 'sys_monitor', 'ln', 'readlink', 'nginx', 'tac', 'getcap', 'sysctl', 'ldd', 'quantum_calc', 'deploy_tool', 'ghost_relay', 'groups', 'usermod', 'access_silo', 'satellite_uplink', 'unshadow', 'john', 'mkswap', 'swapon', 'free', 'hostname', 'runlevel', 'telinit', 'init', 'screen', 'signal_jammer', 'legacy_auth'];
 
 export interface MissionStatus {
   objectives: {
@@ -2456,6 +2743,270 @@ export const tabCompletion = (cwd: string, inputBuffer: string): { matches: stri
 export const processCommand = (cwd: string, commandLine: string, stdin?: string): CommandResult => {
   const cmdTokens = commandLine.trim().split(/\s+/);
   const cmdBase = cmdTokens[0];
+
+  // Built-in: export
+  if (cmdBase === 'export') {
+      const args = commandLine.trim().split(/\s+/).slice(1);
+      if (args.length === 0) return { output: Object.entries(ENV_VARS).map(([k,v]) => `${k}=${v}`).join('\n'), newCwd: cwd };
+      
+      args.forEach(arg => {
+          const parts = arg.split('=');
+          if (parts.length >= 2) {
+              const key = parts[0];
+              let val = parts.slice(1).join('='); // Handle value containing =
+              if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+                  val = val.slice(1, -1);
+              }
+              ENV_VARS[key] = val;
+              saveSystemState();
+          }
+      });
+      return { output: '', newCwd: cwd };
+  }
+
+  // Built-in: env / printenv
+  if (cmdBase === 'env' || cmdBase === 'printenv') {
+      return { output: Object.entries(ENV_VARS).map(([k,v]) => `${k}=${v}`).join('\n'), newCwd: cwd };
+  }
+
+  // Built-in: unset
+  if (cmdBase === 'unset') {
+      const args = commandLine.trim().split(/\s+/).slice(1);
+      args.forEach(arg => {
+          if (ENV_VARS[arg]) {
+              delete ENV_VARS[arg];
+              saveSystemState();
+          }
+      });
+      return { output: '', newCwd: cwd };
+  }
+
+  // Built-in: chmod (Simulation)
+  if (cmdBase === 'chmod') {
+      const args = commandLine.trim().split(/\s+/).slice(1);
+      const mode = args[0];
+      const target = args[1];
+      
+      if (!mode || !target) return { output: 'chmod: missing operand', newCwd: cwd };
+      
+      const fullPath = resolvePath(cwd, target);
+      const node = getNode(fullPath);
+      if (!node) return { output: `chmod: cannot access '${target}': No such file or directory`, newCwd: cwd };
+      
+      if (mode === '+x') {
+          let p = (node as any).permissions || '0644';
+          // Simulating +x by upgrading to 755 or 700 if private
+          if (p === '0644') p = '0755';
+          else if (p === '0600') p = '0700';
+          else if (p === '0640') p = '0750';
+          else if (!p.includes('7') && !p.includes('5')) p = '0755'; // Fallback
+          
+          (node as any).permissions = p;
+          saveSystemState();
+          return { output: '', newCwd: cwd };
+      }
+      if (mode === '755' || mode === '0755') {
+          (node as any).permissions = '0755';
+          saveSystemState();
+          return { output: '', newCwd: cwd };
+      }
+      if (mode === '644' || mode === '0644') {
+          (node as any).permissions = '0644';
+          saveSystemState();
+          return { output: '', newCwd: cwd };
+      }
+      if (mode === 'x' || mode === '-x') {
+           // Remove execute
+          let p = (node as any).permissions || '0755';
+          if (p === '0755') p = '0644';
+          else if (p === '0700') p = '0600';
+          (node as any).permissions = p;
+          saveSystemState();
+          return { output: '', newCwd: cwd };
+      }
+      
+      return { output: `chmod: mode '${mode}' not fully implemented in simulation`, newCwd: cwd };
+  }
+
+  // Built-in: umask
+  if (cmdBase === 'umask') {
+      const args = commandLine.trim().split(/\s+/).slice(1);
+      if (args.length === 0) {
+          return { output: UMASK, newCwd: cwd };
+      } else {
+          const newVal = args[0];
+          if (/^[0-7]{3,4}$/.test(newVal)) {
+              UMASK = newVal;
+              saveSystemState();
+              return { output: '', newCwd: cwd };
+          } else {
+              return { output: `umask: ${newVal}: octal number out of range`, newCwd: cwd };
+          }
+      }
+  }
+
+  // Cycle 160 (The Env Var Injection)
+  if (cmdBase === 'reactor_control' || cmdBase === '/usr/bin/reactor_control') {
+      if (ENV_VARS['SAFETY_OVERRIDE'] === '1') {
+           return { output: '[REACTOR] Interlock Bypassed.\n[REACTOR] Control Rods: INSERTED.\n[REACTOR] Core Stability: 100%.\nFLAG: GHOST_ROOT{ENV_V4R_1NJ3CT10N_SUCC3SS}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: REACTOR STABILIZED.\x1b[0m', newCwd: cwd };
+      } else {
+           return { output: '[REACTOR] ERROR: Mechanical Interlock Active.\n[REACTOR] Safety protocols prevent execution.\n[HINT] Check the manual for override procedures.', newCwd: cwd };
+      }
+  }
+
+  // Cycle 161 (The Manual Override)
+  if (cmdBase === 'signal_jammer' || cmdBase === '/usr/bin/signal_jammer') {
+      const args = commandLine.trim().split(/\s+/).slice(1);
+      const freqIdx = args.indexOf('--freq');
+      const gainIdx = args.indexOf('--gain');
+      
+      if (freqIdx === -1 || gainIdx === -1) {
+           return { output: 'signal_jammer: missing required arguments.\nUsage: signal_jammer --freq <MHz> --gain <dB>\nSee \'man signal_jammer\' for operational parameters.', newCwd: cwd };
+      } else {
+           const freq = args[freqIdx + 1];
+           const gain = args[gainIdx + 1];
+           
+           if (freq === '433.92' && gain === '90') {
+                const output = '[JAMMER] Emitter Active on 433.92 MHz (90dB)...\n[TARGET] Drone Control Link... LOST.\n[SUCCESS] Surveillance Blinded.\nFLAG: GHOST_ROOT{RTFM_W1NS_AG41N}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: DRONE NEUTRALIZED.\x1b[0m';
+                
+                if (!VFS['/var/run/drone_jammed']) {
+                    VFS['/var/run/drone_jammed'] = { type: 'file', content: 'TRUE' };
+                    const runDir = getNode('/var/run');
+                    if (runDir && runDir.type === 'dir' && !runDir.children.includes('drone_jammed')) {
+                        runDir.children.push('drone_jammed');
+                    }
+                }
+                return { output, newCwd: cwd };
+           } else {
+                return { output: `[JAMMER] Broadcasting on ${freq}MHz at ${gain}dB...\n[EFFECT] No target affected.\n[HINT] Check the specific frequency in the manual.`, newCwd: cwd };
+           }
+      }
+  }
+
+  // Cycle 162 (The Permissions Check)
+  if (cmdBase === 'deploy_beta.sh' || cmdBase === './deploy_beta.sh' || cmdBase === '/usr/local/bin/deploy_beta.sh') {
+       const node = getNode(resolvePath(cwd, cmdBase));
+       if (!node) return { output: `bash: ${cmdBase}: No such file or directory`, newCwd: cwd };
+       
+       const perms = (node as any).permissions || '0644';
+       const isExec = perms.includes('7') || perms.includes('5') || perms.includes('1'); // Simplified executable check
+       
+       if (!isExec) {
+           return { output: `bash: ${cmdBase}: Permission denied`, newCwd: cwd };
+       }
+       
+       return { output: '[DEPLOY] Initiating Beta Deployment...\n[CHECK] Permissions Verified.\n[SUCCESS] Systems Online.\nFLAG: GHOST_ROOT{CHM0D_PLUS_X_FTW}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PERMISSIONS RESTORED.\x1b[0m', newCwd: cwd };
+  }
+
+  // Cycle 163 (The SSH Key Permission)
+  if (cmdBase === 'secure_connect' || cmdBase === '/usr/bin/secure_connect') {
+       const keyPath = '/home/ghost/.ssh/id_rsa.pem';
+       const keyNode = VFS[keyPath];
+       
+       if (!keyNode) {
+           return { output: 'secure_connect: Identity file ~/.ssh/id_rsa.pem not found.\n[FAILED] Connection terminated.', newCwd: cwd };
+       }
+       
+       // Check content
+       if (!(keyNode as any).content.includes('SECRET_KEY')) {
+           return { output: 'secure_connect: Invalid key format.\n[FAILED] Handshake rejected.', newCwd: cwd };
+       }
+       
+       // Check permissions (must be 600 or 400 - strict)
+       const perms = (keyNode as any).permissions || '0644';
+       // We accept 600 (rw-------) or 400 (r--------). 
+       if (perms !== '0600' && perms !== '0400') { 
+           return { output: `@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n@         WARNING: UNPROTECTED PRIVATE KEY FILE!          @\n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\nPermissions ${perms} for '${keyPath}' are too open.\nIt is required that your private key files are NOT accessible by others.\nLoad key "${keyPath}": bad permissions\nsecure_connect: Permission denied (publickey).`, newCwd: cwd };
+       }
+       
+       return { output: '[SSH] Identity accepted.\n[SSH] Authenticating to secure-node-alpha...\n[SUCCESS] Channel Open.\nFLAG: GHOST_ROOT{CHM0D_600_K33PS_S3CR3TS}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SECURE UPLINK ESTABLISHED.\x1b[0m', newCwd: cwd };
+  }
+
+  // Cycle 165 (The Umask Mystery)
+  if (cmdBase === 'secure_generator' || cmdBase === '/usr/bin/secure_generator') {
+       const umaskVal = parseInt(UMASK, 8);
+       const basePerms = 0o666;
+       const finalPerms = basePerms & ~umaskVal;
+       
+       // Convert octal to string (e.g. 384 -> "0600")
+       const permStr = '0' + (finalPerms & 0o777).toString(8);
+       
+       let out = `[GENERATOR] Creating secret_key.txt with umask ${UMASK}...\n`;
+       
+       if (permStr === '0600') {
+           out += `[CHECK] Permissions: ${permStr} (rw-------). OK.\n[SUCCESS] Key Generated Securely.\nFLAG: GHOST_ROOT{UM4SK_0077_S3CUR3S_F1L3S}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: DEFAULT PERMISSIONS SECURED.\x1b[0m`;
+           
+           if (!VFS['/home/ghost/secret_key.txt']) {
+               VFS['/home/ghost/secret_key.txt'] = {
+                   type: 'file',
+                   content: 'FLAG: GHOST_ROOT{UM4SK_0077_S3CUR3S_F1L3S}',
+                   permissions: '0600'
+               };
+               const home = getNode('/home/ghost');
+               if (home && home.type === 'dir' && !home.children.includes('secret_key.txt')) {
+                   home.children.push('secret_key.txt');
+               }
+           }
+           if (!VFS['/var/run/umask_solved']) {
+               VFS['/var/run/umask_solved'] = { type: 'file', content: 'TRUE' };
+               const runDir = getNode('/var/run');
+               if (runDir && runDir.type === 'dir' && !runDir.children.includes('umask_solved')) {
+                   runDir.children.push('umask_solved');
+               }
+           }
+       } else {
+           out += `[CHECK] Permissions: ${permStr}.\n[ERROR] File is too open! Policy requires 0600.\n[HINT] Adjust your umask (currently ${UMASK}) to mask out group/other permissions.`;
+           // Create insecure file anyway to punish them? Nah, just fail.
+       }
+       return { output: out, newCwd: cwd };
+  }
+
+  // Cycle 159 (The History Leak)
+  if (cmdBase === 'unzip') {
+      const args = commandLine.trim().split(/\s+/).slice(1);
+      const fileArgIndex = args.findIndex(a => !a.startsWith('-'));
+      const passwordIndex = args.indexOf('-P');
+      
+      if (fileArgIndex === -1) return { output: 'unzip: cannot find zipfile directory in one of . or ...', newCwd: cwd };
+      
+      const targetFile = args[fileArgIndex];
+      const fullPath = resolvePath(cwd, targetFile);
+      
+      if (fullPath !== '/home/ghost/secure.zip') {
+          return { output: `unzip: cannot find or open ${targetFile}, ${targetFile}.zip or ${targetFile}.ZIP.`, newCwd: cwd };
+      }
+      
+      let password = '';
+      if (passwordIndex !== -1 && args[passwordIndex + 1]) {
+          password = args[passwordIndex + 1];
+      }
+      
+      // Remove quotes from password if present
+      if ((password.startsWith('"') && password.endsWith('"')) || (password.startsWith("'") && password.endsWith("'"))) {
+          password = password.slice(1, -1);
+      }
+      
+      if (password === 'Hunter2') {
+          if (!VFS['/home/ghost/data.txt']) {
+               VFS['/home/ghost/data.txt'] = {
+                   type: 'file',
+                   content: 'FLAG: GHOST_ROOT{H1ST0RY_L34KS_P4SSW0RDS}\n',
+                   permissions: '0644'
+               };
+               const homeDir = getNode('/home/ghost');
+               if (homeDir && homeDir.type === 'dir' && !homeDir.children.includes('data.txt')) {
+                   homeDir.children.push('data.txt');
+               }
+          }
+          return { output: 'Archive:  secure.zip\n[secure.zip] data.txt password: ****\n  inflating: data.txt\n\x1b[1;32m[MISSION UPDATE] Objective Complete: ENCRYPTED ARCHIVE OPENED.\x1b[0m', newCwd: cwd };
+      } else {
+          if (password) {
+              return { output: `Archive:  secure.zip\n[secure.zip] data.txt password: ${password.replace(/./g, '*')}\nunzip:  incorrect password`, newCwd: cwd };
+          } else {
+              return { output: 'Archive:  secure.zip\n[secure.zip] data.txt password: \nunzip:  password required (use -P)', newCwd: cwd };
+          }
+      }
+  }
 
   // Cycle 154 (The LD_PRELOAD Injection)
   if (ENV_VARS['LD_PRELOAD']) {
@@ -4851,6 +5402,14 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
         }
         break;
     }
+    case 'legacy_auth': {
+        if (ENV_VARS['DEBUG_MODE_ENABLE'] === '1') {
+            output = '[DEBUG] Mode Enabled.\n[SUCCESS] Auth Bypass Complete.\nFLAG: GHOST_ROOT{STR1NGS_R3V3AL_S3CR3TS}\n\n\x1b[1;32m[MISSION UPDATE] Objective Complete: BINARY ANALYSIS.\x1b[0m';
+        } else {
+            output = 'Segmentation fault (core dumped)';
+        }
+        break;
+    }
     case 'gcc': {
         if (args.length < 1) {
             output = 'gcc: fatal error: no input files\ncompilation terminated.';
@@ -6185,6 +6744,26 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
       }
       break;
     }
+    case 'firewall_bypass': {
+        if (args.length < 2 || args[0] !== '--ip') {
+            output = 'usage: firewall_bypass --ip <TARGET_IP>';
+        } else {
+            const ip = args[1];
+            if (ip === '10.0.0.99') {
+                output = '[SUCCESS] Firewall bypassed. CONNECTION ESTABLISHED.\n\nFLAG: GHOST_ROOT{GREP_F1LT3R_M4ST3R}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: LOG ANALYSIS (GREP).\x1b[0m';
+                if (!VFS['/var/run/firewall_solved']) {
+                    VFS['/var/run/firewall_solved'] = { type: 'file', content: 'TRUE' };
+                    const runDir = getNode('/var/run');
+                    if (runDir && runDir.type === 'dir' && !runDir.children.includes('firewall_solved')) {
+                        runDir.children.push('firewall_solved');
+                    }
+                }
+            } else {
+                output = `[ERROR] Connection failed. IP ${ip} rejected by firewall rules.`;
+            }
+        }
+        break;
+    }
     case 'cd': {
       const target = args[0] || '/';
       let potentialPath = resolvePath(cwd, target);
@@ -6232,6 +6811,16 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
                              runDir.children.push('strings_solved');
                          }
                          output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: HIDDEN STRINGS REVEALED.\x1b[0m`;
+                     }
+                 }
+                 if (content.includes('GHOST_ROOT{PR0C_3NV_L34K}')) {
+                     if (!VFS['/var/run/proc_env_solved']) {
+                         VFS['/var/run/proc_env_solved'] = { type: 'file', content: 'TRUE' };
+                         const runDir = getNode('/var/run');
+                         if (runDir && runDir.type === 'dir' && !runDir.children.includes('proc_env_solved')) {
+                             runDir.children.push('proc_env_solved');
+                         }
+                         output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PROCESS ENVIRONMENT INSPECTED.\x1b[0m`;
                      }
                  }
              } else {
@@ -6948,6 +7537,7 @@ Type "status" for mission objectives.`;
           case 'hashcat': output = 'NAME\n\thashcat - Advanced Password Recovery\n\nSYNOPSIS\n\thashcat -m <mode> <hashfile> <wordlist>\n\nDESCRIPTION\n\tWorld\'s fastest password recovery tool.\n\nMODES\n\t0\tMD5\n\t1000\tNTLM\n\t1800\tsha512crypt'; break;
           case 'beacon': output = 'NAME\n\tbeacon - Automated Dead Drop Signal\n\nSYNOPSIS\n\tbeacon [&]\n\nDESCRIPTION\n\tContinuously attempts to connect to a listening post on localhost:4444 to deliver a payload.\n\nUSAGE\n\tRun "beacon" to start foreground process (will block).\n\tRun "beacon &" to start in background.'; break;
           case 'docker': output = 'NAME\n\tdocker - Docker container management\n\nSYNOPSIS\n\tdocker [OPTIONS] COMMAND\n\nDESCRIPTION\n\tManage containers, images, and volumes.\n\nCOMMANDS\n\tps\tList containers\n\tinspect\tReturn low-level information on Docker objects\n\tlogs\tFetch the logs of a container\n\tstop\tStop one or more running containers'; break;
+          case 'signal_jammer': output = 'NAME\n\tsignal_jammer - RF disruption tool\n\nSYNOPSIS\n\tsignal_jammer --freq <MHz> --gain <dB>\n\nDESCRIPTION\n\tGenerates broad-spectrum noise to disrupt radio communications.\n\nOPERATIONAL NOTES\n\tStandard Surveillance Drones (Model XJ-9) operate on 433.92 MHz.\n\tRequired Gain for effective jamming: 90 dB.\n\nWARNING\n\tUnauthorized jamming is a violation of Federal Communication Laws.'; break;
           default: output = `No manual entry for ${page}`;
         }
       }
@@ -13781,6 +14371,33 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
             }
         } else {
             output = 'Use: screen [-d] [-r] [-ls]';
+        }
+        break;
+    }
+    case 'export': {
+        if (args.length === 0) {
+            output = Object.entries(ENV_VARS).map(([k, v]) => `declare -x ${k}="${v}"`).join('\n');
+        } else {
+            const arg = args[0];
+            const eqIndex = arg.indexOf('=');
+            if (eqIndex !== -1) {
+                const key = arg.substring(0, eqIndex);
+                let val = arg.substring(eqIndex + 1);
+                
+                // Remove quotes
+                if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+                    val = val.slice(1, -1);
+                }
+                
+                ENV_VARS[key] = val;
+                saveSystemState();
+                output = '';
+            } else {
+                // export VAR (undefined/empty)
+                ENV_VARS[arg] = '';
+                saveSystemState();
+                output = '';
+            }
         }
         break;
     }
