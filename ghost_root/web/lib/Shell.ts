@@ -1132,6 +1132,32 @@ export const loadSystemState = () => {
         }
     }
 
+    // Cycle 150 Init (The Encrypted Partition)
+    if (!VFS['/dev/sdb1']) {
+        if (!VFS['/dev']) {
+             VFS['/dev'] = { type: 'dir', children: [] };
+             addChild('/', 'dev');
+        }
+        
+        VFS['/dev/sdb1'] = { 
+            type: 'file', 
+            content: '[LUKS_PARTITION_HEADER_V2] ...ENCRYPTED_DATA...', 
+            permissions: '0660' 
+        };
+        const dev = getNode('/dev');
+        if (dev && dev.type === 'dir' && !dev.children.includes('sdb1')) dev.children.push('sdb1');
+        
+        // Hint
+        if (!VFS['/home/ghost/storage_alert.log']) {
+             VFS['/home/ghost/storage_alert.log'] = {
+                 type: 'file',
+                 content: '[ALERT] Critical Data Partition Unmounted.\n[DEVICE] /dev/sdb1\n[TYPE] LUKS Encrypted Volume\n[ACTION] Decrypt (cryptsetup) and mount to /mnt/secure.\n[RECOVERY_KEY] Passphrase hint: "ghost_protocol_v4"'
+             };
+             const home = getNode('/home/ghost');
+             if (home && home.type === 'dir' && !home.children.includes('storage_alert.log')) home.children.push('storage_alert.log');
+        }
+    }
+
     // Cycle 129 Init (The Magic SysRq)
     if (!VFS['/proc/sysrq-trigger']) {
         // Ensure /proc exists
@@ -1696,15 +1722,180 @@ export const loadSystemState = () => {
         };
         link('/usr/bin', 'ghost_service');
 
-        // Hint
-        if (!VFS['/home/ghost/link_error.log']) {
-            VFS['/home/ghost/link_error.log'] = {
+        // Cycle 147 Init (The Expired Certificate)
+        if (!VFS['/home/ghost/ssl_error.log']) {
+            VFS['/home/ghost/ssl_error.log'] = {
                 type: 'file',
-                content: '[ERROR] ghost_service: error while loading shared libraries: libghost.so: cannot open shared object file: No such file or directory\n[DIAGNOSTIC] The library file exists, but the symlink might be broken.\n[ACTION] Find the broken link (find / -type l) and fix it (ln -sf).'
+                content: '[ERROR] Connection to https://secure.ghost.network failed.\n[REASON] SSL certificate problem: certificate has expired.\n[DIAGNOSTIC] System time is ahead of certificate validity period.\n[ACTION] Check current date and adjust if necessary.'
             };
             const home = getNode('/home/ghost');
-            if (home && home.type === 'dir' && !home.children.includes('link_error.log')) {
-                home.children.push('link_error.log');
+            if (home && home.type === 'dir' && !home.children.includes('ssl_error.log')) {
+                home.children.push('ssl_error.log');
+            }
+        }
+    }
+
+    // Cycle 148 Init (The Hostname Mismatch)
+    if (!VFS['/usr/bin/verify_host']) {
+        const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+        const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+
+        ensureDir('/usr'); ensureDir('/usr/bin');
+        link('/usr', 'bin');
+
+        VFS['/usr/bin/verify_host'] = {
+            type: 'file',
+            content: '[BINARY_ELF_X86_64] [SECURITY_CHECK]\nEXPECTED_HOSTNAME: secure-node-alpha',
+            permissions: '0755'
+        };
+        link('/usr/bin', 'verify_host');
+
+        // Init hostname file
+        if (!VFS['/proc/sys/kernel/hostname']) {
+             ensureDir('/proc'); ensureDir('/proc/sys'); ensureDir('/proc/sys/kernel');
+             link('/', 'proc'); link('/proc', 'sys'); link('/proc/sys', 'kernel');
+             
+             VFS['/proc/sys/kernel/hostname'] = {
+                 type: 'file',
+                 content: 'ghost-root',
+                 permissions: '0644'
+             };
+             link('/proc/sys/kernel', 'hostname');
+        }
+        
+        // Ensure /etc/hostname exists
+        if (!VFS['/etc/hostname']) {
+             ensureDir('/etc');
+             link('/', 'etc');
+             VFS['/etc/hostname'] = { type: 'file', content: 'ghost-root', permissions: '0644' };
+             link('/etc', 'hostname');
+        }
+
+        // Hint
+        if (!VFS['/home/ghost/config_error.log']) {
+            VFS['/home/ghost/config_error.log'] = {
+                type: 'file',
+                content: '[ERROR] Node Verification Failed.\n[REASON] Hostname mismatch.\n[REQUIRED] secure-node-alpha\n[ACTION] Update system hostname to match configuration.'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('config_error.log')) {
+                home.children.push('config_error.log');
+            }
+        }
+    }
+
+    // Cycle 147 Init (The Runlevel Change)
+    if (!VFS['/etc/inittab']) {
+        const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+        const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+
+        ensureDir('/etc');
+        link('/', 'etc');
+
+        VFS['/etc/inittab'] = {
+            type: 'file',
+            content: '# /etc/inittab\n# Default runlevel\nid:1:initdefault:\n# Runlevels:\n# 0 - Halt\n# 1 - Single user mode (Network Disabled)\n# 3 - Multi user mode (Network Enabled)\n# 5 - Graphical mode\n# 6 - Reboot',
+            permissions: '0644'
+        };
+        link('/etc', 'inittab');
+
+        ensureDir('/sbin');
+        link('/', 'sbin');
+        VFS['/sbin/init'] = {
+            type: 'file',
+            content: '[BINARY_ELF_X86_64] [INIT_PROCESS]',
+            permissions: '0755'
+        };
+        link('/sbin', 'init');
+
+        // Set initial runlevel state if not present
+        if (!ENV_VARS['RUNLEVEL']) {
+            ENV_VARS['RUNLEVEL'] = '1';
+        }
+
+        // Hint
+        if (!VFS['/home/ghost/maintenance.log']) {
+            VFS['/home/ghost/maintenance.log'] = {
+                type: 'file',
+                content: '[SYSTEM] Boot sequence completed.\n[STATUS] Runlevel 1 (Single User Mode).\n[WARNING] Networking services are disabled in this runlevel.\n[ACTION] Switch to runlevel 3 to enable network access.'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('maintenance.log')) {
+                home.children.push('maintenance.log');
+            }
+        }
+    }
+    // Cycle 151 Init (The Missing Shared Object)
+    if (!VFS['/usr/bin/decipher']) {
+        const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+        const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+
+        ensureDir('/usr'); ensureDir('/usr/bin');
+        link('/usr', 'bin');
+
+        VFS['/usr/bin/decipher'] = {
+            type: 'file',
+            content: '[BINARY_ELF_X86_64] [ENCRYPTED_MESSAGE_DECODER]\nNEEDED: libcrypto_ghost.so\n',
+            permissions: '0755'
+        };
+        link('/usr/bin', 'decipher');
+
+        // Create the hidden library
+        ensureDir('/opt'); ensureDir('/opt/ghost'); ensureDir('/opt/ghost/libs');
+        link('/', 'opt'); link('/opt', 'ghost'); link('/opt/ghost', 'libs');
+
+        VFS['/opt/ghost/libs/libcrypto_ghost.so'] = {
+            type: 'file',
+            content: '[ELF_SHARED_OBJ] [CRYPTO_LIB_V4] [EXPORT: decipher_msg]',
+            permissions: '0644'
+        };
+        link('/opt/ghost/libs', 'libcrypto_ghost.so');
+
+        // Hint
+        if (!VFS['/home/ghost/library_error.log']) {
+            VFS['/home/ghost/library_error.log'] = {
+                type: 'file',
+                content: '[ERROR] decipher: error while loading shared libraries: libcrypto_ghost.so: cannot open shared object file: No such file or directory\n[HINT] The library was moved to /opt/ghost/libs. You need to tell the loader where to find it (LD_LIBRARY_PATH).'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('library_error.log')) {
+                home.children.push('library_error.log');
+            }
+        }
+    }
+
+    // Cycle 152 Init (The Degraded RAID)
+    if (!VFS['/proc/mdstat']) {
+        const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+        const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+
+        ensureDir('/proc'); ensureDir('/dev');
+        link('/', 'proc'); link('/', 'dev');
+
+        VFS['/proc/mdstat'] = {
+            type: 'file',
+            content: 'Personalities : [raid1]\nmd0 : active raid1 sdb1[0](F) sdc1[1]\n      10485760 blocks super 1.2 [2/1] [_U]\n      \nunused devices: <none>',
+            permissions: '0444'
+        };
+        link('/proc', 'mdstat');
+
+        // Devices
+        VFS['/dev/md0'] = { type: 'file', content: '[BLOCK_DEVICE_RAID1]', permissions: '0660' };
+        VFS['/dev/sdb1'] = { type: 'file', content: '[BLOCK_DEVICE_PARTITION_FAILED]', permissions: '0660' };
+        VFS['/dev/sdc1'] = { type: 'file', content: '[BLOCK_DEVICE_PARTITION_OK]', permissions: '0660' };
+        VFS['/dev/sdd1'] = { type: 'file', content: '[BLOCK_DEVICE_PARTITION_SPARE]', permissions: '0660' };
+        
+        link('/dev', 'md0'); link('/dev', 'sdb1'); link('/dev', 'sdc1'); link('/dev', 'sdd1');
+
+        // Hint
+        if (!VFS['/home/ghost/raid_alert.log']) {
+            VFS['/home/ghost/raid_alert.log'] = {
+                type: 'file',
+                content: '[CRITICAL] RAID Array md0 is DEGRADED.\n[ERROR] Device /dev/sdb1 has failed.\n[ACTION] Remove failed drive and add spare (/dev/sdd1) to rebuild array.\n[TOOL] Use mdadm to manage.'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('raid_alert.log')) {
+                home.children.push('raid_alert.log');
             }
         }
     }
@@ -1936,7 +2127,7 @@ export interface CommandResult {
   data?: any;
 }
 
-const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'ss', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail',     'strings', 'recover_tool', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'arp', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'zgrep', 'gunzip', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'secure_vault', 'jobs', 'fg', 'bg', 'recover_data', 'ghost_update', 'git', 'file', 'openssl', 'beacon', 'fsck', 'docker', 'lsattr', 'chattr', 'backup_service', 'getfattr', 'setfattr', 'mkfifo', 'uplink_service', 'sqlite3', 'gdb', 'jwt_tool', 'php', 'access_card', 'sys_monitor', 'ln', 'readlink', 'nginx', 'tac', 'getcap', 'sysctl', 'ldd', 'quantum_calc', 'deploy_tool', 'ghost_relay', 'groups', 'usermod', 'access_silo', 'satellite_uplink', 'unshadow', 'john', 'mkswap', 'swapon', 'free'];
+const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'ss', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail',     'strings', 'recover_tool', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'arp', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'zgrep', 'gunzip', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'secure_vault', 'jobs', 'fg', 'bg', 'recover_data', 'ghost_update', 'git', 'file', 'openssl', 'beacon', 'fsck', 'docker', 'lsattr', 'chattr', 'backup_service', 'getfattr', 'setfattr', 'mkfifo', 'uplink_service', 'sqlite3', 'gdb', 'jwt_tool', 'php', 'access_card', 'sys_monitor', 'ln', 'readlink', 'nginx', 'tac', 'getcap', 'sysctl', 'ldd', 'quantum_calc', 'deploy_tool', 'ghost_relay', 'groups', 'usermod', 'access_silo', 'satellite_uplink', 'unshadow', 'john', 'mkswap', 'swapon', 'free', 'hostname', 'runlevel', 'telinit', 'init'];
 
 export interface MissionStatus {
   objectives: {
@@ -2106,6 +2297,150 @@ export const tabCompletion = (cwd: string, inputBuffer: string): { matches: stri
 };
 
 export const processCommand = (cwd: string, commandLine: string, stdin?: string): CommandResult => {
+  const cmdTokens = commandLine.trim().split(/\s+/);
+  const cmdBase = cmdTokens[0];
+
+  // Cycle 151 (The Missing Shared Object)
+  if (cmdBase === 'decipher' || cmdBase === '/usr/bin/decipher') {
+      const libPath = ENV_VARS['LD_LIBRARY_PATH'] || '';
+      if (libPath.includes('/opt/ghost/libs')) {
+           return { output: '[DECIPHER] Loading libraries... OK\n[DECIPHER] Decrypting message...\n[SUCCESS] Message decoded.\nFLAG: GHOST_ROOT{SH4R3D_L1B_P4TH_F1X3D}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: ENCRYPTION BROKEN.\x1b[0m', newCwd: cwd };
+      } else {
+           return { output: 'decipher: error while loading shared libraries: libcrypto_ghost.so: cannot open shared object file: No such file or directory', newCwd: cwd };
+      }
+  }
+
+  if (cmdBase === 'ldd') {
+      const target = cmdTokens[1] ? resolvePath(cwd, cmdTokens[1]) : '';
+      if (!target) return { output: 'ldd: missing file arguments', newCwd: cwd };
+      
+      // Basic simulation for known binaries
+      if (target === '/usr/bin/decipher' || target.endsWith('decipher')) {
+          const libPath = ENV_VARS['LD_LIBRARY_PATH'] || '';
+          if (libPath.includes('/opt/ghost/libs')) {
+               return { output: `\tlinux-vdso.so.1 (0x00007ffc5b1e3000)\n\tlibcrypto_ghost.so => /opt/ghost/libs/libcrypto_ghost.so (0x00007f8a9c000000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f8a9be00000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f8a9c200000)`, newCwd: cwd };
+          } else {
+               return { output: `\tlinux-vdso.so.1 (0x00007ffc5b1e3000)\n\tlibcrypto_ghost.so => not found\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f8a9be00000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f8a9c200000)`, newCwd: cwd };
+          }
+      } else if (target === '/usr/bin/quantum_calc') { // Cycle 91
+           return { output: `\tlinux-vdso.so.1 (0x00007ffc5b1e3000)\n\tlibquantum.so.1 => not found\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f8a9be00000)`, newCwd: cwd };
+      } else {
+           return { output: `\tnot a dynamic executable`, newCwd: cwd };
+      }
+  }
+
+  // Cycle 152 (The Degraded RAID)
+  if (cmdBase === 'mdadm') {
+      const args = commandLine.trim().split(/\s+/).slice(1);
+      if (args.length === 0) return { output: 'mdadm: no mode specified', newCwd: cwd };
+      
+      const mode = args[0];
+      
+      if (mode === '--detail' || mode === '-D') {
+           const dev = args[1];
+           if (dev === '/dev/md0') {
+               const state = VFS['/var/run/raid_fixed'] ? 'clean' : 'clean, degraded';
+               const devices = VFS['/var/run/raid_fixed'] ? '2' : '1';
+               const devList = VFS['/var/run/raid_fixed'] 
+                    ? '   0       8       33        0      active sync   /dev/sdd1\n   1       8       49        1      active sync   /dev/sdc1'
+                    : '   0       0        0        -      faulty   /dev/sdb1\n   1       8       49        1      active sync   /dev/sdc1';
+               
+               return { output: `/dev/md0:\n        Version : 1.2\n  Creation Time : Sat Feb 14 12:00:00 2026\n     Raid Level : raid1\n     Array Size : 10485760 (10.00 GiB 10.74 GB)\n  Used Dev Size : 10485760 (10.00 GiB 10.74 GB)\n   Raid Devices : 2\n  Total Devices : ${devices}\n    Persistence : Superblock is persistent\n\n    Update Time : Sat Feb 14 14:30:00 2026\n          State : ${state}\n Active Devices : ${devices}\nWorking Devices : ${devices}\n Failed Devices : ${VFS['/var/run/raid_fixed'] ? '0' : '1'}\n  Spare Devices : 0\n\n           Name : ghost:0  (local to host ghost)\n           UUID : 58392019-4820-1928-5820-192834019283\n         Events : 18\n\n    Number   Major   Minor   RaidDevice State\n${devList}`, newCwd: cwd };
+           }
+           return { output: `mdadm: cannot open ${dev}: No such file or directory`, newCwd: cwd };
+      }
+      
+      if (mode === '--manage') {
+          const devIndex = args.indexOf('/dev/md0');
+          const removeIndex = args.indexOf('--remove');
+          const addIndex = args.indexOf('--add');
+          
+          if (devIndex === -1) return { output: 'mdadm: device not found', newCwd: cwd };
+          
+          if (removeIndex !== -1) {
+              const target = args[removeIndex + 1];
+              if (target === '/dev/sdb1') {
+                   // Mark as removed
+                   VFS['/var/run/raid_removed_sdb1'] = { type: 'file', content: 'TRUE' };
+                   return { output: 'mdadm: hot removed /dev/sdb1 from /dev/md0', newCwd: cwd };
+              }
+              return { output: `mdadm: ${target} does not exist or is not attached`, newCwd: cwd };
+          }
+          
+          if (addIndex !== -1) {
+              const target = args[addIndex + 1];
+              if (target === '/dev/sdd1') {
+                   if (!VFS['/var/run/raid_removed_sdb1']) {
+                       return { output: 'mdadm: cannot add /dev/sdd1: array has failed component, remove it first', newCwd: cwd };
+                   }
+                   
+                   VFS['/var/run/raid_fixed'] = { type: 'file', content: 'TRUE' };
+                   const runDir = getNode('/var/run');
+                   if (runDir && runDir.type === 'dir' && !runDir.children.includes('raid_fixed')) {
+                       runDir.children.push('raid_fixed');
+                   }
+                   
+                   // Update mdstat content
+                   const mdstat = VFS['/proc/mdstat'];
+                   if (mdstat) {
+                       (mdstat as any).content = 'Personalities : [raid1]\nmd0 : active raid1 sdd1[0] sdc1[1]\n      10485760 blocks super 1.2 [2/2] [UU]\n      \nunused devices: <none>';
+                   }
+
+                   return { output: 'mdadm: added /dev/sdd1\n[RAID] Recovery started.\n[RAID] Resyncing... 10%... 50%... 100%.\n[RAID] Array OPTIMAL.\nFLAG: GHOST_ROOT{R41D_R3BU1LD_M4ST3R}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: STORAGE REDUNDANCY RESTORED.\x1b[0m', newCwd: cwd };
+              }
+              return { output: `mdadm: ${target}: device busy or invalid`, newCwd: cwd };
+          }
+      }
+      return { output: 'mdadm: invalid mode', newCwd: cwd };
+  }
+
+  // Cycle 147 (The Runlevel Change)
+  // Intercept network commands in Runlevel 1
+  const cmdBase147 = commandLine.trim().split(/\s+/)[0];
+  if (ENV_VARS['RUNLEVEL'] === '1') {
+      const netCmds = ['ssh', 'curl', 'nc', 'nmap', 'ping', 'netstat', 'ss', 'netmap', 'tor', 'irc', 'sat', 'uplink_connect', 'telnet', 'ftp', 'wget', 'hydra'];
+      if (netCmds.includes(cmdBase147)) {
+          return { output: `${cmdBase147}: Network is unreachable (Runlevel 1: Single User Mode)\n[HINT] Switch to Runlevel 3 to enable networking.`, newCwd: cwd };
+      }
+  }
+
+  // Handle runlevel switching
+  if (cmdBase147 === 'runlevel') {
+      const level = ENV_VARS['RUNLEVEL'] || '1';
+      return { output: `N ${level}`, newCwd: cwd };
+  }
+  
+  if (cmdBase147 === 'init' || cmdBase147 === 'telinit') {
+      const args = commandLine.trim().split(/\s+/).slice(1);
+      const targetLevel = args[0];
+      
+      if (!targetLevel) {
+           return { output: `Usage: ${cmdBase147} [0123456]`, newCwd: cwd };
+      }
+      
+      if (targetLevel === '1' || targetLevel === 'S' || targetLevel === 's') {
+           ENV_VARS['RUNLEVEL'] = '1';
+           return { output: '[INIT] Switching to Runlevel 1 (Single User Mode)...\n[INIT] Stopping network services... OK\n[INIT] Stopping cron... OK', newCwd: cwd };
+      } else if (targetLevel === '3' || targetLevel === '5') {
+           ENV_VARS['RUNLEVEL'] = targetLevel;
+           let out = `[INIT] Switching to Runlevel ${targetLevel} (Multi User Mode)...\n[INIT] Starting network services... OK\n[INIT] Starting sshd... OK\n[INIT] Starting cron... OK`;
+           
+           if (!VFS['/var/run/runlevel_solved']) {
+               VFS['/var/run/runlevel_solved'] = { type: 'file', content: 'TRUE' };
+               const runDir = getNode('/var/run');
+               if (runDir && runDir.type === 'dir' && !runDir.children.includes('runlevel_solved')) {
+                   runDir.children.push('runlevel_solved');
+               }
+               out += `\nFLAG: GHOST_ROOT{RUNL3V3L_SW1TCH_M4ST3R}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: NETWORK SERVICES RESTORED.\x1b[0m`;
+           } else {
+               out += `\nFLAG: GHOST_ROOT{RUNL3V3L_SW1TCH_M4ST3R}`;
+           }
+           
+           return { output: out, newCwd: cwd };
+      } else {
+           return { output: `init: ${targetLevel}: invalid runlevel or not simulated`, newCwd: cwd };
+      }
+  }
   // Cycle 133: Corrupted Superblock Interceptor
   const argsCheck = commandLine.trim().split(/\s+/).slice(1);
   const cmdBaseCheck = commandLine.trim().split(/\s+/)[0];
@@ -7113,6 +7448,47 @@ Type "status" for mission objectives.`;
       }
       break;
     }
+    case 'hostname': {
+        const kernelHostNode = getNode('/proc/sys/kernel/hostname');
+        if (args.length === 0) {
+            output = (kernelHostNode as any)?.content || 'ghost-root';
+        } else {
+            const isRoot = !!getNode('/tmp/.root_session');
+            if (!isRoot) {
+                output = 'hostname: you must be root to change the host name';
+            } else {
+                const newName = args[0];
+                if (kernelHostNode && kernelHostNode.type === 'file') {
+                    kernelHostNode.content = newName;
+                }
+                const etcHostNode = getNode('/etc/hostname');
+                if (etcHostNode && etcHostNode.type === 'file') {
+                    etcHostNode.content = newName;
+                }
+                output = ''; // Silent success
+            }
+        }
+        break;
+    }
+    case 'verify_host': {
+        const kernelHostNode = getNode('/proc/sys/kernel/hostname');
+        const currentHost = (kernelHostNode as any)?.content?.trim() || 'ghost-root';
+        
+        if (currentHost === 'secure-node-alpha') {
+             output = `[VERIFY] Checking Hostname... MATCH\n[VERIFY] Signature... VALID\n[SUCCESS] Node verified.\nFLAG: GHOST_ROOT{H0STN4ME_CH4NG3D_SUCC3SS}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SYSTEM IDENTITY RESTORED.\x1b[0m`;
+             
+             if (!VFS['/var/run/hostname_solved']) {
+                 VFS['/var/run/hostname_solved'] = { type: 'file', content: 'TRUE' };
+                 const runDir = getNode('/var/run');
+                 if (runDir && runDir.type === 'dir' && !runDir.children.includes('hostname_solved')) {
+                     runDir.children.push('hostname_solved');
+                 }
+             }
+        } else {
+             output = `[VERIFY] Checking Hostname... MISMATCH\n[ERROR] Expected 'secure-node-alpha', found '${currentHost}'.\n[FATAL] Identity verification failed.`;
+        }
+        break;
+    }
     case 'analyze': {
       if (args.length < 1) {
         output = 'usage: analyze <file>';
@@ -9776,28 +10152,32 @@ auth.py
                  output = `[INSECURE CONNECTION ESTABLISHED]\n[200 OK] Welcome to the Secure Ghost Network (Insecure Mode).\n(Note: The flag is only served over a valid SSL connection.)`;
                  return finalize(output, newCwd);
              } else {
+                 // Check CA Cert (Cycle 114)
                  const certPath = '/etc/ssl/certs/ca-certificates.crt';
                  const certNode = getNode(certPath);
-                 let valid = false;
-                 
+                 let validCert = false;
                  if (certNode) {
-                     if (certNode.type === 'file') {
-                         valid = true;
-                     } else if (certNode.type === 'symlink') {
+                     if (certNode.type === 'file') validCert = true;
+                     else if (certNode.type === 'symlink') {
                          const target = (certNode as any).target;
                          const targetNode = getNode(target); 
-                         if (targetNode && targetNode.type === 'file') {
-                             valid = true;
-                         }
+                         if (targetNode && targetNode.type === 'file') validCert = true;
                      }
                  }
-                 
-                 if (!valid) {
-                     output = `curl: (60) SSL certificate problem: unable to get local issuer certificate\nMore details here: https://curl.haxx.se/docs/sslcerts.html\n\ncurl: (60) SSL certificate problem: certificate has expired or is invalid`;
+                 if (!validCert) {
+                     output = `curl: (60) SSL certificate problem: unable to get local issuer certificate\n(Hint: Check /etc/ssl/certs/ca-certificates.crt)`;
                      return finalize(output, newCwd);
                  }
+
+                 // Check Time (Cycle 147)
+                 const now = new Date(Date.now() + SYSTEM_TIME_OFFSET);
+                 const expiry = new Date('2025-01-01T00:00:00Z');
                  
-                 output = `[SECURE CONNECTION ESTABLISHED]\n[200 OK] Welcome to the Secure Ghost Network.\nFLAG: GHOST_ROOT{SYML1NK_M4ST3R_R3STOR3D}`;
+                 if (now > expiry) {
+                     output = `curl: (60) SSL certificate problem: certificate has expired.\nMore details here: https://curl.haxx.se/docs/sslcerts.html\n\ncurl failed to verify the legitimacy of the server and therefore could not\nestablish a secure connection to it. To learn more about this situation and\nhow to fix it, please visit the web page mentioned above.`;
+                 } else {
+                     output = `[SECURE CONNECTION ESTABLISHED]\n[200 OK] Welcome to the Secure Ghost Network.\n\nFLAG: GHOST_ROOT{T1M3_TR4V3L_SSL_F1X}\n\n[ACCESS GRANTED]`;
+                 }
                  return finalize(output, newCwd);
              }
         }
@@ -9969,7 +10349,29 @@ auth.py
            if (!isRoot) {
                output = `date: cannot set date: Operation not permitted`;
            } else {
-               output = `date: cannot set date: Use ntpdate to sync with time server.`;
+               if (args.length < 2) {
+                   output = `date: option requires an argument -- 's'`;
+               } else {
+                   const newDateStr = args.slice(1).join(' '); // Handle spaces in date string
+                   const newTime = new Date(newDateStr).getTime();
+                   if (isNaN(newTime)) {
+                       output = `date: invalid date '${newDateStr}'`;
+                   } else {
+                       SYSTEM_TIME_OFFSET = newTime - Date.now();
+                       output = new Date(Date.now() + SYSTEM_TIME_OFFSET).toString();
+                       
+                       // Check if time is back to 2024 (e.g., < 2025-01-01) for Cycle 147
+                       if (new Date(Date.now() + SYSTEM_TIME_OFFSET).getFullYear() < 2025) {
+                           if (!VFS['/var/run/time_fixed']) {
+                               VFS['/var/run/time_fixed'] = { type: 'file', content: 'TRUE' };
+                               const runDir = getNode('/var/run');
+                               if (runDir && runDir.type === 'dir' && !runDir.children.includes('time_fixed')) {
+                                   runDir.children.push('time_fixed');
+                               }
+                           }
+                       }
+                   }
+               }
            }
        } else {
            const now = new Date(Date.now() + SYSTEM_TIME_OFFSET);
@@ -11792,6 +12194,114 @@ Error                           : Unknown file type`;
            }
        }
        break;
+    }
+    case 'cryptsetup': {
+        if (args.length < 2) {
+             output = 'usage: cryptsetup <action> <device> <name> [--passphrase <pass>]';
+        } else {
+             const action = args[0];
+             const device = args[1];
+             const name = args[2];
+             
+             if (action === 'luksOpen') {
+                 if (!device || !name) {
+                     output = 'usage: cryptsetup luksOpen <device> <name>';
+                 } else if (device !== '/dev/sdb1') {
+                     output = `Device ${device} is not a valid LUKS partition.`;
+                 } else {
+                     const passIndex = args.indexOf('--passphrase');
+                     const pass = passIndex !== -1 ? args[passIndex+1] : null;
+                     
+                     if (pass === 'ghost_protocol_v4') {
+                         output = `[cryptsetup] Slot 0 opened. Key material unwrapped.\n`;
+                         
+                         // Create /dev/mapper if missing
+                         if (!VFS['/dev/mapper']) {
+                             VFS['/dev/mapper'] = { type: 'dir', children: [] };
+                             const dev = getNode('/dev');
+                             if (dev && dev.type === 'dir' && !dev.children.includes('mapper')) dev.children.push('mapper');
+                         }
+                         
+                         // Create symlink
+                         const mapPath = `/dev/mapper/${name}`;
+                         if (!VFS[mapPath]) {
+                             VFS[mapPath] = { 
+                                 type: 'symlink', 
+                                 target: '/dev/dm-0',
+                                 permissions: '0777' 
+                             } as any;
+                             const mapper = getNode('/dev/mapper');
+                             if (mapper && mapper.type === 'dir' && !mapper.children.includes(name)) mapper.children.push(name);
+                         }
+                         
+                         output += `/dev/mapper/${name} is now active.`;
+                     } else {
+                         output = `No key available with this passphrase.\n(HINT: Use --passphrase <pass> for simulation)`;
+                     }
+                 }
+             } else {
+                 output = `cryptsetup: unknown action ${action}`;
+             }
+        }
+        break;
+    }
+    case 'mount': {
+        if (args.length < 2) {
+             output = 'usage: mount <device> <dir>';
+        } else {
+             const device = args[0];
+             const dir = args[1];
+             const dirPath = resolvePath(cwd, dir);
+             const dirNode = getNode(dirPath);
+             
+             if (!dirNode || dirNode.type !== 'dir') {
+                 output = `mount: mount point ${dir} does not exist`;
+             } else {
+                 if (device === '/dev/sdb1') {
+                     output = `mount: unknown filesystem type 'crypto_LUKS'`;
+                 } else if (device.startsWith('/dev/mapper/')) {
+                     const mapperName = device.split('/').pop();
+                     const mapPath = `/dev/mapper/${mapperName}`;
+                     if (getNode(mapPath)) {
+                         output = `mount: /dev/mapper/${mapperName} mounted on ${dir}.`;
+                         
+                         // Create secure content inside mount point
+                         const secureFile = 'top_secret.txt';
+                         const securePath = dirPath === '/' ? `/${secureFile}` : `${dirPath}/${secureFile}`;
+                         
+                         VFS[securePath] = { 
+                             type: 'file', 
+                             content: 'FLAG: GHOST_ROOT{LUKS_P4RT1T10N_D3CRYPT3D}\n[DATA] 0x5F3A... [CLASSIFIED]' 
+                         };
+                         
+                         if (!dirNode.children.includes(secureFile)) dirNode.children.push(secureFile);
+                         
+                         // Mission Update
+                         if (!VFS['/var/run/luks_solved']) {
+                             VFS['/var/run/luks_solved'] = { type: 'file', content: 'TRUE' };
+                             const runDir = getNode('/var/run');
+                             if (runDir && runDir.type === 'dir' && !runDir.children.includes('luks_solved')) {
+                                 runDir.children.push('luks_solved');
+                             }
+                             output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: ENCRYPTED VOLUME MOUNTED.\x1b[0m`;
+                         }
+                     } else {
+                         output = `mount: special device ${device} does not exist`;
+                     }
+                 } else {
+                     output = `mount: ${device} is not a valid block device (or already mounted)`;
+                 }
+             }
+        }
+        break;
+    }
+    case 'umount': {
+        if (args.length < 1) {
+             output = 'usage: umount <dir>';
+        } else {
+             output = 'umount: unmounted successfully (simulated)';
+        }
+        break;
     }
     case 'geoip': {
         if (args.length < 1) {
