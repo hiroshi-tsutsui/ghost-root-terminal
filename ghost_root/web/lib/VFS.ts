@@ -169,6 +169,25 @@ curl -s "http://$TARGET_SERVER/api/deploy?auth=$AUTH_TOKEN"
 # ERROR: Could not resolve host
 `
   },
+  '/usr/bin/deploy_final': {
+    type: 'file',
+    content: `#!/bin/bash
+# FINAL DEPLOYMENT SCRIPT v1.0
+# Author: The Architect
+
+echo "[DEPLOY] Initiating final sequence..."
+echo "[CHECK] Verifying pre-flight status..."
+
+if ! command -v check_status &> /dev/null; then
+    echo "deploy_final: line 8: check_status: command not found"
+    echo "[ERROR] Pre-flight check failed. Aborting."
+    exit 127
+fi
+
+echo "[SUCCESS] Status confirmed."
+echo "FLAG: GHOST_ROOT{P4TH_V4R1ABL3_M4N1PUL4T10N}"
+`
+  },
   '/usr/bin/otp_gen': {
     type: 'file',
     content: '[BINARY_ELF_X86_64]\n[DEPENDENCY: ntpdate]\n[USAGE: ./otp_gen]',

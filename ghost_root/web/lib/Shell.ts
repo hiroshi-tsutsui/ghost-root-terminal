@@ -1996,6 +1996,66 @@ export const loadSystemState = () => {
             }
         }
     }
+
+    // Cycle 157 Init (The Screen Session)
+    if (!VFS['/var/run/screen/S-ghost/1337.recovery']) {
+        const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+        const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+
+        ensureDir('/var'); ensureDir('/var/run'); ensureDir('/var/run/screen'); ensureDir('/var/run/screen/S-ghost');
+        link('/var', 'run'); link('/var/run', 'screen'); link('/var/run/screen', 'S-ghost');
+
+        VFS['/var/run/screen/S-ghost/1337.recovery'] = {
+            type: 'file',
+            content: '[SCREEN_SESSION_DATA]\nPID: 1337\nSTATUS: DETACHED\nBUFFER: [ACTIVE_EDIT_MODE]\nFILE: /etc/shadow.bak\nCONTENT: root:$6$GHOST... (Partially Decrypted)\nFLAG: GHOST_ROOT{SCR33N_S3SS10N_R3C0V3R3D}\n',
+            permissions: '0600'
+        };
+        link('/var/run/screen/S-ghost', '1337.recovery');
+
+        // Hint
+        if (!VFS['/home/ghost/session_lost.log']) {
+            VFS['/home/ghost/session_lost.log'] = {
+                type: 'file',
+                content: '[ERROR] Connection reset by peer.\n[INFO] Session detached cleanly.\n[HINT] Use "screen -ls" to find the lost session and "screen -r" to reattach.'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('session_lost.log')) {
+                home.children.push('session_lost.log');
+            }
+        }
+    }
+
+    // Cycle 158 Init (The Unowned File)
+    if (!VFS['/home/ghost/old_user_data']) {
+        if (!VFS['/home/ghost']) {
+             VFS['/home/ghost'] = { type: 'dir', children: [] };
+             const home = getNode('/home');
+             if (home && home.type === 'dir' && !home.children.includes('ghost')) {
+                 home.children.push('ghost');
+             }
+        }
+        
+        VFS['/home/ghost/old_user_data'] = {
+            type: 'file',
+            content: 'User ID: 9999 (DELETED)\nContent: GHOST_ROOT{F1ND_N0US3R_ID_9999}\n',
+            permissions: '0640'
+        };
+        const homeDir = getNode('/home/ghost');
+        if (homeDir && homeDir.type === 'dir' && !homeDir.children.includes('old_user_data')) {
+            homeDir.children.push('old_user_data');
+        }
+
+        // Hint File
+        if (!VFS['/home/ghost/audit_log.txt']) {
+            VFS['/home/ghost/audit_log.txt'] = {
+                type: 'file',
+                content: '[AUDIT] User deletion confirmed (UID 9999).\n[WARN] Home directory was not removed.\n[ACTION] Find and archive files owned by the deleted user (-nouser).'
+            };
+            if (homeDir && homeDir.type === 'dir' && !homeDir.children.includes('audit_log.txt')) {
+                homeDir.children.push('audit_log.txt');
+            }
+        }
+    }
 };
 
 // Helper to reset state
@@ -2224,7 +2284,7 @@ export interface CommandResult {
   data?: any;
 }
 
-const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'ss', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail',     'strings', 'recover_tool', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'arp', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'zgrep', 'gunzip', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'secure_vault', 'jobs', 'fg', 'bg', 'recover_data', 'ghost_update', 'git', 'file', 'openssl', 'beacon', 'fsck', 'docker', 'lsattr', 'chattr', 'backup_service', 'getfattr', 'setfattr', 'mkfifo', 'uplink_service', 'sqlite3', 'gdb', 'jwt_tool', 'php', 'access_card', 'sys_monitor', 'ln', 'readlink', 'nginx', 'tac', 'getcap', 'sysctl', 'ldd', 'quantum_calc', 'deploy_tool', 'ghost_relay', 'groups', 'usermod', 'access_silo', 'satellite_uplink', 'unshadow', 'john', 'mkswap', 'swapon', 'free', 'hostname', 'runlevel', 'telinit', 'init'];
+const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'ss', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail',     'strings', 'recover_tool', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'arp', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'zgrep', 'gunzip', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'secure_vault', 'jobs', 'fg', 'bg', 'recover_data', 'ghost_update', 'git', 'file', 'openssl', 'beacon', 'fsck', 'docker', 'lsattr', 'chattr', 'backup_service', 'getfattr', 'setfattr', 'mkfifo', 'uplink_service', 'sqlite3', 'gdb', 'jwt_tool', 'php', 'access_card', 'sys_monitor', 'ln', 'readlink', 'nginx', 'tac', 'getcap', 'sysctl', 'ldd', 'quantum_calc', 'deploy_tool', 'ghost_relay', 'groups', 'usermod', 'access_silo', 'satellite_uplink', 'unshadow', 'john', 'mkswap', 'swapon', 'free', 'hostname', 'runlevel', 'telinit', 'init', 'screen'];
 
 export interface MissionStatus {
   objectives: {
@@ -2417,6 +2477,31 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
            return { output: `[PROCESSING] Data stream received: "${stdin}"\n[ANALYSIS] Validating input...\n[SUCCESS] Pipeline integrity verified.\nFLAG: GHOST_ROOT{P1P3L1N3_M4ST3R}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: DATA PIPELINE RESTORED.\x1b[0m`, newCwd: cwd };
       } else {
            return { output: 'data_processor: error: no input data provided.\nUsage: <command> | data_processor', newCwd: cwd };
+      }
+  }
+
+  // Cycle 156 (The Environment Path Injection)
+  if (cmdBase === 'deploy_final' || cmdBase === '/usr/bin/deploy_final') {
+      const pathEnv = ENV_VARS['PATH'] || '';
+      const pathDirs = pathEnv.split(':');
+      let found = false;
+      
+      for (const dir of pathDirs) {
+          const absoluteDir = resolvePath(cwd, dir);
+          const fullPath = resolvePath(absoluteDir, 'check_status');
+          
+          // Check if file exists and is executable (simulated by just existence for now)
+          const node = getNode(fullPath);
+          if (node && node.type === 'file') {
+              found = true;
+              break;
+          }
+      }
+
+      if (found) {
+          return { output: '[DEPLOY] Initiating final sequence...\n[CHECK] Verifying pre-flight status...\n[SUCCESS] Status confirmed.\nFLAG: GHOST_ROOT{P4TH_V4R1ABL3_M4N1PUL4T10N}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: DEPLOYMENT AUTHORIZED.\x1b[0m', newCwd: cwd };
+      } else {
+          return { output: 'deploy_final: line 8: check_status: command not found\n[ERROR] Pre-flight check failed. Aborting.', newCwd: cwd };
       }
   }
 
@@ -6481,6 +6566,61 @@ DROP       icmp --  10.10.99.1           anywhere`;
           }
        }
        break;
+    }
+    case 'find': {
+        if (args.length === 0) {
+            output = 'usage: find <path> [options]';
+        } else {
+            const startPath = resolvePath(cwd, args[0]);
+            const nouser = args.includes('-nouser');
+            const nameIdx = args.indexOf('-name');
+            const namePattern = nameIdx !== -1 ? args[nameIdx + 1] : null;
+            const permIdx = args.indexOf('-perm');
+            const permMode = permIdx !== -1 ? args[permIdx + 1] : null;
+            
+            const results: string[] = [];
+            const walk = (currentPath: string) => {
+                const node = getNode(currentPath);
+                if (!node) return;
+                let matches = true;
+                if (nouser) {
+                    if (currentPath !== '/home/ghost/old_user_data') matches = false;
+                }
+                if (namePattern) {
+                    const fileName = currentPath.split('/').pop() || '';
+                    const regex = new RegExp('^' + namePattern.replace(/\*/g, '.*') + '$');
+                    if (!regex.test(fileName)) matches = false;
+                }
+                if (permMode) {
+                    const nodePerms = (node as any).permissions || (node.type === 'dir' ? '0755' : '0644');
+                    if (permMode === '-4000' || permMode === '/4000') {
+                        const modeStr = nodePerms.length === 3 ? '0' + nodePerms : nodePerms;
+                        const special = parseInt(modeStr[0], 10);
+                        if (!(special & 4)) matches = false;
+                    } else if (permMode !== nodePerms) matches = false;
+                }
+                if (matches) results.push(currentPath);
+                if (node.type === 'dir') {
+                    for (const child of node.children) {
+                        walk(currentPath === '/' ? `/${child}` : `${currentPath}/${child}`);
+                    }
+                }
+            };
+            walk(startPath);
+            output = results.join('\n');
+            
+            if (nouser && results.includes('/home/ghost/old_user_data')) {
+                 if (!VFS['/var/run/find_nouser_solved']) {
+                     VFS['/var/run/find_nouser_solved'] = { type: 'file', content: 'TRUE' };
+                     const runDir = getNode('/var/run');
+                     if (runDir && runDir.type === 'dir' && !runDir.children.includes('find_nouser_solved')) {
+                         runDir.children.push('find_nouser_solved');
+                     }
+                     output += `\n\n[SUCCESS] Orphaned file located.\nFLAG: GHOST_ROOT{F1ND_N0US3R_ID_9999}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: ORPHANED FILE RECOVERED.\x1b[0m`;
+                 }
+            }
+        }
+        break;
     }
     case 'lsattr': {
         if (args.length < 1) {
@@ -13606,6 +13746,41 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
             }
         } else {
             output += '[ERROR] tar command not found in PATH.';
+        }
+        break;
+    }
+    case 'screen': {
+        const args = commandLine.trim().split(/\s+/).slice(1);
+        if (args.includes('-ls') || args.includes('-list') || args.includes('--list')) {
+            if (VFS['/var/run/screen/S-ghost/1337.recovery']) {
+                output = 'There is a screen on:\n\t1337.recovery\t(Detached)\n1 Socket in /var/run/screen/S-ghost.';
+            } else {
+                output = 'No Sockets found in /var/run/screen/S-ghost.';
+            }
+        } else if (args.includes('-r')) {
+            const target = args.find(a => a !== '-r');
+            if (target === '1337' || target === 'recovery' || target === '1337.recovery') {
+                if (VFS['/var/run/screen/S-ghost/1337.recovery']) {
+                    output = '[SCREEN] Reattaching to session 1337.recovery...\n[CLEAR]\n\n# VI EDITOR - /etc/shadow.bak (RECOVERED)\n\nroot:$6$rounds=656000$....:19760:0:99999:7:::\nadmin:$1$528392$D7.F7/203.493:19760:0:99999:7:::\nghost:$6$rounds=656000$....:19760:0:99999:7:::\n\n# SYSTEM NOTE: SESSION RESTORED.\nFLAG: GHOST_ROOT{SCR33N_S3SS10N_R3C0V3R3D}\n\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SESSION RECOVERED.\x1b[0m';
+                    
+                    if (!VFS['/var/run/screen_solved']) {
+                        VFS['/var/run/screen_solved'] = { type: 'file', content: 'TRUE' };
+                        const runDir = getNode('/var/run');
+                        if (runDir && runDir.type === 'dir' && !runDir.children.includes('screen_solved')) {
+                            runDir.children.push('screen_solved');
+                        }
+                    }
+                    
+                    // Do not delete for replayability? Or do? Let's keep it.
+                    // delete VFS['/var/run/screen/S-ghost/1337.recovery'];
+                } else {
+                    output = 'There is no screen to be resumed matching ' + target + '.';
+                }
+            } else {
+                output = 'There is no screen to be resumed matching ' + (target || '') + '.';
+            }
+        } else {
+            output = 'Use: screen [-d] [-r] [-ls]';
         }
         break;
     }
