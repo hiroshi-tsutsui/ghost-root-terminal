@@ -7468,15 +7468,16 @@ Type "status" for mission objectives.`;
     case 'route': {
         const isRoot = !!getNode('/tmp/.root_session');
         const routeAdded = !!getNode('/var/run/route_added');
+        const route172Added = !!getNode('/var/run/route_172_added'); // Cycle 146
 
         if (args.length === 0 || args[0] === '-n') {
-            const extraRoute = routeAdded ? '10.10.99.0      192.168.1.1     255.255.255.0   UG    0      0        0 eth0' : '';
+            const extraRoute = routeAdded ? '\n10.10.99.0      192.168.1.1     255.255.255.0   UG    0      0        0 eth0' : '';
+            const route172 = route172Added ? '\n172.16.50.0     192.168.1.254   255.255.255.0   UG    0      0        0 eth0' : '';
             output = `Kernel IP routing table
 Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
 0.0.0.0         192.168.1.1     0.0.0.0         UG    100    0        0 eth0
 192.168.1.0     0.0.0.0         255.255.255.0   U     100    0        0 eth0
-10.0.0.0        192.168.1.254   255.0.0.0       U     200    0        0 eth0
-${extraRoute}`;
+10.0.0.0        192.168.1.254   255.0.0.0       U     200    0        0 eth0${extraRoute}${route172}`;
         } else if (args[0] === 'add') {
             if (!isRoot) {
                 output = 'route: SIOCADDRT: Operation not permitted';
@@ -7486,6 +7487,9 @@ ${extraRoute}`;
                 const correctGw = commandStr.includes('192.168.1.1') || commandStr.includes('gateway');
                 const correctTarget = commandStr.includes('10.10.99.0') || commandStr.includes('default');
                 
+                const target172 = commandStr.includes('172.16.50.0') || commandStr.includes('172.16.0.0');
+                const gw172 = commandStr.includes('192.168.1.254');
+
                 if (correctGw && correctTarget) {
                      VFS['/var/run/route_added'] = { type: 'file', content: 'TRUE' };
                      
@@ -7500,6 +7504,13 @@ ${extraRoute}`;
                      } else {
                          output = ''; // Silent success
                      }
+                } else if (target172 && gw172) {
+                     VFS['/var/run/route_172_added'] = { type: 'file', content: 'TRUE' };
+                     const runDir = getNode('/var/run');
+                     if (runDir && runDir.type === 'dir' && !runDir.children.includes('route_172_added')) {
+                         runDir.children.push('route_172_added');
+                     }
+                     output = `\x1b[1;32m[MISSION UPDATE] Objective Complete: ROUTE ADDED (172.16.50.0/24).\x1b[0m`;
                 } else {
                      output = 'route: SIOCADDRT: No such device or address invalid';
                 }
@@ -7633,6 +7644,15 @@ ${extraRoute}`;
                            output = `PING ${host} (${ip}) 56(84) bytes of data.\n64 bytes from ${ip}: icmp_seq=1 ttl=64 time=0.4 ms`;
                        }
                        return { output, newCwd, action: 'delay' };
+                   }
+               }
+
+               // Cycle 146: Unreachable Host (172.16.50.x)
+               if (ip.startsWith('172.16.50.') || ip.startsWith('172.16.')) {
+                   const route172 = !!getNode('/var/run/route_172_added');
+                   if (!route172) {
+                       output = `connect: Network is unreachable`;
+                       return { output, newCwd };
                    }
                }
 
@@ -8219,6 +8239,27 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
                output = 'usage: nc [options] <host> <port>';
            } else {
                const p = port || '23';
+               
+               // Cycle 146: Unreachable Host
+               if (host === '172.16.50.100') {
+                   const route172 = !!getNode('/var/run/route_172_added');
+                   if (!route172) {
+                       output = 'nc: connect to 172.16.50.100 port 22 (tcp) failed: Network is unreachable';
+                   } else {
+                       output = `SSH-2.0-OpenSSH_8.9p1 Ubuntu-3ubuntu0.1\n\n[SECURE VAULT]\nUNAUTHORIZED ACCESS LOGGED.\nFLAG: GHOST_ROOT{R0U71NG_M4S73R_172}\nConnection closed by foreign host.\n\x1b[1;32m[MISSION UPDATE] Objective Complete: NETWORK REACHED.\x1b[0m`;
+                       
+                       // Set solved flag
+                       if (!VFS['/var/run/net_reached']) {
+                           VFS['/var/run/net_reached'] = { type: 'file', content: 'TRUE' };
+                           const runDir = getNode('/var/run');
+                           if (runDir && runDir.type === 'dir' && !runDir.children.includes('net_reached')) {
+                               runDir.children.push('net_reached');
+                           }
+                       }
+                   }
+                   break;
+               }
+
                // Check for Cycle 70 (Port Knocking)
                if (host === '192.168.1.1' || host === 'gateway') {
                    const pNum = parseInt(p, 10);
