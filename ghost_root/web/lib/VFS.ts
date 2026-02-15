@@ -82,11 +82,17 @@ const VFS: Record<string, VFSNode> = {
   },
   '/usr/bin': {
     type: 'dir',
-    children: ['gcc', 'net-bridge', 'void_crypt', 'deploy_agent', 'otp_gen', 'recover_data', 'ghost_update', 'secure_vault', 'sys_monitor']
+    children: ['gcc', 'net-bridge', 'void_crypt', 'deploy_agent', 'otp_gen', 'recover_data', 'ghost_update', 'secure_vault', 'sys_monitor', 'escalate']
   },
   '/usr/bin/secure_vault': {
     type: 'file',
     content: '[BINARY_ELF_X86_64]\n[SECURE_ACCESS_PROTOCOL]\nUsage: ./secure_vault\nNote: Requires exclusive lock on /var/lock/subsystem/vault.lock'
+  },
+  // Cycle 194: The SUID Binary
+  '/usr/bin/escalate': {
+    type: 'file',
+    content: '[BINARY_ELF_X86_64] [SUID_ROOT]\\n[SYSTEM] Privileges escalated.\\n[ACCESS] GRANTED.\\nFLAG: GHOST_ROOT{SU1D_P0W3R_UNL0CK3D}',
+    permissions: '4755'
   },
   '/usr/bin/ghost_update': {
     type: 'file',
@@ -304,7 +310,16 @@ KEY_ID: GHOST_PROTOCOL_INIT_V2
   },
   '/home/ghost': {
     type: 'dir',
-    children: ['project_alpha', 'secrets', '.bash_history', '.ssh', 'wifi_note.txt', 'journal', 'evidence.jpg', 'surveillance.jpg', 'tools', 'tools.zip', 'capture.cap', 'drone_manual.txt', 'beacon_protocol.txt', 'hashes.txt', 'wordlist.txt', 'operations', 'security_alert.txt']
+    children: ['project_alpha', 'secrets', '.bash_history', '.ssh', 'wifi_note.txt', 'journal', 'evidence.jpg', 'surveillance.jpg', 'tools', 'tools.zip', 'capture.cap', 'drone_manual.txt', 'beacon_protocol.txt', 'hashes.txt', 'wordlist.txt', 'operations', 'security_alert.txt', 'suid_notice.txt']
+  },
+  '/home/ghost/suid_notice.txt': {
+      type: 'file',
+      content: `[SECURITY AUDIT]
+Urgent: We detected a rogue binary with SUID permissions.
+It allows anyone to run it as root.
+Find it immediately and report the flag.
+Hint: use 'find / -perm -4000'
+`
   },
   '/home/ghost/security_alert.txt': {
       type: 'file',

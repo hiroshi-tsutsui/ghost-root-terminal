@@ -11,3 +11,21 @@
 - **Sector:** /usr/bin/secure_generator
 - **Type:** Permissions / Umask
 - **Description:** Added `umask` command simulation and `secure_generator` tool. The tool creates a key file using the current umask. Default umask (0022) results in insecure permissions (0644). User must set `umask 0077` to force 0600 permissions and pass the security check.
+
+## Cycle 172: The Manual Page
+- **Date:** 2026-02-15
+- **Sector:** /usr/bin/net-splice
+- **Type:** RTFM (Man Page Analysis)
+- **Description:** Added `net-splice`, a tool that requires specific arguments documented only in its man page (`man net-splice`). The user must read the documentation to discover the target IP (10.10.99.5), port (443), and stealth mode (silent) required to establish a covert channel.
+
+## Cycle 181: The Broken Installer
+- **Date:** 2026-02-15
+- **Sector:** /usr/local/bin/install_patch.sh
+- **Type:** Corrupted Binary / Manual Patching
+- **Description:** Added a corrupted shell script (`install_patch.sh`) that segfaults upon execution. The user must analyze the file content (`cat`), find the hidden manual override instructions (Set ENV `PATCH_LEVEL=9`), and execute the core patch tool (`patch_core --apply`) directly to secure the system.
+
+## Cycle 130: The Path Hijack
+- **Date:** 2026-02-15
+- **Sector:** /usr/local/bin/sys_health
+- **Type:** Sysadmin / PATH Injection
+- **Description:** Added a vulnerable script `sys_health` that executes `diagnostic_tool` using a relative path. The user must manipulate the `PATH` environment variable to force the execution of a malicious `diagnostic_tool` located in their home directory instead of the system default.

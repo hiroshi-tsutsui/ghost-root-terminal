@@ -2854,6 +2854,419 @@ export const loadSystemState = () => {
             }
         }
     }
+
+    // Cycle 185 Init (The Corrupted Firewall)
+    if (!VFS['/etc/firewall.conf']) {
+        const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+        const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+
+        ensureDir('/etc');
+        link('/', 'etc');
+
+        VFS['/etc/firewall.conf'] = {
+            type: 'file',
+            content: '# FIREWALL CONFIGURATION v2.0\n# POLICY: DROP ALL\n\nALLOW_PORT 80\nALLOW_PORT 443\n# TODO: Allow SSH (Port 22) access for admin console\n',
+            permissions: '0644'
+        };
+        link('/etc', 'firewall.conf');
+
+        ensureDir('/usr'); ensureDir('/usr/local'); ensureDir('/usr/local/bin');
+        link('/usr', 'local'); link('/usr/local', 'bin');
+
+        VFS['/usr/local/bin/firewall_reload'] = {
+            type: 'file',
+            content: '[BINARY_ELF_X86_64] [FIREWALL_CTL]\n[CHECK] Parsing /etc/firewall.conf...\n[ERROR] SSH port 22 not explicitly allowed.\n',
+            permissions: '0755'
+        };
+        link('/usr/local/bin', 'firewall_reload');
+
+        if (!VFS['/home/ghost/ticket_404.txt']) {
+            VFS['/home/ghost/ticket_404.txt'] = {
+                type: 'file',
+                content: 'Subject: SSH Down\nFrom: Admin\n\nI can\'t SSH into the new server (192.168.1.200).\nThe firewall is blocking connection attempts.\nPlease add an allow rule for port 22 to /etc/firewall.conf and reload the firewall.\nFormat: ALLOW_PORT <NUMBER>'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('ticket_404.txt')) {
+                home.children.push('ticket_404.txt');
+            }
+        }
+    }
+
+    // Cycle 186 Init (The Immutable Directory)
+    if (!VFS['/home/ghost/secure_drop']) {
+        const home = getNode('/home/ghost');
+        if (home && home.type === 'dir' && !home.children.includes('secure_drop')) {
+            home.children.push('secure_drop');
+        }
+        VFS['/home/ghost/secure_drop'] = { type: 'dir', children: [] };
+        
+        // Set Immutable Attribute on Directory
+        FILE_ATTRIBUTES['/home/ghost/secure_drop'] = ['i'];
+
+        if (!VFS['/home/ghost/drop_alert.log']) {
+            VFS['/home/ghost/drop_alert.log'] = {
+                type: 'file',
+                content: '[ERROR] Incoming file transfer failed.\n[DEST] /home/ghost/secure_drop\n[REASON] Operation not permitted (Write Protected).\n[ACTION] Remove the immutable attribute from the directory.'
+            };
+            if (home && home.type === 'dir' && !home.children.includes('drop_alert.log')) {
+                home.children.push('drop_alert.log');
+            }
+        }
+    }
+
+    // Cycle 181 Init (The Broken Installer)
+    if (!VFS['/usr/local/bin/install_patch.sh']) {
+        const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+        const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+
+        ensureDir('/usr'); ensureDir('/usr/local'); ensureDir('/usr/local/bin');
+        link('/', 'usr'); link('/usr', 'local'); link('/usr/local', 'bin');
+
+        VFS['/usr/local/bin/install_patch.sh'] = {
+            type: 'file',
+            content: '#!/bin/bash\n# SECURITY PATCH INSTALLER v9.0\necho "Installing security patch..."\n# [CORRUPTED DATA SEGMENT]\n# \\x00\\x99\\x88... (Binary garbage)\n\n# MANUAL STEPS RECOVERED:\n# 1. export PATCH_LEVEL=9\n# 2. /usr/bin/patch_core --apply',
+            permissions: '0755'
+        };
+        link('/usr/local/bin', 'install_patch.sh');
+
+        // Create the core tool
+        ensureDir('/usr/bin');
+        link('/usr', 'bin');
+        VFS['/usr/bin/patch_core'] = {
+            type: 'file',
+            content: '[BINARY_ELF_X86_64] [PATCH_CORE_V9]\n[CHECK] ENV: PATCH_LEVEL\n',
+            permissions: '0755'
+        };
+        link('/usr/bin', 'patch_core');
+
+        // Hint
+        if (!VFS['/home/ghost/patch_fail.log']) {
+            VFS['/home/ghost/patch_fail.log'] = {
+                type: 'file',
+                content: '[ERROR] Automatic update failed.\n[DIAGNOSTIC] Installer script corrupted at offset 0x400.\n[ACTION] Manually extract instructions from the script and execute the patch.'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('patch_fail.log')) {
+                home.children.push('patch_fail.log');
+            }
+        }
+    }
+
+    // Cycle 187 Init (The Manual Page)
+    if (!VFS['/usr/bin/net-splice']) {
+        const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+        const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+
+        ensureDir('/usr'); ensureDir('/usr/bin');
+        link('/usr', 'bin');
+
+        VFS['/usr/bin/net-splice'] = {
+            type: 'file',
+            content: '[BINARY_ELF_X86_64] [NET_SPLICE]\nSee "man net-splice" for documentation.',
+            permissions: '0755'
+        };
+        link('/usr/bin', 'net-splice');
+
+        // Create man page
+        ensureDir('/usr/share'); ensureDir('/usr/share/man'); ensureDir('/usr/share/man/man1');
+        link('/usr', 'share'); link('/usr/share', 'man'); link('/usr/share/man', 'man1');
+
+        VFS['/usr/share/man/man1/net-splice.1'] = {
+            type: 'file',
+            content: '.TH NET-SPLICE 1\n.SH NAME\nnet-splice - establish covert network tunnel\n.SH SYNOPSIS\nnet-splice --target <IP> --port <PORT> --mode <MODE>\n.SH DESCRIPTION\nEstablishes a covert TCP tunnel to the specified target.\n.SH OPTIONS\n--target <IP>\n    Specify the target IP address.\n--port <PORT>\n    Specify the target port (e.g., 443).\n--mode <MODE>\n    Operation mode: "silent", "active", or "beacon".\n.SH EXAMPLES\n    net-splice --target 10.10.99.5 --port 443 --mode silent\n.SH AUTHOR\n    Ghost Protocol Initiative',
+            permissions: '0644'
+        };
+        link('/usr/share/man/man1', 'net-splice.1');
+
+        // Create hint
+        if (!VFS['/home/ghost/network_request.txt']) {
+            VFS['/home/ghost/network_request.txt'] = {
+                type: 'file',
+                content: '[ORDER] Establish covert channel to target 10.10.99.5 on secure port 443.\n[TOOL] Use "net-splice" in silent mode.\n[NOTE] Check the manual (man net-splice) for correct flags.'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('network_request.txt')) {
+                home.children.push('network_request.txt');
+            }
+        }
+    }
+
+    // Cycle 188 Init (The Buried Config)
+    if (!VFS['/usr/bin/decrypt-node']) {
+        const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+        const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+
+        ensureDir('/usr'); ensureDir('/usr/bin');
+        link('/usr', 'bin');
+
+        VFS['/usr/bin/decrypt-node'] = {
+            type: 'file',
+            content: '[BINARY_ELF_X86_64] [DECRYPT_NODE]\n[ERROR] ENVIRONMENT_VARIABLE_MISSING\n',
+            permissions: '0755'
+        };
+        link('/usr/bin', 'decrypt-node');
+
+        // Create the huge log file
+        ensureDir('/var'); ensureDir('/var/log');
+        link('/var', 'log');
+        
+        // Generate noise
+        let logContent = '';
+        const levels = ['INFO', 'DEBUG', 'WARN'];
+        for(let i=0; i<450; i++) {
+             logContent += `[${new Date().toISOString()}] [${levels[i%3]}] System heartbeat: stable.\n`;
+        }
+        // The Needle
+        logContent += `[${new Date().toISOString()}] [DEBUG] Connection string rotated to: GHOST_ROOT{GR3P_4_TH3_W1N}\n`;
+        // More noise
+        for(let i=0; i<50; i++) {
+             logContent += `[${new Date().toISOString()}] [INFO] Garbage collection: ${Math.random()}.\n`;
+        }
+
+        VFS['/var/log/app_debug.log'] = {
+            type: 'file',
+            content: logContent,
+            permissions: '0644'
+        };
+        link('/var/log', 'app_debug.log');
+
+        // Create hint
+        if (!VFS['/home/ghost/config_issue.txt']) {
+            VFS['/home/ghost/config_issue.txt'] = {
+                type: 'file',
+                content: '[ERROR] decrypt-node failed to start.\n[DIAGNOSTIC] Missing CONNECTION_STRING environment variable.\n[HINT] The value was logged in /var/log/app_debug.log during the last rotation.\n[ACTION] Grep the log, export the variable, and retry.'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('config_issue.txt')) {
+                home.children.push('config_issue.txt');
+            }
+        }
+    }
+
+    // Cycle 189 Init (The Broken Installer)
+    if (!VFS['/opt/ghost_protocol/install.sh']) {
+        const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+        const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+
+        ensureDir('/opt'); ensureDir('/opt/ghost_protocol');
+        link('/', 'opt'); link('/opt', 'ghost_protocol');
+
+        VFS['/opt/ghost_protocol/install.sh'] = {
+            type: 'file',
+            content: '#!/bin/bash\n# FIRMWARE INSTALLER v4.2\n# [CRITICAL] DO NOT RUN WITHOUT INTEGRITY CHECK.\n\necho "[INSTALL] Initializing..."\nsleep 1\necho "[CHECK] Verifying dependency: lib-ghost-v4..."\n\n# INTENTIONAL ERROR: This path doesn\'t exist, but the script checks it.\nif [ ! -f "/var/lib/ghost/dependency.ok" ]; then\n  echo "[ERROR] Dependency check failed."\n  echo "PANIC: KERNEL MODULE MISSING"\n  exit 1\nfi\n\necho "[SUCCESS] Dependency found."\necho "Installing firmware..."\nsleep 2\necho "FLAG: GHOST_ROOT{SCR1PT_ANALYS1S_1S_K3Y}"',
+            permissions: '0755'
+        };
+        link('/opt/ghost_protocol', 'install.sh');
+
+        if (!VFS['/home/ghost/install_error.log']) {
+            VFS['/home/ghost/install_error.log'] = {
+                type: 'file',
+                content: '[ERROR] Firmware installation failed.\n[DIAGNOSTIC] Script crashed with error code 1.\n[ACTION] Analyze the installer script (/opt/ghost_protocol/install.sh) to understand the failure condition.'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('install_error.log')) {
+                home.children.push('install_error.log');
+            }
+        }
+    }
+
+    // Cycle 190 Init (The Hidden Port)
+    if (!VFS['/proc/net/tcp']) {
+        const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+        const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+
+        ensureDir('/proc'); ensureDir('/proc/net');
+        link('/', 'proc'); link('/proc', 'net');
+
+        // Hex 1F48 = 8008
+        const tcpContent = '  sl  local_address rem_address   st tx_queue rx_queue tr tm->when retrnsmt   uid  timeout inode\\n' +
+                           '   0: 0100007F:1F48 00000000:0000 0A 00000000:00000000 00:00000000 00000000     0        0 12345\\n' +
+                           '   1: 00000000:0016 00000000:0000 0A 00000000:00000000 00:00000000 00000000     0        0 67890\\n';
+
+        VFS['/proc/net/tcp'] = {
+            type: 'file',
+            content: tcpContent,
+            permissions: '0444'
+        };
+        link('/proc/net', 'tcp');
+
+        // Hint
+        if (!VFS['/home/ghost/net_scan.txt']) {
+            VFS['/home/ghost/net_scan.txt'] = {
+                type: 'file',
+                content: '[ALERT] Suspicious network activity detected on localhost.\\n[ERROR] netstat binary is missing/corrupted.\\n[ACTION] Manually identify the hidden listener in /proc/net/tcp (hex encoded port) and connect to it.\\n[TOOL] use "nc localhost <PORT>"'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('net_scan.txt')) {
+                home.children.push('net_scan.txt');
+            }
+        }
+    }
+
+    // Cycle 191 Init (The Gatekeeper)
+    if (!VFS['/usr/bin/gatekeeper']) {
+        const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+        const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+
+        ensureDir('/usr'); ensureDir('/usr/bin');
+        link('/usr', 'bin');
+
+        VFS['/usr/bin/gatekeeper'] = {
+            type: 'file',
+            content: '[BINARY_ELF_X86_64] [GATEKEEPER_V1]\n[CHECK] ENV: ACCESS_TOKEN\n[ERROR] ACCESS DENIED',
+            permissions: '0755'
+        };
+        link('/usr/bin', 'gatekeeper');
+
+        if (!VFS['/home/ghost/gate_log.txt']) {
+            VFS['/home/ghost/gate_log.txt'] = {
+                type: 'file',
+                content: '[SECURITY] Gatekeeper System Updated.\n[NOTE] Access now requires an environment token.\n[HINT] The token is "GHOST_7". Export it as ACCESS_TOKEN.'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('gate_log.txt')) {
+                home.children.push('gate_log.txt');
+            }
+        }
+    }
+
+    // Cycle 192 Init (The Needle in the Haystack)
+    if (!VFS['/var/log/signal_trace.log']) {
+        if (!VFS['/var/log']) {
+             VFS['/var/log'] = { type: 'dir', children: [] };
+             const varNode = getNode('/var');
+             if (varNode && varNode.type === 'dir' && !varNode.children.includes('log')) {
+                 varNode.children.push('log');
+             }
+        }
+        
+        let noise = '';
+        const freqs = ['88.5MHz', '104.3MHz', '92.1MHz', '101.5MHz'];
+        for(let i=0; i<500; i++) {
+            const freq = freqs[Math.floor(Math.random() * freqs.length)];
+            noise += `[SIGNAL_TRACE] ${new Date().toISOString()} FREQ:${freq} STATUS:NOISE\n`;
+        }
+        // The Needle
+        noise += `[SIGNAL_TRACE] ${new Date().toISOString()} FREQ:89.3MHz STATUS:CONFIRMED_UPLINK\n`;
+        // More hay
+        for(let i=0; i<100; i++) {
+             const freq = freqs[Math.floor(Math.random() * freqs.length)];
+             noise += `[SIGNAL_TRACE] ${new Date().toISOString()} FREQ:${freq} STATUS:NOISE\n`;
+        }
+
+        VFS['/var/log/signal_trace.log'] = { 
+            type: 'file', 
+            content: noise,
+            permissions: '0644'
+        };
+        const logDir = getNode('/var/log');
+        if (logDir && logDir.type === 'dir' && !logDir.children.includes('signal_trace.log')) {
+            logDir.children.push('signal_trace.log');
+        }
+
+        if (!VFS['/usr/bin/tune-receiver']) {
+            const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+            const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+    
+            ensureDir('/usr'); ensureDir('/usr/bin');
+            link('/usr', 'bin');
+    
+            VFS['/usr/bin/tune-receiver'] = {
+                type: 'file',
+                content: '[BINARY_ELF_X86_64] [RECEIVER_CONTROL]\n[ERROR] Frequency argument missing.\n[HINT] Analyze signal logs for confirmed uplink.',
+                permissions: '0755'
+            };
+            link('/usr/bin', 'tune-receiver');
+        }
+    }
+
+    // Cycle 193 Init (The Zombie Process)
+    if (!VFS['/var/lock/subsystem/vault.lock']) {
+        const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+        const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+
+        ensureDir('/var'); ensureDir('/var/lock'); ensureDir('/var/lock/subsystem');
+        link('/var', 'lock'); link('/var/lock', 'subsystem');
+
+        VFS['/var/lock/subsystem/vault.lock'] = {
+            type: 'file',
+            content: '4000',
+            permissions: '0644'
+        };
+        link('/var/lock/subsystem', 'vault.lock');
+
+        // Ensure binaries exist
+        ensureDir('/usr'); ensureDir('/usr/bin'); link('/usr', 'bin');
+        if (!VFS['/usr/bin/vault_guardian']) {
+             VFS['/usr/bin/vault_guardian'] = { 
+                 type: 'file', 
+                 content: '[BINARY_ELF_X86_64] [VAULT_GUARDIAN]\n[STATUS] RUNNING (PID 4000)\n[LOCK] Active', 
+                 permissions: '0755' 
+             };
+             link('/usr/bin', 'vault_guardian');
+        }
+        if (!VFS['/usr/bin/vault_access']) {
+             VFS['/usr/bin/vault_access'] = { 
+                 type: 'file', 
+                 content: '[BINARY_ELF_X86_64] [VAULT_ACCESS_TOOL]\n[ERROR] Lock file detected.\n', 
+                 permissions: '0755' 
+             };
+             link('/usr/bin', 'vault_access');
+        }
+
+        // Hint
+        if (!VFS['/home/ghost/vault_issue.log']) {
+            VFS['/home/ghost/vault_issue.log'] = {
+                type: 'file',
+                content: '[ERROR] Failed to access vault.\n[DIAGNOSTIC] Another process is holding the lock (/var/lock/subsystem/vault.lock).\n[ACTION] Identify the process holding the lock and terminate it to release the resource.'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('vault_issue.log')) {
+                home.children.push('vault_issue.log');
+            }
+        }
+        
+        // Ensure process exists (Dynamic Injection)
+        if (!PROCESSES.find(p => p.pid === 4000)) {
+            PROCESSES.push({ pid: 4000, ppid: 1, user: 'root', cpu: 0.1, mem: 0.2, time: '1:00', command: '/usr/bin/vault_guardian', tty: '?', stat: 'Ss' });
+            PROCESSES.push({ pid: 4001, ppid: 4000, user: 'root', cpu: 0.0, mem: 0.0, time: '0:00', command: '[vault_worker] <defunct>', tty: '?', stat: 'Z' });
+        }
+    }
+
+    // Cycle 130 Init (The Path Hijack)
+    if (!VFS['/usr/local/bin/sys_health']) {
+        const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+        const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+
+        ensureDir('/usr'); ensureDir('/usr/local'); ensureDir('/usr/local/bin');
+        link('/usr', 'local'); link('/usr/local', 'bin');
+
+        VFS['/usr/local/bin/sys_health'] = {
+            type: 'file',
+            content: '#!/bin/bash\n# SYSTEM HEALTH CHECK v2.0\necho "[*] Initiating Diagnostics..."\n# VULNERABILITY: Relative path execution\ndiagnostic_tool --check-integrity\necho "[*] Diagnostics Complete."',
+            permissions: '0755'
+        };
+        link('/usr/local/bin', 'sys_health');
+
+        ensureDir('/usr/bin'); link('/usr', 'bin');
+        VFS['/usr/bin/diagnostic_tool'] = {
+            type: 'file',
+            content: '[BINARY_ELF_X86_64] [DIAGNOSTIC] [STATUS: OK]',
+            permissions: '0755'
+        };
+        link('/usr/bin', 'diagnostic_tool');
+
+        if (!VFS['/home/ghost/path_vuln.log']) {
+            VFS['/home/ghost/path_vuln.log'] = {
+                type: 'file',
+                content: '[SECURITY_AUDIT] Vulnerability detected in sys_health.\n[ISSUE] Script calls \'diagnostic_tool\' without absolute path.\n[RISK] PATH variable manipulation could allow execution of malicious code.\n[ACTION] Create a fake \'diagnostic_tool\' in a custom directory and update PATH to prioritize it.'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('path_vuln.log')) {
+                home.children.push('path_vuln.log');
+            }
+        }
+    }
 };
 
 // Helper to reset state
@@ -3084,7 +3497,7 @@ export interface CommandResult {
   data?: any;
 }
 
-const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'ss', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail',     'strings', 'recover_tool', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'arp', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'zgrep', 'gunzip', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'secure_vault', 'jobs', 'fg', 'bg', 'recover_data', 'ghost_update', 'git', 'file', 'openssl', 'beacon', 'fsck', 'docker', 'lsattr', 'chattr', 'backup_service', 'getfattr', 'setfattr', 'mkfifo', 'uplink_service', 'sqlite3', 'gdb', 'jwt_tool', 'php', 'access_card', 'sys_monitor', 'ln', 'readlink', 'nginx', 'tac', 'getcap', 'sysctl', 'ldd', 'quantum_calc', 'deploy_tool', 'ghost_relay', 'groups', 'usermod', 'access_silo', 'satellite_uplink', 'unshadow', 'john', 'mkswap', 'swapon', 'free', 'hostname', 'runlevel', 'telinit', 'init', 'screen', 'signal_jammer', 'legacy_auth', 'sys_health', 'grid_control', 'restore_uplink', 'uplink_connect_manual', 'nuclear_launch'];
+const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'ss', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail',     'strings', 'recover_tool', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'arp', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'zgrep', 'gunzip', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'secure_vault', 'jobs', 'fg', 'bg', 'recover_data', 'ghost_update', 'git', 'file', 'openssl', 'beacon', 'fsck', 'docker', 'lsattr', 'chattr', 'backup_service', 'getfattr', 'setfattr', 'mkfifo', 'uplink_service', 'sqlite3', 'gdb', 'jwt_tool', 'php', 'access_card', 'sys_monitor', 'ln', 'readlink', 'nginx', 'tac', 'getcap', 'sysctl', 'ldd', 'quantum_calc', 'deploy_tool', 'ghost_relay', 'groups', 'usermod', 'access_silo', 'satellite_uplink', 'unshadow', 'john', 'mkswap', 'swapon', 'free', 'hostname', 'runlevel', 'telinit', 'init', 'screen', 'signal_jammer', 'legacy_auth', 'sys_health', 'grid_control', 'restore_uplink', 'uplink_connect_manual', 'nuclear_launch', 'firewall_reload', 'net-splice', 'tune-receiver'];
 
 export interface MissionStatus {
   objectives: {
@@ -3256,6 +3669,193 @@ export const tabCompletion = (cwd: string, inputBuffer: string): { matches: stri
 export const processCommand = (cwd: string, commandLine: string, stdin?: string): CommandResult => {
   const cmdTokens = commandLine.trim().split(/\s+/);
   const cmdBase = cmdTokens[0];
+
+  // Cycle 195 Init (Lazy Load)
+  if (!VFS['/home/ghost/kernel_alert.txt']) {
+      VFS['/home/ghost/kernel_alert.txt'] = {
+          type: 'file',
+          content: '[ALERT] Malicious Kernel Module Detected.\n[MODULE] rootkit.ko\n[STATUS] Loaded.\n[ACTION] Unload the module immediately (rmmod).\n[WARNING] Module may be protected by a helper process.'
+      };
+      const home = getNode('/home/ghost');
+      if (home && home.type === 'dir' && !home.children.includes('kernel_alert.txt')) {
+          home.children.push('kernel_alert.txt');
+      }
+      
+      // Add fake process to process list
+      const rootkitProc = PROCESSES.find(p => p.pid === 666);
+      if (!rootkitProc) {
+          PROCESSES.push({
+              pid: 666,
+              ppid: 1,
+              user: 'root',
+              cpu: 0.1,
+              mem: 2.0,
+              time: '66:66',
+              command: '[rootkit_d]',
+              tty: '?',
+              stat: 'Ss'
+          });
+      }
+  }
+
+  // Cycle 181: Patch Core
+  if (cmdBase === 'patch_core') {
+      const args = commandLine.trim().split(/\s+/).slice(1);
+      let output = '';
+      if (args.includes('--apply')) {
+          if (ENV_VARS['PATCH_LEVEL'] === '9') {
+              output = '[PATCH_CORE] Verifying environment... OK.\n[PATCH_CORE] Applying security patch level 9...\n[SUCCESS] System Secured.\nFLAG: GHOST_ROOT{M4NU4L_P4TCH_QU33N}\n\\x1b[1;32m[MISSION UPDATE] Objective Complete: SYSTEM PATCHED.\\x1b[0m';
+              
+              if (!VFS['/var/run/patch_solved']) {
+                  VFS['/var/run/patch_solved'] = { type: 'file', content: 'TRUE' };
+                  const runDir = getNode('/var/run');
+                  if (runDir && runDir.type === 'dir' && !runDir.children.includes('patch_solved')) {
+                      runDir.children.push('patch_solved');
+                  }
+              }
+          } else {
+              output = '[PATCH_CORE] Error: Invalid or missing PATCH_LEVEL environment variable.\nExecution aborted.';
+          }
+      } else {
+          output = 'usage: patch_core --apply';
+      }
+      return { output, newCwd: cwd };
+  }
+
+  // Cycle 195 (The Sticky Rootkit)
+  if (cmdBase === 'lsmod') {
+      // Lazy Init
+      if (!VFS['/proc/modules']) {
+           VFS['/proc/modules'] = {
+               type: 'file',
+               content: 'Module                  Size  Used by\nrootkit                16384  1\nnf_conntrack          163840  2\niptable_filter         16384  1\nip_tables              28672  1 iptable_filter\nx_tables               40960  2 ip_tables,iptable_filter\n',
+               permissions: '0444'
+           };
+           // Ensure /proc exists
+           const proc = getNode('/proc');
+           if (proc && proc.type === 'dir' && !proc.children.includes('modules')) {
+               proc.children.push('modules');
+           }
+      }
+      
+      // Check if rootkit is still loaded
+      let content = (VFS['/proc/modules'] as any).content;
+      if (VFS['/var/run/rootkit_unloaded']) {
+          content = content.replace('rootkit                16384  1\n', '');
+      }
+      
+      return { output: content, newCwd: cwd };
+  }
+
+  if (cmdBase === 'kill') {
+      const args = commandLine.trim().split(/\s+/).slice(1);
+      if (args.length === 0) return { output: 'kill: usage: kill [-s sigspec | -n signum | -sigspec] pid | jobspec ...', newCwd: cwd };
+      
+      const pid = args[args.length - 1]; // Simple parsing
+      
+      if (pid === '666') {
+          VFS['/var/run/rootkit_killed'] = { type: 'file', content: 'TRUE' };
+          return { output: '[kill] Process 666 (rootkit_d) terminated.', newCwd: cwd };
+      } else {
+          return { output: `kill: (${pid}) - No such process`, newCwd: cwd };
+      }
+  }
+
+  if (cmdBase === 'rmmod') {
+      const args = commandLine.trim().split(/\s+/).slice(1);
+      const module = args[0];
+      
+      if (!module) return { output: 'rmmod: missing module name', newCwd: cwd };
+      
+      if (module === 'rootkit') {
+          if (VFS['/var/run/rootkit_unloaded']) {
+               return { output: 'rmmod: ERROR: Module rootkit is not currently loaded', newCwd: cwd };
+          }
+          
+          if (!VFS['/var/run/rootkit_killed']) {
+               return { output: 'rmmod: ERROR: Module rootkit is in use by [rootkit_d] (PID 666)', newCwd: cwd };
+          }
+          
+          VFS['/var/run/rootkit_unloaded'] = { type: 'file', content: 'TRUE' };
+          
+          let out = '[SUCCESS] Module rootkit unloaded.\nFLAG: GHOST_ROOT{K3RN3L_M0D_UNL0AD3D}';
+          if (!VFS['/var/run/cycle195_solved']) {
+              VFS['/var/run/cycle195_solved'] = { type: 'file', content: 'TRUE' };
+              const runDir = getNode('/var/run');
+              if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle195_solved')) {
+                  runDir.children.push('cycle195_solved');
+              }
+              out += '\n\x1b[1;32m[MISSION UPDATE] Objective Complete: KERNEL SANITIZED.\x1b[0m';
+          }
+          return { output: out, newCwd: cwd };
+      }
+      
+      return { output: `rmmod: ERROR: Module ${module} does not exist in /proc/modules`, newCwd: cwd };
+  }
+
+  // Cycle 196 Init (Lazy Load) - The Host Override
+  if (!VFS['/home/ghost/network_bridge.log']) {
+      // Ensure /etc/hosts exists
+      if (!VFS['/etc/hosts']) {
+          if (!VFS['/etc']) VFS['/etc'] = { type: 'dir', children: [] };
+          VFS['/etc/hosts'] = {
+              type: 'file',
+              content: '127.0.0.1\tlocalhost\n::1\tlocalhost ip6-localhost ip6-loopback\nfe00::0\tip6-localnet\nff00::0\tip6-mcastprefix\nff02::1\tip6-allnodes\nff02::2\tip6-allrouters\n',
+              permissions: '0644'
+          };
+          const etc = getNode('/etc');
+          if (etc && etc.type === 'dir' && !etc.children.includes('hosts')) {
+              etc.children.push('hosts');
+          }
+      }
+
+      // Hint file
+      VFS['/home/ghost/network_bridge.log'] = {
+          type: 'file',
+          content: '[ERROR] Bridge Connection Failed.\n[TARGET] uplink.satellite (203.0.113.5)\n[STATUS] Connection Refused (Remote Host Down).\n[ACTION] Override DNS locally to point to localhost (127.0.0.1).\n[HINT] Edit /etc/hosts to redirect traffic.'
+      };
+      const home = getNode('/home/ghost');
+      if (home && home.type === 'dir' && !home.children.includes('network_bridge.log')) {
+          home.children.push('network_bridge.log');
+      }
+
+      // Binary (Mock)
+      if (!VFS['/usr/bin/net-bridge']) {
+          VFS['/usr/bin/net-bridge'] = {
+              type: 'file',
+              content: '[BINARY_ELF_X86_64] [BRIDGE_CONTROL]\n[CONFIG] Target: uplink.satellite',
+              permissions: '0755'
+          };
+          const binDir = getNode('/usr/bin');
+          if (binDir && binDir.type === 'dir' && !binDir.children.includes('net-bridge')) {
+              binDir.children.push('net-bridge');
+          }
+      }
+  }
+
+  // Cycle 196 Command Logic
+  if (cmdBase === 'net-bridge' || cmdBase === '/usr/bin/net-bridge') {
+      const hostsNode = VFS['/etc/hosts'];
+      if (!hostsNode || hostsNode.type !== 'file') {
+          return { output: 'Error: /etc/hosts not found.', newCwd: cwd };
+      }
+
+      const content = (hostsNode as any).content;
+      // Check if user mapped uplink.satellite to 127.0.0.1
+      const hasMapping = content.split('\n').some((line: string) => 
+          line.includes('127.0.0.1') && line.includes('uplink.satellite') && !line.trim().startsWith('#')
+      );
+
+      if (hasMapping) {
+          if (!VFS['/var/run/bridge_solved']) {
+              VFS['/var/run/bridge_solved'] = { type: 'file', content: 'TRUE' };
+              return { output: '[BRIDGE] Resolving uplink.satellite...\n[DNS] Override Detected: 127.0.0.1\n[CONNECT] Handshake Successful.\n[SUCCESS] Bridge Established.\nFLAG: GHOST_ROOT{DNS_SP00F_M4ST3R}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: TRAFFIC REDIRECTED.\x1b[0m', newCwd: cwd };
+          }
+          return { output: '[BRIDGE] Connection Active.\nFLAG: GHOST_ROOT{DNS_SP00F_M4ST3R}', newCwd: cwd };
+      } else {
+          return { output: '[BRIDGE] Resolving uplink.satellite...\n[DNS] 203.0.113.5 (Public IP)\n[CONNECT] Connection Refused (Timeout).\n[ERROR] Remote host unreachable.\n[HINT] Override required.', newCwd: cwd };
+      }
+  }
 
   // Built-in: export
   if (cmdBase === 'export') {
@@ -3558,6 +4158,69 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
        }
   }
 
+  // Cycle 191 (The Gatekeeper)
+  if (cmdBase === 'gatekeeper' || cmdBase === '/usr/bin/gatekeeper') {
+       if (ENV_VARS['ACCESS_TOKEN'] === 'GHOST_7') {
+           if (!VFS['/var/run/gate_solved']) {
+               VFS['/var/run/gate_solved'] = { type: 'file', content: 'TRUE' };
+               return { output: '[GATEKEEPER] Access Token Verified.\n[SUCCESS] Gate Opened.\nFLAG: GHOST_ROOT{ENV_V4R_G4T3_0P3N3D}\n\\x1b[1;32m[MISSION UPDATE] Objective Complete: ACCESS GRANTED.\\x1b[0m', newCwd: cwd };
+           }
+           return { output: '[GATEKEEPER] System Active.\nFLAG: GHOST_ROOT{ENV_V4R_G4T3_0P3N3D}', newCwd: cwd };
+       } else {
+           return { output: '[GATEKEEPER] Error: Access Denied.\n[REASON] Missing or Invalid Environment Variable: ACCESS_TOKEN.\n[HINT] Check /home/ghost/gate_log.txt for credentials.', newCwd: cwd };
+       }
+  }
+
+  // Cycle 192 (The Needle in the Haystack)
+  if (cmdBase === 'tune-receiver' || cmdBase === '/usr/bin/tune-receiver') {
+       const args = commandLine.trim().split(/\s+/).slice(1);
+       if (args.length === 0) {
+           return { output: 'Usage: tune-receiver <frequency>\nExample: tune-receiver 100.0MHz', newCwd: cwd };
+       }
+       
+       const freq = args[0];
+       if (freq === '89.3MHz' || freq === '89.3') {
+           if (!VFS['/var/run/cycle192_solved']) {
+               VFS['/var/run/cycle192_solved'] = { type: 'file', content: 'TRUE' };
+               return { output: '[RECEIVER] Tuning to 89.3MHz...\n[SIGNAL] LOCKED.\n[DECODING] ...\n[SUCCESS] Uplink Established.\nFLAG: GHOST_ROOT{GR3P_TH3_N33DL3_SUCC3SS}\n\\x1b[1;32m[MISSION UPDATE] Objective Complete: SIGNAL ISOLATED.\\x1b[0m', newCwd: cwd };
+           }
+           return { output: '[RECEIVER] Signal Locked: 89.3MHz.\nFLAG: GHOST_ROOT{GR3P_TH3_N33DL3_SUCC3SS}', newCwd: cwd };
+       } else {
+           return { output: `[RECEIVER] Tuning to ${freq}...\n[ERROR] No signal detected or static only.\n[HINT] Check /var/log/signal_trace.log for a valid frequency.`, newCwd: cwd };
+       }
+  }
+
+  // Cycle 130 (The Path Hijack)
+  if (cmdBase === 'sys_health' || cmdBase === './sys_health' || cmdBase === '/usr/local/bin/sys_health') {
+       // Simulate PATH lookup for 'diagnostic_tool'
+       const pathEnv = ENV_VARS['PATH'] || '';
+       const pathDirs = pathEnv.split(':');
+       let executedPath = '';
+       
+       for (const dir of pathDirs) {
+           const absoluteDir = resolvePath(cwd, dir);
+           const fullPath = resolvePath(absoluteDir, 'diagnostic_tool');
+           
+           const node = getNode(fullPath);
+           if (node && node.type === 'file') {
+               executedPath = fullPath;
+               break;
+           }
+       }
+       
+       if (executedPath === '/usr/bin/diagnostic_tool') {
+           return { output: '[*] Initiating Diagnostics...\n[BINARY] [DIAGNOSTIC] [STATUS: OK]\n[*] Diagnostics Complete.', newCwd: cwd };
+       } else if (executedPath && executedPath !== '/usr/bin/diagnostic_tool') {
+           if (!VFS['/var/run/path_hijack_solved']) {
+               VFS['/var/run/path_hijack_solved'] = { type: 'file', content: 'TRUE' };
+               return { output: '[*] Initiating Diagnostics...\n[EXEC] Hijacked binary executed.\nFLAG: GHOST_ROOT{P4TH_H1J4CK_VULN}\n\\x1b[1;32m[MISSION UPDATE] Objective Complete: PATH HIJACK SUCCESSFUL.\\x1b[0m\n[*] Diagnostics Complete.', newCwd: cwd };
+           }
+           return { output: '[*] Initiating Diagnostics...\nFLAG: GHOST_ROOT{P4TH_H1J4CK_VULN}\n[*] Diagnostics Complete.', newCwd: cwd };
+       } else {
+           return { output: '/usr/local/bin/sys_health: line 4: diagnostic_tool: command not found', newCwd: cwd };
+       }
+  }
+
   // Cycle 181 (The Intrusion Log)
   if (cmdBase === 'trace_intruder.sh' || cmdBase === './trace_intruder.sh' || cmdBase === '/usr/local/bin/trace_intruder.sh') {
        const node = getNode(resolvePath(cwd, cmdBase));
@@ -3588,6 +4251,58 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
        } else {
            return { output: `[TRACER] Target: ${args[0]}\\n[STATUS] No active session found for this IP.\\n[FAILED] Mismatch.`, newCwd: cwd };
        }
+  }
+
+  // Cycle 186 (The Immutable Directory)
+  if (cmdBase === 'lsattr') {
+      const args = commandLine.trim().split(/\s+/).slice(1);
+      const target = args.includes('-d') ? args[args.indexOf('-d') + 1] : args[0];
+      if (target) {
+          const fullPath = resolvePath(cwd, target);
+          if (FILE_ATTRIBUTES[fullPath]?.includes('i')) {
+              return { output: `----i--------- ${target}`, newCwd: cwd };
+          }
+      }
+  }
+  if (cmdBase === 'chattr' || cmdBase === '/usr/bin/chattr') {
+      const args = commandLine.trim().split(/\s+/).slice(1);
+      if (args.includes('-i')) {
+          const targetIdx = args.indexOf('-i') + 1;
+          const target = args[targetIdx];
+          if (target) {
+              const fullPath = resolvePath(cwd, target);
+              if (fullPath === '/home/ghost/secure_drop') {
+                  if (FILE_ATTRIBUTES[fullPath]) {
+                      FILE_ATTRIBUTES[fullPath] = FILE_ATTRIBUTES[fullPath].filter(a => a !== 'i');
+                      saveSystemState();
+                      
+                      let out = '[SUCCESS] Attribute cleared.';
+                      if (!VFS['/var/run/cycle186_solved']) {
+                          VFS['/var/run/cycle186_solved'] = { type: 'file', content: 'TRUE' };
+                          const runDir = getNode('/var/run');
+                          if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle186_solved')) {
+                              runDir.children.push('cycle186_solved');
+                          }
+                          out += '\nFLAG: GHOST_ROOT{D1R_ATTR_UNL0CK3D}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: DIRECTORY UNLOCKED.\x1b[0m';
+                      }
+                      return { output: out, newCwd: cwd };
+                  }
+              }
+          }
+      }
+  }
+  // Intercept writes for Immutable Directory
+  if (['touch', 'mkdir', 'cp', 'mv', 'rm'].includes(cmdBase)) {
+      const args = commandLine.trim().split(/\s+/).slice(1);
+      const target = args.find(a => !a.startsWith('-'));
+      if (target) {
+          const fullPath = resolvePath(cwd, target);
+          const parentPath = fullPath.substring(0, fullPath.lastIndexOf('/')) || '/';
+          // Check if parent has 'i' (Directory Immutable)
+          if (FILE_ATTRIBUTES[parentPath]?.includes('i')) {
+              return { output: `${cmdBase}: cannot modify '${target}': Operation not permitted (Directory immutable)`, newCwd: cwd };
+          }
+      }
   }
 
   // Cycle 159 (The History Leak)
@@ -6012,6 +6727,28 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
   }
 
   switch (command) {
+    case 'firewall_reload': {
+        const confNode = getNode('/etc/firewall.conf');
+        if (!confNode || confNode.type !== 'file') {
+            output = '[ERROR] Configuration file /etc/firewall.conf not found.';
+        } else {
+            if (confNode.content.includes('ALLOW_PORT 22')) {
+                if (!VFS['/var/run/firewall_solved']) {
+                    VFS['/var/run/firewall_solved'] = { type: 'file', content: 'TRUE' };
+                    const runDir = getNode('/var/run');
+                    if (runDir && runDir.type === 'dir' && !runDir.children.includes('firewall_solved')) {
+                        runDir.children.push('firewall_solved');
+                    }
+                    output = '[FIREWALL] Reloading configuration...\n[CHECK] Port 80: ALLOWED\n[CHECK] Port 443: ALLOWED\n[CHECK] Port 22: ALLOWED\n[SUCCESS] Rules updated. SSH Traffic enabled.\nFLAG: GHOST_ROOT{FW_RUL3_UPD4T3D}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: FIREWALL CONFIGURED.\x1b[0m';
+                } else {
+                    output = '[FIREWALL] Reloading configuration...\n[SUCCESS] Firewall Active.';
+                }
+            } else {
+                output = '[FIREWALL] Reloading configuration...\n[CHECK] Port 80: ALLOWED\n[CHECK] Port 443: ALLOWED\n[ERROR] Port 22: BLOCKED (Default Policy).\n[HINT] Edit /etc/firewall.conf to allow SSH.';
+            }
+        }
+        break;
+    }
     case 'auth_daemon': {
         if (stdin && stdin.length > 16) {
            output = `Enter password: ${stdin}\n[MEMORY CORRUPTION DETECTED]\n[DEBUG] admin_flag overwritten: 0x${Math.floor(Math.random()*0xFFFFFFFF).toString(16)}\n\nAccess Granted! Flag: GHOST_ROOT{B0F_OV3RFL0W_K1NG}\n\n[SHELL] Spawning root shell...\n#`;
@@ -15255,6 +15992,110 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
              return { output: '[ROTATOR] Error: Invalid Archive Key.\n[FAILED] Access Denied.', newCwd: cwd };
         }
     }
+    case 'net-splice': {
+        const hasTarget = args.includes('--target');
+        const hasPort = args.includes('--port');
+        const hasMode = args.includes('--mode');
+        
+        if (!hasTarget || !hasPort || !hasMode) {
+             output = 'Error: Missing required arguments.\nSee "man net-splice" for details.';
+        } else {
+            const targetIdx = args.indexOf('--target');
+            const portIdx = args.indexOf('--port');
+            const modeIdx = args.indexOf('--mode');
+            
+            const target = args[targetIdx + 1];
+            const port = args[portIdx + 1];
+            const mode = args[modeIdx + 1];
+            
+            if (target === '10.10.99.5' && port === '443' && mode === 'silent') {
+                 if (!VFS['/var/run/man_page_solved']) {
+                     VFS['/var/run/man_page_solved'] = { type: 'file', content: 'TRUE' };
+                     const runDir = getNode('/var/run');
+                     if (runDir && runDir.type === 'dir' && !runDir.children.includes('man_page_solved')) {
+                         runDir.children.push('man_page_solved');
+                     }
+                     output = '[SPLICE] Target Acquired (10.10.99.5:443)...\n[MODE] Silent.\n[SUCCESS] Tunnel Established.\nFLAG: GHOST_ROOT{RTFM_IS_TH3_K3Y}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: COVERT CHANNEL OPENED.\x1b[0m';
+                 } else {
+                     output = '[SPLICE] Tunnel Established.\nFLAG: GHOST_ROOT{RTFM_IS_TH3_K3Y}';
+                 }
+            } else {
+                 output = `[SPLICE] Connection Failed.\n[DEBUG] Target:${target} Port:${port} Mode:${mode}\n[HINT] Ensure all parameters match the mission profile.`;
+            }
+        }
+        break;
+    }
+    // Cycle 188 (The Buried Config)
+    case 'decrypt-node':
+    case '/usr/bin/decrypt-node': {
+        const connStr = ENV_VARS['CONNECTION_STRING'];
+        if (!connStr) {
+            output = '[ERROR] Missing Environment Variable: CONNECTION_STRING\n[STATUS] Aborted.';
+        } else if (connStr === 'GHOST_ROOT{GR3P_4_TH3_W1N}') {
+            if (!VFS['/var/run/cycle188_solved']) {
+                VFS['/var/run/cycle188_solved'] = { type: 'file', content: 'TRUE' };
+                const runDir = getNode('/var/run');
+                if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle188_solved')) {
+                    runDir.children.push('cycle188_solved');
+                }
+                output = '[DECRYPT] Connection String Verified.\n[DECRYPT] Decrypting Node Payload...\n[SUCCESS] Node Online.\nFLAG: GHOST_ROOT{ENV_V4R_M4ST3R_V2}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: NODE DECRYPTED.\x1b[0m';
+            } else {
+                output = '[DECRYPT] Node Online.\nFLAG: GHOST_ROOT{ENV_V4R_M4ST3R_V2}';
+            }
+        } else {
+            output = '[ERROR] Invalid Connection String.\n[DEBUG] Check logs for the correct rotation value.';
+        }
+        break;
+    }
+
+    // Cycle 189 (The Broken Installer)
+    case 'install.sh':
+    case './install.sh':
+    case '/opt/ghost_protocol/install.sh': {
+        // Check if the dependency file exists
+        if (VFS['/var/lib/ghost/dependency.ok']) {
+             if (!VFS['/var/run/cycle189_solved']) {
+                 VFS['/var/run/cycle189_solved'] = { type: 'file', content: 'TRUE' };
+                 const runDir = getNode('/var/run');
+                 if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle189_solved')) {
+                     runDir.children.push('cycle189_solved');
+                 }
+                 output = '[INSTALL] Initializing...\n[CHECK] Verifying dependency: lib-ghost-v4...\n[SUCCESS] Dependency found.\n[INSTALL] Installing firmware...\n[SUCCESS] Firmware Updated.\nFLAG: GHOST_ROOT{SCR1PT_ANALYS1S_1S_K3Y}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: FIRMWARE RESTORED.\x1b[0m';
+             } else {
+                 output = '[INSTALL] Firmware Updated.\nFLAG: GHOST_ROOT{SCR1PT_ANALYS1S_1S_K3Y}';
+             }
+        } else {
+             output = '[INSTALL] Initializing...\n[CHECK] Verifying dependency: lib-ghost-v4...\n[ERROR] Dependency check failed.\nPANIC: KERNEL MODULE MISSING';
+        }
+        break;
+    }
+
+    // Cycle 190 (The Hidden Port)
+    case 'nc':
+    case '/bin/nc':
+    case '/usr/bin/nc': {
+         const args = commandLine.trim().split(/\s+/).slice(1);
+         const host = args.find(a => !a.startsWith('-') && (a === 'localhost' || a === '127.0.0.1'));
+         const port = args.find(a => !a.startsWith('-') && a !== 'localhost' && a !== '127.0.0.1');
+         
+         if (!host || !port) {
+             output = 'usage: nc [options] [hostname] [port]';
+         } else if ((host === 'localhost' || host === '127.0.0.1') && port === '8008') {
+             if (!VFS['/var/run/cycle190_solved']) {
+                 VFS['/var/run/cycle190_solved'] = { type: 'file', content: 'TRUE' };
+                 const runDir = getNode('/var/run');
+                 if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle190_solved')) {
+                     runDir.children.push('cycle190_solved');
+                 }
+                 output = '[NC] Connection established to 127.0.0.1:8008...\\n[BANNER] GHOST_NET_LISTENER_V1\\n[AUTH] Bypass Successful.\\nFLAG: GHOST_ROOT{PR0C_N3T_TCP_H3X_D3C0D3R}\\n\\x1b[1;32m[MISSION UPDATE] Objective Complete: HIDDEN SERVICE IDENTIFIED.\\x1b[0m';
+             } else {
+                 output = '[NC] Connection established.\\nFLAG: GHOST_ROOT{PR0C_N3T_TCP_H3X_D3C0D3R}';
+             }
+         } else {
+             output = `nc: connect to ${host} port ${port} (tcp) failed: Connection refused`;
+         }
+         break;
+    }
     case 'export': {
         if (args.length === 0) {
             output = Object.entries(ENV_VARS).map(([k, v]) => `declare -x ${k}="${v}"`).join('\n');
@@ -15279,6 +16120,26 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
                 saveSystemState();
                 output = '';
             }
+        }
+        break;
+    }
+    // Cycle 193 (The Zombie Process)
+    case 'vault_access':
+    case './vault_access':
+    case '/usr/bin/vault_access': {
+        if (VFS['/var/lock/subsystem/vault.lock']) {
+             output = '[VAULT] Access Denied.\n[ERROR] Resource Locked (/var/lock/subsystem/vault.lock).\n[DIAGNOSTIC] Another process is using the vault.\n[STATUS] Aborted.';
+        } else {
+             if (!VFS['/var/run/cycle193_solved']) {
+                 VFS['/var/run/cycle193_solved'] = { type: 'file', content: 'TRUE' };
+                 const runDir = getNode('/var/run');
+                 if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle193_solved')) {
+                     runDir.children.push('cycle193_solved');
+                 }
+                 output = '[VAULT] Lock file clear.\n[VAULT] Accessing Secure Storage...\n[SUCCESS] Vault Unlocked.\nFLAG: GHOST_ROOT{Z0MB13_PR0C3SS_R34P3D}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: RESOURCE FREED.\x1b[0m';
+             } else {
+                 output = '[VAULT] Vault Unlocked.\nFLAG: GHOST_ROOT{Z0MB13_PR0C3SS_R34P3D}';
+             }
         }
         break;
     }
