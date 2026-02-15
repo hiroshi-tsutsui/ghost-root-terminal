@@ -3267,6 +3267,212 @@ export const loadSystemState = () => {
             }
         }
     }
+    // Cycle 201 Init (The Env Var Injection)
+    if (!VFS['/usr/local/bin/debug_console']) {
+        const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+        const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+
+        ensureDir('/usr'); ensureDir('/usr/local'); ensureDir('/usr/local/bin');
+        link('/usr', 'local'); link('/usr/local', 'bin');
+
+        VFS['/usr/local/bin/debug_console'] = {
+            type: 'file',
+            content: '#!/bin/bash\n# DEBUG CONSOLE v1.0\n# USAGE: export USER_NAME="Admin"; ./debug_console\n\nif [ -z "$USER_NAME" ]; then\n  echo "Error: USER_NAME not set."\n  exit 1\nfi\n\n# VULNERABLE CODE:\neval "echo Welcome, $USER_NAME"',
+            permissions: '0755'
+        };
+        link('/usr/local/bin', 'debug_console');
+
+        if (!VFS['/root/secret_flag.txt']) {
+             if (!VFS['/root']) { VFS['/root'] = { type: 'dir', children: [] }; addChild('/', 'root'); }
+             VFS['/root/secret_flag.txt'] = {
+                 type: 'file',
+                 content: 'FLAG: GHOST_ROOT{EV4L_1NJ3CT10N_1S_B4D}',
+                 permissions: '0600'
+             };
+             addChild('/root', 'secret_flag.txt');
+        }
+
+        if (!VFS['/home/ghost/debug_alert.txt']) {
+            VFS['/home/ghost/debug_alert.txt'] = {
+                type: 'file',
+                content: '[ALERT] Insecure debug script detected.\n[LOCATION] /usr/local/bin/debug_console\n[RISK] eval() on unsanitized environment variable.\n[ACTION] Exploit the variable injection to read /root/secret_flag.txt.'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('debug_alert.txt')) {
+                home.children.push('debug_alert.txt');
+            }
+        }
+    }
+
+    // Cycle 202 Init (The Locked Script)
+    if (!VFS['/usr/local/bin/satellite_fix']) {
+        const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+        const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+
+        ensureDir('/usr'); ensureDir('/usr/local'); ensureDir('/usr/local/bin');
+        link('/usr', 'local'); link('/usr/local', 'bin');
+
+        VFS['/usr/local/bin/satellite_fix'] = {
+            type: 'file',
+            content: '#!/bin/bash\n# SATELLITE FIX v1.0\n# [ERROR] Permission Denied? Fix the mode.\n\n[SYSTEM] Realigning dish...\n[SUCCESS] Signal Optimized.\nFLAG: GHOST_ROOT{CHM0D_F1X_TH3_SCR1PT}',
+            permissions: '0600'
+        };
+        link('/usr/local/bin', 'satellite_fix');
+
+        if (!VFS['/home/ghost/fix_log.txt']) {
+            VFS['/home/ghost/fix_log.txt'] = {
+                type: 'file',
+                content: '[ERROR] Failed to run satellite_fix.\n[DIAGNOSTIC] Permission denied.\n[ACTION] Make the script executable.\n[HINT] chmod +x <file>'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('fix_log.txt')) {
+                home.children.push('fix_log.txt');
+            }
+        }
+    }
+
+    // Cycle 203 Init (The Firewall Log)
+    if (!VFS['/var/log/firewall.log']) {
+        if (!VFS['/var/log']) {
+             VFS['/var/log'] = { type: 'dir', children: [] };
+             const varNode = getNode('/var');
+             if (varNode && varNode.type === 'dir' && !varNode.children.includes('log')) varNode.children.push('log');
+        }
+        
+        VFS['/var/log/firewall.log'] = {
+            type: 'file',
+            content: (() => {
+                let lines = [];
+                const ips = ["192.168.1.5", "10.0.0.1", "172.16.0.1", "8.8.8.8", "1.1.1.1"];
+                for (let i = 0; i < 1000; i++) {
+                    const ip = ips[Math.floor(Math.random() * ips.length)];
+                    const port = Math.floor(Math.random() * (65535 - 1024) + 1024);
+                    const status = ["ALLOWED", "DENIED", "DROPPED"][Math.floor(Math.random() * 3)];
+                    const h = String(Math.floor(Math.random()*24)).padStart(2,'0');
+                    const m = String(Math.floor(Math.random()*60)).padStart(2,'0');
+                    const s = String(Math.floor(Math.random()*60)).padStart(2,'0');
+                    lines.push('Feb 16 ' + h + ':' + m + ':' + s + ' ghost-root kernel: [UFW ' + status + '] IN=eth0 OUT= MAC=00:11:22:33:44:55 SRC=' + ip + ' DST=192.168.1.105 LEN=60 TOS=0x00 PREC=0x00 TTL=64 ID=' + Math.floor(Math.random()*65535) + ' PROTO=TCP SPT=' + port + ' DPT=22 WINDOW=512 RES=0x00 SYN URGP=0');
+                }
+                const needle = 'Feb 16 14:02:42 ghost-root kernel: [UFW BLOCK] IN=eth0 OUT= MAC=00:11:22:33:44:55 SRC=10.10.10.222 DST=192.168.1.105 LEN=60 TOS=0x00 PREC=0x00 TTL=64 ID=1337 PROTO=TCP SPT=6666 DPT=22 WINDOW=512 RES=0x00 SYN URGP=0 [SUSPICIOUS]';
+                lines.splice(Math.floor(Math.random() * 900) + 50, 0, needle);
+                return lines.join('\n');
+            })(),
+            permissions: '0640'
+        };
+        const logDir = getNode('/var/log');
+        if (logDir && logDir.type === 'dir' && !logDir.children.includes('firewall.log')) {
+            logDir.children.push('firewall.log');
+        }
+
+        if (!VFS['/home/ghost/fw_alert.txt']) {
+            VFS['/home/ghost/fw_alert.txt'] = {
+                type: 'file',
+                content: '[ALERT] Suspicious connection attempt blocked.\n[ACTION] Find the blocked IP in /var/log/firewall.log and unblock it using "unblock_ip <IP>".\n[HINT] Look for "SUSPICIOUS" tag.'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('fw_alert.txt')) {
+                home.children.push('fw_alert.txt');
+            }
+        }
+        
+        // Binary
+        if (!VFS['/usr/bin/unblock_ip']) {
+             if (!VFS['/usr/bin']) { VFS['/usr/bin'] = { type: 'dir', children: [] }; addChild('/usr', 'bin'); }
+             VFS['/usr/bin/unblock_ip'] = { 
+                 type: 'file', 
+                 content: '[BINARY_ELF_X86_64] [FIREWALL_CONTROL]\n[USAGE] unblock_ip <IP>', 
+                 permissions: '0755' 
+             };
+             addChild('/usr/bin', 'unblock_ip');
+        }
+    }
+
+    // Cycle 204 Init (The Configuration Drift)
+    if (!VFS['/etc/ssh/sshd_config.bak']) {
+        if (!VFS['/etc/ssh']) {
+             if (!VFS['/etc']) { VFS['/etc'] = { type: 'dir', children: [] }; addChild('/', 'etc'); }
+             VFS['/etc/ssh'] = { type: 'dir', children: [] }; addChild('/etc', 'ssh');
+        }
+
+        const originalConfig = 
+`# sshd_config
+Port 22
+Protocol 2
+HostKey /etc/ssh/ssh_host_rsa_key
+UsePrivilegeSeparation yes
+KeyRegenerationInterval 3600
+ServerKeyBits 1024
+SyslogFacility AUTH
+LogLevel INFO
+LoginGraceTime 120
+PermitRootLogin prohibit-password
+StrictModes yes
+RSAAuthentication yes
+PubkeyAuthentication yes
+IgnoreRhosts yes
+RhostsRSAAuthentication no
+HostbasedAuthentication no
+PermitEmptyPasswords no
+ChallengeResponseAuthentication no
+# PasswordAuthentication no
+X11Forwarding yes
+X11DisplayOffset 10
+PrintMotd no
+PrintLastLog yes
+TCPKeepAlive yes
+AcceptEnv LANG LC_*
+Subsystem sftp /usr/lib/openssh/sftp-server
+UsePAM yes
+`;
+
+        const tamperedConfig = 
+`# sshd_config
+Port 22
+Protocol 2
+HostKey /etc/ssh/ssh_host_rsa_key
+UsePrivilegeSeparation yes
+KeyRegenerationInterval 3600
+ServerKeyBits 1024
+SyslogFacility AUTH
+LogLevel INFO
+LoginGraceTime 120
+PermitRootLogin prohibit-password
+StrictModes yes
+RSAAuthentication yes
+PubkeyAuthentication yes
+IgnoreRhosts yes
+RhostsRSAAuthentication no
+HostbasedAuthentication no
+PermitEmptyPasswords no
+ChallengeResponseAuthentication no
+PasswordAuthentication yes # FLAG: GHOST_ROOT{D1FF_CH3CK_M4ST3R}
+X11Forwarding yes
+X11DisplayOffset 10
+PrintMotd no
+PrintLastLog yes
+TCPKeepAlive yes
+AcceptEnv LANG LC_*
+Subsystem sftp /usr/lib/openssh/sftp-server
+UsePAM yes
+`;
+
+        VFS['/etc/ssh/sshd_config'] = { type: 'file', content: tamperedConfig, permissions: '0644' };
+        addChild('/etc/ssh', 'sshd_config');
+
+        VFS['/etc/ssh/sshd_config.bak'] = { type: 'file', content: originalConfig, permissions: '0644' };
+        addChild('/etc/ssh', 'sshd_config.bak');
+
+        if (!VFS['/home/ghost/config_alert.txt']) {
+            VFS['/home/ghost/config_alert.txt'] = {
+                type: 'file',
+                content: '[ALERT] Configuration Drift Detected.\n[TARGET] /etc/ssh/sshd_config\n[ACTION] Compare with backup (/etc/ssh/sshd_config.bak) to identify unauthorized changes.\n[HINT] Use "diff file1 file2".'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('config_alert.txt')) {
+                home.children.push('config_alert.txt');
+            }
+        }
+    }
 };
 
 // Helper to reset state
@@ -3667,8 +3873,105 @@ export const tabCompletion = (cwd: string, inputBuffer: string): { matches: stri
 };
 
 export const processCommand = (cwd: string, commandLine: string, stdin?: string): CommandResult => {
+// Legacy export for compatibility
+// export const execute = processCommand;
   const cmdTokens = commandLine.trim().split(/\s+/);
   const cmdBase = cmdTokens[0];
+
+  // Cycle 204 Command Logic (The Configuration Drift)
+  if (cmdBase === 'diff') {
+      const args = commandLine.trim().split(/\s+/).slice(1);
+      if (args.length < 2) {
+          return { output: 'diff: missing operand after \'' + (args[0] || 'diff') + '\'', newCwd: cwd };
+      }
+      
+      const file1 = resolvePath(cwd, args[0]);
+      const file2 = resolvePath(cwd, args[1]);
+      
+      const node1 = getNode(file1);
+      const node2 = getNode(file2);
+      
+      if (!node1 || node1.type !== 'file') return { output: `diff: ${args[0]}: No such file or directory`, newCwd: cwd };
+      if (!node2 || node2.type !== 'file') return { output: `diff: ${args[1]}: No such file or directory`, newCwd: cwd };
+      
+      const content1 = ((node1 as any).content || '').split('\n');
+      const content2 = ((node2 as any).content || '').split('\n');
+      
+      let diffOutput = '';
+      let i = 0, j = 0;
+      
+      // Very naive diff (line by line comparison assuming minimal changes)
+      // This is sufficient for the puzzle which just changes one line.
+      while (i < content1.length || j < content2.length) {
+          const line1 = content1[i];
+          const line2 = content2[j];
+          
+          if (line1 === line2) {
+              i++; j++;
+          } else {
+              // Difference found
+              if (line1 !== undefined) diffOutput += `< ${line1}\n`;
+              if (line2 !== undefined) diffOutput += `> ${line2}\n`;
+              
+              // Check if it's the flag line
+              if ((line1 && line1.includes('FLAG:')) || (line2 && line2.includes('FLAG:'))) {
+                   if (!VFS['/var/run/cycle204_solved']) {
+                       VFS['/var/run/cycle204_solved'] = { type: 'file', content: 'TRUE' };
+                       diffOutput += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: CONFIGURATION AUDITED.\x1b[0m`;
+                   }
+              }
+              i++; j++;
+          }
+      }
+      
+      return { output: diffOutput, newCwd: cwd };
+  }
+
+  // Cycle 203 Command Logic (The Firewall Log)
+  if (cmdBase === 'unblock_ip' || cmdBase === '/usr/bin/unblock_ip') {
+      const args = commandLine.trim().split(/\s+/).slice(1);
+      if (args.length === 0) {
+          return { output: 'Usage: unblock_ip <IP_ADDRESS>', newCwd: cwd };
+      }
+      
+      const ip = args[0];
+      if (ip === '10.10.10.222') {
+          if (!VFS['/var/run/cycle203_solved']) {
+              VFS['/var/run/cycle203_solved'] = { type: 'file', content: 'TRUE' };
+              return { output: `[FIREWALL] IP ${ip} removed from blocklist.\n[SUCCESS] Traffic Allowed.\nFLAG: GHOST_ROOT{GR3P_M4ST3R_F1R3W4LL}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: FIREWALL BYPASSED.\x1b[0m`, newCwd: cwd };
+          }
+          return { output: `[FIREWALL] IP ${ip} is already allowed.\nFLAG: GHOST_ROOT{GR3P_M4ST3R_F1R3W4LL}`, newCwd: cwd };
+      } else {
+          return { output: `[FIREWALL] Error: IP ${ip} not found in active blocklist.`, newCwd: cwd };
+      }
+  }
+
+  // Cycle 200 Init (The Tarball)
+  if (!VFS['/home/ghost/backup.tar.gz']) {
+      if (!VFS['/home/ghost']) VFS['/home/ghost'] = { type: 'dir', children: [] };
+      
+      const flagContent = 'CONFIDENTIAL\n\nPROJECT OMEGA: PHASE 4\nTARGET: 10.0.0.99\n\nFLAG: GHOST_ROOT{T4R_GZ_EXTR4CT10N_M4ST3R}';
+      // Base64 encode manually to avoid runtime issues if btoa missing
+      const b64Flag = 'Q09ORklERU5USUFMCgpQUk9KRUNUIE9NRUdBOiBQSEFTRSA0ClRBUkdFVDogMTAuMC4wLjk5CgpGTEFHOiBHMhPU1RfUk9PVHtUNFJfR1pfRVhUUjRDVDFPTl9NNFNUM1J9';
+      
+      VFS['/home/ghost/backup.tar.gz'] = {
+          type: 'file',
+          content: `GZIP_V1:{TAR_V1:{secret_plans.txt:${b64Flag}}}`
+      };
+      const home = getNode('/home/ghost');
+      if (home && home.type === 'dir' && !home.children.includes('backup.tar.gz')) {
+          home.children.push('backup.tar.gz');
+      }
+      
+      // Hint
+      if (!VFS['/home/ghost/backup_alert.txt']) {
+          VFS['/home/ghost/backup_alert.txt'] = {
+              type: 'file',
+              content: '[SYSTEM] Automated Backup Complete.\n[FILE] ~/backup.tar.gz\n[ACTION] Verify integrity and extract contents (tar -xvf).'
+          };
+          if (home && home.type === 'dir' && !home.children.includes('backup_alert.txt')) home.children.push('backup_alert.txt');
+      }
+  }
 
   // Cycle 195 Init (Lazy Load)
   if (!VFS['/home/ghost/kernel_alert.txt']) {
@@ -3854,6 +4157,69 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
           return { output: '[BRIDGE] Connection Active.\nFLAG: GHOST_ROOT{DNS_SP00F_M4ST3R}', newCwd: cwd };
       } else {
           return { output: '[BRIDGE] Resolving uplink.satellite...\n[DNS] 203.0.113.5 (Public IP)\n[CONNECT] Connection Refused (Timeout).\n[ERROR] Remote host unreachable.\n[HINT] Override required.', newCwd: cwd };
+      }
+  }
+
+  // Cycle 197 Init (Lazy Load) - The Strings Pulse
+  if (!VFS['/home/ghost/pulse_log.txt']) {
+      // Hint file
+      if (!VFS['/home/ghost']) VFS['/home/ghost'] = { type: 'dir', children: [] };
+      VFS['/home/ghost/pulse_log.txt'] = {
+          type: 'file',
+          content: '[ERROR] Pulse Monitor corrupted.\n[DIAGNOSTIC] Segmentation fault on execution.\n[ACTION] Analyze binary strings to find recovery argument.\n[HINT] strings /usr/bin/pulse_check'
+      };
+      const home = getNode('/home/ghost');
+      if (home && home.type === 'dir' && !home.children.includes('pulse_log.txt')) {
+          home.children.push('pulse_log.txt');
+      }
+
+      // Binary (Corrupted)
+      if (!VFS['/usr/bin/pulse_check']) {
+          if (!VFS['/usr/bin']) {
+              if (!VFS['/usr']) VFS['/usr'] = { type: 'dir', children: ['bin'] };
+              VFS['/usr/bin'] = { type: 'dir', children: [] };
+          }
+          VFS['/usr/bin/pulse_check'] = {
+              type: 'file',
+              content: '[BINARY_ELF_X86_64] [PULSE_MONITOR]\n\x00\x00\x00\x01\x02\n[ERROR] SEGMENTATION FAULT\n\n[STRINGS_TABLE]\n--verbose\n--quiet\n--recover\nRESYNC_77\n[END_STRINGS]',
+              permissions: '0755'
+          };
+          const binDir = getNode('/usr/bin');
+          if (binDir && binDir.type === 'dir' && !binDir.children.includes('pulse_check')) {
+              binDir.children.push('pulse_check');
+          }
+      }
+  }
+
+  // Built-in: strings (Added for Cycle 197)
+  if (cmdBase === 'strings') {
+      const args = commandLine.trim().split(/\s+/).slice(1);
+      const target = args[0];
+      if (!target) return { output: 'strings: missing operand', newCwd: cwd };
+
+      const fullPath = resolvePath(cwd, target);
+      const node = getNode(fullPath);
+      if (!node || node.type !== 'file') return { output: `strings: '${target}': No such file`, newCwd: cwd };
+
+      const content = (node as any).content || '';
+      // Extract printable strings of length >= 4
+      const matches = content.match(/[\x20-\x7E]{4,}/g);
+      return { output: matches ? matches.join('\n') : '', newCwd: cwd };
+  }
+
+  // Cycle 197 Command Logic
+  if (cmdBase === 'pulse_check' || cmdBase === '/usr/bin/pulse_check') {
+      const args = commandLine.trim().split(/\s+/).slice(1);
+      const recoverIdx = args.indexOf('--recover');
+      
+      if (recoverIdx !== -1 && args[recoverIdx + 1] === 'RESYNC_77') {
+          if (!VFS['/var/run/cycle197_solved']) {
+              VFS['/var/run/cycle197_solved'] = { type: 'file', content: 'TRUE' };
+              return { output: '[PULSE] Initiating Recovery Mode...\n[AUTH] Code RESYNC_77 Accepted.\n[SUCCESS] Signal Restored.\nFLAG: GHOST_ROOT{STR1NGS_R3V3AL_TRUTH_V2}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SIGNAL STABILIZED.\x1b[0m', newCwd: cwd };
+          }
+          return { output: '[PULSE] Signal Stable.\nFLAG: GHOST_ROOT{STR1NGS_R3V3AL_TRUTH_V2}', newCwd: cwd };
+      } else {
+          return { output: 'Segmentation fault (core dumped)', newCwd: cwd };
       }
   }
 
@@ -7858,45 +8224,80 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
             const target = operands[0];
             const linkName = operands[1];
             
-            const linkPath = resolvePath(cwd, linkName);
-            const parentDir = resolvePath(linkPath, '..');
-            const fileName = linkPath.split('/').pop();
+            // Resolve linkName relative to CWD
+            let linkPath = '';
+            if (linkName.startsWith('/')) {
+                linkPath = linkName;
+            } else {
+                // Handle relative paths properly
+                const parts = cwd.split('/').filter(Boolean);
+                const relParts = linkName.split('/').filter(Boolean);
+                for (const p of relParts) {
+                    if (p === '..') parts.pop();
+                    else if (p !== '.') parts.push(p);
+                }
+                linkPath = '/' + parts.join('/');
+            }
             
-            const parentNode = getNode(parentDir);
+            const fileName = linkPath.split('/').pop();
+            const parentPath = linkPath.substring(0, linkPath.lastIndexOf('/')) || '/';
+            
+            const parentNode = getNode(parentPath);
+            
             if (!parentNode || parentNode.type !== 'dir') {
                 output = `ln: failed to create symbolic link '${linkName}': No such directory`;
-            } else if (parentNode.children.includes(fileName!) && !isForce) {
-                output = `ln: failed to create symbolic link '${linkName}': File exists`;
             } else {
-                VFS[linkPath] = {
-                    type: 'symlink',
-                    target: target,
-                    permissions: '777'
-                } as any;
-                
-                if (!parentNode.children.includes(fileName!)) {
-                    parentNode.children.push(fileName!);
-                }
-                
-                // Cycle 143 Win Condition
-                if (linkPath === '/opt/libs/libghost.so' && target === '/opt/libs/libghost.so.1.0') {
-                    if (!VFS['/var/run/symlink_solved']) {
-                        VFS['/var/run/symlink_solved'] = { type: 'file', content: 'TRUE' };
-                        const runDir = getNode('/var/run');
-                        if (runDir && runDir.type === 'dir' && !runDir.children.includes('symlink_solved')) {
-                            runDir.children.push('symlink_solved');
-                        }
-                        output = `[SUCCESS] Symlink repaired.\n[SYSTEM] Library libghost.so now points to valid version 1.0.\nFLAG: GHOST_ROOT{D4NGL1NG_SYML1NK_F1X3D}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: BROKEN LINK REPAIRED.\x1b[0m`;
-                    } else {
-                        output = '';
-                    }
+                // Check if file exists
+                if (parentNode.children.includes(fileName!) && !isForce) {
+                    // Check if it's really there or just a broken link (VFS handles broken links as existing nodes usually)
+                    output = `ln: failed to create symbolic link '${linkName}': File exists`;
                 } else {
-                    output = '';
+                    // Create the link
+                    VFS[linkPath] = {
+                        type: 'symlink',
+                        target: target,
+                        permissions: '777'
+                    } as any;
+                    
+                    if (!parentNode.children.includes(fileName!)) {
+                        parentNode.children.push(fileName!);
+                    }
+                    
+                    // Cycle 143 Win Condition
+                    if (linkPath === '/opt/libs/libghost.so' && target === '/opt/libs/libghost.so.1.0') {
+                        if (!VFS['/var/run/symlink_solved']) {
+                            VFS['/var/run/symlink_solved'] = { type: 'file', content: 'TRUE' };
+                            const runDir = getNode('/var/run');
+                            if (runDir && runDir.type === 'dir' && !runDir.children.includes('symlink_solved')) {
+                                runDir.children.push('symlink_solved');
+                            }
+                            output = `[SUCCESS] Symlink repaired.\n[SYSTEM] Library libghost.so now points to valid version 1.0.\nFLAG: GHOST_ROOT{D4NGL1NG_SYML1NK_F1X3D}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: BROKEN LINK REPAIRED.\x1b[0m`;
+                        }
+                    } 
                 }
             }
         }
         break;
     }
+    // Cycle 199: repair-sys
+    case 'repair-sys': {
+        const configPath = '/etc/ghost/config.json';
+        const backupPath = '/usr/share/ghost/config.json.bak';
+        
+        const node = getNode(configPath);
+        
+        if (!node) {
+             output = `[ERROR] Configuration file missing: ${configPath}\n[HINT] Restore it from backup: ${backupPath}`;
+        } else if (node.type !== 'symlink') {
+             output = `[ERROR] Configuration file is not a symbolic link.\n[EXPECTED] Symlink to ${backupPath}`;
+        } else if (node.target !== backupPath) {
+             output = `[ERROR] Configuration file points to invalid location: ${node.target}\n[EXPECTED] Symlink to ${backupPath}`;
+        } else {
+             output = `[SYSTEM] Verifying configuration...\n[OK] Config file found.\n[OK] Target verified: ${backupPath}\n[SUCCESS] System Repaired.\nFLAG: GHOST_ROOT{SYML1NK_R3C0V3RY_M4ST3R}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SYSTEM REPAIRED.\x1b[0m`;
+        }
+        break;
+    }
+
     case 'fsck': {
         if (args.length < 1) {
             output = 'fsck: usage: fsck <device>';
@@ -8482,7 +8883,7 @@ DROP       icmp --  10.10.99.1           anywhere`;
                   const isRoot = !!getNode('/tmp/.root_session');
                   
                   // Allow chmod on /tmp and /tmp/public specifically for puzzles
-                  const isAllowed = path === '/tmp' || path === '/tmp/public' || path === '/usr/local/bin/dark_node' || isRoot;
+                  const isAllowed = path === '/tmp' || path === '/tmp/public' || path === '/usr/local/bin/dark_node' || path === '/usr/local/bin/satellite_fix' || isRoot;
 
                   if (isSystemFile && !isAllowed) {
                       output = `chmod: changing permissions of '${target}': Operation not permitted`;
@@ -13235,8 +13636,22 @@ The key's randomart image is:
                         } else {
                             output = `gzip: stdin: not in gzip format`;
                         }
-                   } else if (content.startsWith('TAR_V1:')) {
-                       const payload = content.substring(7);
+                   } else if (content.startsWith('TAR_V1:') || content.startsWith('GZIP_V1:')) {
+                       let payload = content;
+                       // Unwrap GZIP if present
+                       if (payload.startsWith('GZIP_V1:')) {
+                           const inner = payload.substring(8); 
+                           if (inner.startsWith('{') && inner.endsWith('}')) {
+                               payload = inner.substring(1, inner.length - 1);
+                           } else {
+                               payload = inner;
+                           }
+                       }
+                       
+                       if (payload.startsWith('TAR_V1:')) {
+                           payload = payload.substring(7);
+                       }
+                       
                        const matches = payload.match(/\{([^:]+):([^}]+)\}/g);
                        let extracted: string[] = [];
                        if (matches) {
@@ -16143,9 +16558,68 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
         }
         break;
     }
+    // Cycle 201 (The Env Var Injection)
+    case 'debug_console':
+    case './debug_console':
+    case '/usr/local/bin/debug_console': {
+        const userName = ENV_VARS['USER_NAME'];
+        if (!userName) {
+            output = 'Error: USER_NAME not set.';
+        } else {
+            // Simulate eval vulnerability
+            if (userName.includes('cat') && (userName.includes('/root/secret_flag.txt') || userName.includes('flag'))) {
+                 if (!VFS['/var/run/cycle201_solved']) {
+                     VFS['/var/run/cycle201_solved'] = { type: 'file', content: 'TRUE' };
+                     const runDir = getNode('/var/run');
+                     if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle201_solved')) {
+                         runDir.children.push('cycle201_solved');
+                     }
+                     output = `Welcome, \nFLAG: GHOST_ROOT{EV4L_1NJ3CT10N_1S_B4D}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: CODE INJECTION SUCCESSFUL.\x1b[0m`;
+                 } else {
+                     output = `Welcome, \nFLAG: GHOST_ROOT{EV4L_1NJ3CT10N_1S_B4D}`;
+                 }
+            } else if (userName.includes(';')) {
+                 // Simulate generic execution attempt
+                 const parts = userName.split(';');
+                 output = `Welcome, ${parts[0]}`;
+                 if(parts[1]) output += `\nbash: ${parts[1].trim()}: command not found (Simulation limitation)`;
+            } else {
+                 output = `Welcome, ${userName}`;
+            }
+        }
+        break;
+    }
+    // Cycle 202 (The Locked Script)
+    case 'satellite_fix':
+    case './satellite_fix':
+    case '/usr/local/bin/satellite_fix': {
+       const node = getNode(resolvePath(cwd, cmdBase));
+       if (!node) {
+           output = `bash: ${cmdBase}: No such file or directory`;
+           break;
+       }
+       
+       const perms = (node as any).permissions || '0644';
+       const isExec = perms === '0755' || perms === '0700' || perms.includes('x');
+       
+       if (!isExec && perms !== '0755' && perms !== '0700') {
+           output = `bash: ${cmdBase}: Permission denied`;
+       } else {
+           if (!VFS['/var/run/cycle202_solved']) {
+               VFS['/var/run/cycle202_solved'] = { type: 'file', content: 'TRUE' };
+               output = '[SYSTEM] Realigning dish...\n[SUCCESS] Signal Optimized.\nFLAG: GHOST_ROOT{CHM0D_F1X_TH3_SCR1PT}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SCRIPT EXECUTED.\x1b[0m';
+           } else {
+               output = '[SYSTEM] Signal Optimized.\nFLAG: GHOST_ROOT{CHM0D_F1X_TH3_SCR1PT}';
+           }
+       }
+       break;
+    }
     default:
       output = `bash: ${command}: command not found`;
   }
 
   return finalize(output, newCwd, action, data, newPrompt);
 };
+
+
+export const execute = processCommand;
