@@ -1115,7 +1115,17 @@ Do not attempt to fix it unless the alert level is 0.
   },
   '/home/dr_akira/RANSOM_NOTE.txt': {
     type: 'file',
-    content: 'YOUR FILES HAVE BEEN ENCRYPTED.\n\nTo decrypt, you need the creation date of Project Chimera (YYYYMMDD).\nHint: Check the project logs or metadata.\n(Date: 2024-01-15)'
+    content: '[ALERT] daemon_v2 (PID 5555) started with insecure environment variables.\\n[RISK] Sensitive data (DB_PASS) might be exposed in /proc.\\n[ACTION] Inspect process environment using /proc filesystem or "strings /proc/5555/environ".'
+  },
+  // Cycle 184: The Hidden Service
+  '/usr/local/bin/dark_node': {
+      type: 'file',
+      content: '[BINARY_ELF_X86_64] [DARK_NODE_SERVICE]\\n[ERROR] ENVIRONMENT_VARIABLE_MISSING\\n[HINT] Set "DARK_MODE=1" to enable.\\n',
+      permissions: '0644'
+  },
+  '/home/ghost/service_log.txt': {
+      type: 'file',
+      content: '[SERVICE] Dark Node installation complete.\\n[STATUS] Inactive.\\n[NOTE] Binary is located at /usr/local/bin/dark_node.\\n[WARNING] Default permissions are restricted. Make executable before running.'
   },
 };
 

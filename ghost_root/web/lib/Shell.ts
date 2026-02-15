@@ -2774,6 +2774,86 @@ export const loadSystemState = () => {
             }
         }
     }
+
+    // Cycle 182 Init (The SSH Key Permission)
+    if (!VFS['/home/ghost/.ssh/id_bunker']) {
+        const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+        const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+
+        ensureDir('/home/ghost/.ssh');
+        link('/home/ghost', '.ssh');
+
+        VFS['/home/ghost/.ssh/id_bunker'] = {
+            type: 'file',
+            content: '-----BEGIN OPENSSH PRIVATE KEY-----\nKEY_ID: BUNKER_ACCESS_V1\n...[ENCRYPTED]...\n-----END OPENSSH PRIVATE KEY-----',
+            permissions: '0644' // BAD PERMISSIONS!
+        };
+        link('/home/ghost/.ssh', 'id_bunker');
+
+        if (!VFS['/home/ghost/mission_bunker.txt']) {
+            VFS['/home/ghost/mission_bunker.txt'] = {
+                type: 'file',
+                content: '[MISSION] Infiltrate the Bunker Node (192.168.1.150).\n[INTEL] Use the key in .ssh/id_bunker.\n[WARNING] Key file permissions must be secure (600) or SSH will reject it.'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('mission_bunker.txt')) {
+                home.children.push('mission_bunker.txt');
+            }
+        }
+    }
+
+    // Cycle 183 Init (The Log Rotation)
+    if (!VFS['/usr/local/bin/rotate_logs']) {
+        const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+        const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+
+        ensureDir('/usr'); ensureDir('/usr/local'); ensureDir('/usr/local/bin');
+        link('/usr', 'local'); link('/usr/local', 'bin');
+
+        VFS['/usr/local/bin/rotate_logs'] = {
+            type: 'file',
+            content: '[BINARY_ELF_X86_64] [LOG_ROTATOR]\n[USAGE] rotate_logs <ARCHIVE_KEY>\n[CHECK] Verifies key against /var/log/syslog_full',
+            permissions: '0755'
+        };
+        link('/usr/local/bin', 'rotate_logs');
+
+        // Create the huge log file with hidden key
+        if (!VFS['/var/log/syslog_full']) {
+             if (!VFS['/var/log']) {
+                 VFS['/var/log'] = { type: 'dir', children: [] };
+                 addChild('/var', 'log');
+             }
+             
+             let logContent = '';
+             for(let i=0; i<400; i++) {
+                 logContent += `[${new Date().toISOString()}] KERNEL: Sector ${i} verified OK.\\n`;
+             }
+             // The Needle
+             logContent += `[${new Date().toISOString()}] ARCHIVE_DAEMON: Backup Key Generated: GHOST_ROOT{GR3P_TH3_N33DL3_V2}\\n`;
+             
+             for(let i=0; i<300; i++) {
+                 logContent += `[${new Date().toISOString()}] SYSTEM: Maintenance routine ${i} completed.\\n`;
+             }
+
+             VFS['/var/log/syslog_full'] = { 
+                 type: 'file', 
+                 content: logContent,
+                 permissions: '0644'
+             };
+             addChild('/var/log', 'syslog_full');
+        }
+
+        if (!VFS['/home/ghost/log_alert.txt']) {
+            VFS['/home/ghost/log_alert.txt'] = {
+                type: 'file',
+                content: "[ALERT] System Logging Paused.\\n[REASON] Log file /var/log/syslog_full has reached capacity.\\n[ACTION] Rotate logs immediately using 'rotate_logs <KEY>'.\\n[HINT] The Archive Key is buried somewhere in the log file itself."
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('log_alert.txt')) {
+                home.children.push('log_alert.txt');
+            }
+        }
+    }
 };
 
 // Helper to reset state
@@ -7665,7 +7745,7 @@ DROP       icmp --  10.10.99.1           anywhere`;
                   const isRoot = !!getNode('/tmp/.root_session');
                   
                   // Allow chmod on /tmp and /tmp/public specifically for puzzles
-                  const isAllowed = path === '/tmp' || path === '/tmp/public' || isRoot;
+                  const isAllowed = path === '/tmp' || path === '/tmp/public' || path === '/usr/local/bin/dark_node' || isRoot;
 
                   if (isSystemFile && !isAllowed) {
                       output = `chmod: changing permissions of '${target}': Operation not permitted`;
@@ -8087,6 +8167,42 @@ Type "status" for mission objectives.`;
             }
         } else {
              output = `[JAMMER] Initializing...\n[ERROR] Target signal not affected. Adjust frequency or gain.\n[HINT] Check surveillance logs for enemy drone frequencies.`;
+        }
+        break;
+    }
+    case 'dark_node': {
+        const node = getNode('/usr/local/bin/dark_node');
+        if (!node) {
+            output = 'dark_node: command not found';
+        } else {
+            const perms = (node as any).permissions || '0644';
+            // Check executable bit (standard 755 or +x means 1, 3, 5, 7 in the last digit? No, usually 755 = rwx r-x r-x)
+            // Simpler check: does it start with 7 or 5, or contain 'x'?
+            // The chmod logic sets perms as string e.g. "0755".
+            // Logic: if user (first char of 3-digit, second of 4-digit) is odd (1,3,5,7), it's executable.
+            
+            const modeStr = perms.length === 4 ? perms.slice(1) : perms; // Remove leading 0 if 4 chars
+            const userDigit = parseInt(modeStr[0], 10);
+            const isExecutable = (userDigit & 1) === 1; // 1=x, 4=r, 2=w. Wait. 1=x, 2=w, 4=r? 
+            // r=4, w=2, x=1. So 1, 3(wx), 5(rx), 7(rwx) have x.
+            
+            if (!isExecutable) {
+                output = 'bash: /usr/local/bin/dark_node: Permission denied';
+            } else {
+                if (ENV_VARS['DARK_MODE'] === '1') {
+                    output = '[DARK_NODE] INITIALIZING...\n[STATUS] ONLINE.\n[SECURE] Environment Verified.\nFLAG: GHOST_ROOT{CHM0D_XM0D_G0D}\n\n\x1b[1;32m[MISSION UPDATE] Objective Complete: HIDDEN SERVICE ACTIVATED.\x1b[0m';
+                    
+                    if (!VFS['/var/run/dark_node_solved']) {
+                        VFS['/var/run/dark_node_solved'] = { type: 'file', content: 'TRUE' };
+                        const runDir = getNode('/var/run');
+                        if (runDir && runDir.type === 'dir' && !runDir.children.includes('dark_node_solved')) {
+                            runDir.children.push('dark_node_solved');
+                        }
+                    }
+                } else {
+                    output = '[DARK_NODE] FATAL ERROR: ENVIRONMENT_VARIABLE_MISSING\n[REQUIRED] DARK_MODE=1\n[ACTION] Aborting.';
+                }
+            }
         }
         break;
     }
@@ -8868,6 +8984,32 @@ Type "status" for mission objectives.`;
              output = `Connecting to ${hostPart} (${resolvedIP})...\n[VAULT NODE TERMINAL]\nACCESS GRANTED: DNS_OVERRIDE_CONFIRMED.\n\nType 'cat root/VAULT_ACCESS_LOG.txt' to view logs.`;
              newCwd = '/remote/vault-node';
              return { output, newCwd, action: 'delay', newPrompt: 'vault@node:~$ ' };
+        } else if (resolvedIP === '192.168.1.150') {
+             let hasKey = false;
+             if (identityFile) {
+                 const keyPath = resolvePath(cwd, identityFile);
+                 const keyNode = getNode(keyPath);
+                 if (keyNode && keyNode.type === 'file' && keyNode.content.includes('KEY_ID: BUNKER_ACCESS_V1')) {
+                     hasKey = true;
+                 }
+             }
+             if (hasKey) {
+                 output = `Connecting to ${hostPart}...\n[BUNKER TERMINAL]\nACCESS GRANTED.\n\nFLAG: GHOST_ROOT{CHM0D_600_K3YS_R_S4F3}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: BUNKER INFILTRATED.\x1b[0m`;
+                 
+                 // Mission Update
+                 if (!VFS['/var/run/bunker_solved']) {
+                     VFS['/var/run/bunker_solved'] = { type: 'file', content: 'TRUE' };
+                     const runDir = getNode('/var/run');
+                     if (runDir && runDir.type === 'dir' && !runDir.children.includes('bunker_solved')) {
+                         runDir.children.push('bunker_solved');
+                     }
+                 }
+                 newCwd = '/remote/bunker';
+                 return { output, newCwd, action: 'delay', newPrompt: 'root@bunker:~# ' };
+             } else {
+                 output = `Connecting to ${hostPart}...\nPermission denied (publickey).`;
+                 return { output, newCwd, action: 'delay' };
+             }
         } else {
              output = `ssh: connect to host ${hostPart} port 22: Connection timed out`;
              return { output, newCwd, action: 'delay' };
@@ -15083,6 +15225,35 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
              output = '[UPLINK] Error: Invalid Authentication Key.\n[CHECK] Verify UPLINK_KEY environment variable.';
         }
         break;
+    }
+
+    // Cycle 183 (The Log Rotation)
+    case 'rotate_logs':
+    case './rotate_logs':
+    case '/usr/local/bin/rotate_logs': {
+        const args = commandLine.trim().split(/\s+/).slice(1);
+        if (args.length === 0) {
+            return { output: 'Usage: rotate_logs <ARCHIVE_KEY>', newCwd: cwd };
+        }
+        
+        const key = args[0];
+        if (key === 'GHOST_ROOT{GR3P_TH3_N33DL3_V2}') {
+             if (!VFS['/var/run/log_solved']) {
+                 VFS['/var/run/log_solved'] = { type: 'file', content: 'TRUE' };
+                 // Clear the log file to simulate rotation
+                 if (VFS['/var/log/syslog_full']) {
+                     (VFS['/var/log/syslog_full'] as any).content = '[LOGS ROTATED] New cycle started...';
+                 }
+                 const runDir = getNode('/var/run');
+                 if (runDir && runDir.type === 'dir' && !runDir.children.includes('log_solved')) {
+                     runDir.children.push('log_solved');
+                 }
+                 return { output: '[ROTATOR] Key Accepted.\n[ROTATOR] Archiving old logs...\n[SUCCESS] Disk space reclaimed.\nFLAG: GHOST_ROOT{L0G_R0T4T10N_M4ST3R}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: LOGS SECURED.\x1b[0m', newCwd: cwd };
+             }
+             return { output: '[ROTATOR] Logs already rotated.\nFLAG: GHOST_ROOT{L0G_R0T4T10N_M4ST3R}', newCwd: cwd };
+        } else {
+             return { output: '[ROTATOR] Error: Invalid Archive Key.\n[FAILED] Access Denied.', newCwd: cwd };
+        }
     }
     case 'export': {
         if (args.length === 0) {
