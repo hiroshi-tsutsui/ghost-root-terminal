@@ -29,3 +29,17 @@
 - **Sector:** /usr/local/bin/sys_health
 - **Type:** Sysadmin / PATH Injection
 - **Description:** Added a vulnerable script `sys_health` that executes `diagnostic_tool` using a relative path. The user must manipulate the `PATH` environment variable to force the execution of a malicious `diagnostic_tool` located in their home directory instead of the system default.
+
+## Cycle 207: The Silent Stream
+- **Date:** 2026-02-16
+- **Sector:** /usr/bin/covert_op
+- **Type:** Redirection / File Descriptors
+- **Mechanic:** Command detects if stdout is a TTY. Refuses to run unless output is redirected (e.g., `covert_op > file`).
+- **Status:** DEPLOYED
+
+## Cycle 224: The Corrupted Binary
+- **Date:** 2026-02-16
+- **Sector:** /usr/bin/sys_diag
+- **Type:** Forensics / Strings Analysis
+- **Mechanic:** Added `sys_diag` binary which segfaults on execution. Users must use the newly implemented `strings` command to extract the hidden flag from the binary file.
+- **Status:** DEPLOYED

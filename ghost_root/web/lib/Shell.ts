@@ -4686,6 +4686,83 @@ export const tabCompletion = (cwd: string, inputBuffer: string): { matches: stri
             }
         }
     }
+
+    // Cycle 235 Init (The Hidden Dotfile)
+    if (!VFS['/home/ghost/project_omega']) {
+        if (!VFS['/home/ghost']) {
+             VFS['/home/ghost'] = { type: 'dir', children: [] };
+             const h = getNode('/home');
+             if (h && h.type === 'dir' && !h.children.includes('ghost')) h.children.push('ghost');
+        }
+        
+        VFS['/home/ghost/project_omega'] = { type: 'dir', children: ['launch_sequence.sh', 'readme.txt', '.omega_config.bak'] };
+        const home = getNode('/home/ghost');
+        if (home && home.type === 'dir' && !home.children.includes('project_omega')) {
+            home.children.push('project_omega');
+        }
+
+        VFS['/home/ghost/project_omega/launch_sequence.sh'] = {
+            type: 'file',
+            content: '#!/bin/bash\\n# OMEGA LAUNCHER v1.0\\n# Usage: ./launch_sequence.sh\\n\\necho "[SYSTEM] Initializing launch sequence..."\\nsleep 1\\n\\nif [ ! -f .omega_config ]; then\\n  echo "[ERROR] Configuration file .omega_config not found."\\n  echo "[HINT] Check for backups."\\n  exit 1\\nfi\\n\\n# Validate config content\\n# source .omega_config (Simulated)\\n\\necho "[SUCCESS] Configuration loaded."\\necho "FLAG: GHOST_ROOT{M0V3_C0NF1G_B4K}"',
+            permissions: '0755'
+        };
+
+        VFS['/home/ghost/project_omega/.omega_config.bak'] = {
+            type: 'file',
+            content: 'MODE=ACTIVE\\nAPI_KEY=GHOST_ROOT_V4',
+            permissions: '0644'
+        };
+
+        VFS['/home/ghost/project_omega/readme.txt'] = {
+            type: 'file',
+            content: 'PROJECT OMEGA - SETUP GUIDE\\n\\n1. Ensure configuration is present (.omega_config).\\n2. Run ./launch_sequence.sh\\n\\nNote: Config templates are stored as hidden files (.bak) for security.'
+        };
+    }
+
+    // Cycle 237 Init (The Environment Key)
+    if (!VFS['/usr/local/bin/fusion_core']) {
+        const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+        const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+
+        ensureDir('/usr'); ensureDir('/usr/local'); ensureDir('/usr/local/bin');
+        link('/usr', 'local'); link('/usr/local', 'bin');
+
+        VFS['/usr/local/bin/fusion_core'] = {
+            type: 'file',
+            content: '[BINARY_ELF_X86_64] [FUSION_CORE_CONTROL]\n[CHECK] ENV: FUSION_KEY\n[WARN] UNAUTHORIZED ACCESS PROHIBITED',
+            permissions: '0755'
+        };
+        link('/usr/local/bin', 'fusion_core');
+
+        // Create the manual
+        if (!VFS['/home/ghost/manuals']) {
+             VFS['/home/ghost/manuals'] = { type: 'dir', children: [] };
+             const home = getNode('/home/ghost');
+             if (home && home.type === 'dir' && !home.children.includes('manuals')) home.children.push('manuals');
+        }
+
+        VFS['/home/ghost/manuals/fusion_manual.txt'] = {
+            type: 'file',
+            content: 'FUSION CORE OPERATION MANUAL v4.2\\n----------------------------------\\nWARNING: Core instability detected.\\nTo engage the magnetic confinement field, you must start the core control binary.\\n\\nSECURITY PROTOCOL:\\nThe binary /usr/local/bin/fusion_core requires a security key to operate.\\nSet the environment variable FUSION_KEY to "GHOST-7-OMEGA" before running the command.\\n\\nExample:\\nexport FUSION_KEY=VALUE\\n./fusion_core\\n',
+            permissions: '0644'
+        };
+        const manDir = getNode('/home/ghost/manuals');
+        if (manDir && manDir.type === 'dir' && !manDir.children.includes('fusion_manual.txt')) {
+            manDir.children.push('fusion_manual.txt');
+        }
+
+        // Hint in home
+        if (!VFS['/home/ghost/core_alert.log']) {
+            VFS['/home/ghost/core_alert.log'] = {
+                type: 'file',
+                content: '[CRITICAL] Fusion Core destabilizing.\\n[ACTION] Read the manual in ~/manuals and restart the core immediately.\\n[TIME] T-minus 30 minutes to meltdown.'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('core_alert.log')) {
+                home.children.push('core_alert.log');
+            }
+        }
+    }
 };
 
 export const processCommand = (cwd: string, commandLine: string, stdin?: string): CommandResult => {
@@ -4693,6 +4770,97 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
 // export const execute = processCommand;
   const cmdTokens = commandLine.trim().split(/\s+/);
   const cmdBase = cmdTokens[0];
+
+  // Cycle 237 (The Environment Key)
+  if (cmdBase === 'fusion_core' || cmdBase === '/usr/local/bin/fusion_core' || (cwd === '/usr/local/bin' && cmdBase === './fusion_core')) {
+      if (ENV_VARS['FUSION_KEY'] === 'GHOST-7-OMEGA') {
+           return { output: '[FUSION_CORE] Verifying Key... [OK]\\n[SYSTEM] Magnetic Confinement Field: ENGAGED.\\n[SYSTEM] Core Temperature: STABLE (15M Kelvin).\\n[SUCCESS] Meltdown averted.\\nFLAG: GHOST_ROOT{3NV_V4R_M4ST3RY_X9}\\n\\x1b[1;32m[MISSION UPDATE] Objective Complete: FUSION CORE STABILIZED.\\x1b[0m', newCwd: cwd };
+      } else {
+           return { output: '[FUSION_CORE] ERROR: SECURITY_KEY_MISSING or INVALID.\\n[SYSTEM] Access Denied.\\n[HINT] The environment variable FUSION_KEY must be set correctly. Consult the manual in ~/manuals.', newCwd: cwd };
+      }
+  }
+
+  // Cycle 236 (The Log Rotation)
+  if (!VFS['/home/ghost/log_alert.txt']) {
+      VFS['/home/ghost/log_alert.txt'] = {
+          type: 'file',
+          content: '[ALERT] Disk usage critical (98%).\n[ANALYSIS] Nginx logs are growing uncontrollably.\n[ACTION] Force a log rotation immediately.\n[HINT] Use "logrotate -f /etc/logrotate.conf".'
+      };
+      
+      // Ensure /var/log/nginx exists
+      if (!VFS['/var/log/nginx']) {
+           if (!VFS['/var/log']) {
+               VFS['/var/log'] = { type: 'dir', children: ['nginx'] };
+               const v = getNode('/var');
+               if (v && v.type === 'dir' && !v.children.includes('log')) v.children.push('log');
+           } else {
+               VFS['/var/log/nginx'] = { type: 'dir', children: [] };
+               const l = getNode('/var/log');
+               if (l && l.type === 'dir' && !l.children.includes('nginx')) l.children.push('nginx');
+           }
+      }
+      
+      VFS['/var/log/nginx/access.log'] = {
+          type: 'file',
+          content: '[LOG_DATA_START] ... [5GB_DATA] ... [LOG_DATA_END]',
+          permissions: '0640'
+      };
+      const n = getNode('/var/log/nginx');
+      if (n && n.type === 'dir' && !n.children.includes('access.log')) n.children.push('access.log');
+
+      // Ensure /etc/logrotate.conf exists
+      if (!VFS['/etc/logrotate.conf']) {
+           if (!VFS['/etc']) {
+               VFS['/etc'] = { type: 'dir', children: ['logrotate.conf'] };
+               const r = getNode('/');
+               if (r && r.type === 'dir' && !r.children.includes('etc')) r.children.push('etc');
+           }
+           VFS['/etc/logrotate.conf'] = {
+               type: 'file',
+               content: '/var/log/nginx/*.log {\\n    rotate 7\\n    daily\\n    compress\\n    missingok\\n    notifempty\\n}',
+               permissions: '0644'
+           };
+           const e = getNode('/etc');
+           if (e && e.type === 'dir' && !e.children.includes('logrotate.conf')) e.children.push('logrotate.conf');
+      }
+  }
+
+  // Cycle 236 Command Logic
+  if (cmdBase === 'logrotate' || cmdBase === '/usr/sbin/logrotate') {
+       if (commandLine.includes('-f') && commandLine.includes('/etc/logrotate.conf')) {
+           if (!VFS['/var/run/cycle236_solved']) {
+               VFS['/var/run/cycle236_solved'] = { type: 'file', content: 'TRUE' };
+               // Compress the log mock
+               VFS['/var/log/nginx/access.log.1.gz'] = { type: 'file', content: '[COMPRESSED_DATA]', permissions: '0640' };
+               VFS['/var/log/nginx/access.log'] = { type: 'file', content: '', permissions: '0640' }; // Empty it
+               
+               return { output: 'reading config file /etc/logrotate.conf\\nAllocating hash table for state file, size 15360 B\\nHandling 1 logs\\nrotating pattern: /var/log/nginx/*.log  forced from command line (7 rotations)\\ncompressing log with: /bin/gzip\\n[SUCCESS] Logs rotated.\\nFLAG: GHOST_ROOT{L0G_R0T4T3_SAV3S_D1SK}\\n\\x1b[1;32m[MISSION UPDATE] Objective Complete: DISK SPACE CLEARED.\\x1b[0m', newCwd: cwd };
+           }
+           return { output: 'reading config file /etc/logrotate.conf\\n[SUCCESS] Logs already rotated.\\nFLAG: GHOST_ROOT{L0G_R0T4T3_SAV3S_D1SK}', newCwd: cwd };
+       } else {
+           return { output: 'logrotate: usage: logrotate [-f] <config_file>', newCwd: cwd };
+       }
+  }
+
+  // Cycle 235 (The Hidden Dotfile)
+  if (cmdBase === './launch_sequence.sh' || cmdBase === 'launch_sequence.sh') {
+      const isCorrectDir = cwd === '/home/ghost/project_omega';
+      if (!isCorrectDir) {
+          return { output: 'bash: launch_sequence.sh: No such file or directory', newCwd: cwd };
+      }
+      
+      const configPath = '/home/ghost/project_omega/.omega_config';
+      
+      if (VFS[configPath]) {
+           if (!VFS['/var/run/cycle235_solved']) {
+               VFS['/var/run/cycle235_solved'] = { type: 'file', content: 'TRUE' };
+               return { output: '[SYSTEM] Initializing launch sequence...\\n[SUCCESS] Configuration loaded.\\nFLAG: GHOST_ROOT{M0V3_C0NF1G_B4K}\\n\\x1b[1;32m[MISSION UPDATE] Objective Complete: CONFIG RESTORED.\\x1b[0m', newCwd: cwd };
+           }
+           return { output: '[SYSTEM] Initializing launch sequence...\\n[SUCCESS] Configuration loaded.\\nFLAG: GHOST_ROOT{M0V3_C0NF1G_B4K}', newCwd: cwd };
+      } else {
+           return { output: '[SYSTEM] Initializing launch sequence...\\n[ERROR] Configuration file .omega_config not found.\\n[HINT] Check for backups (ls -a).', newCwd: cwd };
+      }
+  }
 
   // Cycle 218 (The Identity Theft)
   if (cmdBase === 'ssh_target' || cmdBase === '/usr/bin/ssh_target') {
@@ -7887,6 +8055,16 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
                      if (!stdin) output += `\n(Hint: Program expects input via pipe or redirection)`;
                      return { output, newCwd, action: 'delay' };
                   }
+              } else if (fileName === 'deploy_shield.sh') {
+                  output = `[SYSTEM] Initializing Shield Generator...\n[SYSTEM] Power: 100%\n[SUCCESS] Shields: ACTIVE\n\nFLAG: GHOST_ROOT{CHM0D_X_1S_K3Y}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PERMISSION FIX.\x1b[0m`;
+                  if (!VFS['/var/run/shield_deployed']) {
+                      VFS['/var/run/shield_deployed'] = { type: 'file', content: 'TRUE' };
+                      const runDir = getNode('/var/run');
+                      if (runDir && runDir.type === 'dir' && !runDir.children.includes('shield_deployed')) {
+                          if (runDir.children) runDir.children.push('shield_deployed');
+                      }
+                  }
+                  return { output, newCwd, action: 'delay' };
               } else if (fileName === 'otp_gen' || fileName === 'auth_token') {
                   const now = Date.now() + SYSTEM_TIME_OFFSET;
                   const year = new Date(now).getFullYear();

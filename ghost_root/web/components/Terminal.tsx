@@ -129,6 +129,52 @@ const WebTerminal = () => {
     return () => clearInterval(interval);
   }, []);
 
+  // Cycle 198: The Cron Job (Dead Drop)
+  useEffect(() => {
+    const interval = setInterval(() => {
+        const dropFile = VFS['/tmp/dead_drop.txt'];
+        // Ensure VFS is accessible (it's imported)
+        if (dropFile && dropFile.type === 'file') {
+            // Drop found! Remove it to simulate pickup
+            delete VFS['/tmp/dead_drop.txt'];
+            const tmp = VFS['/tmp'];
+            if (tmp && tmp.type === 'dir') {
+                tmp.children = tmp.children.filter(c => c !== 'dead_drop.txt');
+            }
+
+            // Generate Receipt/Flag
+            const receiptPath = '/home/ghost/intel_receipt.txt';
+            if (!VFS[receiptPath]) {
+                 VFS[receiptPath] = {
+                     type: 'file',
+                     content: 'RECEIPT: INTEL RECEIVED.\\nFLAG: GHOST_ROOT{CR0N_D34D_DR0P_SUCC3SS}\\n\\n[SYSTEM] Payment has been wired to your account.'
+                 };
+                 const home = VFS['/home/ghost'];
+                 if (home && home.type === 'dir' && !home.children.includes('intel_receipt.txt')) {
+                     home.children.push('intel_receipt.txt');
+                 }
+            }
+            
+            // Notify Terminal
+            if (termRef.current) {
+                // Save current buffer/cursor
+                const buffer = inputBufferRef.current;
+                
+                termRef.current.writeln('');
+                termRef.current.writeln('\x1b[1;35m[CRON] SYSTEM EVENT TRIGGERED: /usr/local/bin/collect_intel.sh\x1b[0m');
+                termRef.current.writeln('\x1b[1;32m[SUCCESS] Dead drop processed. Receipt generated in /home/ghost.\x1b[0m');
+                
+                // Restore prompt
+                const cwd = cwdRef.current;
+                const p = promptRef.current;
+                termRef.current.write(`${p}:\x1b[1;34m${cwd}\x1b[0m$ ${buffer}`);
+            }
+        }
+    }, 5000); // Check every 5 seconds for responsiveness
+
+    return () => clearInterval(interval);
+  }, []);
+
   const renderSearch = () => {
       const term = termRef.current;
       if (!term) return;

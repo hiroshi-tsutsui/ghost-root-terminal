@@ -82,7 +82,7 @@ const VFS: Record<string, VFSNode> = {
   },
   '/usr/bin': {
     type: 'dir',
-    children: ['gcc', 'net-bridge', 'void_crypt', 'deploy_agent', 'otp_gen', 'recover_data', 'ghost_update', 'secure_vault', 'sys_monitor', 'escalate']
+    children: ['gcc', 'net-bridge', 'void_crypt', 'deploy_agent', 'otp_gen', 'recover_data', 'ghost_update', 'secure_vault', 'sys_monitor', 'escalate', 'upload_firmware']
   },
   '/usr/bin/secure_vault': {
     type: 'file',
@@ -205,7 +205,7 @@ echo "FLAG: GHOST_ROOT{P4TH_V4R1ABL3_M4N1PUL4T10N}"
   },
   '/opt': {
     type: 'dir',
-    children: ['libs']
+    children: ['libs', 'backup']
   },
   '/opt/libs': {
     type: 'dir',
@@ -263,7 +263,7 @@ int main(int argc, char *argv[]) {
   },
   '/home': {
     type: 'dir',
-    children: ['recovery', 'ghost', 'dr_akira']
+    children: ['recovery', 'ghost', 'dr_akira', 'sysadmin']
   },
   '/home/recovery': {
     type: 'dir',
@@ -310,7 +310,7 @@ KEY_ID: GHOST_PROTOCOL_INIT_V2
   },
   '/home/ghost': {
     type: 'dir',
-    children: ['project_alpha', 'secrets', '.bash_history', '.ssh', 'wifi_note.txt', 'journal', 'evidence.jpg', 'surveillance.jpg', 'tools', 'tools.zip', 'capture.cap', 'drone_manual.txt', 'beacon_protocol.txt', 'hashes.txt', 'wordlist.txt', 'operations', 'security_alert.txt', 'suid_notice.txt']
+    children: ['project_alpha', 'secrets', '.bash_history', '.ssh', 'wifi_note.txt', 'journal', 'evidence.jpg', 'surveillance.jpg', 'tools', 'tools.zip', 'capture.cap', 'drone_manual.txt', 'beacon_protocol.txt', 'hashes.txt', 'wordlist.txt', 'operations', 'security_alert.txt', 'suid_notice.txt', 'backup_log.txt', 'security_notice.txt']
   },
   '/home/ghost/suid_notice.txt': {
       type: 'file',
@@ -509,7 +509,7 @@ exit`
   },
   '/etc': {
     type: 'dir',
-    children: ['passwd', 'shadow', 'hosts', 'iptables.rules', 'tor', 'cron.daily', 'cron.d', 'ssl', 'uplink.conf']
+    children: ['passwd', 'shadow', 'hosts', 'iptables.rules', 'tor', 'cron.daily', 'cron.d', 'ssl', 'uplink.conf', 'omega']
   },
   '/etc/uplink.conf': {
     type: 'file',
@@ -1079,7 +1079,12 @@ Oct 23 16:20:00 ghost-root kernel: [ 4200.000000] VAULT_NODE: Connection refused
   },
   '/home/ghost/capture.cap': {
     type: 'file',
-    content: '[PCAP_HEADER_LE: a1b2c3d4 0002 0004 0000 0000 ffff 0000]\n[PACKET: IV=1234 KEYID=0 DATA=Encrypted]\n[PACKET: IV=1235 KEYID=0 DATA=Encrypted]\n[HANDSHAKE: 00:C0:CA:AD:88:99 -> DE:AD:BE:EF:CA:FE]'
+    content: '[PCAP_HEADER_LE]\n[PACKET_01] IP 192.168.1.5 > 192.168.1.100: SYN\n[PACKET_02] IP 192.168.1.100 > 192.168.1.5: SYN-ACK\n[PACKET_03] IP 192.168.1.5 > 192.168.1.100: ACK\n[PACKET_04] IP 192.168.1.5 > 192.168.1.100: PSH, ACK Data="USER=admin&PASS=GHOST_ROOT{PC4P_4N4LYS1S_X}"\n[PACKET_05] IP 192.168.1.100 > 192.168.1.5: FIN',
+    permissions: '0644'
+  },
+  '/home/ghost/network_log.txt': {
+    type: 'file',
+    content: '[ALERT] Suspicious network activity detected on interface eth0.\n[ACTION] A packet capture was saved to ~/capture.cap.\n[HINT] Use "cat" or "strings" to analyze the traffic. Look for cleartext credentials.'
   },
   '/home/dr_akira': {
     type: 'dir',
@@ -1141,6 +1146,162 @@ Do not attempt to fix it unless the alert level is 0.
   '/home/ghost/service_log.txt': {
       type: 'file',
       content: '[SERVICE] Dark Node installation complete.\\n[STATUS] Inactive.\\n[NOTE] Binary is located at /usr/local/bin/dark_node.\\n[WARNING] Default permissions are restricted. Make executable before running.'
+  },
+  // Cycle 198: The Dead Drop (Cron)
+  '/etc/crontab': {
+      type: 'file',
+      content: '# /etc/crontab: system-wide crontab\nSHELL=/bin/sh\nPATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin\n\n# m h dom mon dow user  command\n*/1 * * * * root /usr/local/bin/collect_intel.sh\n17 * * * * root cd / && run-parts --report /etc/cron.hourly\n25 6 * * * root test -x /usr/sbin/anacron || ( cd / && run-parts --report /etc/cron.daily )\n47 6 * * 7 root test -x /usr/sbin/anacron || ( cd / && run-parts --report /etc/cron.weekly )\n52 6 1 * * root test -x /usr/sbin/anacron || ( cd / && run-parts --report /etc/cron.monthly )\n',
+      permissions: '0644'
+  },
+  '/usr/local/bin/collect_intel.sh': {
+      type: 'file',
+      content: '#!/bin/bash\n# AUTOMATED INTEL COLLECTION\n# This script runs every minute via cron.\n\nDROP_ZONE="/tmp/dead_drop.txt"\nSECURE_STORE="/home/ghost/secure_store"\n\nif [ -f "$DROP_ZONE" ]; then\n    echo "[SYSTEM] Dead drop detected. Processing..."\n    mv "$DROP_ZONE" "$SECURE_STORE/intel_$(date +%s).txt"\n    echo "[SYSTEM] Intel secured."\n    # In simulation, this triggers the flag release.\nelse\n    echo "[SYSTEM] No drop found."\nfi\n',
+      permissions: '0700'
+  },
+  '/home/ghost/intel_brief.txt': {
+      type: 'file',
+      content: 'AGENT BRIEFING:\n\nWe have established an automated dead drop protocol.\nThe system checks for new intel every minute.\nReview the system configuration to find the pickup schedule and location.\n\n- Control',
+      permissions: '0644'
+  },
+  // Cycle 199: The Broken Symlink
+  '/usr/bin/repair-sys': {
+      type: 'file',
+      content: '[BINARY_ELF_X86_64] [SYSTEM_REPAIR_TOOL]\nUsage: repair-sys\nChecks critical configuration files for integrity.\n',
+      permissions: '0755'
+  },
+  '/etc/ghost': {
+      type: 'dir',
+      children: ['config.json']
+  },
+  '/etc/ghost/config.json': {
+      type: 'symlink',
+      target: '/tmp/config.json.tmp', // Broken link
+      permissions: '0777'
+  },
+  '/usr/share/ghost': {
+      type: 'dir',
+      children: ['config.json.bak']
+  },
+  '/usr/share/ghost/config.json.bak': {
+      type: 'file',
+      content: '{\n  "database": "production",\n  "retry_count": 5,\n  "timeout": 3000\n}',
+      permissions: '0644'
+  },
+  '/home/ghost/repair_manual.txt': {
+      type: 'file',
+      content: '[MANUAL] repair-sys Troubleshooting\n-----------------------------------\nIf the tool reports "Configuration Missing", check /etc/ghost/config.json.\nIt often points to a temporary location that gets deleted.\nRestore it by linking to the backup in /usr/share/ghost/config.json.bak.\n\nCommand: ln -s <target> <link_name>'
+  },
+  // Cycle 201: The Env Var Injection
+  '/usr/local/bin/debug_console': {
+      type: 'file',
+      content: '#!/bin/bash\n# DEBUG CONSOLE v1.0\n# USAGE: export USER_NAME="Admin"; ./debug_console\n\nif [ -z "$USER_NAME" ]; then\n  echo "Error: USER_NAME not set."\n  exit 1\nfi\n\n# VULNERABLE CODE:\neval "echo Welcome, $USER_NAME"',
+      permissions: '0755'
+  },
+  '/root/secret_flag.txt': {
+      type: 'file',
+      content: 'FLAG: GHOST_ROOT{EV4L_1NJ3CT10N_1S_B4D}',
+      permissions: '0600'
+  },
+  // Cycle 210: The Archive (Tarball)
+  '/opt/backup': {
+      type: 'dir',
+      children: ['secure_data.tar.gz']
+  },
+  '/opt/backup/secure_data.tar.gz': {
+      type: 'file',
+      content: 'GZIP_V1:TAR_V1:{blueprint.txt:RkxBRzogR0hPU1RfUk9PVHtUNFJfWDdSRl9TVUNDM1NTfQ==}',
+      permissions: '0644'
+  },
+  '/home/ghost/backup_log.txt': {
+      type: 'file',
+      content: '[BACKUP_LOG]\nDate: 2026-02-16\nStatus: COMPLETE\nLocation: /opt/backup/secure_data.tar.gz\nNote: This archive is compressed. Use standard tools to extract.',
+      permissions: '0644'
+  },
+  // Cycle 211: The Environment Trap
+  '/etc/omega': {
+      type: 'dir',
+      children: ['config.sample']
+  },
+  '/etc/omega/config.sample': {
+      type: 'file',
+      content: '# Project Omega Configuration\n# ---------------------------\n#\n# Shard Allocation:\n#   US-EAST: ALPHA-1\n#   EU-WEST: BETA-2\n#   ASIA-PACIFIC: ZEUS-X-77  <-- ACTIVE\n#\n# Usage:\n#   export OMEGA_SHARD=SHARD_ID\n#   ./deploy_omega\n',
+      permissions: '0644'
+  },
+  '/usr/local/bin/deploy_omega': {
+      type: 'file',
+      content: '#!/bin/bash\n# OMEGA DEPLOYMENT SEQUENCE v3.1\n# AUTHOR: Dr. Halsey\n\nTARGET_SHARD="ZEUS-X-77"\n\nif [ -z "$OMEGA_SHARD" ]; then\n  echo "Error: OMEGA_SHARD environment variable not set."\n  echo "Consult /etc/omega/config.sample for shard IDs."\n  exit 1\nfi\n\nif [ "$OMEGA_SHARD" != "$TARGET_SHARD" ]; then\n  echo "Error: Invalid Shard ID. Access Denied."\n  exit 1\nfi\n\necho "Shard Verified: $OMEGA_SHARD"\necho "Initiating Neural Link..."\necho "..."\necho "FLAG: GHOST_ROOT{ENV_V4R_M4ST3RY_UNL0CK3D}"\n',
+      permissions: '0755'
+  },
+  // Cycle 215: The DNS Spoof
+  '/usr/bin/sat_link': {
+      type: 'file',
+      content: '[BINARY_ELF_X86_64] [SATELLITE_UPLINK_V5]\n[CONFIG] Target: mothership.internal\n[ERROR] Host Unreachable.\n',
+      permissions: '0755'
+  },
+  // Cycle 216: The SetUID Bit
+  '/usr/bin/doomsday': {
+      type: 'file',
+      content: '[BINARY_ELF_X86_64] [DOOMSDAY_DEVICE]\n[ERROR] EUID != 0. Root privileges required.\n',
+      permissions: '0755'
+  },
+  '/home/ghost/dns_failure.log': {
+      type: 'file',
+      content: '[ERROR] sat_link: Could not resolve hostname "mothership.internal".\n[DIAGNOSTIC] DNS service is offline.\n[ACTION] Add manual override to /etc/hosts.\n[TARGET_IP] 10.0.0.5'
+  },
+  // Cycle 219: The Kernel Module
+  '/dev/ghost0': {
+      type: 'file',
+      content: '[BLOCK_DEVICE_GHOSTFS_V1]',
+      permissions: '0660'
+  },
+  '/lib/modules/fs_ghost.ko': {
+      type: 'file',
+      content: '[KERNEL_MODULE_GHOSTFS]',
+      permissions: '0644'
+  },
+  '/home/ghost/kernel_panic.log': {
+      type: 'file',
+      content: '[ERROR] Failed to mount ghost0. Module \'ghostfs\' missing.\n[ACTION] Load required kernel module before mounting.'
+  },
+  // Cycle 221: The History Leak
+  '/home/sysadmin': {
+      type: 'dir',
+      children: ['.bash_history'],
+      permissions: '755'
+  },
+  '/home/sysadmin/.bash_history': {
+      type: 'file',
+      content: 'cd /var/log\ntail -f syslog\ngrep "ERROR" *\nwhoami\nexport FIRMWARE_KEY=X99-OMEGA-ZN\n/usr/bin/upload_firmware $FIRMWARE_KEY\nexit\n',
+      permissions: '644'
+  },
+  '/usr/bin/upload_firmware': {
+      type: 'file',
+      content: '#!/bin/bash\n# FIRMWARE UPLOAD UTILITY v2.0\n# USAGE: upload_firmware <KEY>\n\nKEY=$1\n\nif [ -z "$KEY" ]; then\n  echo "Error: Missing firmware key."\n  exit 1\nfi\n\nif [ "$KEY" != "X99-OMEGA-ZN" ]; then\n  echo "Error: Invalid key."\n  echo "Access Denied."\n  exit 1\nfi\n\necho "Verifying key..."\nsleep 1\necho "Uploading firmware..."\nsleep 2\necho "Upload Complete."\necho "FLAG: GHOST_ROOT{H1ST0RY_F1L3S_4R3_D4NG3R0US}"\n',
+      permissions: '0755'
+  },
+  '/home/ghost/security_notice.txt': {
+      type: 'file',
+      content: '[SECURITY UPDATE]\nWe have audited the \'sysadmin\' account.\nIt appears they left their history file world-readable.\nPlease check /home/sysadmin and report any leaks.\n- IT Security'
+  },
+  // Cycle 224: The Corrupted Binary (Advanced)
+  '/usr/bin/sys_diag': {
+      type: 'file',
+      content: '\x7fELF\x02\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x3e\x00\x01\x00\x00\x00\x30\x05\x40\x00\x00\x00\x00\x00@\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00[CORRUPTED_SECTION_START]\x00\x00\x00\x01\x00\x02\x00\x03GHOST_ROOT{STR1NGS_4R3_P0W3RFUL}\x00\x00\x00\x00[END_SECTION]\x00\x00\x00',
+      permissions: '0755'
+  },
+  '/home/ghost/sys_diag.log': {
+      type: 'file',
+      content: '[ERROR] System Diagnostic tool (sys_diag) failed to start.\n[DIAGNOSTIC] Segmentation fault (core dumped).\n[ANALYSIS] The binary header appears intact, but the data section is corrupted.\n[ACTION] Use forensic tools to extract readable strings from the binary.'
+  },
+  // Cycle 238: The Permission Fix
+  '/usr/local/bin/deploy_shield.sh': {
+      type: 'file',
+      content: '#!/bin/bash\n# SHIELD DEPLOYMENT V4.0\n# STATUS: OFFLINE\n\necho "Initializing Shield Generator..."\nsleep 1\necho "Power: 100%"\nsleep 1\necho "Shields: ACTIVE"\necho "FLAG: GHOST_ROOT{CHM0D_X_1S_K3Y}"\n',
+      permissions: '0644'
+  },
+  '/home/ghost/shield_status.txt': {
+      type: 'file',
+      content: '[ERROR] Shield deployment failed.\n[REASON] Permission denied.\n[ACTION] The deployment script is located at /usr/local/bin/deploy_shield.sh.\nMake it executable before running.'
   },
 };
 
