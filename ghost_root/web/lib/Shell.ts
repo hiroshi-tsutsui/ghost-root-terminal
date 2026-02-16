@@ -4763,6 +4763,41 @@ export const tabCompletion = (cwd: string, inputBuffer: string): { matches: stri
             }
         }
     }
+
+    // Cycle 241 Init (The Corrupted Rescue)
+    if (!VFS['/usr/local/bin/rescue_mission.sh']) {
+        const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+        const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+
+        ensureDir('/usr'); ensureDir('/usr/local'); ensureDir('/usr/local/bin');
+        link('/usr', 'local'); link('/usr/local', 'bin');
+
+        VFS['/usr/local/bin/rescue_mission.sh'] = {
+            type: 'file',
+            content: '#!/bin/bash\\n# RESCUE PROTOCOL v1.0\\necho "[SYSTEM] Locating stranded assets..."\\n# ERROR: Binary corruption in line 5\\n# \\x00\\x00\\xDEAD\\xBEEF\\n#\\n# MANUAL OVERRIDE:\\n# If this script fails, execute the following manually:\\n# export RESCUE_CODE="ALPHA-TANGO-7"\\n# ./rescue_pod --launch',
+            permissions: '0755'
+        };
+        link('/usr/local/bin', 'rescue_mission.sh');
+        
+        VFS['/usr/local/bin/rescue_pod'] = {
+            type: 'file',
+            content: '[BINARY_ELF_X86_64] [RESCUE_POD_CONTROLLER]\\n[CHECK] ENV: RESCUE_CODE',
+            permissions: '0755'
+        };
+        link('/usr/local/bin', 'rescue_pod');
+
+        // Hint in home
+        if (!VFS['/home/ghost/rescue_alert.log']) {
+            VFS['/home/ghost/rescue_alert.log'] = {
+                type: 'file',
+                content: '[CRITICAL] Rescue mission failed.\\n[DIAGNOSTIC] Script /usr/local/bin/rescue_mission.sh is corrupted.\\n[ACTION] Inspect the script content to find the manual override procedure.'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('rescue_alert.log')) {
+                home.children.push('rescue_alert.log');
+            }
+        }
+    }
 };
 
 export const processCommand = (cwd: string, commandLine: string, stdin?: string): CommandResult => {
@@ -4778,6 +4813,23 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
       } else {
            return { output: '[FUSION_CORE] ERROR: SECURITY_KEY_MISSING or INVALID.\\n[SYSTEM] Access Denied.\\n[HINT] The environment variable FUSION_KEY must be set correctly. Consult the manual in ~/manuals.', newCwd: cwd };
       }
+  }
+
+  // Cycle 241 (The Corrupted Rescue)
+  if (cmdBase === 'rescue_mission.sh' || cmdBase === './rescue_mission.sh' || cmdBase === '/usr/local/bin/rescue_mission.sh') {
+       return { output: '[SYSTEM] Locating stranded assets...\\n./rescue_mission.sh: line 5: syntax error near unexpected token `\\x00\'\\n./rescue_mission.sh: line 5: `\\x00\\x00\\xDEAD\\xBEEF\'', newCwd: cwd };
+  }
+
+  if (cmdBase === 'rescue_pod' || cmdBase === './rescue_pod' || cmdBase === '/usr/local/bin/rescue_pod') {
+       if (ENV_VARS['RESCUE_CODE'] === 'ALPHA-TANGO-7') {
+           if (!VFS['/var/run/cycle241_solved']) {
+               VFS['/var/run/cycle241_solved'] = { type: 'file', content: 'TRUE' };
+               return { output: '[POD] Code Verified: ALPHA-TANGO-7\\n[POD] Launch Sequence Initiated...\\n[SUCCESS] Assets Recovered.\\nFLAG: GHOST_ROOT{SCR1PT_D3BUG_OV3RR1D3}\\n\\x1b[1;32m[MISSION UPDATE] Objective Complete: RESCUE SUCCESSFUL.\\x1b[0m', newCwd: cwd };
+           }
+           return { output: '[POD] Code Verified: ALPHA-TANGO-7\\n[POD] Assets Recovered.\\nFLAG: GHOST_ROOT{SCR1PT_D3BUG_OV3RR1D3}', newCwd: cwd };
+       } else {
+           return { output: '[POD] ERROR: UNAUTHORIZED LAUNCH ATTEMPT.\\n[POD] Rescue Code Required.\\n[HINT] Check mission parameters.', newCwd: cwd };
+       }
   }
 
   // Cycle 236 (The Log Rotation)
