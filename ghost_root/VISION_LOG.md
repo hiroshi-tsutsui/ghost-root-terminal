@@ -26,3 +26,10 @@
 - **Type:** Diff Analysis
 - **Mechanic:** User must compare `/etc/ssh/sshd_config` (tampered) with `/etc/ssh/sshd_config.bak` (original) using `diff` to find the unauthorized change (the Flag).
 - **Status:** DEPLOYED
+
+## Cycle 234: The Zombie Process
+- **Date:** 2026-02-17
+- **Sector:** /usr/bin/vault_guardian
+- **Type:** Process Management / Zombie
+- **Mechanic:** User must identify a zombie process (PID 4001, STAT `Z`) using `ps aux` or `ps -ef`, find its parent (PID 4000), and kill the parent to clear the zombie.
+- **Status:** DEPLOYED
