@@ -1303,6 +1303,43 @@ Do not attempt to fix it unless the alert level is 0.
       type: 'file',
       content: '[ERROR] Shield deployment failed.\n[REASON] Permission denied.\n[ACTION] The deployment script is located at /usr/local/bin/deploy_shield.sh.\nMake it executable before running.'
   },
+  // Cycle 239: The Hidden Dotfile
+  '/mnt/backup/.id_rsa.bak': {
+      type: 'file',
+      content: '-----BEGIN RSA PRIVATE KEY-----\nMIIEowIBAAKCAQEA3... (BACKUP KEY)\nKEY_ID: HIDDEN_DOTFILE_RECOVERY\nFLAG: GHOST_ROOT{D0TF1L3S_C4NT_H1D3_FR0M_LS_A}\n-----END RSA PRIVATE KEY-----',
+      permissions: '0600'
+  },
+  '/home/ghost/ssh_error.log': {
+      type: 'file',
+      content: '[ERROR] SSH Connection Failed.\n[Target] secure_server\n[Reason] Permission denied (publickey).\n[Diagnostic] The private key seems to be missing from ~/.ssh.\n[Hint] Check local backups. Sometimes files are hidden (start with dot).'
+  },
+  // Cycle 240: The System Breach (Grep)
+  '/var/log/firewall.log': {
+      type: 'file',
+      content: (() => {
+          const noise = '[INFO] Packet accepted from 192.168.1.';
+          let log = '';
+          for (let i = 0; i < 50; i++) {
+              log += `${noise}${Math.floor(Math.random() * 255)}\n`;
+          }
+          log += '[CRITICAL] INTRUSION DETECTED from 203.0.113.45 (Unknown Origin)\n';
+          for (let i = 0; i < 50; i++) {
+              log += `${noise}${Math.floor(Math.random() * 255)}\n`;
+          }
+          return log;
+      })(),
+      permissions: '0644'
+  },
+  '/usr/bin/firewall-cmd': {
+      type: 'file',
+      content: '#!/bin/bash\n# FIREWALL COMMAND LINE INTERFACE v2.0\n# USAGE: firewall-cmd --block <IP>\n\nIP=$2\nACTION=$1\n\nif [ "$ACTION" != "--block" ]; then\n  echo "Usage: firewall-cmd --block <IP>"\n  exit 1\nfi\n\nif [ -z "$IP" ]; then\n  echo "Error: IP address required."\n  exit 1\nfi\n\necho "Scanning active connections..."\nsleep 1\nif [ "$IP" == "203.0.113.45" ]; then\n  echo "[SUCCESS] Intruder IP $IP blocked."\n  echo "FLAG: GHOST_ROOT{GR3P_M4ST3R_F1R3W4LL}"\nelse\n  echo "[INFO] IP $IP blocked. No active threats neutralized."\nfi\n',
+      permissions: '0755'
+  },
+  '/home/ghost/breach_alert.txt': {
+      type: 'file',
+      content: '[URGENT SECURITY ALERT]\nOur monitoring systems detected a breach attempt on the firewall.\nThe logs are massive (/var/log/firewall.log), and we can\'t manually check them all.\nUse \'grep\' or \'cat\' to find the "[CRITICAL]" entry and identify the IP.\nOnce found, use \'firewall-cmd --block <IP>\' to neutralize the threat.',
+      permissions: '0644'
+  },
 };
 
 export const initialVFS = JSON.parse(JSON.stringify(VFS)); // Deep copy for reset
