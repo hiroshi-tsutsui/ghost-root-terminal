@@ -5352,6 +5352,70 @@ export const tabCompletion = (cwd: string, inputBuffer: string): { matches: stri
             }
         }
     }
+    // Cycle 271 Init (The Configuration Drift)
+    if (!VFS['/etc/ssh/sshd_config']) {
+        const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+        const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+
+        ensureDir('/etc'); ensureDir('/etc/ssh');
+        link('/etc', 'ssh');
+
+        // The corrupted file
+        VFS['/etc/ssh/sshd_config'] = {
+            type: 'file',
+            content: '# SSH Daemon Config\nPort 22\nProtocol 2\nPermitRootLogin yes\nStrictModes yes\nMaxAuthTries 6\n',
+            permissions: '0644'
+        };
+        link('/etc/ssh', 'sshd_config');
+
+        // The backup (clean) file with FLAG hidden in diff
+        VFS['/etc/ssh/sshd_config.bak'] = {
+            type: 'file',
+            content: '# SSH Daemon Config\nPort 22\nProtocol 2\n# FLAG: GHOST_ROOT{D1FF_CH3CK_AUD1T_C0MPL3T3}\nPermitRootLogin no\nStrictModes yes\nMaxAuthTries 6\n',
+            permissions: '0644'
+        };
+        link('/etc/ssh', 'sshd_config.bak');
+
+        // Hint
+        if (!VFS['/home/ghost/ssh_alert.log']) {
+            VFS['/home/ghost/ssh_alert.log'] = {
+                type: 'file',
+                content: '[ALERT] Configuration Drift Detected.\n[TARGET] /etc/ssh/sshd_config\n[ACTION] Compare with backup (/etc/ssh/sshd_config.bak) to identify unauthorized changes.\n[HINT] Use "diff file1 file2".'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('ssh_alert.log')) {
+                home.children.push('ssh_alert.log');
+            }
+        }
+    }
+
+    // Cycle 272 Init (The SUID Privilege Escalation)
+    if (!VFS['/usr/bin/doas']) {
+        const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+        const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+
+        ensureDir('/usr'); ensureDir('/usr/bin');
+        link('/usr', 'bin');
+
+        VFS['/usr/bin/doas'] = {
+            type: 'file',
+            content: '[BINARY_ELF_X86_64] [DOAS_AUTH_V1]\n[CHECK] SUID_BIT: REQUIRED\n',
+            permissions: '0755'
+        };
+        link('/usr/bin', 'doas');
+
+        // Hint
+        if (!VFS['/home/ghost/perm_error.log']) {
+            VFS['/home/ghost/perm_error.log'] = {
+                type: 'file',
+                content: '[ERROR] doas: Operation not permitted.\n[REASON] Binary must be setuid root to authenticate.\n[ACTION] Set the SUID bit on /usr/bin/doas.\n[HINT] chmod u+s <file> (or 4755).'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('perm_error.log')) {
+                home.children.push('perm_error.log');
+            }
+        }
+    }
 };
 
 export const processCommand = (cwd: string, commandLine: string, stdin?: string): CommandResult => {
@@ -11491,11 +11555,38 @@ DROP       icmp --  10.10.99.1           anywhere`;
                                output = `[SUCCESS] Sticky bit set on /tmp/public.\n[SYSTEM] Directory secured against unauthorized deletion.\nFLAG: GHOST_ROOT{ST1CKY_B1T_S3CUR3D}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SECURE PUBLIC DIR.\x1b[0m`;
                            }
                       }
+
+                      // Cycle 272 Win Condition (SUID Addition)
+                      if (path === '/usr/bin/doas' && newMode.startsWith('4')) {
+                           if (!VFS['/var/run/doas_solved']) {
+                               VFS['/var/run/doas_solved'] = { type: 'file', content: 'TRUE' };
+                               const runDir = getNode('/var/run');
+                               if (runDir && runDir.type === 'dir' && !runDir.children.includes('doas_solved')) {
+                                   if (runDir.children) runDir.children.push('doas_solved');
+                               }
+                               output = `[SUCCESS] SUID bit set on /usr/bin/doas.\n[SYSTEM] Privilege Escalation Enabled.\nFLAG: GHOST_ROOT{SU1D_P0W3R_UNL0CK3D}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SUID PRIVILEGE ESCALATION.\x1b[0m`;
+                           }
+                      }
                   }
               }
           }
        }
        break;
+    }
+    case 'doas': {
+        const node = getNode('/usr/bin/doas');
+        if (!node) {
+            output = 'doas: command not found';
+        } else {
+            const perms = (node as any).permissions || '0755';
+            const modeStr = perms.length === 3 ? '0' + perms : perms;
+            if (modeStr.startsWith('4')) {
+                 output = '[DOAS] Authenticating root...\n[SUCCESS] Access Granted.\nFLAG: GHOST_ROOT{SU1D_P0W3R_UNL0CK3D}';
+            } else {
+                 output = 'doas: Operation not permitted (must be setuid root)';
+            }
+        }
+        break;
     }
     case 'find': {
         if (args.length === 0) {
