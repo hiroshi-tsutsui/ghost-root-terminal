@@ -5268,6 +5268,90 @@ export const tabCompletion = (cwd: string, inputBuffer: string): { matches: stri
             }
         }
     }
+
+    // Cycle 268 Init (The Deep Archive)
+    if (!VFS['/var/log/archive/2026/02/dump.log']) {
+        const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+        const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+        
+        ensureDir('/var'); ensureDir('/var/log'); ensureDir('/var/log/archive'); ensureDir('/var/log/archive/2026'); ensureDir('/var/log/archive/2026/02');
+        link('/var', 'log'); link('/var/log', 'archive'); link('/var/log/archive', '2026'); link('/var/log/archive/2026', '02');
+        
+        let dumpContent = '';
+        for(let i=0; i<1000; i++) {
+            dumpContent += `[LOG_ID_${i}] STATUS: OK\n`;
+        }
+        dumpContent += `[LOG_ID_1001] CRITICAL: FLAG: GHOST_ROOT{GR3P_M4ST3R}\n`;
+        for(let i=1002; i<2000; i++) {
+             dumpContent += `[LOG_ID_${i}] STATUS: OK\n`;
+        }
+        
+        VFS['/var/log/archive/2026/02/dump.log'] = {
+            type: 'file',
+            content: dumpContent,
+            permissions: '0644'
+        };
+        link('/var/log/archive/2026/02', 'dump.log');
+
+        // Hint
+        if (!VFS['/home/ghost/archive_task.txt']) {
+            VFS['/home/ghost/archive_task.txt'] = {
+                type: 'file',
+                content: '[TASK] Security Audit required.\n[TARGET] /var/log/archive/2026/02/dump.log\n[ACTION] Use grep to find the "CRITICAL" entry containing the flag.'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('archive_task.txt')) {
+                home.children.push('archive_task.txt');
+            }
+        }
+    }
+
+    // Cycle 270 Init (The Corrupted Environment)
+    if (!VFS['/home/ghost/token.enc']) {
+        VFS['/home/ghost/token.enc'] = {
+            type: 'file',
+            content: 'U0VDVVJFX1RPS0VOX1Yx', // SECURE_TOKEN_V1 in Base64
+            permissions: '0644'
+        };
+        const home = getNode('/home/ghost');
+        if (home && home.type === 'dir' && !home.children.includes('token.enc')) {
+            home.children.push('token.enc');
+        }
+
+        // Binary
+        if (!VFS['/usr/local/bin/secure_start']) {
+            if (!VFS['/usr/local/bin']) {
+                // Ensure path exists if not present
+                const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+                ensureDir('/usr'); ensureDir('/usr/local'); ensureDir('/usr/local/bin');
+                const binDir = getNode('/usr/local/bin');
+                const localDir = getNode('/usr/local');
+                if (localDir && localDir.type === 'dir' && !localDir.children.includes('bin')) localDir.children.push('bin');
+            }
+            
+            VFS['/usr/local/bin/secure_start'] = {
+                type: 'file',
+                content: '[BINARY_ELF_X86_64] [SECURE_START]\n[CHECK] ENV: SECURE_TOKEN\n',
+                permissions: '0755'
+            };
+            const bin = getNode('/usr/local/bin');
+            if (bin && bin.type === 'dir' && !bin.children.includes('secure_start')) {
+                bin.children.push('secure_start');
+            }
+        }
+
+        // Hint
+        if (!VFS['/home/ghost/startup_failed.log']) {
+            VFS['/home/ghost/startup_failed.log'] = {
+                type: 'file',
+                content: '[ERROR] Secure Start failed.\n[REASON] Missing Environment Variable: SECURE_TOKEN.\n[HINT] The token is encoded in /home/ghost/token.enc. Decode it (base64) and export it.'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('startup_failed.log')) {
+                home.children.push('startup_failed.log');
+            }
+        }
+    }
 };
 
 export const processCommand = (cwd: string, commandLine: string, stdin?: string): CommandResult => {
@@ -5275,6 +5359,23 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
 // export const execute = processCommand;
   const cmdTokens = commandLine.trim().split(/\s+/);
   const cmdBase = cmdTokens[0];
+
+  // Cycle 270 (The Env Variable)
+  if (cmdBase === 'secure_start' || cmdBase === './secure_start' || cmdBase === '/usr/local/bin/secure_start') {
+       if (ENV_VARS['SECURE_TOKEN'] === 'SECURE_TOKEN_V1') {
+            if (!VFS['/var/run/env_solved']) {
+                VFS['/var/run/env_solved'] = { type: 'file', content: 'TRUE' };
+                const runDir = getNode('/var/run');
+                if (runDir && runDir.type === 'dir' && !runDir.children.includes('env_solved')) {
+                    runDir.children.push('env_solved');
+                }
+                return { output: `[SECURE_START] Initializing...\n[CHECK] Token Verified.\n[SUCCESS] System unlocked.\nFLAG: GHOST_ROOT{3NV_V4R_D3C0D3D}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: ENVIRONMENT CONFIGURED.\x1b[0m`, newCwd: cwd };
+            }
+            return { output: `[SECURE_START] Initializing...\n[CHECK] Token Verified.\n[SUCCESS] System unlocked.\nFLAG: GHOST_ROOT{3NV_V4R_D3C0D3D}`, newCwd: cwd };
+       } else {
+            return { output: `[ERROR] Secure Start failed.\n[REASON] Invalid or missing SECURE_TOKEN.\n[DIAGNOSTIC] Current Value: ${ENV_VARS['SECURE_TOKEN'] || '(null)'}`, newCwd: cwd };
+       }
+  }
 
   // Cycle 263 (The Stale Lock)
   if (cmdBase === 'start-reactor' || cmdBase === './start-reactor' || cmdBase === '/usr/local/bin/start-reactor') {
@@ -6070,6 +6171,22 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
                return { output: '[kill] Process 7777 (hidden_listener) terminated.\n[SUCCESS] Rogue process stopped.\nFLAG: GHOST_ROOT{N3TST4T_K1LL_C0MB0}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: LISTENER STOPPED.\x1b[0m', newCwd: cwd };
            }
            return { output: '[kill] Process 7777 terminated.', newCwd: cwd };
+      }
+      else if (pid === 8080) {
+           return { output: 'kill: (8080) - Operation not permitted (process is zombie/defunct)', newCwd: cwd };
+      }
+      else if (pid === 8000) {
+           const parentIdx = PROCESSES.findIndex(p => p.pid === 8000);
+           const zombieIdx = PROCESSES.findIndex(p => p.pid === 8080);
+           
+           if (parentIdx !== -1) PROCESSES.splice(parentIdx, 1);
+           if (zombieIdx !== -1) PROCESSES.splice(zombieIdx, 1);
+
+           if (!VFS['/var/run/cycle267_solved']) {
+               VFS['/var/run/cycle267_solved'] = { type: 'file', content: 'TRUE' };
+               return { output: '[kill] Process 8000 (lazy_parent) terminated.\\n[SYSTEM] Zombie process 8080 reaped by init.\\nFLAG: GHOST_ROOT{Z0MB13_P4R3NT_K1LL3D}\\n\\x1b[1;32m[MISSION UPDATE] Objective Complete: ZOMBIE REAPED.\\x1b[0m', newCwd: cwd };
+           }
+           return { output: '[kill] Process 8000 terminated.', newCwd: cwd };
       }
       
       const proc = PROCESSES.find(p => p.pid === pid);
@@ -8594,6 +8711,28 @@ int main(int argc, char* argv[]) {
           };
           const home = getNode('/home/ghost');
           if (home && home.type === 'dir' && !home.children.includes('app_alert.txt')) home.children.push('app_alert.txt');
+      }
+  }
+
+  // Cycle 267 Init (The Zombie Process)
+  if (!VFS['/home/ghost/cpu_alert_v2.log']) {
+      VFS['/home/ghost/cpu_alert_v2.log'] = {
+          type: 'file',
+          content: '[ALERT] System Load High due to Zombie Process.\\n[PID] 8080 (State: Z)\\n[ACTION] You cannot kill a zombie directly. Find and kill its parent (PPID).\\n[HINT] use "ps -o pid,ppid,stat,cmd"'
+      };
+      const home = getNode('/home/ghost');
+      if (home && home.type === 'dir' && !home.children.includes('cpu_alert_v2.log')) home.children.push('cpu_alert_v2.log');
+
+      // Add Processes
+      if (!PROCESSES.find(p => p.pid === 8080)) {
+          PROCESSES.push({
+              pid: 8080, ppid: 8000, user: 'ghost', cpu: 0.0, mem: 0.0, time: '0:00', command: '[defunct]', tty: '?', stat: 'Z'
+          });
+      }
+      if (!PROCESSES.find(p => p.pid === 8000)) {
+          PROCESSES.push({
+              pid: 8000, ppid: 1, user: 'ghost', cpu: 0.1, mem: 0.5, time: '0:05', command: '/usr/bin/lazy_parent', tty: '?', stat: 'Ss'
+          });
       }
   }
 

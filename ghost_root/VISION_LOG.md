@@ -181,3 +181,31 @@
 - **Type:** Sysadmin / Log Management
 - **Mechanic:** Service `start_app_v2` fails because log file is too big. User must truncate (`> file`) or rotate (`mv file file.1`) to proceed.
 - **Status:** DEPLOYED
+
+## Cycle 267: The Zombie Parent (Process Management)
+- **Date:** 2026-02-17
+- **Sector:** /proc
+- **Type:** Sysadmin / Process Management
+- **Mechanic:** Zombie process 8080 (`[defunct]`) is detected. User must identify its parent (PPID 8000) via `ps` and kill the parent (`kill 8000`) to reap the zombie.
+- **Status:** DEPLOYED
+
+## Cycle 268: The Deep Archive (Grep / Find)
+- **Date:** 2026-02-17
+- **Sector:** /var/archive/deep_storage
+- **Type:** Sysadmin / Recursive Search
+- **Mechanic:** Flag is buried deep in a nested directory structure. User must use `find /var/archive/deep_storage -name manifest.txt` or `grep -r FLAG /var/archive/deep_storage` to locate it.
+- **Status:** DEPLOYED
+
+## Cycle 269: The SSL Expiry (File Copy / Verification)
+- **Date:** 2026-02-17
+- **Sector:** /etc/ssl
+- **Type:** Sysadmin / Security (SSL)
+- **Mechanic:** User must identify expired certificate (`/etc/ssl/server.crt`) and overwrite it with a backup (`/etc/ssl/backup/server_v2.crt`).
+- **Status:** DEPLOYED
+
+## Cycle 270: The Corrupted Environment (Env Vars / Base64)
+- **Date:** 2026-02-17
+- **Sector:** /home/ghost/token.enc
+- **Type:** Sysadmin / Environment Variables
+- **Mechanic:** Critical binary `secure_start` fails without `SECURE_TOKEN`. User must decode Base64 file (`token.enc`) to retrieve the value and `export` it.
+- **Status:** DEPLOYED
