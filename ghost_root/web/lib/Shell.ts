@@ -5295,6 +5295,91 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
         }
   }
 
+  // Cycle 264 (The Listen Port)
+  if (!VFS['/home/ghost/port_alert.txt']) {
+      VFS['/home/ghost/port_alert.txt'] = {
+          type: 'file',
+          content: '[ALERT] Unauthorized service detected.\n[ANALYSIS] A rogue process is listening on a high port.\n[ACTION] Use "netstat" to identify the PID and "kill" it.'
+      };
+      const home = getNode('/home/ghost');
+      if (home && home.type === 'dir' && !home.children.includes('port_alert.txt')) {
+          home.children.push('port_alert.txt');
+      }
+      // Binary
+      if (!VFS['/usr/bin/hidden_listener']) {
+          VFS['/usr/bin/hidden_listener'] = {
+              type: 'file',
+              content: '[BINARY_ELF_X86_64] [LISTENER_V2]\n[PORT] 5050\n[STATUS] LISTENING...',
+              permissions: '0755'
+          };
+          const bin = getNode('/usr/bin');
+          if (bin && bin.type === 'dir' && !bin.children.includes('hidden_listener')) {
+              bin.children.push('hidden_listener');
+          }
+      }
+  }
+
+  // Cycle 265 Init (The DNS Poisoning)
+  if (!VFS['/home/ghost/dns_alert.txt']) {
+      VFS['/home/ghost/dns_alert.txt'] = {
+          type: 'file',
+          content: '[ALERT] Connection to secure.corp failed.\\n[DIAGNOSTIC] Host "secure.corp" not found.\\n[ACTION] Add a manual entry to /etc/hosts mapping secure.corp to 127.0.0.1.\\n[Target IP] 127.0.0.1'
+      };
+      const home = getNode('/home/ghost');
+      if (home && home.type === 'dir' && !home.children.includes('dns_alert.txt')) {
+          home.children.push('dns_alert.txt');
+      }
+
+      // Ensure /etc/hosts exists
+      if (!VFS['/etc/hosts']) {
+           if (!VFS['/etc']) {
+               VFS['/etc'] = { type: 'dir', children: ['hosts'] };
+               const root = getNode('/');
+               if (root && root.type === 'dir' && !root.children.includes('etc')) root.children.push('etc');
+           }
+           VFS['/etc/hosts'] = {
+               type: 'file',
+               content: '127.0.0.1\\tlocalhost\\n::1\\tlocalhost ip6-localhost ip6-loopback\\n',
+               permissions: '0644'
+           };
+           const etc = getNode('/etc');
+           if (etc && etc.type === 'dir' && !etc.children.includes('hosts')) etc.children.push('hosts');
+      }
+
+      // Binary
+      if (!VFS['/usr/bin/connect_secure']) {
+          VFS['/usr/bin/connect_secure'] = {
+              type: 'file',
+              content: '[BINARY_ELF_X86_64] [SECURE_CLIENT]\\n[TARGET] secure.corp\\n[PORT] 443\\n',
+              permissions: '0755'
+          };
+          const bin = getNode('/usr/bin');
+          if (bin && bin.type === 'dir' && !bin.children.includes('connect_secure')) {
+              bin.children.push('connect_secure');
+          }
+      }
+  }
+
+  // Cycle 265 Command (The DNS Poisoning)
+  if (cmdBase === 'connect_secure' || cmdBase === '/usr/bin/connect_secure' || cmdBase === './connect_secure') {
+      const hosts = VFS['/etc/hosts'];
+      if (hosts && hosts.type === 'file') {
+          const content = hosts.content;
+          if (/127\\.0\\.0\\.1\\s+secure\\.corp/.test(content)) {
+               if (!VFS['/var/run/cycle265_solved']) {
+                   VFS['/var/run/cycle265_solved'] = { type: 'file', content: 'TRUE' };
+                   const runDir = getNode('/var/run');
+                   if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle265_solved')) {
+                       runDir.children.push('cycle265_solved');
+                   }
+                   return { output: '[SECURE] Resolving secure.corp...\\n[DNS] 127.0.0.1 (Local Override)\\n[CONN] Handshake Successful.\\n[SUCCESS] Uplink Established.\\nFLAG: GHOST_ROOT{ETC_H0STS_P01S0N_OK}\\n\\x1b[1;32m[MISSION UPDATE] Objective Complete: DNS OVERRIDE ACTIVE.\\x1b[0m', newCwd: cwd };
+               }
+               return { output: '[SECURE] Connection Established.\\nFLAG: GHOST_ROOT{ETC_H0STS_P01S0N_OK}', newCwd: cwd };
+          }
+      }
+      return { output: '[SECURE] Resolving secure.corp...\\n[ERROR] Host not found.\\n[HINT] Update local DNS configuration.', newCwd: cwd };
+  }
+
   // Cycle 249 Init (The Disk Hog)
   if (!VFS['/home/ghost/disk_space_alert.txt']) {
       VFS['/home/ghost/disk_space_alert.txt'] = {
@@ -5707,17 +5792,27 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
       }
   }
 
-  // Cycle 208 Command Logic (netstat)
+  // Cycle 208 & 264 Command Logic (netstat)
   if (cmdBase === 'netstat') {
       // Simple mock
       let out = 'Active Internet connections (only servers)\nProto Recv-Q Send-Q Local Address           Foreign Address         State      PID/Program name\n';
       out += 'tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      100/sshd\n';
-      out += 'tcp        0      0 127.0.0.1:31337         0.0.0.0:*               LISTEN      6000/net_service\n';
+      
+      // Cycle 208
+      if (!VFS['/var/run/cycle208_solved']) {
+          out += 'tcp        0      0 127.0.0.1:31337         0.0.0.0:*               LISTEN      6000/net_service\n';
+      }
+      
+      // Cycle 264
+      if (!VFS['/var/run/cycle264_solved']) {
+          out += 'tcp        0      0 127.0.0.1:5050          0.0.0.0:*               LISTEN      7777/hidden_listener\n';
+      }
+
       out += 'udp        0      0 0.0.0.0:68              0.0.0.0:*                           600/dhclient\n';
       return { output: out, newCwd: cwd };
   }
 
-  // Cycle 208 Command Logic (nc)
+  // Cycle 208 & 264 Command Logic (nc)
   if (cmdBase === 'nc') {
       const args = commandLine.trim().split(/\s+/).slice(1);
       
@@ -5732,6 +5827,13 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
                } else {
                    return { output: '[NC] Connected to localhost:31337\n[SVC] Access Denied. Protocol Mismatch.\n[HINT] Service expects "AUTH_KAPPA" on stdin.', newCwd: cwd };
                }
+          }
+          // Cycle 264
+          if (args.includes('5050')) {
+               if (VFS['/var/run/cycle264_solved']) {
+                   return { output: 'nc: connect to localhost port 5050 (tcp) failed: Connection refused', newCwd: cwd };
+               }
+               return { output: '[NC] Connected to localhost:5050\n[SVC] UNIDENTIFIED LISTENER ACTIVE.\n[SVC] PID: 7777\n[SVC] COMMAND: /usr/bin/hidden_listener\n[SVC] STATUS: WAITING_FOR_INPUT...', newCwd: cwd };
           }
       }
       return { output: 'nc: connection refused', newCwd: cwd };
@@ -5961,6 +6063,13 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
                PROCESSES.splice(procIdx, 1);
                return { output: '[kill] Process 5000 (sys_bloat) terminated.', newCwd: cwd };
            }
+      }
+      else if (pid === 7777) {
+           if (!VFS['/var/run/cycle264_solved']) {
+               VFS['/var/run/cycle264_solved'] = { type: 'file', content: 'TRUE' };
+               return { output: '[kill] Process 7777 (hidden_listener) terminated.\n[SUCCESS] Rogue process stopped.\nFLAG: GHOST_ROOT{N3TST4T_K1LL_C0MB0}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: LISTENER STOPPED.\x1b[0m', newCwd: cwd };
+           }
+           return { output: '[kill] Process 7777 terminated.', newCwd: cwd };
       }
       
       const proc = PROCESSES.find(p => p.pid === pid);
@@ -8458,6 +8567,36 @@ int main(int argc, char* argv[]) {
       return { output: 'Usage: secure_vault --unlock <RESOURCE_ID>', newCwd: cwd };
   }
 
+  // Cycle 266 Init (The Log Rotation)
+  if (!VFS['/var/log/massive_app.log']) {
+      VFS['/var/log/massive_app.log'] = {
+          type: 'file',
+          content: '[LOG] ' + 'A'.repeat(5000), // Simulated size check
+          permissions: '0644'
+      };
+      const log = getNode('/var/log');
+      if (log && log.type === 'dir' && !log.children.includes('massive_app.log')) log.children.push('massive_app.log');
+
+      if (!VFS['/usr/local/bin/start_app_v2']) {
+          VFS['/usr/local/bin/start_app_v2'] = {
+              type: 'file',
+              content: '#!/bin/bash\n# APP V2 STARTUP\nLOG_FILE=/var/log/massive_app.log\nMAX_SIZE=100\n\nSIZE=$(wc -c < "$LOG_FILE")\nif [ "$SIZE" -gt "$MAX_SIZE" ]; then\n  echo "[ERROR] Log file too large ($SIZE bytes)."\n  echo "[ACTION] Rotate or truncate log to proceed."\n  exit 1\nfi\n\necho "[SUCCESS] App Started."\nFLAG: GHOST_ROOT{L0G_R0T4T3_M4ST3R}',
+              permissions: '0755'
+          };
+          const bin = getNode('/usr/local/bin');
+          if (bin && bin.type === 'dir' && !bin.children.includes('start_app_v2')) bin.children.push('start_app_v2');
+      }
+
+      if (!VFS['/home/ghost/app_alert.txt']) {
+          VFS['/home/ghost/app_alert.txt'] = {
+              type: 'file',
+              content: '[ALERT] start_app_v2 failed.\n[REASON] Log file quota exceeded.\n[ACTION] Check /var/log/massive_app.log size and reduce it.\n[HINT] Use ">" to truncate or "mv" to rotate.'
+          };
+          const home = getNode('/home/ghost');
+          if (home && home.type === 'dir' && !home.children.includes('app_alert.txt')) home.children.push('app_alert.txt');
+      }
+  }
+
 
   // 1. Handle Piping (|) recursively
   const segments = splitPipeline(commandLine);
@@ -8866,6 +9005,29 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
                   }
               }
           } else if (fileNode.content.startsWith('#!/bin/bash')) {
+              if (fileName === 'start_app_v2') {
+                  const logNode = getNode('/var/log/massive_app.log');
+                  let logSize = 5000;
+                  if (logNode && logNode.type === 'file') {
+                      logSize = (logNode as any).content.length;
+                  }
+                  
+                  if (logSize < 100) {
+                      output = `[APP] Starting up...\n[CHECK] Log file size: ${logSize} bytes (OK)\n[SUCCESS] App Started.\nFLAG: GHOST_ROOT{L0G_R0T4T3_M4ST3R}`;
+                      if (!VFS['/var/run/cycle266_solved']) {
+                          VFS['/var/run/cycle266_solved'] = { type: 'file', content: 'TRUE' };
+                          const runDir = getNode('/var/run');
+                          if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle266_solved')) {
+                              runDir.children.push('cycle266_solved');
+                          }
+                          output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: LOG ROTATED.\x1b[0m`;
+                      }
+                      return { output, newCwd, action: 'delay' };
+                  } else {
+                      output = `[APP] Starting up...\n[CHECK] Log file size: ${logSize} bytes (TOO LARGE)\n[ERROR] Max allowed: 100 bytes.\n[ACTION] Rotate logs immediately.`;
+                      return { output, newCwd, action: 'delay' };
+                  }
+              }
               if (fileName === 'fix_wifi.sh') {
                   output = `[WIFI] Resetting Wifi Adapter...\n[WIFI] Tx-Power: ON\n[SUCCESS] Wifi Interface Restored.\n\nFLAG: GHOST_ROOT{SH3B4NG_M1SS1NG_F0UND}`;
                   if (!VFS['/var/run/shebang_solved']) {

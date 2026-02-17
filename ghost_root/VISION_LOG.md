@@ -160,3 +160,24 @@
 - **Type:** Sysadmin / Process Management
 - **Mechanic:** Service fails due to stale lock file (`/var/run/reactor.lock`). User must identify the PID (1337) is dead and remove the lock.
 - **Status:** DEPLOYED
+
+## Cycle 264: The Listen Port (Netstat)
+- **Date:** 2026-02-17
+- **Sector:** /usr/bin/hidden_listener
+- **Type:** Sysadmin / Network Analysis
+- **Mechanic:** Rogue process listening on port 5050. User must use `netstat` to identify PID (7777) and `kill` it.
+- **Status:** DEPLOYED
+
+## Cycle 265: The DNS Poisoning (/etc/hosts)
+- **Date:** 2026-02-17
+- **Sector:** /usr/bin/connect_secure
+- **Type:** Sysadmin / DNS Configuration
+- **Mechanic:** Connection fails due to missing host. User must edit `/etc/hosts` to map `secure.corp` to `127.0.0.1`.
+- **Status:** DEPLOYED
+
+## Cycle 266: The Log Rotation (Manual)
+- **Date:** 2026-02-17
+- **Sector:** /var/log/massive_app.log
+- **Type:** Sysadmin / Log Management
+- **Mechanic:** Service `start_app_v2` fails because log file is too big. User must truncate (`> file`) or rotate (`mv file file.1`) to proceed.
+- **Status:** DEPLOYED

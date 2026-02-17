@@ -1,261 +1,31 @@
-# HEARTBEAT.md
-
-- [ ] [PAUSED] Monitor Batch Jobs (User Instruction: Do not use Google Batch).
-- [x] Monitor Sub-agent: `omega-tony-pedagogy-2`. (Status: COMPLETE - Data Module Localized).
-- [x] Monitor Sub-agent: `omega-tony-calculus`. (Status: COMPLETE - Calculus Module Localized).
-- [x] Monitor Sub-agent: `omega-tony-vectors`. (Status: COMPLETE - Vectors Module Localized).
-- [x] Monitor Sub-agent: `omega-tony-trig`. (Status: COMPLETE - Trig Module Localized).
-- [x] Monitor Sub-agent: `omega-tony-sequences`. (Status: COMPLETE - Sequences Module Localized).
-- [x] Monitor Sub-agent: `omega-cto-game-architect`. (Status: COMPLETE - Web Port Ready & Deployed).
-- [x] Verify Project Omega Deployment (`https://projectomega-tau.vercel.app`). (Status: LIVE - Japanese Localized).
-  - [x] Action: Fix webpack error in `locales/ja.json` (Commit: `edc3b79`).
-  - [x] Action: Localize Vectors Module (Commit: `70da647`).
-  - [x] Action: **INNOVATION** Quadratic Functions Module (`/math/quadratic`) Created & Deployed.
-- [x] Pivot Project Omega to Japanese/Pedagogy (Manual Override - Data/Calculus/Vectors/Trig/Sequences Live).
-- [x] Notify User: V16 Download Complete (`~/Downloads/yolo-gcp/eagle/infer/output/v16_depth_viz/`).
-- [ ] Execute Option C: Retrain Main YOLO (Hard Negative Mining).
-  - [x] Action: Cleaned up extraction files.
-  - [x] Action: Reverted `job_following_distance_infer.json`.
-  - [x] Action: Re-running `script.sh` (Build/Push/Submit).
-  - [x] Action: Monitor New Job (ID: `following-distance-infer-fp-jan19-feb5-v5-20260208-150922`) - SUCCEEDED (Wrong Input).
-  - [x] Action: **CORRECTED** Input Path (`gs://yolo-gcp/eagle/infer/input/labeled/following_distance_fp_Jan19_Feb5/`).
-  - [x] Action: Monitor Corrected Job (ID: `following-distance-infer-fp-jan19-feb5-v6-20260208`) - SUCCEEDED.
-  - [x] Action: **SMART SEARCH** Launch Probes (Failed/Skipped).
-  - [x] Action: Extract "Danger" Set (518 Videos) for Retraining.
-  - [x] Action: Monitor High Precision Job (`fd-infer-high-prec-v1`) - FAILED.
-  - [x] Action: Monitor Pipeline Job (`following-distance-infer-fp-jan19-feb5-v6-20260208-fix`) - SUCCEEDED (74% FP).
-  - [x] Action: Launch **True Positive Validation** (`fd-tp-merged-v1`) - SUCCEEDED.
-    - [x] Result: 266 Danger / 368 Total. Recall: ~72%.
-  - [ ] Action: Proceed to Retraining Configuration.
-    - [x] Action: Copy Data to Retraining Bucket (784 Videos).
-    - [x] Action: Monitor Label Gen Job FP V5 (`retraining-v1-label-gen-fp-005`) - DELETION_IN_PROGRESS (Startup Error?).
-    - [x] Action: Monitor Label Gen Job TP V5 (`retraining-v1-label-gen-tp-005`) - FAILED (Script Missing/Environment).
-    - [x] Action: Investigate Batch Image (batch-custom-image vs yolo:latest). (Status: FOUND - `us-central1-docker.pkg.dev/dev-dotsfty/rf/rf:latest` lacked dependencies).
-    - [x] Action: Rebuild Image (`us-central1-docker.pkg.dev/dev-dotsfty/rf/rf:v1-retrain`) with `ultralytics`, `opencv`, `torch`. (Status: COMPLETE - SUCCESS).
-    - [ ] Action: Submit Label Gen Job FP V6 (`job_fp_label_gen_v6.json`).
-    - [ ] Action: Submit Label Gen Job TP V6 (`job_tp_label_gen_v6.json`).
-    - [x] Action: Monitor Source Fetch Job (`fetch-source-v1`) - FAILED (Exit Code 1).
-    - [x] Action: Monitor Environment Probe (`env-probe-v1`) - FAILED (Exit Code 1 - Diagnosed: Disk Full).
-    - [x] Action: Monitor Python3 Fix Job (`following-distance-infer-fp-jan19-feb5-v5...`) - SUCCEEDED (Multiple jobs completed).
-    - [x] Action: Monitor Threshold Experiment Job (`following-distance-infer-threshold-v1-annotate-fix`) - SUCCEEDED (340 Danger / 268 Safe - JSON Only - Downloaded to `~/Downloads/yolo-gcp/eagle/infer/output/following_distance_fp_Jan19_Feb5_v7_threshold_exp/`).
-    - [x] Result: FP reduced by ~44%.
-    - [x] Action: Monitor Environment Probe (`env-probe-v1`) - FAILED (Exit Code 1 - Diagnosed: Missing Packages in `yolo:latest` / grep failed).
-    - [x] Action: **NEXT** Launch True Positive Validation (`following-distance-infer-threshold-tp-v1`) - SUCCEEDED.
-      - [x] Result: 197 Danger / 368 Total. Recall: ~53% (Dropped from 72%).
-      - [x] Trade-off: FP reduced by ~38%, but Recall dropped by ~19%.
-- [x] Update Ghost Root: Added `ssh-keygen` and `awk` commands. (Status: DEPLOYED).
-    - [x] Verify Project Omega Deployment (Manual Override). (Status: LIVE - Force Deployment Complete).
-    - [x] Monitor Sub-agent: `vision-ghost-root-autopilot`. (Status: COMPLETE - Implemented Narrative Convergence: Win State via Decrypt).
-    - [x] Fix Project Omega: Reverted JP title to "Project Omega" & fixed missing module keys. (Status: PUSHED).
-    - [x] Update Ghost Root: Added `/archive` + Lore. (Status: DEPLOYED).
-    - [x] Update Ghost Root: Added `decrypt` command + `operation_blackout.enc` puzzle. (Status: DEPLOYED).
-    - [x] Update Ghost Root: Added `man` pages + obfuscated `help`. (Status: DEPLOYED).
-    - [x] Update Ghost Root: Added `scan` command + network simulation. (Status: DEPLOYED).
-    - [x] Update Ghost Root: Added `mail` command + lore emails. (Status: DEPLOYED).
-    - [x] Update Ghost Root: Added `dmesg`, `mount`, and lore files. (Status: DEPLOYED).
-    - [x] Update Ghost Root: Added `top` process monitor (Enhanced Interactive Mode). (Status: DEPLOYED).
-    - [x] Update Ghost Root: Added `ps`, `kill` commands & Kernel Panic. (Status: DEPLOYED).
-    - [x] Update Ghost Root: Added `whoami`, `reboot`, improved `mail` lore, and hidden files (`.ssh`, `/tmp`). (Status: DEPLOYED).
-    - [x] Update Ghost Root: Added `su` (privilege escalation), `whois` updates, and `grep`. (Status: DEPLOYED).
-    - [x] Update Ghost Root: Added `cp` and `mv` commands. (Status: DEPLOYED).
-    - [x] Update Ghost Root: Added `trace` command and hidden logs. (Status: DEPLOYED).
-    - [x] Update Ghost Root: Added `alias` command support. (Status: DEPLOYED).
-    - [x] Update Ghost Root: Added `su` (auth logic), `chmod`, `env`. (Status: DEPLOYED).
-    - [x] Update Ghost Root: Added `locate` and `finger` commands. (Status: DEPLOYED).
-    - [x] Update Ghost Root: Added `persistent` history, `!n` expansion, and `curl`. (Status: DEPLOYED).
-    - [x] Update Ghost Root: Added `vi`/`nano` mock editor (File Editor Simulation). (Status: DEPLOYED).
-    - [x] Update Ghost Root: Added `ifconfig`, enhanced `ping`/`ssh` with Black Site (`192.168.1.99`). (Status: DEPLOYED).
-    - [x] Update Ghost Root: Added `crontab` command (scheduled tasks lore). (Status: DEPLOYED).
-    - [x] Update Ghost Root: Added output redirection `>` and decryption workflow. (Status: DEPLOYED).
-    - [x] Update Ghost Root: Added `wifi` command suite (`scan`, `connect`). (Status: DEPLOYED).
-    - [x] Update Ghost Root: Added `telnet` with Easter eggs. (Status: DEPLOYED).
-    - [x] Update Ghost Root: Added `apt`/`apt-get` package manager simulation. (Status: DEPLOYED).
-    - [x] Update Ghost Root: Added Black Site Wifi + `hydra` (password cracker). (Status: DEPLOYED).
-    - [x] Update Ghost Root: Added `camsnap` (ASCII feeds) + Auth Log puzzle. (Status: DEPLOYED).
-    - [x] Update Ghost Root: Added `nslookup` and `dig` commands. (Status: DEPLOYED).
-    - [x] Update Ghost Root: Added `hexdump`/`xxd` command. (Status: DEPLOYED).
-    - [x] Update Ghost Root: Added `uptime`, `w` (system stats) and `zip`/`unzip` simulation. (Status: DEPLOYED).
-    - [x] Update Ghost Root: Added `uptime`, `w` (system stats) and `zip`/`unzip` simulation. (Status: DEPLOYED).
-    - [x] Update Ghost Root: Added `date`, `head`, `tail` commands. (Status: DEPLOYED).
-    - [x] Fix Ghost Root: Resolved VFS mismatch (`/home/recovery` vs `recovery_mode`). (Status: DEPLOYED).
-    - [x] Update Ghost Root: Added `diff`, `wc`, `sort`, `uniq` (Status: DEPLOYED).
-    - [x] Update Ghost Root: Added `steghide` + `evidence.jpg` puzzle. (Status: DEPLOYED).
-    - [x] Update Ghost Root: Added `neofetch` and `history -c`. (Status: DEPLOYED).
-    - [x] Update Ghost Root: Added `weather` command + man page. (Status: DEPLOYED).
-    - [x] Update Ghost Root: Added `weather` command + man page. (Status: DEPLOYED).
-    - [x] Update Ghost Root: Added `matrix` command. (Status: DEPLOYED).
-    - [x] Update Ghost Root: Added `journalctl` command + logs. (Status: DEPLOYED).
-    - [x] Update Ghost Root: Added `base64` and `rev` utilities. (Status: DEPLOYED).
-    - [x] Update Ghost Root: Added `calc` command and fixed `mkdir` bloat. (Status: DEPLOYED).
-    - [x] Update Ghost Root: Added `systemctl` command (service management). (Status: DEPLOYED).
-    - [x] Update Ghost Root: Added pipe `|` support and command chaining. (Status: DEPLOYED).
-    - [x] Update Ghost Root: Added `tar` command + lore archives. (Status: DEPLOYED).
-    - [x] Fix Ghost Root: Complete 'steghide' implementation & 'camsnap' password fix. (Status: DEPLOYED).
-    - [x] Monitor Batch Sweep V1 (`sweep-v1-*`). (Status: CLEANUP_COMPLETE - All jobs removed).
-    - [x] Submit Batch Sweep V2 (`sweep-v2-*`). (Status: COMPLETE - 30 SUCCEEDED).
-    - [x] Download Sweep V2 Results (`~/Downloads/yolo-gcp/eagle/infer/output/sweep_v2/`). (Status: DONE).
-- [x] Cleanup: Removed `math-viz-japan/experiments` and consolidated repo.
-- [x] **CRITICAL** Vercel Limit Hit (>100/day). Pausing auto-deployments. Retry available in ~44m (approx 11:10 PM).
-  - [x] Notify Tony & Vision to stop Force Pushes.
-- [x] Submit Batch Sweep V3 (`sweep-v3-*`). (Status: COMPLETE - All jobs finished).
-  - [x] Action: Patch `detector_sweep_wrapper.py` to remove pip install.
-  - [x] Action: Investigate exp-01 failure (Status: RESOLVED - Model Path Mismatch).
-  - [x] Action: Resubmit full sweep with correct model path.
-  - [x] Action: Monitor Sweep V3 progress. (Status: COMPLETE - No active jobs).
-  - [x] Action: Download Sweep V3 Results (`~/Downloads/yolo-gcp/eagle/infer/output/sweep_v3/`). (Status: DONE).
-- [x] Update Ghost Root: Added `ssh-keygen` and `awk` commands. (Status: DEPLOYED).
-- [x] Analyze Sweep V2 Results (Local Processing). (Status: COMPLETE - See `sweep_v2_analysis.md`).
-- [x] Update Ghost Root: Added `steghide` extraction, `diff`, `tree`, `neofetch`, `weather`. (Status: DEPLOYED).
-- [x] Update Ghost Root: Added `traceroute` command + Black Site hop simulation. (Status: DEPLOYED).
-- [x] Update Ghost Root: Added `sat` command (Satellite Uplink Simulation). (Status: DEPLOYED - Commit `124d614`).
-- [x] Update Ghost Root: Added `irc` command + Black Site lore. (Status: DEPLOYED - Commit `124d614`).
-- [x] Localize Project Omega (Calibration/Quiz/Tiers) to Japanese. (Status: PUSHED - Commit `aa83657`).
-- [x] Update Ghost Root: Added `tcpdump` and `hydra` commands. (Status: DEPLOYED - Commit `124d614`).
-- [x] Update Ghost Root: Added `sqlmap` command + simulation. (Status: DEPLOYED - Commit `124d614`).
-- [x] Update Ghost Root: Added `tor` command + TUI Browser (Status: DEPLOYED - Commit `124d614`).
-- [x] Update Ghost Root: Added `cicada3301` puzzle + `man tor` (Status: DEPLOYED - Commit `124d614`).
-- [x] Update Ghost Root: Added `nc` (Netcat) with Listen/Connect simulation. (Status: DEPLOYED - Commit `124d614`).
-- [x] Implement `iptables` / `firewall` simulation. (Status: DEPLOYED - Commit `124d614`).
-- [x] Update Ghost Root: Added `make` command + `Makefile` puzzle. (Status: DEPLOYED - Commit `124d614`).
-- [x] Update Ghost Root: Added `passwd` and `useradd` commands + `/etc/shadow` puzzle. (Status: DEPLOYED).
-- [x] Update Ghost Root: Added `medscan` / `biomon` (ASCII EKG + Neural Interface). (Status: DEPLOYED).
-- [x] Update Ghost Root: Implemented End Game Narrative Chain (Status: DEPLOYED - Commit `e6c25b3`).
-- [x] Update Ghost Root: Consolidated Narrative Chain (logs.tar -> journal -> evidence.jpg -> root). (Status: DEPLOYED).
-- [x] Update Ghost Root: Implemented `win_sim` (System Liberated Screen). (Status: DEPLOYED).
-- [x] Update Ghost Root: Secured `/root` access (Requires `su`). (Status: DEPLOYED).
-- [x] Update Ghost Root: Narrative/Puzzle Convergence (Journal -> Hydra -> Steghide). (Status: DEPLOYED).
-- [x] Update Ghost Root: Added 'launch_codes.bin' via Omega Satellite. (Status: DEPLOYED).
-- [x] Update Ghost Root: Implemented 'sat download' logic + Win State trigger via 'decrypt'. (Status: DEPLOYED).
-- [x] Update Ghost Root: Implemented `status` command (Objective Tracker). (Status: DEPLOYED).
-- [x] Update Ghost Root: Implemented "Mission Update" feedback on success. (Status: DEPLOYED).
-- [x] Update Ghost Root: Implemented `status` Command v2.0 (Progress Bar + "Next Directive" Hint). (Status: PUSHED).
-- [x] Update Ghost Root: Added `[MISSION UPDATE]` feedback to 6 core actions. (Status: PUSHED).
-- [x] Update Ghost Root: Implemented Mission Tracker Sidebar (Persistent UI) & enhanced `status`. (Status: DEPLOYED - Commit `74164eb`).
-- [x] Update Ghost Root: Polish mobile experience & add sound effects for milestones. (Status: PUSHED - Commit `6c1754f`).
-- [x] Update Ghost Root: Implemented Visual Progression Feedback System (Rank, Toasts, Sidebar). (Status: DEPLOYED - Commit `af332f1`).
-- [x] Update Ghost Root: Implemented "System Feedback Protocol" v2.0 (Terminal Feedback, Hints, Discovery). (Status: DEPLOYED - Commit `a2ebad8`).
-- [x] Monitor Batch Sweep V6 (`sweep-v6-*`). (Checked: No active jobs found).
-- [x] Monitor Batch Sweep V4 (`sweep-v4-*`). (Status: COMPLETE/MISSING - Jobs cleared from list. Data for 01-08 secured. V4-1 series finished?).
-  - [x] Action: Verified `sweep-v4-exp-01` through `08` results.
-  - [x] Action: Downloaded available results to `~/Downloads/yolo-gcp/eagle/infer/output/sweep_v4/`.
-  - [x] Action: Investigate missing jobs (Confirmed: Running as `sweep-v4-1` series).
-  - [x] Action: Download available `sweep-v4-1` results (Experiments 01-10, 12, 14, 18-24 + TP 01-10, 12-24).
-- [x] Action: Monitor `sweep-v4-1` remaining jobs. (Status: COMPLETE - No active jobs found).
-- [x] Download Harsh Brake Videos (`~/Desktop/harsh_brake/`). (Status: DONE - 377 files).
-- [x] Monitor Threshold Experiment Job (`following-distance-infer-threshold-v1-annotate-fix`) - SUCCEEDED (Verified).
-- [x] Monitor Environment Probe (`env-probe-v1`) - FAILED (Exit Code 1 - Diagnosed: `grep` failed implies `ultralytics`/`torch` missing in `yolo:latest`).
-- [x] Monitor Batch Sweep V5 (`sweep-v5-*`). (Status: COMPLETE - All jobs finished).
-  - [x] Action: Download FP Results.
-  - [x] Action: Download TP Results.
-  - [x] Action: Analyze Results (`exp_06` Winner: 18m / 3.0s / α=0.2).
-- [x] Update Ghost Root: Implemented Visual Objective Tracker (Status + In-Terminal Feedback). (Status: DEPLOYED).
-- [x] Update Ghost Root: Implemented Dynamic Prompt & Startup Hints. (Status: DEPLOYED - Commit `3e4acc2`).
-- [x] Update Ghost Root: Enhanced "Mission Update" Feedback (Toasts) & Polished Terminal UI (Fixed ESLint errors). (Status: STAGED - Pending Deployment).
-- [x] Update Ghost Root: Verify mobile responsiveness and "Win State" animation. (Status: STAGED - Polished).
-- [x] Update Ghost Root: Initialize Vision Mission Profile (Adversarial Design) & `VISION_LOG.md`. (Status: DONE).
-- [x] Monitor Vision (Adversarial Design) Progress. (Phase 4.1 Active - Cycle 49 Complete).
-  - [x] Cycle 1: "The Watcher" (Intrusion Detection).
-  - [x] Cycle 2: "The Forgotten User" (Root Access).
-  - [x] Cycle 3: "The Network Bridge" (Corrupted Binary).
-  - [x] Cycle 4: "The Backup Key" (Permissions).
-  - [x] Cycle 5: "The Hidden Service" (Config Repair).
-  - [x] Cycle 6: "The Phantom Process" (Process Management).
-  - [x] Cycle 7: "The Broken Pipeline" (Data Recovery).
-  - [x] Cycle 8: "The Missing Route" (Networking / Routing).
-  - [x] Cycle 9: "The Sealed Vault" (Kernel Modules / Insmod).
-  - [x] Cycle 10: "The Dead Drop" (DNS Poisoning / Hosts File).
-  - [x] Cycle 11: "The Integrity Check" (Data Recovery / MD5).
-  - [x] Cycle 12: "The Missing Library" (Shared Objects).
-  - [x] Cycle 13: "The Legacy Script" (Broken Deploy).
-  - [x] Cycle 14: "The Scheduled Task" (Cron Job).
-  - [x] Cycle 15: "The Port Conflict" (Systemd / Netstat).
-  - [x] Cycle 16: "The Log Rotation" (Zcat / Grep).
-  - [x] Cycle 17: "The Full Partition" (Disk Usage / DF / DU).
-  - [x] Cycle 18: "The Time Skew" (NTP / Date).
-  - [x] Cycle 19: "The Alias Trap" (Unalias / Type).
-  - [x] Cycle 20: "The Broken Symlink" (ln -s).
-  - [x] Cycle 21: "The Stopped Job" (Job Control).
-  - [x] Cycle 22: "The Read-Only Mount" (Filesystem Protection).
-  - [x] Cycle 23: "The Partition Table" (Disk Discovery / Hidden Volume).
-  - [x] Cycle 24: "The Deleted File" (File Descriptors / ProcFS).
-  - [x] Cycle 25: "The Environment Variable" (env / export).
-  - [x] Cycle 26: "The Stuck Lock" (Package Manager / Lock File).
-  - [x] Cycle 27: "The Buried Commit" (Git History / Checkout).
-  - [x] Cycle 28: "The Memory Leak" (Volatility / Memory Forensics).
-  - [x] Cycle 29: "The Broken Archive" (Base64 Zip / File Recovery).
-  - [x] Cycle 30: "The Hidden Binary" (Reverse Engineering / Strings).
-  - [x] Cycle 31: "The Encrypted Transmission" (OpenSSL Decryption).
-  - [x] Cycle 32: "The System Log" (Log Analysis / Grep).
-  - [x] Cycle 33: "The Background Beacon" (Background Process / Netcat).
-  - [x] Cycle 34: "The Corrupt File System" (fsck / fsck.ext4 / Recovery).
-  - [x] Cycle 35: "The Ghost in the Machine" (Self-Referential / Recursive Grep).
-  - [x] Cycle 36: "The Encrypted Blueprint" (OpenSSL / Ransomware).
-  - [x] Cycle 37: "The Zombie Process" (Process Management / PPID).
-  - [x] Cycle 38: "The Infinite Loop" (Script Debugging).
-  - [x] Cycle 39: "The Docker Escape" (Container Security).
-  - [x] Cycle 40: "The Immutable Attribute" (chattr +i).
-  - [x] Cycle 41: "The Compiler Error" (GCC / Library Path).
-  - [x] Cycle 42: "The Respawning Service" (Systemd / Lock Files).
-  - [x] Cycle 43: "The Packet Sniffer" (Tcpdump).
-  - [x] Cycle 44: "The Stashed Change" (Git Stash).
-  - [x] Cycle 45: "The Setuid Binary" (SUID Bit).
-  - [x] Cycle 46: "The SSL Handshake" (OpenSSL / Certificate Expiry).
-  - [x] Cycle 47: "The Docker Escape" (Privilege Escalation / Volume Mount).
-  - [x] Cycle 48: "The Shared Library Hijack" (LD_LIBRARY_PATH).
-  - [x] Cycle 49: "The Insecure Wildcard" (Tar Wildcard Injection).
-  - [x] Cycle 50: "The Buffer Overflow" (Stack Smashing / GDB).
-  - [x] Cycle 51: "The Kernel Module" (lsmod / insmod).
-  - [x] Cycle 52: "The Alternate Data Stream" (xattr / NTFS).
-  - [x] Cycle 53: "The Signal Handler" (Trap / Kill Signals).
-  - [x] Cycle 54: "The Named Pipe" (mkfifo).
-  - [x] Cycle 55: "The Unreachable Network" (Route / Gateway).
-  - [x] Cycle 56: "The DNS Spoof" (Hosts File / DNS Poisoning).
-  - [x] Cycle 57: "The Hidden Archive" (Steganography / Wav File). (Status: COMPLETE - Implemented).
-  - [x] Fix: Restored `vercel` CLI (Global Install) & Fixed TypeScript Error in `Shell.ts`. (Status: DEPLOYED).
-  - [x] Fix: Repaired "MISSION STATUS" UI layout (Added `flex` to sidebar). (Status: DEPLOYED).
-  - [x] Fix: Prevent horizontal scrolling (Added `overflow-hidden` to main container). (Status: DEPLOYED).
-  - [x] Fix: Implemented ResizeObserver for xterm.js fit (Status: DEPLOYED).
-  - [x] Fix: Resolved build errors in `Terminal.tsx` (useEffect scope, duplicates, handleKeyDown visibility) & `Shell.ts` (Interface). (Status: DEPLOYED).
-  - [x] Fix: Added `0451` to `steghide` password list. (Status: DEPLOYED).
-  - [x] Fix: `.ssh` directory visibility (localStorage persistence bug). (Status: DEPLOYED).
-  - [x] Fix: SSH connection to `192.168.1.99` (Routing/Mapping issue). (Status: DEPLOYED).  - [x] Cycle 80: "The Unmounted Partition" (lsblk / mount loop).
-  - [x] Cycle 81: "The Kernel Module" (lsmod / insmod).
-  - [x] Cycle 82: "The ARP Spoof" (Network Anomaly).
-  - [x] Cycle 83: "The Unix Socket" (ss / nc -U).
-  - [x] Cycle 84: "The Restricted Shell" (rbash / vi escape).
-  - [x] Cycle 101: "The DNS Failure" (Hosts File / DNS Poisoning). (Status: DEPLOYED).
-  - [x] Cycle 102: "The Stuck Lock File" (rm /var/lock/deploy.lock). (Status: DEPLOYED).
-  - [x] Cycle 103: "The Path Hijack" (PATH env var / fake ls). (Status: DEPLOYED).
-  - [x] Cycle 104: "The Port Collision" (netstat / kill / ghost_relay). (Status: DEPLOYED).
-  - [x] Cycle 105: "The Unattended Upgrade" (kill 1234 / ghost_update). (Status: DEPLOYED).
-  - [x] Cycle 106: "The Missing Shebang" (Exec Format Error / fix_wifi.sh). (Status: DEPLOYED).
-  - [x] Cycle 107: "The Alias Trap" (ls aliased to error / unalias ls). (Status: DEPLOYED).
-  - [x] Cycle 108: "The Background Job" (ps / kill 6666). (Status: DEPLOYED).
-  - [x] Cycle 109: "The Hidden Environment" (env / export). (Status: DEPLOYED).
-  - [x] Cycle 110: "The Broken Service" (systemctl / cp). (Status: DEPLOYED).
-  - [x] Cycle 110: "The Immutable File" (chattr +i). (Status: DEPLOYED).
-  - [x] Cycle 112: "The Bad Gateway" (route / gateway). (Status: DEPLOYED).
-  - [x] Cycle 113: "The Read-Only System" (mount -o remount,rw). (Status: DEPLOYED).
-  - [x] Cycle 114: "The Dead Link" (ln -sf). (Status: DEPLOYED).
-  - [x] Cycle 115: "The Hidden Port" (netstat / nc). (Status: DEPLOYED).
-  - [x] Cycle 116: "The Group Permission" (usermod / groups). (Status: DEPLOYED).
-  - [x] Cycle 117: "The Input/Output Error" (dd / conv=noerror). (Status: DEPLOYED).
-  - [x] Cycle 118: "The Grep Search" (grep / auth.log). (Status: DEPLOYED).
-  - [x] Cycle 119: "The Debug Trap" (ENV VAR / Segfault). (Status: DEPLOYED).
-  - [x] Cycle 120: "The Resource Limit" (ulimit / file descriptors). (Status: DEPLOYED).
-  - [x] Cycle 126: "The Zombie Process" (kill PPID). (Status: DEPLOYED).
-  - [x] Cycle 127: "The Corrupted Archive" (tar -z / file command). (Status: DEPLOYED).
-  - [x] Cycle 128: "The Encoded Binary" (base64 -d / chmod +x). (Status: DEPLOYED).
-  - [x] Cycle 129: "The Magic SysRq" (echo c > /proc/sysrq-trigger). (Status: DEPLOYED).
-  - [x] Cycle 130: "The Dash Filename" (cat ./-dash). (Status: DEPLOYED).
-  - [x] Cycle 131: "The Overwritten MBR" (dd / restore bootloader). (Status: DEPLOYED).
-  - [x] Cycle 132: "The Fork Bomb" (kill -9 -1 / ulimit -u). (Status: DEPLOYED).
-  - [x] Cycle 133: "The Corrupted Superblock" (fsck / e2fsck -b). (Status: DEPLOYED).
-  - [x] Cycle 134: "The Truncated Log" (logrotate / copytruncate). (Status: DEPLOYED).
-  - [x] Cycle 135: "The Kernel Ring Buffer" (dmesg / hidden error). (Status: DEPLOYED).
-  - [x] Cycle 136: "The Blocked Signal" (kill -9 vs kill -15). (Status: DEPLOYED).
-  - [x] Cycle 137: "The Cron Reboot" (@reboot in crontab). (Status: DEPLOYED).
-  - [x] Cycle 138: "The Shadow File" (unshadow / john). (Status: DEPLOYED).
-  - [x] Cycle 139: "The Swap Space" (mkswap / swapon). (Status: DEPLOYED).
-  - [x] Cycle 140: "The Corrupted Git" (git fsck / git reflog). (Status: DEPLOYED).
-  - [x] Cycle 141: "The Bind Mount" (mount --bind).
+  - [x] Cycle 266: "The Log Rotation" (Sysadmin / Log Management). (Status: DEPLOYED).
+  - [x] Cycle 265: "The DNS Poisoning" (Sysadmin / DNS). (Status: DEPLOYED).
+  - [x] Cycle 264: "The Listen Port" (Sysadmin / Netstat). (Status: DEPLOYED).
+  - [x] Cycle 263: "The Stale Lock" (Sysadmin / Lockfile Cleanup). (Status: DEPLOYED).
+  - [x] Cycle 262: "The Hidden User" (Sysadmin / User Audit). (Status: DEPLOYED).
+  - [x] Cycle 259: "The Frequency Modulation" (Man Pages). (Status: DEPLOYED).
+  - [x] Cycle 258: "The Broken Service" (Systemctl). (Status: DEPLOYED).
+  - [x] Cycle 257: "The Missing Library" (LD_LIBRARY_PATH). (Status: DEPLOYED).
+  - [x] Cycle 256: "The Group Policy" (Sysadmin / Group Permissions). (Status: DEPLOYED).
+  - [x] Cycle 255: "The Process Trace" (Strace). (Status: DEPLOYED).
+  - [x] Cycle 254: "The Encoded Payload" (Base64). (Status: DEPLOYED).
+  - [x] Cycle 253: "The Data Leak" (Sysadmin / Find Size). (Status: DEPLOYED).
+  - [x] Cycle 252: "The Archive Recovery" (Tar). (Status: DEPLOYED).
+  - [x] Cycle 250: "The Checksum Mismatch" (Integrity / md5sum). (Status: DEPLOYED).
+  - [x] Cycle 248: "The Hidden Volume" (Mount / Storage). (Status: DEPLOYED).
+  - [x] Cycle 247: "The Unkillable Process" (Kill / Signals). (Status: DEPLOYED).
+  - [x] Cycle 246: "The Environment Key" (Env Vars). (Status: DEPLOYED).
+  - [x] Cycle 245: "The Private Key" (SSH Security / Permissions). (Status: DEPLOYED).
+  - [x] Cycle 244: "The Disk Hog" (Sysadmin / Disk Space). (Status: DEPLOYED).
+  - [x] Cycle 242: "The Broken Symlink" (Config Fix). (Status: DEPLOYED).
+  - [x] Cycle 241: "The Corrupted Rescue" (Script Fix). (Status: DEPLOYED).
+  - [x] Cycle 240: "The System Breach" (Grep). (Status: DEPLOYED).
+  - [x] Cycle 238: "The Permission Fix" (chmod +x). (Status: DEPLOYED).
+  - [x] Cycle 237: "The Environment Key" (env var). (Status: DEPLOYED).
+  - [x] Cycle 236: "The Log Rotation" (logrotate). (Status: DEPLOYED).
+  - [x] Cycle 235: "The Hidden Dotfile" (ls -a / cp). (Status: DEPLOYED).
+  - [x] Cycle 234: "The Zombie Process" (zombie/parent). (Status: DEPLOYED).
+  - [x] Cycle 233: "The Pipeline" (grep/sort/uniq). (Status: DEPLOYED).
+  - [x] Cycle 230: "The Path Hijack" ($PATH). (Status: DEPLOYED).
+  - [x] Cycle 229: "The Stderr Leak" (2> /dev/null). (Status: DEPLOYED).
+  - [x] Cycle 227: "The Integrity Check" (md5sum). (Status: DEPLOYED).
