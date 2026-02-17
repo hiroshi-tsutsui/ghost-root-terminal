@@ -1318,6 +1318,52 @@ export const loadSystemState = () => {
         }
     }
 
+    // Cycle 260 Init (The Persistence Layer)
+    if (!VFS['/var/spool/cron/crontabs/root']) {
+        if (!VFS['/var/spool']) {
+             VFS['/var/spool'] = { type: 'dir', children: ['cron'] };
+             const varNode = getNode('/var');
+             if (varNode && varNode.type === 'dir' && !varNode.children.includes('spool')) varNode.children.push('spool');
+        }
+        if (!VFS['/var/spool/cron']) {
+             VFS['/var/spool/cron'] = { type: 'dir', children: ['crontabs'] };
+             const spool = getNode('/var/spool');
+             if (spool && spool.type === 'dir' && !spool.children.includes('cron')) spool.children.push('cron');
+        }
+        if (!VFS['/var/spool/cron/crontabs']) {
+             VFS['/var/spool/cron/crontabs'] = { type: 'dir', children: [] };
+             const cron = getNode('/var/spool/cron');
+             if (cron && cron.type === 'dir' && !cron.children.includes('crontabs')) cron.children.push('crontabs');
+        }
+
+        VFS['/var/spool/cron/crontabs/root'] = {
+            type: 'file',
+            content: '*/1 * * * * /usr/bin/backdoor_v3\n# MALICIOUS_PERSISTENCE_DETECTED\n# FLAG: GHOST_ROOT{CR0NT4B_CL3ANUP_SUCC3SS}',
+            permissions: '0600'
+        };
+        const tabs = getNode('/var/spool/cron/crontabs');
+        if (tabs && tabs.type === 'dir' && !tabs.children.includes('root')) tabs.children.push('root');
+
+        VFS['/usr/bin/backdoor_v3'] = {
+            type: 'file',
+            content: '[BINARY] [MALWARE] [RUNNING]',
+            permissions: '0755'
+        };
+        const bin = getNode('/usr/bin');
+        if (bin && bin.type === 'dir' && !bin.children.includes('backdoor_v3')) bin.children.push('backdoor_v3');
+
+        if (!VFS['/home/ghost/persistence_alert.log']) {
+            VFS['/home/ghost/persistence_alert.log'] = {
+                type: 'file',
+                content: '[ALERT] User "root" has unauthorized scheduled tasks.\n[DIAGNOSTIC] Process "backdoor_v3" respawns immediately after kill.\n[ACTION] Check root\'s crontab (crontab -l) and remove the entry (crontab -r).'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('persistence_alert.log')) {
+                home.children.push('persistence_alert.log');
+            }
+        }
+    }
+
     // Cycle 131 Init (The Overwritten MBR)
     if (!VFS['/var/backups/boot.mbr']) {
       // Create backup directory if needed
@@ -5124,6 +5170,32 @@ export const tabCompletion = (cwd: string, inputBuffer: string): { matches: stri
             const home = getNode('/home/ghost');
             if (home && home.type === 'dir' && !home.children.includes('service_alert.txt')) {
                 home.children.push('service_alert.txt');
+            }
+        }
+    }
+
+    // Cycle 259 Init (The Frequency Modulation)
+    if (!VFS['/usr/bin/tune-receiver']) {
+        const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+        const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+
+        ensureDir('/usr'); ensureDir('/usr/bin'); link('/usr', 'bin');
+
+        VFS['/usr/bin/tune-receiver'] = {
+            type: 'file',
+            content: '[BINARY_ELF_X86_64] [SDR_INTERFACE_V2]\n[STATUS] LISTENING\n',
+            permissions: '0755'
+        };
+        link('/usr/bin', 'tune-receiver');
+
+        if (!VFS['/home/ghost/sdr_log.txt']) {
+            VFS['/home/ghost/sdr_log.txt'] = {
+                type: 'file',
+                content: '[ALERT] Unknown signal detected on emergency band.\n[FREQ] 404.0 MHz\n[MODULATION] Unknown (Garbled Audio)\n[ACTION] Use "tune-receiver" to lock onto the signal.\n[HINT] Check "man tune-receiver" for correct demodulation mode for encrypted channels.'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('sdr_log.txt')) {
+                home.children.push('sdr_log.txt');
             }
         }
     }
@@ -11450,6 +11522,7 @@ Type "status" for mission objectives.`;
           case 'docker': output = 'NAME\n\tdocker - Docker container management\n\nSYNOPSIS\n\tdocker [OPTIONS] COMMAND\n\nDESCRIPTION\n\tManage containers, images, and volumes.\n\nCOMMANDS\n\tps\tList containers\n\tinspect\tReturn low-level information on Docker objects\n\tlogs\tFetch the logs of a container\n\tstop\tStop one or more running containers'; break;
           case 'signal_jammer': output = 'NAME\n\tsignal_jammer - RF disruption tool\n\nSYNOPSIS\n\tsignal_jammer --freq <MHz> --gain <dB>\n\nDESCRIPTION\n\tGenerates broad-spectrum noise to disrupt radio communications.\n\nOPERATIONAL NOTES\n\tStandard Surveillance Drones (Model XJ-9) operate on 433.92 MHz.\n\tRequired Gain for effective jamming: 90 dB.\n\nWARNING\n\tUnauthorized jamming is a violation of Federal Communication Laws.'; break;
           case 'net-splice': output = 'NAME\n\tnet-splice - Advanced Network Tunneling Tool\n\nSYNOPSIS\n\tnet-splice --target <IP> --port <PORT> --mode <MODE>\n\nDESCRIPTION\n\tEstablishes a covert splice into the target network infrastructure.\n\nOPTIONS\n\t--target <IP>\n\t\tThe IP address of the target node.\n\n\t--port <PORT>\n\t\tThe destination port (default: 80, secure: 443).\n\n\t--mode <MODE>\n\t\tOperation mode. Available modes:\n\t\t- standard: Normal operation (Logged)\n\t\t- fast: Optimized for speed (Unreliable)\n\t\t- silent: Stealth mode (No logs)\n\nEXAMPLES\n\tnet-splice --target 192.168.1.1 --port 80 --mode standard'; break;
+          case 'tune-receiver': output = 'NAME\n\ttune-receiver - Software Defined Radio (SDR) Interface\n\nSYNOPSIS\n\ttune-receiver --freq <MHz> --mode <MODE>\n\nDESCRIPTION\n\tTunes the internal SDR to listen for covert broadcasts.\n\nOPTIONS\n\t--freq <MHz>\n\t\tTarget frequency.\n\t\tStandard uplink frequency: 104.5 MHz.\n\t\tEmergency override frequency: 404.0 MHz.\n\n\t--mode <MODE>\n\t\tDemodulation mode.\n\t\tModes: AM, FM, USB, LSB.\n\t\tNote: Encrypted channels require "USB" (Upper Side Band).\n\nEXAMPLES\n\ttune-receiver --freq 104.5 --mode FM'; break;
           default: output = `No manual entry for ${page}`;
         }
       }
@@ -19306,6 +19379,42 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
             }
         } else {
              output = `Failed to ${action} ${service}: Unit ${service} not found.`;
+        }
+        break;
+    }
+
+    case 'tune-receiver':
+    case './tune-receiver':
+    case '/usr/bin/tune-receiver': {
+        const hasFreq = args.includes('--freq');
+        const hasMode = args.includes('--mode');
+        
+        if (!hasFreq || !hasMode) {
+            output = 'tune-receiver: missing required arguments.\nUsage: tune-receiver --freq <MHz> --mode <MODE>\nSee "man tune-receiver" for operating parameters.';
+        } else {
+            const freqIdx = args.indexOf('--freq');
+            const modeIdx = args.indexOf('--mode');
+            const freq = args[freqIdx + 1];
+            const mode = args[modeIdx + 1];
+            
+            if ((freq === '404' || freq === '404.0') && mode === 'USB') {
+                 if (!VFS['/var/run/cycle259_solved']) {
+                     VFS['/var/run/cycle259_solved'] = { type: 'file', content: 'TRUE' };
+                     const runDir = getNode('/var/run');
+                     if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle259_solved')) {
+                         runDir.children.push('cycle259_solved');
+                     }
+                     output = `[SDR] Tuning to ${freq} MHz (USB)...\n[SIGNAL] LOCK ACQUIRED.\n[DECODING] ...\n[MSG] "Emergency Broadcast: System Compromised."\nFLAG: GHOST_ROOT{R4D10_S1L3NC3_BR0K3N}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SIGNAL INTERCEPTED.\x1b[0m`;
+                 } else {
+                     output = `[SDR] Tuning to ${freq} MHz (USB)...\n[SIGNAL] LOCK ACQUIRED.\nFLAG: GHOST_ROOT{R4D10_S1L3NC3_BR0K3N}`;
+                 }
+            } else if (freq === '404' || freq === '404.0') {
+                 output = `[SDR] Tuning to ${freq} MHz (${mode})...\n[SIGNAL] Detected carrier wave, but audio is garbled.\n[HINT] Encrypted channels require Upper Side Band (USB).`;
+            } else if (freq === '104.5') {
+                 output = `[SDR] Tuning to 104.5 MHz (${mode})...\n[SIGNAL] Playing: "Lo-Fi Beats to Hack To" (Public Broadcast).`;
+            } else {
+                 output = `[SDR] Tuning to ${freq} MHz (${mode})...\n[SIGNAL] Static...`;
+            }
         }
         break;
     }

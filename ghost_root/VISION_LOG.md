@@ -1,3 +1,5 @@
+# VISION LOG
+
 ## Cycle 240: The System Breach (Grep)
 - **Date:** 2026-02-17
 - **Sector:** /var/log/firewall.log
@@ -10,4 +12,130 @@
 - **Sector:** /usr/local/bin/rescue_mission.sh
 - **Type:** Sysadmin / Binary Corruption
 - **Mechanic:** Script fails with syntax error. User must read the script to find the rescue code and execute manually.
+- **Status:** DEPLOYED
+
+## Cycle 242: The Broken Symlink (Config Fix)
+- **Date:** 2026-02-17
+- **Sector:** /usr/local/bin/fix_config
+- **Type:** Sysadmin / Symlink Repair
+- **Mechanic:** Server config is missing. User must link `/etc/ghost_server/server.conf` to `/var/backups/ghost_server/server.conf.bak`.
+- **Status:** DEPLOYED
+
+## Cycle 243: The Port Scan (Netstat)
+- **Date:** 2026-02-17
+- **Sector:** /usr/bin/hidden_listener
+- **Type:** Sysadmin / Network Analysis
+- **Mechanic:** Rogue process on PID 54321. User must `netstat -tulpn` to find port, then `nc localhost 54321` to access.
+- **Status:** DEPLOYED
+
+## Cycle 244: The Disk Hog (Disk Usage)
+- **Date:** 2026-02-17
+- **Sector:** /var/log/kernel_panic.dump
+- **Type:** Sysadmin / Disk Space
+- **Mechanic:** Upload fails due to disk full. User must use `du -sh` to find 50GB log file and `rm` it.
+- **Status:** DEPLOYED
+
+## Cycle 245: The Private Key (Permissions)
+- **Date:** 2026-02-17
+- **Sector:** /home/ghost/.ssh/id_rsa_vault
+- **Type:** Sysadmin / SSH Security
+- **Mechanic:** SSH key for `10.10.99.2` has `0644` permissions. User must `chmod 600` it.
+- **Status:** DEPLOYED
+
+## Cycle 246: The Environment Key (Env Vars)
+- **Date:** 2026-02-17
+- **Sector:** /usr/local/bin/access_gate
+- **Type:** Sysadmin / Environment Variables
+- **Mechanic:** Binary requires `GATE_KEY` env var to be set. User must `export GATE_KEY="OPEN_SESAME_V2"` to proceed.
+- **Status:** DEPLOYED
+
+## Cycle 247: The Unkillable Process (Signal Handling)
+- **Date:** 2026-02-17
+- **Sector:** /bin/hal_9000
+- **Type:** Sysadmin / Process Management
+- **Mechanic:** Process ignores SIGTERM (default kill). User must use `kill -9` to force shutdown.
+- **Status:** DEPLOYED
+
+## Cycle 248: The Hidden Volume (Mount)
+- **Date:** 2026-02-17
+- **Sector:** /dev/sdb1
+- **Type:** Sysadmin / Storage Management
+- **Mechanic:** Unmounted volume detected. User must create a mount point (`mkdir /mnt/data`) and mount the device (`mount /dev/sdb1 /mnt/data`) to access secure data.
+- **Status:** DEPLOYED
+
+## Cycle 249: The Log Overflow (Disk Usage II)
+- **Date:** 2026-02-17
+- **Sector:** /var/log/nginx
+- **Type:** Sysadmin / Disk Management
+- **Mechanic:** Root partition full (100%). User must use `du` to identify massive log file (`error.log.1`) and remove it (`rm`).
+- **Status:** DEPLOYED
+
+## Cycle 250: The Checksum Mismatch (Integrity)
+- **Date:** 2026-02-17
+- **Sector:** /var/data
+- **Type:** Sysadmin / Integrity Check
+- **Mechanic:** Three data dumps exist (`dump_v1.bin`, `dump_v2.bin`, `dump_v3.bin`), but only one matches the `checksum.md5`. User must run `md5sum` to find the valid file and extract the flag.
+- **Status:** DEPLOYED
+
+## Cycle 251: The Scheduled Task (Cron)
+- **Date:** 2026-02-17
+- **Sector:** /etc/crontab
+- **Type:** Sysadmin / Automation
+- **Mechanic:** Maintenance script failed. User must read `/etc/crontab` to find the required flag (`--force-override`) and manually execute the script.
+- **Status:** DEPLOYED
+
+## Cycle 252: The Archive Recovery (Tar)
+- **Date:** 2026-02-17
+- **Sector:** /var/backups/project_titan.tar.gz
+- **Type:** Sysadmin / Archive Management (Tar)
+- **Mechanic:** Critical data archived. User must use `tar -xzf project_titan.tar.gz` to extract `blueprint.txt`.
+- **Status:** DEPLOYED
+
+## Cycle 253: The Data Leak (Find Size)
+- **Date:** 2026-02-17
+- **Sector:** /var/data/leak
+- **Type:** Sysadmin / File System Analysis (Find)
+- **Mechanic:** Massive data leak hidden among small files. User must use `find /var/data/leak -size +1M` to locate the 1.5MB evidence file.
+- **Status:** DEPLOYED
+
+## Cycle 254: The Encoded Payload (Base64)
+- **Date:** 2026-02-17
+- **Sector:** /home/ghost/payload.b64
+- **Type:** Sysadmin / Data Decoding
+- **Mechanic:** User receives an encrypted payload. Must use `base64 -d payload.b64` to decode it and retrieve the flag.
+- **Status:** DEPLOYED
+
+## Cycle 256: The Group Policy (Permissions)
+- **Date:** 2026-02-17
+- **Sector:** /usr/local/bin/deploy_weapon
+- **Type:** Sysadmin / Group Management
+- **Mechanic:** Binary requires membership in `black_ops` group. User must use `usermod -aG black_ops ghost`.
+- **Status:** DEPLOYED
+
+## Cycle 257: The Missing Library (LD_LIBRARY_PATH)
+- **Date:** 2026-02-17
+- **Sector:** /usr/local/bin/ghost_scanner
+- **Type:** Sysadmin / Shared Libraries
+- **Mechanic:** Binary fails to load shared library (`libghost.so`). User must find it in `/opt/ghost/lib` and `export LD_LIBRARY_PATH=/opt/ghost/lib`.
+- **Status:** DEPLOYED
+
+## Cycle 258: The Broken Service (Systemctl)
+- **Date:** 2026-02-17
+- **Sector:** /etc/systemd/system/firewall.service
+- **Type:** Sysadmin / Service Management
+- **Mechanic:** Firewall service is dead. User must diagnose missing config (`/etc/firewall/rules.conf`), copy it from defaults, and start the service (`systemctl start firewall`).
+- **Status:** DEPLOYED
+
+## Cycle 259: The Frequency Modulation (Man Pages)
+- **Date:** 2026-02-17
+- **Sector:** /usr/bin/tune-receiver
+- **Type:** Sysadmin / RTFM (Man Pages)
+- **Mechanic:** Signal on 404 MHz is unintelligible. User must read `man tune-receiver` to discover the correct demodulation mode (USB) for encrypted channels.
+- **Status:** DEPLOYED
+
+## Cycle 260: The Persistence Layer (Crontab)
+- **Date:** 2026-02-17
+- **Sector:** /var/spool/cron/crontabs/root
+- **Type:** Sysadmin / Automation (Crontab)
+- **Mechanic:** Root user has a malicious cron job (`backdoor_v3`) running every minute. User must list (`crontab -l`) to find it and remove it (`crontab -r`).
 - **Status:** DEPLOYED
