@@ -5215,6 +5215,59 @@ export const tabCompletion = (cwd: string, inputBuffer: string): { matches: stri
         };
         link('/var/spool/cron/crontabs', 'root');
     }
+
+    // Cycle 263 Init (The Stale Lock)
+    if (!VFS['/var/run/reactor.lock']) {
+        if (!VFS['/var/run']) {
+             if (!VFS['/var']) VFS['/var'] = { type: 'dir', children: [] };
+             VFS['/var/run'] = { type: 'dir', children: [] };
+             const v = getNode('/var');
+             if (v && v.type === 'dir' && !v.children.includes('run')) v.children.push('run');
+        }
+        
+        VFS['/var/run/reactor.lock'] = {
+            type: 'file',
+            content: '1337', // Stale PID
+            permissions: '0644'
+        };
+        const run = getNode('/var/run');
+        if (run && run.type === 'dir' && !run.children.includes('reactor.lock')) {
+            run.children.push('reactor.lock');
+        }
+
+        // Create the binary
+        if (!VFS['/usr/local/bin']) {
+             if (!VFS['/usr/local']) {
+                 VFS['/usr/local'] = { type: 'dir', children: ['bin'] };
+                 const u = getNode('/usr');
+                 if (u && u.type === 'dir' && !u.children.includes('local')) u.children.push('local');
+             }
+             VFS['/usr/local/bin'] = { type: 'dir', children: [] };
+             const l = getNode('/usr/local');
+             if (l && l.type === 'dir' && !l.children.includes('bin')) l.children.push('bin');
+        }
+        VFS['/usr/local/bin/start-reactor'] = {
+            type: 'file',
+            content: '[BINARY_ELF_X86_64] [REACTOR_CONTROL]\n[CHECK] /var/run/reactor.lock\n',
+            permissions: '0755'
+        };
+        const bin = getNode('/usr/local/bin');
+        if (bin && bin.type === 'dir' && !bin.children.includes('start-reactor')) {
+            bin.children.push('start-reactor');
+        }
+
+        // Hint
+        if (!VFS['/home/ghost/reactor_error.log']) {
+            VFS['/home/ghost/reactor_error.log'] = {
+                type: 'file',
+                content: '[ERROR] Failed to start reactor.\n[REASON] Process already running (PID 1337).\n[DIAGNOSTIC] Lock file exists: /var/run/reactor.lock\n[ACTION] If the process is dead, remove the lock file to proceed.'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('reactor_error.log')) {
+                home.children.push('reactor_error.log');
+            }
+        }
+    }
 };
 
 export const processCommand = (cwd: string, commandLine: string, stdin?: string): CommandResult => {
@@ -5222,6 +5275,25 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
 // export const execute = processCommand;
   const cmdTokens = commandLine.trim().split(/\s+/);
   const cmdBase = cmdTokens[0];
+
+  // Cycle 263 (The Stale Lock)
+  if (cmdBase === 'start-reactor' || cmdBase === './start-reactor' || cmdBase === '/usr/local/bin/start-reactor') {
+        const lockPath = '/var/run/reactor.lock';
+        if (VFS[lockPath]) {
+             return { output: `[ERROR] Reactor startup failed.\n[FATAL] Lock file found: ${lockPath}\n[PID] 1337 (Stale?)\n[ACTION] Remove the lock file if the process is not running.`, newCwd: cwd };
+        } else {
+             if (!VFS['/var/run/reactor_solved']) {
+                 VFS['/var/run/reactor_solved'] = { type: 'file', content: 'TRUE' };
+                 // Ensure directory exists
+                 const runDir = getNode('/var/run');
+                 if (runDir && runDir.type === 'dir' && !runDir.children.includes('reactor_solved')) {
+                     runDir.children.push('reactor_solved');
+                 }
+                 return { output: `[REACTOR] Initializing core sequence...\n[CHECK] Lock file cleared.\n[SUCCESS] Reactor Online.\nFLAG: GHOST_ROOT{L0CKF1L3_R3M0V3D_S4F3LY}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: STALE LOCK REMOVED.\x1b[0m`, newCwd: cwd };
+             }
+             return { output: `[REACTOR] Initializing core sequence...\n[CHECK] Lock file cleared.\n[SUCCESS] Reactor Online.\nFLAG: GHOST_ROOT{L0CKF1L3_R3M0V3D_S4F3LY}`, newCwd: cwd };
+        }
+  }
 
   // Cycle 249 Init (The Disk Hog)
   if (!VFS['/home/ghost/disk_space_alert.txt']) {
@@ -8340,6 +8412,51 @@ int main(int argc, char* argv[]) {
       }
   }
 
+  // Cycle 261 Init (The Data Extraction)
+  if (!VFS['/var/log/access.csv']) {
+      VFS['/var/log/access.csv'] = {
+          type: 'file',
+          content: '',
+          permissions: '0644'
+      };
+      // Populate content
+      let c = 'TIMESTAMP;USER;ACTION;RESOURCE\n';
+      const resources = ['/home/ghost', '/usr/bin', '/etc/passwd', '/var/log', '/tmp', '/opt/libs'];
+      for(let i=0; i<100; i++) {
+          c += `2026-02-17;user${i};READ;${resources[Math.floor(Math.random()*resources.length)]}\n`;
+      }
+      for(let i=0; i<50; i++) {
+          c += `2026-02-17;admin;WRITE;/hidden/vault_v2\n`;
+      }
+      (VFS['/var/log/access.csv'] as any).content = c;
+      
+      const log = getNode('/var/log');
+      if (log && log.type === 'dir' && !log.children.includes('access.csv')) log.children.push('access.csv');
+
+      if (!VFS['/home/ghost/csv_alert.txt']) {
+          VFS['/home/ghost/csv_alert.txt'] = {
+              type: 'file',
+              content: '[ALERT] Access Log Anomaly.\n[GOAL] Identify the most frequently accessed resource.\n[DATA] /var/log/access.csv (Delimiter is ";")\n[HINT] cut -d";" -f4 | sort | uniq -c | sort -nr'
+          };
+          const home = getNode('/home/ghost');
+          if (home && home.type === 'dir' && !home.children.includes('csv_alert.txt')) home.children.push('csv_alert.txt');
+      }
+  }
+  
+  // Cycle 261 Solution Check (secure_vault)
+  if (cmdBase === 'secure_vault') {
+      const args = commandLine.trim().split(/\s+/).slice(1);
+      if (args[0] === '--unlock' && args[1] === '/hidden/vault_v2') {
+           if (!VFS['/var/run/cycle261_solved']) {
+               VFS['/var/run/cycle261_solved'] = { type: 'file', content: 'TRUE' };
+               return { output: '[VAULT] Resource Verified.\n[SUCCESS] Vault Unlocked.\nFLAG: GHOST_ROOT{CUT_CMD_D3L1M1T3R_H3R0}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: DATA EXTRACTED.\x1b[0m', newCwd: cwd };
+           }
+           return { output: '[VAULT] Vault is open.\nFLAG: GHOST_ROOT{CUT_CMD_D3L1M1T3R_H3R0}', newCwd: cwd };
+      } else if (args[0] === '--unlock') {
+           return { output: '[VAULT] Access Denied. Incorrect Resource ID.', newCwd: cwd };
+      }
+      return { output: 'Usage: secure_vault --unlock <RESOURCE_ID>', newCwd: cwd };
+  }
 
 
   // 1. Handle Piping (|) recursively
@@ -9429,6 +9546,55 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
         }
         break;
     }
+    case 'cut': {
+        const args = parts.slice(1);
+        let delimiter = '\t';
+        let field = 1;
+        let file = '';
+        
+        // Naive arg parsing
+        for (let i = 0; i < args.length; i++) {
+            if (args[i].startsWith('-d')) {
+                delimiter = args[i].substring(2);
+                if (!delimiter && args[i+1]) { delimiter = args[i+1]; i++; }
+                // Clean quotes
+                if ((delimiter.startsWith('"') && delimiter.endsWith('"')) || (delimiter.startsWith("'") && delimiter.endsWith("'"))) {
+                    delimiter = delimiter.slice(1, -1);
+                }
+            } else if (args[i].startsWith('-f')) {
+                const fVal = args[i].substring(2) || args[i+1];
+                field = parseInt(fVal);
+                if (args[i] === '-f') i++;
+            } else {
+                file = args[i];
+            }
+        }
+        
+        let content = '';
+        if (stdin) {
+            content = stdin;
+        } else if (file) {
+            const node = getNode(resolvePath(cwd, file));
+            if (!node || node.type !== 'file') {
+                output = `cut: ${file}: No such file or directory`;
+                return finalize(output, newCwd);
+            }
+            content = (node as any).content || '';
+        } else {
+            output = 'cut: missing file operand';
+            return finalize(output, newCwd);
+        }
+        
+        const lines = content.split('\n');
+        const result = lines.map(line => {
+            if (!line) return '';
+            const parts = line.split(delimiter);
+            return parts[field - 1] || '';
+        }).join('\n');
+        
+        output = result;
+        break;
+    }
     case 'grep': {
        let pattern = '';
        let content = '';
@@ -9807,9 +9973,13 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
     }
     case 'sort': {
        let content = '';
-       if (args.length > 0) {
-          const node = getNode(resolvePath(cwd, args[0]));
-          if (node && node.type === 'file') content = node.content;
+       const fileArgs = args.filter(a => !a.startsWith('-'));
+       const isReverse = args.some(a => a.includes('r'));
+       const isNumeric = args.some(a => a.includes('n'));
+
+       if (fileArgs.length > 0) {
+          const node = getNode(resolvePath(cwd, fileArgs[0]));
+          if (node && node.type === 'file') content = (node as any).content || '';
        } else if (stdin !== undefined) {
           content = stdin;
        } else {
@@ -9817,16 +9987,29 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
           return finalize(output, newCwd);
        }
        
-       const lines = content.split('\n');
-       lines.sort();
+       let lines = content.split('\n').filter(l => l !== '');
+       lines.sort((a, b) => {
+           if (isNumeric) {
+               const numA = parseInt(a.trim().split(/\s+/)[0]) || 0;
+               const numB = parseInt(b.trim().split(/\s+/)[0]) || 0;
+               return numA - numB;
+           }
+           return a.localeCompare(b);
+       });
+       
+       if (isReverse) lines.reverse();
+       
        output = lines.join('\n');
        break;
     }
     case 'uniq': {
        let content = '';
-       if (args.length > 0) {
-          const node = getNode(resolvePath(cwd, args[0]));
-          if (node && node.type === 'file') content = node.content;
+       const fileArgs = args.filter(a => !a.startsWith('-'));
+       const isCount = args.some(a => a.includes('c'));
+
+       if (fileArgs.length > 0) {
+          const node = getNode(resolvePath(cwd, fileArgs[0]));
+          if (node && node.type === 'file') content = (node as any).content || '';
        } else if (stdin !== undefined) {
           content = stdin;
        } else {
@@ -9834,11 +10017,26 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
           return finalize(output, newCwd);
        }
        
-       const lines = content.split('\n');
-       const uniqueLines = lines.filter((line, index) => {
-           return index === 0 || line !== lines[index - 1];
-       });
-       output = uniqueLines.join('\n');
+       const lines = content.split('\n').filter(l => l !== '');
+       
+       const result = [];
+       if (lines.length > 0) {
+           let prev = lines[0];
+           let count = 1;
+           
+           for (let i = 1; i < lines.length; i++) {
+               if (lines[i] === prev) {
+                   count++;
+               } else {
+                   result.push(isCount ? `${String(count).padStart(4)} ${prev}` : prev);
+                   prev = lines[i];
+                   count = 1;
+               }
+           }
+           result.push(isCount ? `${String(count).padStart(4)} ${prev}` : prev);
+       }
+       
+       output = result.join('\n');
        break;
     }
     case 'rev': {

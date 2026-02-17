@@ -139,3 +139,24 @@
 - **Type:** Sysadmin / Automation (Crontab)
 - **Mechanic:** Root user has a malicious cron job (`backdoor_v3`) running every minute. User must list (`crontab -l`) to find it and remove it (`crontab -r`).
 - **Status:** DEPLOYED
+
+## Cycle 261: The Data Extraction (Cut/Awk)
+- **Date:** 2026-02-17
+- **Sector:** /var/log/access.csv
+- **Type:** Sysadmin / Data Pipeline
+- **Mechanic:** User must identify the resource accessed frequently. Requires `cut -d';' -f4 | sort | uniq -c | sort -nr`.
+- **Status:** DEPLOYED
+
+## Cycle 262: The Hidden User (/etc/passwd)
+- **Date:** 2026-02-17
+- **Sector:** /usr/sbin/userdel
+- **Type:** Sysadmin / User Auditing
+- **Mechanic:** Unauthorized user `sys_backup` found in `/etc/passwd` with UID 0. User must identify and remove it with `userdel`.
+- **Status:** DEPLOYED
+
+## Cycle 263: The Stale Lock (Lockfile)
+- **Date:** 2026-02-17
+- **Sector:** /usr/local/bin/start-reactor
+- **Type:** Sysadmin / Process Management
+- **Mechanic:** Service fails due to stale lock file (`/var/run/reactor.lock`). User must identify the PID (1337) is dead and remove the lock.
+- **Status:** DEPLOYED
