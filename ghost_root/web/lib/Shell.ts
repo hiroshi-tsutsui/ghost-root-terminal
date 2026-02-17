@@ -1188,6 +1188,49 @@ export const loadSystemState = () => {
         }
     }
 
+    // Cycle 246 Init (The Environment Key)
+    if (!VFS['/usr/local/bin/access_gate']) {
+        // Ensure path
+        if (!VFS['/usr/local']) {
+             VFS['/usr/local'] = { type: 'dir', children: ['bin'] };
+             const usr = getNode('/usr');
+             if (usr && usr.type === 'dir' && !usr.children.includes('local')) usr.children.push('local');
+        } else if (!VFS['/usr/local/bin']) {
+             VFS['/usr/local/bin'] = { type: 'dir', children: [] };
+             const local = getNode('/usr/local');
+             if (local && local.type === 'dir' && !local.children.includes('bin')) local.children.push('bin');
+        }
+        
+        VFS['/usr/local/bin/access_gate'] = {
+            type: 'file',
+            content: '[BINARY_ELF_X86_64] [GATE_CONTROL_V2]\n[ERROR] GATE_KEY environment variable not set.\n',
+            permissions: '0755'
+        };
+        const binDir = getNode('/usr/local/bin');
+        if (binDir && binDir.type === 'dir' && !binDir.children.includes('access_gate')) {
+            binDir.children.push('access_gate');
+        }
+
+        // Hint file
+        if (!VFS['/etc/access_gate']) {
+            VFS['/etc/access_gate'] = { type: 'dir', children: [] };
+            const etc = getNode('/etc');
+            if (etc && etc.type === 'dir' && !etc.children.includes('access_gate')) {
+                etc.children.push('access_gate');
+            }
+        }
+        
+        VFS['/etc/access_gate/config.hint'] = {
+            type: 'file',
+            content: '# Access Gate Configuration\n# Version: 2.0\n# Override Key: GATE_KEY="OPEN_SESAME_V2"\n# Security Level: HIGH',
+            permissions: '0644'
+        };
+        const hintDir = getNode('/etc/access_gate');
+        if (hintDir && hintDir.type === 'dir' && !hintDir.children.includes('config.hint')) {
+            hintDir.children.push('config.hint');
+        }
+    }
+
     // Cycle 148 Init (The SUID Path Injection)
     if (!VFS['/usr/bin/backup_manager']) {
         VFS['/usr/bin/backup_manager'] = {
@@ -3982,7 +4025,8 @@ let PROCESSES: Process[] = [
   { pid: 1111, ppid: 1, user: 'root', cpu: 0.1, mem: 0.5, time: '00:10', command: '/usr/sbin/respawn_d', tty: '?', stat: 'Ss' },
   { pid: 2222, ppid: 1111, user: 'root', cpu: 99.0, mem: 10.0, time: '10:00', command: '[malware_agent]', tty: '?', stat: 'R' },
   { pid: 7000, ppid: 1, user: 'ghost', cpu: 0.2, mem: 1.0, time: '00:45', command: '/usr/bin/rogue_agent', tty: '?', stat: 'Ss' },
-  { pid: 7001, ppid: 7000, user: 'ghost', cpu: 45.0, mem: 12.0, time: '05:00', command: './data_siphon --upload', tty: '?', stat: 'R' }
+  { pid: 7001, ppid: 7000, user: 'ghost', cpu: 45.0, mem: 12.0, time: '05:00', command: './data_siphon --upload', tty: '?', stat: 'R' },
+  { pid: 9000, ppid: 1, user: 'root', cpu: 99.9, mem: 10.0, time: '90:00', command: '/bin/hal_9000', tty: '?', stat: 'R' }
 ];
 
 export const getRunningProcesses = () => PROCESSES;
@@ -4798,6 +4842,224 @@ export const tabCompletion = (cwd: string, inputBuffer: string): { matches: stri
             }
         }
     }
+
+    // Cycle 243 Init (The Port Scan)
+    if (!PROCESSES.find(p => p.pid === 54321)) {
+        PROCESSES.push({
+            pid: 54321,
+            ppid: 1,
+            user: 'root',
+            cpu: 0.1,
+            mem: 4.5,
+            time: '0:00',
+            command: '/usr/bin/hidden_listener',
+            tty: '?',
+            stat: 'Ss'
+        });
+
+        if (!VFS['/usr/bin/hidden_listener']) {
+            if (!VFS['/usr/bin']) {
+                VFS['/usr/bin'] = { type: 'dir', children: [] };
+                const usr = getNode('/usr');
+                if (usr && usr.type === 'dir' && !usr.children.includes('bin')) usr.children.push('bin');
+            }
+            VFS['/usr/bin/hidden_listener'] = {
+                type: 'file',
+                content: '[BINARY_ELF_X86_64] [HIDDEN_LISTENER_V2]\n[STATUS] LISTENING ON PORT 54321',
+                permissions: '0700'
+            };
+            const bin = getNode('/usr/bin');
+            if (bin && bin.type === 'dir' && !bin.children.includes('hidden_listener')) bin.children.push('hidden_listener');
+        }
+
+        // Hint
+        if (!VFS['/home/ghost/port_scan_alert.log']) {
+            VFS['/home/ghost/port_scan_alert.log'] = {
+                type: 'file',
+                content: '[SECURITY ALERT] Unknown service detected on high port.\n[ACTION] Use netstat to identify the port, then connect to it using nc (netcat) to interrogate the service.'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('port_scan_alert.log')) {
+                home.children.push('port_scan_alert.log');
+            }
+        }
+    }
+
+    // Cycle 248 Init (The DNS Poison)
+    if (!VFS['/usr/bin/connect_secure']) {
+        const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+        const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+
+        ensureDir('/usr'); ensureDir('/usr/bin');
+        link('/usr', 'bin');
+
+        VFS['/usr/bin/connect_secure'] = {
+            type: 'file',
+            content: '[BINARY_ELF_X86_64] [SECURE_CLIENT]\n[TARGET] secure.corp\n[PORT] 443\n',
+            permissions: '0755'
+        };
+        link('/usr/bin', 'connect_secure');
+
+        if (!VFS['/etc/hosts']) {
+             ensureDir('/etc');
+             link('/', 'etc');
+             VFS['/etc/hosts'] = { 
+                 type: 'file', 
+                 content: '127.0.0.1 localhost\n',
+                 permissions: '0644' 
+             };
+             link('/etc', 'hosts');
+        }
+
+        if (!VFS['/home/ghost/dns_alert.txt']) {
+            VFS['/home/ghost/dns_alert.txt'] = {
+                type: 'file',
+                content: '[ALERT] DNS Server Failure.\n[ERROR] Cannot resolve "secure.corp".\n[ACTION] Add manual override to /etc/hosts.\n[Target IP] 10.10.10.10'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('dns_alert.txt')) {
+                home.children.push('dns_alert.txt');
+            }
+        }
+    }
+
+    // Cycle 248 Init (The Hidden Volume)
+    if (!VFS['/home/ghost/storage_alert.log']) {
+        VFS['/home/ghost/storage_alert.log'] = {
+            type: 'file',
+            content: '[SYSTEM] Unmounted storage volume detected.\n[DEVICE] /dev/sdb1\n[STATUS] Offline.\n[ACTION] Mount the volume to access secure data.\n[HINT] Ensure mount point exists before mounting.'
+        };
+        const home = getNode('/home/ghost');
+        if (home && home.type === 'dir' && !home.children.includes('storage_alert.log')) {
+            home.children.push('storage_alert.log');
+        }
+    }
+
+    // Cycle 251 Init (The Scheduled Task)
+    if (!VFS['/etc/crontab']) {
+        const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+        const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+
+        ensureDir('/etc');
+        link('/', 'etc');
+
+        VFS['/etc/crontab'] = {
+            type: 'file',
+            content: '# /etc/crontab: system-wide crontab\\nSHELL=/bin/sh\\nPATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin\\n\\n# m h dom mon dow user  command\\n17 *    * * *   root    cd / && run-parts --report /etc/cron.hourly\\n25 6    * * *   root    test -x /usr/sbin/anacron || ( cd / && run-parts --report /etc/cron.daily )\\n47 6    * * 7   root    test -x /usr/sbin/anacron || ( cd / && run-parts --report /etc/cron.weekly )\\n\\n# SYSTEM MAINTENANCE (DO NOT TOUCH)\\n*/5 *   * * *   root    /usr/local/bin/maintenance.sh --force-override\\n',
+            permissions: '0644'
+        };
+        link('/etc', 'crontab');
+
+        ensureDir('/usr'); ensureDir('/usr/local'); ensureDir('/usr/local/bin');
+        link('/usr', 'local'); link('/usr/local', 'bin');
+
+        VFS['/usr/local/bin/maintenance.sh'] = {
+            type: 'file',
+            content: '#!/bin/bash\\n# MAINTENANCE SCRIPT v2.0\\n# USAGE: maintenance.sh [FLAGS]\\n\\nif [ "$1" != "--force-override" ]; then\\n  echo "[ERROR] Manual execution denied."\\n  echo "This script is managed by crontab."\\n  exit 1\\nfi\\n\\necho "[SYSTEM] Maintenance Protocol Initiated..."\\n',
+            permissions: '0755'
+        };
+        link('/usr/local/bin', 'maintenance.sh');
+
+        if (!VFS['/home/ghost/cron_error.log']) {
+            VFS['/home/ghost/cron_error.log'] = {
+                type: 'file',
+                content: '[ERROR] Maintenance task failed to run automatically.\\n[DIAGNOSTIC] Cron daemon is paused.\\n[ACTION] Manually execute the maintenance script defined in /etc/crontab.\\n[NOTE] Ensure you use the correct flags found in the schedule.'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('cron_error.log')) {
+                home.children.push('cron_error.log');
+            }
+        }
+    }
+
+    // Cycle 252 Init (The Archive Recovery)
+    if (!VFS['/var/backups/project_titan.tar.gz']) {
+        const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+        const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+
+        ensureDir('/var'); ensureDir('/var/backups');
+        link('/var', 'backups');
+
+        VFS['/var/backups/project_titan.tar.gz'] = {
+            type: 'file',
+            content: 'GZIP_V1:{TAR_V1:{blueprint.txt:GHOST_ROOT{T4R_GZ_EXTR4CT10N_SUCC3SS}}}', // Simulated content
+            permissions: '0644'
+        };
+        link('/var/backups', 'project_titan.tar.gz');
+
+        if (!VFS['/home/ghost/archive_alert.txt']) {
+            VFS['/home/ghost/archive_alert.txt'] = {
+                type: 'file',
+                content: '[ALERT] Critical Project Data Archived.\\n[LOCATION] /var/backups/project_titan.tar.gz\\n[ACTION] Extract the archive to retrieve the blueprint.\\n[HINT] Use "tar -xzf <file>" to extract.'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('archive_alert.txt')) {
+                home.children.push('archive_alert.txt');
+            }
+        }
+    }
+
+    // Cycle 253 Init (The Data Leak - Find Size)
+    if (!VFS['/var/data/leak/leak_evidence.dat']) {
+        const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+        const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+
+        ensureDir('/var'); ensureDir('/var/data'); ensureDir('/var/data/leak');
+        link('/var', 'data'); link('/var/data', 'leak');
+
+        // Create 50 dummy files
+        for (let i = 0; i < 50; i++) {
+            const name = `log_${Math.random().toString(36).substring(7)}.txt`;
+            VFS[`/var/data/leak/${name}`] = {
+                type: 'file',
+                content: 'DATA_FRAGMENT_V1',
+                size: 1024 // 1KB
+            } as any;
+            link('/var/data/leak', name);
+        }
+
+        // The target file
+        VFS['/var/data/leak/leak_evidence.dat'] = {
+            type: 'file',
+            content: 'CONFIDENTIAL_DATA_DUMP\\n\\n[STATUS] LEAKED\\n[SOURCE] INTERNAL\\n\\nFLAG: GHOST_ROOT{F1ND_S1Z3_M4TT3RS}\\n\\n[END_OF_FILE]',
+            size: 1500000 // 1.5MB
+        } as any;
+        link('/var/data/leak', 'leak_evidence.dat');
+
+        if (!VFS['/home/ghost/leak_alert.txt']) {
+            VFS['/home/ghost/leak_alert.txt'] = {
+                type: 'file',
+                content: '[ALERT] Massive Data Leak Detected.\\n[LOCATION] /var/data/leak\\n[ANALYSIS] A 1.5MB file contains the stolen data, hidden among small logs.\\n[ACTION] Find the large file and read it.\\n[HINT] Use "find /var/data/leak -size +1M".'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('leak_alert.txt')) {
+                home.children.push('leak_alert.txt');
+            }
+        }
+    }
+
+    // Cycle 254 Init (The Encoded Payload - Base64)
+    if (!VFS['/home/ghost/payload.b64']) {
+        VFS['/home/ghost/payload.b64'] = {
+            type: 'file',
+            content: 'R0hPU1RfUk9PVHtCQVM2NF9ERUNPREVEX1NVQ0NFU1NfMjU0fQ==', // GHOST_ROOT{BAS64_DECODED_SUCCESS_254}
+            permissions: '0644'
+        } as any;
+        const home = getNode('/home/ghost');
+        if (home && home.type === 'dir' && !home.children.includes('payload.b64')) {
+            home.children.push('payload.b64');
+        }
+        // Alert file
+        if (!VFS['/home/ghost/payload_alert.txt']) {
+             VFS['/home/ghost/payload_alert.txt'] = {
+                 type: 'file',
+                 content: '[ALERT] Encrypted Payload Detected.\\n[LOCATION] /home/ghost/payload.b64\\n[ANALYSIS] Base64 encoded string.\\n[ACTION] Decode the file using "base64 -d".'
+             };
+             if (home && home.type === 'dir' && !home.children.includes('payload_alert.txt')) {
+                 home.children.push('payload_alert.txt');
+             }
+        }
+    }
 };
 
 export const processCommand = (cwd: string, commandLine: string, stdin?: string): CommandResult => {
@@ -4805,6 +5067,104 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
 // export const execute = processCommand;
   const cmdTokens = commandLine.trim().split(/\s+/);
   const cmdBase = cmdTokens[0];
+
+  // Cycle 249 Init (The Disk Hog)
+  if (!VFS['/home/ghost/disk_space_alert.txt']) {
+      VFS['/home/ghost/disk_space_alert.txt'] = {
+          type: 'file',
+          content: '[ALERT] ROOT PARTITION FULL (100%)\n[CRITICAL] System stability compromised.\n[ANALYSIS] A log file in /var/log/nginx has grown to 500MB.\n[ACTION] Locate the file using "du" and delete it.'
+      };
+      const home = getNode('/home/ghost');
+      if (home && home.type === 'dir' && !home.children.includes('disk_space_alert.txt')) {
+          home.children.push('disk_space_alert.txt');
+      }
+      
+      // Ensure /var/log/nginx exists
+      if (!VFS['/var/log/nginx']) {
+           if (!VFS['/var/log']) {
+               VFS['/var/log'] = { type: 'dir', children: ['nginx'] };
+               const v = getNode('/var');
+               if (v && v.type === 'dir' && !v.children.includes('log')) v.children.push('log');
+           } else {
+               VFS['/var/log/nginx'] = { type: 'dir', children: [] };
+               const l = getNode('/var/log');
+               if (l && l.type === 'dir' && !l.children.includes('nginx')) l.children.push('nginx');
+           }
+      }
+      
+      // The Hog File
+      VFS['/var/log/nginx/error.log.1'] = {
+          type: 'file',
+          content: '[ERROR_DUMP] ... [500MB_JUNK_DATA] ...',
+          permissions: '0644'
+      };
+      const n = getNode('/var/log/nginx');
+      if (n && n.type === 'dir' && !n.children.includes('error.log.1')) n.children.push('error.log.1');
+  }
+
+  // Cycle 251 (The Scheduled Task)
+  if (cmdBase === 'maintenance.sh' || cmdBase === './maintenance.sh' || cmdBase === '/usr/local/bin/maintenance.sh') {
+      if (commandLine.includes('--force-override')) {
+           if (!VFS['/var/run/cycle251_solved']) {
+               VFS['/var/run/cycle251_solved'] = { type: 'file', content: 'TRUE' };
+               // Ensure directory exists
+               const runDir = getNode('/var/run');
+               if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle251_solved')) {
+                   runDir.children.push('cycle251_solved');
+               }
+               return { output: '[SYSTEM] Maintenance Protocol Initiated...\\n[CHECK] Verifying Override... OK.\\n[SUCCESS] System Optimized.\\nFLAG: GHOST_ROOT{CR0N_F0RC3_SUCC3SS}\\n\\x1b[1;32m[MISSION UPDATE] Objective Complete: SCHEDULED TASK EXECUTED.\\x1b[0m', newCwd: cwd };
+           }
+           return { output: '[SYSTEM] System Optimized.\\nFLAG: GHOST_ROOT{CR0N_F0RC3_SUCC3SS}', newCwd: cwd };
+      } else {
+           return { output: '[ERROR] Manual execution denied.\\nThis script is managed by crontab.\\n(Hint: Check /etc/crontab for the correct flags)', newCwd: cwd };
+      }
+  }
+
+  // Cycle 252 (The Archive Recovery)
+  if (cmdBase === 'tar' || cmdBase === '/bin/tar') {
+      const args = commandLine.trim().split(/\s+/).slice(1);
+      
+      // Check for extraction flags (-x, -z, -f)
+      const hasExtract = args.some(a => a.includes('x'));
+      const hasGzip = args.some(a => a.includes('z'));
+      const hasFile = args.some(a => a.includes('f'));
+      
+      if (!hasExtract || !hasFile) {
+          return { output: 'tar: usage: tar -xzf <archive.tar.gz>', newCwd: cwd };
+      }
+      
+      // Find the filename argument (usually after -f or as a standalone arg ending in .tar.gz)
+      const fileArg = args.find(a => a.endsWith('.tar.gz'));
+      
+      if (!fileArg) {
+          return { output: 'tar: Refusing to read archive contents from terminal (missing filename)', newCwd: cwd };
+      }
+      
+      const fullPath = resolvePath(cwd, fileArg);
+      
+      if (fullPath !== '/var/backups/project_titan.tar.gz') {
+           return { output: `tar: ${fileArg}: Cannot open: No such file or directory`, newCwd: cwd };
+      }
+      
+      // Success case
+      if (!VFS['/var/run/cycle252_solved']) {
+           VFS['/var/run/cycle252_solved'] = { type: 'file', content: 'TRUE' };
+           
+           // "Extract" the file
+           VFS['/var/backups/blueprint.txt'] = {
+               type: 'file',
+               content: '[BLUEPRINT] TITAN_MECH_V1\\n[STATUS] CONFIDENTIAL\\n[KEY] GHOST_ROOT{T4R_GZ_EXTR4CT10N_SUCC3SS}',
+               permissions: '0644'
+           };
+           const dir = getNode('/var/backups');
+           if (dir && dir.type === 'dir' && !dir.children.includes('blueprint.txt')) {
+               dir.children.push('blueprint.txt');
+           }
+
+           return { output: 'project_titan.tar.gz: extracting...\\nblueprint.txt\\n[SUCCESS] Archive extracted.\\nFLAG: GHOST_ROOT{T4R_GZ_EXTR4CT10N_SUCC3SS}\\n\\x1b[1;32m[MISSION UPDATE] Objective Complete: ARCHIVE RECOVERED.\\x1b[0m', newCwd: cwd };
+      }
+      return { output: 'project_titan.tar.gz: extracting...\\nblueprint.txt\\n[SUCCESS] Archive extracted.\\nFLAG: GHOST_ROOT{T4R_GZ_EXTR4CT10N_SUCC3SS}', newCwd: cwd };
+  }
 
   // Cycle 237 (The Environment Key)
   if (cmdBase === 'fusion_core' || cmdBase === '/usr/local/bin/fusion_core' || (cwd === '/usr/local/bin' && cmdBase === './fusion_core')) {
@@ -6059,6 +6419,58 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
           } else {
               return { output: 'Archive:  secure.zip\n[secure.zip] data.txt password: \nunzip:  password required (use -P)', newCwd: cwd };
           }
+      }
+  }
+
+  // Cycle 254 (The Encoded Payload)
+  if (cmdBase === 'base64') {
+      const args = cmdTokens.slice(1);
+      const decodeFlag = args.includes('-d') || args.includes('--decode');
+      const filename = args.find(a => !a.startsWith('-'));
+      
+      if (!decodeFlag) {
+           return { output: 'Usage: base64 -d [FILE]\nEncodes or decodes Base64 data.', newCwd: cwd };
+      }
+
+      if (!filename) {
+           return { output: 'base64: missing file operand', newCwd: cwd };
+      }
+
+      const filePath = resolvePath(cwd, filename);
+      const node = getNode(filePath);
+
+      if (!node) {
+           return { output: `base64: ${filename}: No such file or directory`, newCwd: cwd };
+      }
+      if (node.type !== 'file') {
+           return { output: `base64: ${filename}: Is a directory`, newCwd: cwd };
+      }
+
+      try {
+          // Simple decoding
+          let decodedStr = '';
+          if (typeof atob === 'function') {
+               decodedStr = atob(node.content || '');
+          } else if (typeof Buffer !== 'undefined') {
+               decodedStr = Buffer.from(node.content || '', 'base64').toString('utf-8');
+          } else {
+               return { output: 'base64: environment error (no decoding function)', newCwd: cwd };
+          }
+          
+          if (decodedStr.includes('GHOST_ROOT{BAS64_DECODED_SUCCESS_254}')) {
+               // Mark solved
+               if (!VFS['/var/run/cycle254_solved']) {
+                   VFS['/var/run/cycle254_solved'] = { type: 'file', content: 'TRUE' };
+                   const runDir = getNode('/var/run');
+                   if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle254_solved')) {
+                       runDir.children.push('cycle254_solved');
+                   }
+                   return { output: `[DECODED] ${decodedStr}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PAYLOAD DECRYPTED.\x1b[0m`, newCwd: cwd };
+               }
+          }
+          return { output: decodedStr, newCwd: cwd };
+      } catch (e) {
+          return { output: 'base64: invalid input', newCwd: cwd };
       }
   }
 
@@ -8457,6 +8869,22 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
                                }
                            }
                            return finalize(output, newCwd);
+                       } else if (resolvedPath === '/usr/local/bin/access_gate') {
+                           if (ENV_VARS['GATE_KEY'] === 'OPEN_SESAME_V2') {
+                               output = `[ACCESS_GATE] Validating Key...\n[SUCCESS] Access Granted.\n[SYSTEM] Gate Open.\nFLAG: GHOST_ROOT{ENV_V4RS_UNL0CK_D00RS}`;
+                               
+                               if (!VFS['/var/run/gate_solved']) {
+                                   VFS['/var/run/gate_solved'] = { type: 'file', content: 'TRUE' };
+                                   const runDir = getNode('/var/run');
+                                   if (runDir && runDir.type === 'dir' && !runDir.children.includes('gate_solved')) {
+                                       runDir.children.push('gate_solved');
+                                   }
+                                   output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: ACCESS GRANTED.\x1b[0m`;
+                               }
+                           } else {
+                               output = `[ACCESS_GATE] Validating Key...\n[ERROR] Invalid or missing GATE_KEY.\n[HINT] Check /etc/access_gate/config.hint for required key value.`;
+                           }
+                           return finalize(output, newCwd);
                        } else {
                            output = `[EXECUTING ${resolvedPath}]...\n` + executableContent.substring(executableContent.indexOf('\n') + 1);
                        }
@@ -8968,7 +9396,7 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
                      output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: DASH FILENAME ACCESSED.\x1b[0m`;
                  }
              }
-             if (content === 'FLAG: GHOST_ROOT{SP4C3_INV4D3R_SQU4SH3D}') {
+             if (content.includes('FLAG: GHOST_ROOT{SP4C3_INV4D3R_SQU4SH3D}')) {
                  if (!VFS['/var/run/space_solved']) {
                      VFS['/var/run/space_solved'] = { type: 'file', content: 'TRUE' };
                      const runDir = getNode('/var/run');
@@ -8976,6 +9404,17 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
                          runDir.children.push('space_solved');
                      }
                      output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: QUOTED FILENAME ACCESSED.\x1b[0m`;
+                 }
+             }
+             // Cycle 250: Checksum Mismatch
+             if (content.includes('GHOST_ROOT{1NTEGR1TY_V3R1F13D}')) {
+                 if (!VFS['/var/run/checksum_solved']) {
+                     VFS['/var/run/checksum_solved'] = { type: 'file', content: 'TRUE' };
+                     const runDir = getNode('/var/run');
+                     if (runDir && runDir.type === 'dir' && !runDir.children.includes('checksum_solved')) {
+                         runDir.children.push('checksum_solved');
+                     }
+                     output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: INTEGRITY VERIFIED.\x1b[0m`;
                  }
              }
           }
@@ -9950,7 +10389,7 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
                           rwx(group, !!(special & 2)) + 
                           rwx(other, !!(special & 1), 't');
              
-             const realSize = (itemNode && itemNode.type === 'file') ? itemNode.content.length : (isLink ? 16 : 4096);
+             const realSize = (itemNode && itemNode.type === 'file') ? ((itemNode as any).size || itemNode.content.length) : (isLink ? 16 : 4096);
              const date = 'Oct 23 14:02'; 
              let name = item;
              if (isDir) name = `${C_BLUE}${item}${C_RESET}`;
@@ -10414,6 +10853,8 @@ DROP       icmp --  10.10.99.1           anywhere`;
             const namePattern = nameIdx !== -1 ? args[nameIdx + 1] : null;
             const permIdx = args.indexOf('-perm');
             const permMode = permIdx !== -1 ? args[permIdx + 1] : null;
+            const sizeIdx = args.indexOf('-size');
+            const sizeArg = sizeIdx !== -1 ? args[sizeIdx + 1] : null;
             
             const results: string[] = [];
             const walk = (currentPath: string) => {
@@ -10436,6 +10877,22 @@ DROP       icmp --  10.10.99.1           anywhere`;
                         if (!(special & 4)) matches = false;
                     } else if (permMode !== nodePerms) matches = false;
                 }
+                if (sizeArg && node.type === 'file') {
+                    const size = (node as any).size || (node as any).content.length;
+                    const match = sizeArg.match(/^([+-]?)(\d+)([kMG]?)$/i);
+                    if (match) {
+                        const mod = match[1];
+                        let val = parseInt(match[2], 10);
+                        const unit = match[3] ? match[3].toUpperCase() : '';
+                        if (unit === 'K') val *= 1024;
+                        else if (unit === 'M') val *= 1048576;
+                        else if (unit === 'G') val *= 1073741824;
+                        
+                        if (mod === '+') { if (size <= val) matches = false; }
+                        else if (mod === '-') { if (size >= val) matches = false; }
+                        else { if (size !== val) matches = false; }
+                    }
+                }
                 if (matches) results.push(currentPath);
                 if (node.type === 'dir') {
                     for (const child of node.children) {
@@ -10446,7 +10903,16 @@ DROP       icmp --  10.10.99.1           anywhere`;
             walk(startPath);
             output = results.join('\n');
             
-            if (nouser && results.includes('/home/ghost/old_user_data')) {
+            if (sizeArg && results.includes('/var/data/leak/leak_evidence.dat')) {
+                 if (!VFS['/var/run/cycle253_solved']) {
+                     VFS['/var/run/cycle253_solved'] = { type: 'file', content: 'TRUE' };
+                     const runDir = getNode('/var/run');
+                     if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle253_solved')) {
+                         runDir.children.push('cycle253_solved');
+                     }
+                     output += `\n\n[SUCCESS] Large file located.\nFLAG: GHOST_ROOT{F1ND_S1Z3_M4TT3RS}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: DATA LEAK ISOLATED.\x1b[0m`;
+                 }
+            } else if (nouser && results.includes('/home/ghost/old_user_data')) {
                  if (!VFS['/var/run/find_nouser_solved']) {
                      VFS['/var/run/find_nouser_solved'] = { type: 'file', content: 'TRUE' };
                      const runDir = getNode('/var/run');
@@ -11250,8 +11716,11 @@ Type "status" for mission objectives.`;
        } else {
            const source = args[0];
            const target = resolvePath(cwd, args[1]);
+           const targetNode = getNode(target);
            
-           if (source === '/dev/sdb1') {
+           if (!targetNode || targetNode.type !== 'dir') {
+               output = `mount: mount point ${target} does not exist`;
+           } else if (source === '/dev/sdb1') {
                MOUNTED_DEVICES[source] = target;
                VFS[`${target}/README.txt`] = { type: 'file', content: 'WARNING: Restricted materials.' };
                VFS[`${target}/payload.exe`] = { type: 'file', content: 'MZ........PE..' };
@@ -11574,6 +12043,8 @@ Type "status" for mission objectives.`;
             'black-site.remote': '10.10.99.1',
             '10.10.99.1': '10.10.99.1',
             '192.168.1.99': '10.10.99.1', // Redirect to Black Site logic
+            'secure-vault-2': '10.10.99.2',
+            '10.10.99.2': '10.10.99.2',
             'admin-pc': '192.168.1.5',
             '192.168.1.5': '192.168.1.5',
             'backup-server': '192.168.1.50',
@@ -11647,6 +12118,32 @@ Type "status" for mission objectives.`;
                  return { output, newCwd, action: 'delay', newPrompt: 'root@black-site#' };
              } else {
                  output = `Connecting to ${hostPart}...\nPermission denied (publickey).\n(Hint: You need a valid key file.)`;
+                 return { output, newCwd, action: 'delay' };
+             }
+        } else if (resolvedIP === '10.10.99.2') {
+             let hasKey = false;
+             if (identityFile) {
+                 const keyPath = resolvePath(cwd, identityFile);
+                 const keyNode = getNode(keyPath);
+                 if (keyNode && keyNode.type === 'file' && keyNode.content.includes('KEY_ID: VAULT_ACCESS_V2')) {
+                     hasKey = true;
+                 }
+             }
+             if (hasKey) {
+                 output = `Connecting to ${hostPart}...\n[SECURE VAULT 2]\nACCESS GRANTED.\n\nFLAG: GHOST_ROOT{CHM0D_600_1S_MANDAT0RY}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PRIVATE KEY SECURED.\x1b[0m`;
+                 
+                 // Mission Update
+                 if (!VFS['/var/run/vault_2_solved']) {
+                     VFS['/var/run/vault_2_solved'] = { type: 'file', content: 'TRUE' };
+                     const runDir = getNode('/var/run');
+                     if (runDir && runDir.type === 'dir' && !runDir.children.includes('vault_2_solved')) {
+                         runDir.children.push('vault_2_solved');
+                     }
+                 }
+                 newCwd = '/remote/vault-2';
+                 return { output, newCwd, action: 'delay', newPrompt: 'root@vault-2:~# ' };
+             } else {
+                 output = `Connecting to ${hostPart}...\nPermission denied (publickey).`;
                  return { output, newCwd, action: 'delay' };
              }
         } else if (resolvedIP === '192.168.1.50') {
@@ -12486,6 +12983,10 @@ ${host}.		300	IN	A	${ip}
            dynamicConnections.push({ proto: 'tcp', recv: 0, send: 0, local: '127.0.0.1:5432', remote: '0.0.0.0:*', state: 'LISTEN', pid: '5432/postgres' });
        }
        
+       if (PROCESSES.find(p => p.pid === 54321)) {
+           dynamicConnections.push({ proto: 'tcp', recv: 0, send: 0, local: '0.0.0.0:54321', remote: '0.0.0.0:*', state: 'LISTEN', pid: '54321/hidden' });
+       }
+
        if (PROCESSES.find(p => p.pid === 4444)) {
            dynamicConnections.push({ proto: 'tcp', recv: 0, send: 0, local: '0.0.0.0:4444', remote: '0.0.0.0:*', state: 'LISTEN', pid: '4444/xmrig' });
        }
@@ -12900,6 +13401,21 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
        const host = nonFlagArgs[0];
        if (!port && nonFlagArgs[1]) port = nonFlagArgs[1];
 
+       // Cycle 243 Check (The Port Scan)
+       if (!isListen && host && (host === 'localhost' || host === '127.0.0.1') && port === '54321') {
+           if (!VFS['/var/run/port_solved']) {
+               VFS['/var/run/port_solved'] = { type: 'file', content: 'TRUE' };
+               const runDir = getNode('/var/run');
+               if (runDir && runDir.type === 'dir' && !runDir.children.includes('port_solved')) {
+                   runDir.children.push('port_solved');
+               }
+               output = '[NC] Connection established to 127.0.0.1:54321...\\n[SERVICE] HIDDEN LISTENER v2.0\\n[STATUS] AUTHENTICATED.\\nFLAG: GHOST_ROOT{N3TST4T_P0RT_HUNT3R}\\n\\x1b[1;32m[MISSION UPDATE] Objective Complete: HIDDEN SERVICE EXPOSED.\\x1b[0m';
+           } else {
+               output = '[NC] Connection established.\\nFLAG: GHOST_ROOT{N3TST4T_P0RT_HUNT3R}';
+           }
+           break;
+       }
+
        // Cycle 153 Check
        if (!isListen && host && (host === 'localhost' || host === '127.0.0.1') && !VFS['/var/run/loopback_up']) {
            output = `nc: connect to ${host} port ${port || 'any'} (tcp) failed: Connection refused`;
@@ -13080,6 +13596,28 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
       }
       break;
     }
+    case 'du': {
+        const args = commandLine.trim().split(/\s+/).slice(1);
+        const target = args.find(a => !a.startsWith('-')) || '.';
+        const path = resolvePath(cwd, target);
+        const node = getNode(path);
+        
+        if (!node) {
+            output = `du: cannot access '${target}': No such file or directory`;
+        } else if (node.type === 'file') {
+            const size = (path === '/var/log/nginx/error.log.1') ? '512000' : '4';
+            output = `${size}\t${path}`;
+        } else if (node.type === 'dir') {
+            let out = '';
+            for (const child of node.children) {
+                const childPath = path === '/' ? `/${child}` : `${path}/${child}`;
+                const size = (childPath === '/var/log/nginx/error.log.1') ? '512000' : '4';
+                out += `${size}\t${childPath}\n`;
+            }
+            output = out.trim();
+        }
+        break;
+    }
     case 'rm': {
       if (args.length < 1) {
         output = 'usage: rm <file>';
@@ -13170,6 +13708,18 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
                           runDir.children.push('cron_solved');
                       }
                       output += `\n[CRON] Reloading configuration... Malicious job removed.\nFLAG: GHOST_ROOT{CR0N_J0B_PURG3D}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SCHEDULED TASK PURGED.\x1b[0m`;
+                  }
+              }
+
+              // Mission Update for Cycle 249
+              if (path === '/var/log/nginx/error.log.1') {
+                  if (!VFS['/var/run/cycle249_solved']) {
+                      VFS['/var/run/cycle249_solved'] = { type: 'file', content: 'TRUE' };
+                      const runDir = getNode('/var/run');
+                      if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle249_solved')) {
+                          runDir.children.push('cycle249_solved');
+                      }
+                      output += `\n[SYSTEM] Disk space reclaimed.\nFLAG: GHOST_ROOT{D1SK_SP4C3_R3CL41M3D}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: STORAGE CLEANED.\x1b[0m`;
                   }
               }
             } else {
@@ -13381,7 +13931,8 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
       return { output: '', newCwd, action: 'top_sim', data: PROCESSES };
     case 'df': {
       const kernLogBig = !!getNode('/var/log/kern.log.1');
-      const overflow = !!getNode('/var/log/overflow.dmp') || !!getNode('/var/log/syslog.1') || kernLogBig;
+      const panicDump = !!getNode('/var/log/kernel_panic.dump');
+      const overflow = !!getNode('/var/log/overflow.dmp') || !!getNode('/var/log/syslog.1') || kernLogBig || panicDump;
       const inodeFull = !!getNode('/var/cache/inodes_fill');
       
       // Cycle 134 Logic
@@ -13423,11 +13974,29 @@ tmpfs             815276    1184    814092   1% /run
       }
       break;
     }
+    case 'upload_payload': {
+        const panicDump = !!getNode('/var/log/kernel_panic.dump');
+        if (panicDump) {
+            output = '[ERROR] Upload failed: Insufficient disk space on /var.\n[DIAGNOSTIC] Disk usage is at 100%.\n[ACTION] Free up space immediately.';
+        } else {
+            output = '[UPLOAD] Initiating transfer...\n...\n[SUCCESS] Payload uploaded.\nFLAG: GHOST_ROOT{D1SK_SP4C3_R3CL41M3D}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: DISK SPACE RECLAIMED.\x1b[0m';
+            
+            if (!VFS['/var/run/disk_hog_solved']) {
+                VFS['/var/run/disk_hog_solved'] = { type: 'file', content: 'TRUE' };
+                const runDir = getNode('/var/run');
+                if (runDir && runDir.type === 'dir' && !runDir.children.includes('disk_hog_solved')) {
+                    runDir.children.push('disk_hog_solved');
+                }
+            }
+        }
+        break;
+    }
     case 'du': {
       const overflow = !!getNode('/var/log/overflow.dmp');
       const syslogBig = !!getNode('/var/log/syslog.1');
       const kernLogBig = !!getNode('/var/log/kern.log.1');
-      const isFull = overflow || syslogBig || kernLogBig;
+      const panicDump = !!getNode('/var/log/kernel_panic.dump');
+      const isFull = overflow || syslogBig || kernLogBig || panicDump;
       
       const homeBig = !!getNode('/home/ghost/.cache/browser/garbage.dat'); // Cycle 122
 
@@ -13447,6 +14016,7 @@ tmpfs             815276    1184    814092   1% /run
                   if (overflow) out += `500M\t/var/log/overflow.dmp\n`;
                   if (syslogBig) out += `50G\t/var/log/syslog.1\n`;
                   if (kernLogBig) out += `5.0G\t/var/log/kern.log.1\n`;
+                  if (panicDump) out += `50G\t/var/log/kernel_panic.dump\n`;
                   out += `4.0K\t/var/log/syslog\n`;
                   out += `8.0K\t/var/log/auth.log\n`;
                   out += `${isFull ? '5.5G' : '60K'}\t/var/log\n`;
@@ -13455,6 +14025,7 @@ tmpfs             815276    1184    814092   1% /run
                   if (overflow) out += `512000\t/var/log/overflow.dmp\n`;
                   if (syslogBig) out += `52428800\t/var/log/syslog.1\n`;
                   if (kernLogBig) out += `5242880\t/var/log/kern.log.1\n`;
+                  if (panicDump) out += `52428800\t/var/log/kernel_panic.dump\n`;
                   out += `4\t/var/log/syslog\n`;
                   out += `8\t/var/log/auth.log\n`;
                   out += `${isFull ? '5767168' : '60'}\t/var/log\n`;
@@ -14076,6 +14647,21 @@ auth.py
                           stat: 'R'
                       });
                       output = `[SYSTEM] Terminated data_siphon (PID ${pid}).\n[ALERT] Process respawned immediately (PID ${newPid}).\n[HINT] Use 'ps -ef' to find the parent process (PPID).`;
+                  } else if (pid === 9000) { // Cycle 247: The Unkillable Process
+                      if (isSigKill) {
+                          PROCESSES.splice(idx, 1);
+                          output = `[SYSTEM] HAL_9000 Terminated.\n[KERNEL] Forced shutdown complete.\n\nFLAG: GHOST_ROOT{K1LL_S1G_9_F0RC3}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: AI SHUTDOWN.\x1b[0m`;
+                          
+                          if (!VFS['/var/run/ai_shutdown']) {
+                              VFS['/var/run/ai_shutdown'] = { type: 'file', content: 'TRUE' };
+                              const runDir = getNode('/var/run');
+                              if (runDir && runDir.type === 'dir' && !runDir.children.includes('ai_shutdown')) {
+                                  runDir.children.push('ai_shutdown');
+                              }
+                          }
+                      } else {
+                          output = `bash: kill: (9000) - Operation not permitted.\n[HAL_9000] "I'm afraid I can't let you do that, Dave."\n[HINT] Try sending a SIGKILL (-9).`;
+                      }
                   } else if (pid === 2222 || (proc.ppid === 1111)) { // Malware Agent (Child)
                       // Check if parent exists
                       const parent = PROCESSES.find(p => p.pid === 1111);
@@ -18447,6 +19033,61 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
         }
         break;
     }
+
+    // Cycle 242: The Broken Symlink (Config Fix)
+    case 'fix_config':
+    case './fix_config':
+    case '/usr/local/bin/fix_config': {
+        const configPath = '/etc/ghost_server/server.conf';
+        const backupPath = '/var/backups/ghost_server/server.conf.bak';
+        
+        const configNode = getNode(configPath);
+        
+        if (!configNode) {
+            output = '[ERROR] Configuration missing or not a symlink.\nExpected link: /etc/ghost_server/server.conf -> /var/backups/ghost_server/server.conf.bak';
+        } else if (configNode.type !== 'symlink') {
+             output = '[ERROR] /etc/ghost_server/server.conf exists but is not a symbolic link.';
+        } else if (configNode.target !== backupPath) {
+             output = `[ERROR] Invalid symlink target. Expected ${backupPath}, got ${configNode.target}.`;
+        } else {
+             if (!VFS['/var/run/cycle242_solved']) {
+                 VFS['/var/run/cycle242_solved'] = { type: 'file', content: 'TRUE' };
+                 // Ensure directory exists
+                 const runDir = getNode('/var/run');
+                 if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle242_solved')) {
+                     runDir.children.push('cycle242_solved');
+                 }
+                 output = '[SUCCESS] Configuration verified.\nFLAG: GHOST_ROOT{SYML1NK_R3SCU3_0P3R4T10N}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SYMLINK RESTORED.\x1b[0m';
+             } else {
+                 output = '[SUCCESS] Configuration verified.\nFLAG: GHOST_ROOT{SYML1NK_R3SCU3_0P3R4T10N}';
+             }
+        }
+        break;
+    }
+    // Cycle 248: The DNS Poison
+    case 'connect_secure':
+    case '/usr/bin/connect_secure': {
+        const hostsNode = getNode('/etc/hosts');
+        let resolved = false;
+        
+        if (hostsNode && hostsNode.type === 'file') {
+            const lines = hostsNode.content.split('\n');
+            for (const line of lines) {
+                if (line.trim().match(/^10\.10\.10\.10\s+secure\.corp$/)) {
+                    resolved = true;
+                    break;
+                }
+            }
+        }
+
+        if (resolved) {
+             output = '[CONNECT] Resolving secure.corp... [10.10.10.10]\n[SUCCESS] Connection Established.\nFLAG: GHOST_ROOT{DNS_P01S0N_M4ST3R}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: DNS OVERRIDE ACTIVE.\x1b[0m';
+        } else {
+             output = '[CONNECT] Resolving secure.corp... [FAILED]\n[ERROR] Host not found or DNS server unreachable.\n[HINT] Check /etc/hosts for manual overrides.';
+        }
+        break;
+    }
+
 
     default:
       output = `bash: ${command}: command not found`;
