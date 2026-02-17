@@ -5055,9 +5055,76 @@ export const tabCompletion = (cwd: string, inputBuffer: string): { matches: stri
                  type: 'file',
                  content: '[ALERT] Encrypted Payload Detected.\\n[LOCATION] /home/ghost/payload.b64\\n[ANALYSIS] Base64 encoded string.\\n[ACTION] Decode the file using "base64 -d".'
              };
+             const home = getNode('/home/ghost');
              if (home && home.type === 'dir' && !home.children.includes('payload_alert.txt')) {
                  home.children.push('payload_alert.txt');
              }
+        }
+    }
+
+    // Cycle 255 Init (The Process Trace - Strace)
+    if (!VFS['/home/ghost/trace_alert.txt']) {
+        VFS['/home/ghost/trace_alert.txt'] = {
+            type: 'file',
+            content: '[ALERT] Suspicious background process detected (PID 9001).\\n[ANALYSIS] Process "ghost_daemon" is active but silent.\\n[ACTION] Use "strace -p 9001" to trace its system calls and find what file it is trying to access.'
+        };
+        const home = getNode('/home/ghost');
+        if (home && home.type === 'dir' && !home.children.includes('trace_alert.txt')) {
+            home.children.push('trace_alert.txt');
+        }
+
+        // Spawn the process
+        if (!PROCESSES.find(p => p.pid === 9001)) {
+            PROCESSES.push({
+                pid: 9001,
+                ppid: 1,
+                user: 'ghost',
+                cpu: 0.1,
+                mem: 4.5,
+                time: '0:05',
+                command: '/usr/bin/ghost_daemon',
+                tty: '?',
+                stat: 'Ss'
+            });
+        }
+    }
+
+    // Cycle 258 Init (The Broken Service)
+    if (!VFS['/etc/systemd/system/firewall.service']) {
+        const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+        const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+
+        ensureDir('/etc'); ensureDir('/etc/systemd'); ensureDir('/etc/systemd/system');
+        link('/etc', 'systemd'); link('/etc/systemd', 'system');
+
+        VFS['/etc/systemd/system/firewall.service'] = {
+            type: 'file',
+            content: '[Unit]\nDescription=Ghost Firewall Daemon\nAfter=network.target\n\n[Service]\nExecStart=/usr/bin/ghost_firewall\nRestart=on-failure\n\n[Install]\nWantedBy=multi-user.target',
+            permissions: '0644'
+        };
+        link('/etc/systemd/system', 'firewall.service');
+
+        // Create the missing config file in a "backup" location
+        ensureDir('/usr/share/doc/firewall');
+        link('/usr/share', 'doc'); link('/usr/share/doc', 'firewall');
+        
+        VFS['/usr/share/doc/firewall/rules.conf.example'] = {
+            type: 'file',
+            content: '# FIREWALL RULES\nALLOW 127.0.0.1\nDENY ALL\n',
+            permissions: '0644'
+        };
+        link('/usr/share/doc/firewall', 'rules.conf.example');
+
+        // Hint
+        if (!VFS['/home/ghost/service_alert.txt']) {
+            VFS['/home/ghost/service_alert.txt'] = {
+                type: 'file',
+                content: '[ALERT] Critical Security Service Failed.\n[SERVICE] firewall.service\n[STATUS] Inactive (Dead)\n[ACTION] Start the service using "systemctl start firewall".\n[NOTE] Check logs if startup fails.'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('service_alert.txt')) {
+                home.children.push('service_alert.txt');
+            }
         }
     }
 };
@@ -19088,6 +19155,160 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
         break;
     }
 
+    // Cycle 255: The Process Trace (Strace)
+    case 'strace': {
+        const hasPID = args.includes('-p');
+        const pidIdx = args.indexOf('-p');
+        const pid = args[pidIdx + 1];
+
+        if (!hasPID || !pid) {
+             output = 'usage: strace -p <pid>';
+        } else if (pid === '9001') {
+             if (VFS['/tmp/ghost.token']) {
+                 const node = getNode('/tmp/ghost.token');
+                 const content = (node && node.type === 'file') ? (node as any).content.trim() : '';
+                 
+                 if (content === 's3cr3t_k3y') {
+                     if (!VFS['/var/run/cycle255_solved']) {
+                         VFS['/var/run/cycle255_solved'] = { type: 'file', content: 'TRUE' };
+                         const runDir = getNode('/var/run');
+                         if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle255_solved')) {
+                             runDir.children.push('cycle255_solved');
+                         }
+                         output = `Process 9001 attached\nopen("/tmp/ghost.token", O_RDONLY) = 3\nread(3, "s3cr3t_k3y", 1024) = 10\nwrite(1, "Access Granted.\\nFLAG: GHOST_ROOT{STR4C3_D3BUG_SUCC3SS}\\n", 60) = 60\nclose(3) = 0\n[SUCCESS] Token Verified.\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PROCESS TRACED.\x1b[0m`;
+                     } else {
+                         output = `Process 9001 attached\nopen("/tmp/ghost.token", O_RDONLY) = 3\nread(3, "s3cr3t_k3y", 1024) = 10\nwrite(1, "Access Granted.\\nFLAG: GHOST_ROOT{STR4C3_D3BUG_SUCC3SS}\\n", 60) = 60\nclose(3) = 0`;
+                     }
+                 } else {
+                     output = `Process 9001 attached\nopen("/tmp/ghost.token", O_RDONLY) = 3\nread(3, "${content}", 1024) = ${content.length}\nwrite(2, "Error: Token '${content}' != 's3cr3t_k3y'\\n", ${28 + content.length}) = ${28 + content.length}\nclose(3) = 0`;
+                 }
+             } else {
+                 output = `Process 9001 attached\nopen("/tmp/ghost.token", O_RDONLY) = -1 ENOENT (No such file or directory)\nnanosleep({tv_sec=1, tv_nsec=0}, NULL) = 0\nopen("/tmp/ghost.token", O_RDONLY) = -1 ENOENT (No such file or directory)\n...`;
+             }
+        } else {
+             output = `strace: attach: ptrace(PTRACE_SEIZE, ${pid}): Operation not permitted`;
+        }
+        break;
+    }
+
+    // Cycle 256: The Group Policy
+    case 'deploy_weapon':
+    case './deploy_weapon':
+    case '/usr/local/bin/deploy_weapon': {
+        const hasGroup = USER_GROUPS.includes('black_ops');
+        if (hasGroup) {
+             if (!VFS['/var/run/cycle256_solved']) {
+                 VFS['/var/run/cycle256_solved'] = { type: 'file', content: 'TRUE' };
+                 // Ensure directory exists
+                 const runDir = getNode('/var/run');
+                 if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle256_solved')) {
+                     runDir.children.push('cycle256_solved');
+                 }
+                 output = '[AUTH] Group Membership Verified (black_ops).\n[SYSTEM] Weapon Systems Online.\n[DEPLOY] Payload Released.\nFLAG: GHOST_ROOT{US3R_GR0UP_M4N4G3M3NT}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PRIVILEGE ESCALATION (GROUPS).\x1b[0m';
+             } else {
+                 output = '[SYSTEM] Weapon Systems Online.\nFLAG: GHOST_ROOT{US3R_GR0UP_M4N4G3M3NT}';
+             }
+        } else {
+             output = '[ACCESS DENIED] User is not in the required group: black_ops\n[ACTION] Contact SysAdmin to be added to the group.';
+        }
+        break;
+    }
+    case 'groups': {
+        const targetUser = args[0] || 'ghost';
+        if (targetUser === 'ghost') {
+            output = `ghost : ${USER_GROUPS.join(' ')}`;
+        } else if (targetUser === 'root') {
+            output = 'root : root';
+        } else {
+            output = `groups: ${targetUser}: no such user`;
+        }
+        break;
+    }
+    case 'usermod': {
+        // usermod -aG group user
+        // Simplified parsing for "usermod -aG group user" or "usermod -a -G group user"
+        let groupsStr = '';
+        let user = '';
+        
+        if (args.includes('-aG')) {
+            const idx = args.indexOf('-aG');
+            groupsStr = args[idx + 1];
+            user = args[idx + 2];
+        } else if (args.includes('-G') && args.includes('-a')) {
+            const idx = args.indexOf('-G');
+            groupsStr = args[idx + 1];
+            user = args[args.length - 1]; // Assume user is last
+        } else {
+            output = 'usage: usermod -aG <group> <user>';
+            break;
+        }
+        
+        if (!user || !groupsStr) {
+            output = 'usage: usermod -aG <group> <user>';
+        } else if (user !== 'ghost') {
+            output = `usermod: user '${user}' does not exist`;
+        } else {
+            const groupsToAdd = groupsStr.split(',');
+            for (const g of groupsToAdd) {
+                if (!USER_GROUPS.includes(g)) {
+                    USER_GROUPS.push(g);
+                }
+            }
+            saveSystemState();
+            output = ''; // Silent success
+        }
+        break;
+    }
+
+    // Cycle 258: The Broken Service
+    case 'systemctl': {
+        const args = commandLine.trim().split(/\s+/).slice(1);
+        const action = args[0];
+        const service = args[1];
+        
+        if (!action) {
+            output = 'systemctl: usage: systemctl [start|stop|restart|status] <service>';
+            break;
+        }
+        
+        if (service === 'firewall' || service === 'firewall.service') {
+            if (action === 'status') {
+                 if (VFS['/var/run/firewall.pid']) {
+                     output = '● firewall.service - Ghost Firewall Daemon\n   Loaded: loaded (/etc/systemd/system/firewall.service; enabled; vendor preset: enabled)\n   Active: active (running) since Tue 2026-02-17 16:00:00 UTC; 1min ago\n Main PID: 8888 (ghost_firewall)\n    Tasks: 1 (limit: 4915)\n   CGroup: /system.slice/firewall.service\n           └─8888 /usr/bin/ghost_firewall';
+                 } else {
+                     output = '● firewall.service - Ghost Firewall Daemon\n   Loaded: loaded (/etc/systemd/system/firewall.service; enabled; vendor preset: enabled)\n   Active: inactive (dead)\n\nFeb 17 16:00:00 ghost-root systemd[1]: Starting Ghost Firewall Daemon...\nFeb 17 16:00:00 ghost-root ghost_firewall[8888]: Error: Configuration file /etc/firewall/rules.conf not found.\nFeb 17 16:00:00 ghost-root systemd[1]: firewall.service: Main process exited, code=exited, status=1/FAILURE\nFeb 17 16:00:00 ghost-root systemd[1]: Failed to start Ghost Firewall Daemon.';
+                 }
+            } else if (action === 'start' || action === 'restart') {
+                 // Check if config exists
+                 const configNode = getNode('/etc/firewall/rules.conf');
+                 if (configNode && configNode.type === 'file') {
+                     if (!VFS['/var/run/cycle258_solved']) {
+                         VFS['/var/run/cycle258_solved'] = { type: 'file', content: 'TRUE' };
+                         VFS['/var/run/firewall.pid'] = { type: 'file', content: '8888' };
+                         // Ensure directory exists
+                         const runDir = getNode('/var/run');
+                         if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle258_solved')) {
+                             runDir.children.push('cycle258_solved');
+                         }
+                         output = '[SUCCESS] firewall.service started.\nFLAG: GHOST_ROOT{SYST3MCTL_S3RV1C3_R3SCU3}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: FIREWALL ACTIVE.\x1b[0m';
+                     } else {
+                         VFS['/var/run/firewall.pid'] = { type: 'file', content: '8888' };
+                         output = '[SUCCESS] firewall.service started.\nFLAG: GHOST_ROOT{SYST3MCTL_S3RV1C3_R3SCU3}';
+                     }
+                 } else {
+                     output = 'Job for firewall.service failed because the control process exited with error code.\nSee "systemctl status firewall.service" and "journalctl -xe" for details.';
+                 }
+            } else if (action === 'stop') {
+                delete VFS['/var/run/firewall.pid'];
+                output = 'Stopped firewall.service.';
+            } else {
+                output = `Unknown operation '${action}'.`;
+            }
+        } else {
+             output = `Failed to ${action} ${service}: Unit ${service} not found.`;
+        }
+        break;
+    }
 
     default:
       output = `bash: ${command}: command not found`;

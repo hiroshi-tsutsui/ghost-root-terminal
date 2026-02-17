@@ -43,3 +43,10 @@
 - **Type:** Forensics / Strings Analysis
 - **Mechanic:** Added `sys_diag` binary which segfaults on execution. Users must use the newly implemented `strings` command to extract the hidden flag from the binary file.
 - **Status:** DEPLOYED
+
+## Cycle 248: The DNS Poison
+- **Date:** 2026-02-17
+- **Sector:** /usr/bin/connect_secure
+- **Type:** Sysadmin / DNS Spoofing
+- **Mechanic:** `connect_secure` fails to resolve `secure.corp`. User must edit `/etc/hosts` to point `secure.corp` to `10.10.10.10`.
+- **Status:** DEPLOYED
