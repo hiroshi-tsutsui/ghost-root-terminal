@@ -9999,24 +9999,7 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
       return finalize(output, newCwd);
   }
   
-  // Cycle 255 Binary Execution Logic
-  if (command === 'mystery_process' || command === './mystery_process' || command === '/usr/bin/mystery_process') {
-       if (VFS['/tmp/secret_config.dat']) {
-            output = `[MYSTERY] Configuration Loaded.\nFLAG: GHOST_ROOT{STR4C3_D3BUG_M4ST3R}`;
-            if (!VFS['/var/run/strace_solved']) {
-                VFS['/var/run/strace_solved'] = { type: 'file', content: 'TRUE' };
-                const runDir = getNode('/var/run');
-                if (runDir && runDir.type === 'dir' && !runDir.children.includes('strace_solved')) {
-                    runDir.children.push('strace_solved');
-                }
-                output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PROCESS TRACED.\x1b[0m`;
-            }
-       } else {
-            // Simulate stderr
-            output = `Error: Config missing.`; 
-       }
-       return finalize(output, newCwd);
-  }
+// Cycle 255: Replaced with consolidated logic below
 
   // Cycle 277 Binary Execution Logic
   if (command === 'decrypt_file' || command === './decrypt_file' || command === '/usr/bin/decrypt_file') {
@@ -10038,7 +10021,7 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
   }
 
   switch (command) {
-    case 'strace': {
+    // case 'strace': {
         if (args.length < 1) {
             output = 'usage: strace [-p PID] <command> [args...]';
         } else {
@@ -16542,7 +16525,7 @@ auth.py
        break;
     }
     // Cycle 255: The Process Trace
-    case 'mystery_process': {
+    // case 'mystery_process': {
         if (VFS['/tmp/secret_config.dat']) {
             output = '[MYSTERY] Config found.\n[MYSTERY] Decrypting payload...\nFLAG: GHOST_ROOT{STR4C3_R3V3ALS_H1DD3N_F1L3S}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PROCESS TRACED.\x1b[0m';
             if (!VFS['/var/run/strace_solved']) {
@@ -16558,7 +16541,7 @@ auth.py
         }
         break;
     }
-    case 'strace': {
+    // case 'strace': {
         const cmd = args[0];
         if (!cmd) {
             output = 'usage: strace <command>';
@@ -20554,35 +20537,78 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
     // Cycle 255: The Process Trace (Strace)
     case 'strace': {
         const hasPID = args.includes('-p');
-        const pidIdx = args.indexOf('-p');
-        const pid = args[pidIdx + 1];
+        
+        if (hasPID) {
+            const pidIdx = args.indexOf('-p');
+            const pid = args[pidIdx + 1];
 
-        if (!hasPID || !pid) {
-             output = 'usage: strace -p <pid>';
-        } else if (pid === '9001') {
-             if (VFS['/tmp/ghost.token']) {
-                 const node = getNode('/tmp/ghost.token');
-                 const content = (node && node.type === 'file') ? (node as any).content.trim() : '';
-                 
-                 if (content === 's3cr3t_k3y') {
-                     if (!VFS['/var/run/cycle255_solved']) {
-                         VFS['/var/run/cycle255_solved'] = { type: 'file', content: 'TRUE' };
-                         const runDir = getNode('/var/run');
-                         if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle255_solved')) {
-                             runDir.children.push('cycle255_solved');
-                         }
-                         output = `Process 9001 attached\nopen("/tmp/ghost.token", O_RDONLY) = 3\nread(3, "s3cr3t_k3y", 1024) = 10\nwrite(1, "Access Granted.\\nFLAG: GHOST_ROOT{STR4C3_D3BUG_SUCC3SS}\\n", 60) = 60\nclose(3) = 0\n[SUCCESS] Token Verified.\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PROCESS TRACED.\x1b[0m`;
+            if (!pid) {
+                 output = 'usage: strace -p <pid>';
+            } else if (pid === '9001') {
+                 // Legacy/Alt Logic for PID 9001
+                 if (VFS['/tmp/ghost.token']) {
+                     const node = getNode('/tmp/ghost.token');
+                     const content = (node && node.type === 'file') ? (node as any).content.trim() : '';
+                     
+                     if (content === 's3cr3t_k3y') {
+                         output = `Process 9001 attached\nopen("/tmp/ghost.token", O_RDONLY) = 3\nread(3, "s3cr3t_k3y", 1024) = 10\nwrite(1, "Access Granted.\\n", 16) = 16\nclose(3) = 0`;
                      } else {
-                         output = `Process 9001 attached\nopen("/tmp/ghost.token", O_RDONLY) = 3\nread(3, "s3cr3t_k3y", 1024) = 10\nwrite(1, "Access Granted.\\nFLAG: GHOST_ROOT{STR4C3_D3BUG_SUCC3SS}\\n", 60) = 60\nclose(3) = 0`;
+                         output = `Process 9001 attached\nopen("/tmp/ghost.token", O_RDONLY) = 3\nread(3, "${content}", 1024) = ${content.length}\nwrite(2, "Error: Token Mismatch\\n", 22) = 22\nclose(3) = 0`;
                      }
                  } else {
-                     output = `Process 9001 attached\nopen("/tmp/ghost.token", O_RDONLY) = 3\nread(3, "${content}", 1024) = ${content.length}\nwrite(2, "Error: Token '${content}' != 's3cr3t_k3y'\\n", ${28 + content.length}) = ${28 + content.length}\nclose(3) = 0`;
+                     output = `Process 9001 attached\nopen("/tmp/ghost.token", O_RDONLY) = -1 ENOENT (No such file or directory)\n...`;
                  }
-             } else {
-                 output = `Process 9001 attached\nopen("/tmp/ghost.token", O_RDONLY) = -1 ENOENT (No such file or directory)\nnanosleep({tv_sec=1, tv_nsec=0}, NULL) = 0\nopen("/tmp/ghost.token", O_RDONLY) = -1 ENOENT (No such file or directory)\n...`;
+            } else {
+                 output = `strace: attach: ptrace(PTRACE_SEIZE, ${pid}): Operation not permitted`;
+            }
+        } else if (args.length > 0) {
+            const cmd = args[0];
+            // Handle mystery_process
+            if (cmd === 'mystery_process' || cmd === './mystery_process' || cmd === '/usr/bin/mystery_process') {
+                 if (VFS['/tmp/secret_config.dat']) {
+                     output = `execve("/usr/bin/mystery_process", ["mystery_process"], 0x7ff...) = 0
+brk(NULL)                               = 0x559d7249a000
+access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = 3
+fstat(3, {st_mode=S_IFREG|0644, st_size=12, ...}) = 0
+read(3, "CONF=TRUE\\n", 1024)           = 10
+write(1, "Configuration Loaded.\\n", 22)  = 22
+write(1, "FLAG: GHOST_ROOT{STR4C3_F1L3_M1SS1NG_F0UND}\\n", 44) = 44
+exit_group(0)                           = ?
++++ exited with 0 +++`;
+                     // Mark as solved
+                     if (!VFS['/var/run/cycle255_solved']) {
+                         VFS['/var/run/cycle255_solved'] = { type: 'file', content: 'TRUE' };
+                         output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PROCESS TRACE ANALYSIS.\x1b[0m`;
+                     }
+                 } else {
+                     output = `execve("/usr/bin/mystery_process", ["mystery_process"], 0x7ff...) = 0
+brk(NULL)                               = 0x559d7249a000
+access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = -1 ENOENT (No such file or directory)
+exit_group(1)                           = ?
++++ exited with 1 +++`;
+                 }
+            } else {
+                output = `strace: ${cmd}: command not found or not supported in simulation`;
+            }
+        } else {
+             output = 'usage: strace [-p pid] <command> [args]';
+        }
+        break;
+    }
+
+    case 'mystery_process':
+    case './mystery_process':
+    case '/usr/bin/mystery_process': {
+        if (VFS['/tmp/secret_config.dat']) {
+             output = 'Configuration Loaded.\nFLAG: GHOST_ROOT{STR4C3_F1L3_M1SS1NG_F0UND}';
+             if (!VFS['/var/run/cycle255_solved']) {
+                 VFS['/var/run/cycle255_solved'] = { type: 'file', content: 'TRUE' };
+                 output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PROCESS TRACE ANALYSIS.\x1b[0m`;
              }
         } else {
-             output = `strace: attach: ptrace(PTRACE_SEIZE, ${pid}): Operation not permitted`;
+             output = ''; // Silent failure
         }
         break;
     }
