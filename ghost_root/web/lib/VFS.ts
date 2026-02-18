@@ -942,10 +942,16 @@ Click here to claim your prize!
       type: 'file',
       content: '\x7fELF\x02\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x3e\x00\x01\x00\x00\x00\x30\x05\x40\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00[MODULE_LICENSE: GPL]\n[MODULE_AUTHOR: Ghost]\n[MODULE_DESCRIPTION: Encrypted Vault Filesystem Driver]\n'
   },
-  // Cycle 276: The Immutable File (Chattr)
-  '/var/secure': {
-      type: 'dir',
-      children: ['vault.lock']
+  // Cycle 255: The Process Trace (Strace)
+  '/usr/bin/mystery_process': {
+      type: 'file',
+      content: '[BINARY_ELF_X86_64] [OBSCURE_DAEMON]\n[ERROR] Silent Failure Mode Active.\n',
+      permissions: '0755'
+  },
+  '/home/ghost/trace_log.txt': {
+      type: 'file',
+      content: '[DEV_NOTE] The new daemon (/usr/bin/mystery_process) keeps dying immediately.\nIt doesn\'t print any errors to stdout/stderr.\nI need to know what file it\'s trying to open before it crashes.\nTool: strace',
+      permissions: '0644'
   },
   '/var/secure/vault.lock': {
       type: 'file',

@@ -4283,7 +4283,7 @@ export interface CommandResult {
   data?: any;
 }
 
-const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'ss', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail',     'strings', 'recover_tool', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'arp', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'zgrep', 'gunzip', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'secure_vault', 'jobs', 'fg', 'bg', 'recover_data', 'ghost_update', 'git', 'file', 'openssl', 'beacon', 'fsck', 'docker', 'lsattr', 'chattr', 'backup_service', 'getfattr', 'setfattr', 'setcap', 'mkfifo', 'uplink_service', 'sqlite3', 'gdb', 'jwt_tool', 'php', 'access_card', 'sys_monitor', 'ln', 'readlink', 'nginx', 'tac', 'getcap', 'sysctl', 'ldd', 'quantum_calc', 'deploy_tool', 'ghost_relay', 'groups', 'usermod', 'access_silo', 'satellite_uplink', 'unshadow', 'john', 'mkswap', 'swapon', 'free', 'hostname', 'runlevel', 'telinit', 'init', 'screen', 'signal_jammer', 'legacy_auth', 'sys_health', 'grid_control', 'restore_uplink', 'uplink_connect_manual', 'nuclear_launch', 'firewall_reload', 'net-splice', 'tune-receiver', 'doomsday'];
+const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'ss', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail',     'strings', 'recover_tool', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'arp', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'zgrep', 'gunzip', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'secure_vault', 'jobs', 'fg', 'bg', 'recover_data', 'ghost_update', 'git', 'file', 'openssl', 'beacon', 'fsck', 'docker', 'lsattr', 'chattr', 'backup_service', 'getfattr', 'setfattr', 'setcap', 'mkfifo', 'uplink_service', 'sqlite3', 'gdb', 'jwt_tool', 'php', 'access_card', 'sys_monitor', 'ln', 'readlink', 'nginx', 'tac', 'getcap', 'sysctl', 'ldd', 'quantum_calc', 'deploy_tool', 'ghost_relay', 'groups', 'usermod', 'access_silo', 'satellite_uplink', 'unshadow', 'john', 'mkswap', 'swapon', 'free', 'hostname', 'runlevel', 'telinit', 'init', 'screen', 'signal_jammer', 'legacy_auth', 'sys_health', 'grid_control', 'restore_uplink', 'uplink_connect_manual', 'nuclear_launch', 'firewall_reload', 'net-splice', 'tune-receiver', 'doomsday', 'strace'];
 
 export interface MissionStatus {
   objectives: {
@@ -5153,6 +5153,51 @@ export const tabCompletion = (cwd: string, inputBuffer: string): { matches: stri
              const home = getNode('/home/ghost');
              if (home && home.type === 'dir' && !home.children.includes('payload_alert.txt')) {
                  home.children.push('payload_alert.txt');
+             }
+        }
+    }
+
+    // Cycle 255 Init (The Process Trace - Strace)
+    if (!VFS['/home/ghost/trace_alert.txt']) {
+        VFS['/home/ghost/trace_alert.txt'] = {
+            type: 'file',
+            content: '[ALERT] Suspicious background process detected (PID 9001).\\n[ANALYSIS] Process "mystery_process" is active but silent.\\n[ACTION] Use "strace -p 9001" (or "strace mystery_process") to trace its system calls.\\n[GOAL] Identify the missing configuration file it is trying to open.'
+        };
+        const home = getNode('/home/ghost');
+        if (home && home.type === 'dir' && !home.children.includes('trace_alert.txt')) {
+            home.children.push('trace_alert.txt');
+        }
+
+        // Spawn the process
+        if (!PROCESSES.find(p => p.pid === 9001)) {
+            PROCESSES.push({
+                pid: 9001,
+                ppid: 1,
+                user: 'ghost',
+                cpu: 0.1,
+                mem: 4.5,
+                time: '0:05',
+                command: '/usr/bin/mystery_process',
+                tty: '?',
+                stat: 'Ss'
+            });
+        }
+        
+        // Create the binary file
+        if (!VFS['/usr/bin/mystery_process']) {
+             if (!VFS['/usr/bin']) {
+                 const usr = getNode('/usr');
+                 if (usr && usr.type === 'dir' && !usr.children.includes('bin')) usr.children.push('bin');
+                 VFS['/usr/bin'] = { type: 'dir', children: [] };
+             }
+             VFS['/usr/bin/mystery_process'] = {
+                 type: 'file',
+                 content: '[BINARY_ELF_X86_64] [OBFUSCATED]\n',
+                 permissions: '0755'
+             };
+             const binDir = getNode('/usr/bin');
+             if (binDir && binDir.type === 'dir' && !binDir.children.includes('mystery_process')) {
+                 binDir.children.push('mystery_process');
              }
         }
     }
@@ -9954,6 +9999,25 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
       return finalize(output, newCwd);
   }
   
+  // Cycle 255 Binary Execution Logic
+  if (command === 'mystery_process' || command === './mystery_process' || command === '/usr/bin/mystery_process') {
+       if (VFS['/tmp/secret_config.dat']) {
+            output = `[MYSTERY] Configuration Loaded.\nFLAG: GHOST_ROOT{STR4C3_D3BUG_M4ST3R}`;
+            if (!VFS['/var/run/strace_solved']) {
+                VFS['/var/run/strace_solved'] = { type: 'file', content: 'TRUE' };
+                const runDir = getNode('/var/run');
+                if (runDir && runDir.type === 'dir' && !runDir.children.includes('strace_solved')) {
+                    runDir.children.push('strace_solved');
+                }
+                output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PROCESS TRACED.\x1b[0m`;
+            }
+       } else {
+            // Simulate stderr
+            output = `Error: Config missing.`; 
+       }
+       return finalize(output, newCwd);
+  }
+
   // Cycle 277 Binary Execution Logic
   if (command === 'decrypt_file' || command === './decrypt_file' || command === '/usr/bin/decrypt_file') {
        if (LOADED_MODULES.includes('crypto_sec')) {
@@ -9974,6 +10038,65 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
   }
 
   switch (command) {
+    case 'strace': {
+        if (args.length < 1) {
+            output = 'usage: strace [-p PID] <command> [args...]';
+        } else {
+            let target = args[0];
+            if (target === '-p' && args[1]) {
+                const pid = parseInt(args[1], 10);
+                const proc = PROCESSES.find(p => p.pid === pid);
+                if (proc) {
+                    target = proc.command; 
+                    // Handle command path
+                    if (target.startsWith('/')) target = target.split('/').pop() || target;
+                } else {
+                     output = `strace: attach: ptrace(PTRACE_SEIZE, ${pid}): No such process`;
+                     return finalize(output, newCwd);
+                }
+            }
+            
+            // Clean up target name (./mystery_process -> mystery_process)
+            if (target.startsWith('./')) target = target.substring(2);
+            if (target.includes('/')) target = target.split('/').pop() || target;
+
+            if (target === 'mystery_process') {
+                 if (VFS['/tmp/secret_config.dat']) {
+                      output = `execve("/usr/bin/mystery_process", ["mystery_process"], 0x7ffd5d4b6390 /* 21 vars */) = 0
+brk(NULL)                               = 0x559e3a628000
+access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = 3
+read(3, "CONF: GHOST_ROOT{STR4C3_D3BUG_M4ST3R}", 1024) = 38
+close(3)                                = 0
+write(1, "Configuration Loaded.\\n", 22)  = 22
+exit_group(0)                           = ?
++++ exited with 0 +++
+\x1b[1;32m[MISSION UPDATE] Objective Complete: PROCESS TRACED.\x1b[0m`;
+
+                      if (!VFS['/var/run/strace_solved']) {
+                          VFS['/var/run/strace_solved'] = { type: 'file', content: 'TRUE' };
+                          const runDir = getNode('/var/run');
+                          if (runDir && runDir.type === 'dir' && !runDir.children.includes('strace_solved')) {
+                              runDir.children.push('strace_solved');
+                          }
+                      }
+                 } else {
+                      output = `execve("/usr/bin/mystery_process", ["mystery_process"], 0x7ffd5d4b6390 /* 21 vars */) = 0
+brk(NULL)                               = 0x559e3a628000
+access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = -1 ENOENT (No such file or directory)
+write(2, "Error: Config missing.\\n", 22) = 22
+exit_group(1)                           = ?
++++ exited with 1 +++`;
+                 }
+            } else if (target === 'ls') {
+                 output = `execve("/bin/ls", ["ls"], 0x...) = 0\nopenat(AT_FDCWD, ".", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3\ngetdents64(3, /* 15 entries */, 32768) = 432\nclose(3) = 0\n+++ exited with 0 +++`;
+            } else {
+                 output = `strace: ${target}: command not found or simulation not implemented.`;
+            }
+        }
+        break;
+    }
     case 'firewall_reload': {
         const confNode = getNode('/etc/firewall.conf');
         if (!confNode || confNode.type !== 'file') {
@@ -16417,6 +16540,66 @@ auth.py
     case 'finger': {
        output = 'Login: ghost...';
        break;
+    }
+    // Cycle 255: The Process Trace
+    case 'mystery_process': {
+        if (VFS['/tmp/secret_config.dat']) {
+            output = '[MYSTERY] Config found.\n[MYSTERY] Decrypting payload...\nFLAG: GHOST_ROOT{STR4C3_R3V3ALS_H1DD3N_F1L3S}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PROCESS TRACED.\x1b[0m';
+            if (!VFS['/var/run/strace_solved']) {
+                VFS['/var/run/strace_solved'] = { type: 'file', content: 'TRUE' };
+                const runDir = getNode('/var/run');
+                if (runDir && runDir.type === 'dir' && !runDir.children.includes('strace_solved')) {
+                    runDir.children.push('strace_solved');
+                }
+            }
+        } else {
+            // Silent crash (simulated)
+            output = ''; 
+        }
+        break;
+    }
+    case 'strace': {
+        const cmd = args[0];
+        if (!cmd) {
+            output = 'usage: strace <command>';
+        } else {
+            // Handle various paths to the binary
+            if (cmd === 'mystery_process' || cmd === './mystery_process' || cmd === '/usr/bin/mystery_process') {
+                if (VFS['/tmp/secret_config.dat']) {
+                     output = `execve("${cmd}", ["${cmd}"], 0x...) = 0
+open("/tmp/secret_config.dat", O_RDONLY) = 3
+read(3, "CONF_V2...", 1024) = 1024
+close(3) = 0
+write(1, "[MYSTERY] Config found.\\n", 24) = 24
+write(1, "[MYSTERY] Decrypting payload...\\n", 31) = 31
+write(1, "FLAG: GHOST_ROOT{STR4C3_R3V3ALS_H1DD3N_F1L3S}\\n", 45) = 45
+exit_group(0)                           = ?
++++ exited with 0 +++`;
+                } else {
+                     output = `execve("${cmd}", ["${cmd}"], 0x7ffd5d4c3860 /* 21 vars */) = 0
+brk(NULL)                               = 0x55a92d838000
+access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)
+mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f0f1c0b9000
+access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
+open("/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
+fstat(3, {st_mode=S_IFREG|0644, st_size=12345, ...}) = 0
+mmap(NULL, 12345, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7f0f1c0b5000
+close(3)                                = 0
+open("/usr/lib/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
+read(3, "\\177ELF\\2\\1\\1\\3\\0\\0\\0\\0\\0\\0\\0\\0\\3\\0>\\0\\1\\0\\0\\0\\360q\\2\\0\\0\\0\\0\\0"..., 832) = 832
+fstat(3, {st_mode=S_IFREG|0755, st_size=2029592, ...}) = 0
+mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f0f1c0b3000
+...
+open("/tmp/secret_config.dat", O_RDONLY) = -1 ENOENT (No such file or directory)
+--- SIGSEGV {si_signo=SIGSEGV, si_code=SEGV_MAPERR, si_addr=NULL} ---
++++ killed by SIGSEGV +++
+Segmentation fault`;
+                }
+            } else {
+                output = `execve("${cmd}", ["${cmd}"], 0x...) = 0\n...`;
+            }
+        }
+        break;
     }
     case 'curl': {
       // Basic argument parsing
