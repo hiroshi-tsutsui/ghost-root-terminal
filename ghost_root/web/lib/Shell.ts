@@ -5584,6 +5584,71 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
   const cmdTokens = commandLine.trim().split(/\s+/);
   const cmdBase = cmdTokens[0];
 
+  // Cycle 255 Init (The Process Trace)
+  if (!VFS['/home/ghost/trace_alert.log']) {
+      VFS['/home/ghost/trace_alert.log'] = {
+          type: 'file',
+          content: '[ALERT] Mystery process failing silently.\n[ANALYSIS] Binary /usr/bin/mystery_process exits immediately.\n[ACTION] Use "strace" to trace system calls and find missing resources.'
+      };
+      const home = getNode('/home/ghost');
+      if (home && home.type === 'dir' && !home.children.includes('trace_alert.log')) {
+          home.children.push('trace_alert.log');
+      }
+
+      if (!VFS['/usr/bin/mystery_process']) {
+          VFS['/usr/bin/mystery_process'] = {
+              type: 'file',
+              content: '[BINARY_ELF_X86_64] [MYSTERY_V1]\n[STATUS] CORRUPTED config path.\n',
+              permissions: '0755'
+          };
+          const bin = getNode('/usr/bin');
+          if (bin && bin.type === 'dir' && !bin.children.includes('mystery_process')) {
+              bin.children.push('mystery_process');
+          }
+      }
+  }
+
+  // Cycle 255 Command (mystery_process)
+  if (cmdBase === 'mystery_process' || cmdBase === './mystery_process' || cmdBase === '/usr/bin/mystery_process') {
+       if (VFS['/tmp/secret_config.dat']) {
+            if (!VFS['/var/run/cycle255_solved']) {
+                VFS['/var/run/cycle255_solved'] = { type: 'file', content: 'TRUE' };
+                // Ensure directory exists
+                const runDir = getNode('/var/run');
+                if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle255_solved')) {
+                    runDir.children.push('cycle255_solved');
+                }
+                return { output: '[INIT] Reading config... OK.\n[SUCCESS] Process Started.\nFLAG: GHOST_ROOT{STR4C3_R3V34LS_H1DD3N_F1L3S}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SYSTEM CALL TRACED.\x1b[0m', newCwd: cwd };
+            }
+            return { output: '[INIT] Reading config... OK.\n[SUCCESS] Process Started.\nFLAG: GHOST_ROOT{STR4C3_R3V34LS_H1DD3N_F1L3S}', newCwd: cwd };
+       }
+       // Silent fail
+       return { output: '', newCwd: cwd };
+  }
+
+  // Cycle 255 Command (strace)
+  if (cmdBase === 'strace') {
+      const args = cmdTokens.slice(1);
+      if (args.length === 0) return { output: 'strace: usage: strace [-o <file>] [-p <pid>] <command>', newCwd: cwd };
+      
+      const targetCmd = args[args.length - 1]; // Simplified parsing
+      if (targetCmd.includes('mystery_process')) {
+           let out = 'execve("/usr/bin/mystery_process", ["mystery_process"], [/* 21 vars */]) = 0\nbrk(NULL)                               = 0x12345678\naccess("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)\n';
+           
+           if (VFS['/tmp/secret_config.dat']) {
+               out += 'open("/tmp/secret_config.dat", O_RDONLY) = 3\nread(3, "CONFIG_V1", 1024) = 9\nwrite(1, "[INIT] Reading config... OK.\\n", 29) = 29\nwrite(1, "[SUCCESS] Process Started.\\n", 27) = 27\nexit_group(0)                           = ?\n+++ exited with 0 +++';
+           } else {
+               out += 'open("/tmp/secret_config.dat", O_RDONLY) = -1 ENOENT (No such file or directory)\nexit_group(1)                           = ?\n+++ exited with 1 +++';
+           }
+           return { output: out, newCwd: cwd };
+      } else if (targetCmd.includes('ghost_daemon')) {
+          // Cycle 273 (The Iptables Firewall) - Reusing strace for other puzzles if needed
+           return { output: 'execve("/usr/bin/ghost_daemon", ...)\nconnect(3, {sa_family=AF_INET, sin_port=htons(80), sin_addr=inet_addr("1.1.1.1")}, 16) = -1 ENETUNREACH (Network is unreachable)\n', newCwd: cwd };
+      }
+      
+      return { output: `strace: ${targetCmd}: command not found`, newCwd: cwd };
+  }
+
   // Cycle 275 (The Kernel Module)
   if (cmdBase === 'interface_uplink' || cmdBase === './interface_uplink' || cmdBase === '/usr/bin/interface_uplink') {
        if (LOADED_MODULES.includes('uplink')) {

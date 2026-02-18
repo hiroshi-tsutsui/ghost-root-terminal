@@ -224,6 +224,13 @@
 - **Mechanic:** Critical file is locked (`+i`). User must use `lsattr` to inspect and `chattr -i` to unlock before deletion.
 - **Status:** DEPLOYED
 
+## Cycle 255: The Process Trace (Strace)
+- **Date:** 2026-02-19
+- **Sector:** /usr/bin/mystery_process
+- **Type:** Sysadmin / Debugging (Strace)
+- **Mechanic:** Binary fails silently. User must run `strace mystery_process` to see it trying to open `/tmp/secret_config.dat` (ENOENT). User creates the missing file to fix it.
+- **Status:** DEPLOYED
+
 ## Cycle 277: The Kernel Module (Modprobe)
 - **Date:** 2026-02-18
 - **Sector:** /lib/modules/5.4.0-ghost/kernel/crypto/crypto_sec.ko
