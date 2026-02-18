@@ -311,7 +311,7 @@ KEY_ID: GHOST_PROTOCOL_INIT_V2
   },
   '/home/ghost': {
     type: 'dir',
-    children: ['project_alpha', 'secrets', '.bash_history', '.ssh', 'wifi_note.txt', 'journal', 'evidence.jpg', 'surveillance.jpg', 'tools', 'tools.zip', 'capture.cap', 'drone_manual.txt', 'beacon_protocol.txt', 'hashes.txt', 'wordlist.txt', 'operations', 'security_alert.txt', 'suid_notice.txt', 'backup_log.txt', 'security_notice.txt']
+    children: ['project_alpha', 'secrets', '.bash_history', '.ssh', 'wifi_note.txt', 'journal', 'evidence.jpg', 'surveillance.jpg', 'tools', 'tools.zip', 'capture.cap', 'drone_manual.txt', 'beacon_protocol.txt', 'hashes.txt', 'wordlist.txt', 'operations', 'security_alert.txt', 'suid_notice.txt', 'backup_log.txt', 'security_notice.txt', 'security_audit.log']
   },
   '/home/ghost/suid_notice.txt': {
       type: 'file',
@@ -510,7 +510,27 @@ exit`
   },
   '/etc': {
     type: 'dir',
-    children: ['passwd', 'shadow', 'hosts', 'iptables.rules', 'tor', 'cron.daily', 'cron.d', 'ssl', 'uplink.conf', 'omega']
+    children: ['passwd', 'shadow', 'hosts', 'iptables.rules', 'tor', 'cron.daily', 'cron.d', 'ssl', 'uplink.conf', 'omega', 'ssh']
+  },
+  // Cycle 271: The Configuration Drift
+  '/etc/ssh': {
+      type: 'dir',
+      children: ['sshd_config', 'sshd_config.bak']
+  },
+  '/etc/ssh/sshd_config': {
+      type: 'file',
+      content: '# Package generated configuration file\\n# See the sshd_config(5) manpage for details\\n\\n# What ports, IPs and protocols we listen for\\nPort 22\\n# Use these options to restrict which interfaces/protocols sshd will bind to\\n#ListenAddress ::\\n#ListenAddress 0.0.0.0\\nProtocol 2\\n# HostKeys for protocol version 2\\nHostKey /etc/ssh/ssh_host_rsa_key\\nHostKey /etc/ssh/ssh_host_dsa_key\\nHostKey /etc/ssh/ssh_host_ecdsa_key\\nHostKey /etc/ssh/ssh_host_ed25519_key\\n#Privilege Separation is turned on for security\\nUsePrivilegeSeparation yes\\n\\n# Logging\\nSyslogFacility AUTH\\nLogLevel INFO\\n\\n# Authentication:\\nLoginGraceTime 120\\nPermitRootLogin prohibited-password\\nStrictModes yes\\n\\nRSAAuthentication yes\\nPubkeyAuthentication yes\\n#AuthorizedKeysFile	%h/.ssh/authorized_keys\\n# HIDDEN_BACKDOOR: GHOST_ROOT{C0NF1G_DR1FT_D3T3CT3D}\\n\\n# Don\\'t read the user\\'s ~/.rhosts and ~/.shosts files\\nIgnoreRhosts yes\\n# For this to work you will also need host keys in /etc/ssh_known_hosts\\nRhostsRSAAuthentication no\\n# similar for protocol version 2\\nHostbasedAuthentication no\\n# Uncomment if you don\\'t trust ~/.ssh/known_hosts for RhostsRSAAuthentication\\n#IgnoreUserKnownHosts yes\\n\\n# To enable empty passwords, change to yes (NOT RECOMMENDED)\\nPermitEmptyPasswords no\\n\\n# Change to yes to enable challenge-response passwords (beware issues with\\n# some PAM modules and threads)\\nChallengeResponseAuthentication no\\n',
+      permissions: '0644'
+  },
+  '/etc/ssh/sshd_config.bak': {
+      type: 'file',
+      content: '# Package generated configuration file\\n# See the sshd_config(5) manpage for details\\n\\n# What ports, IPs and protocols we listen for\\nPort 22\\n# Use these options to restrict which interfaces/protocols sshd will bind to\\n#ListenAddress ::\\n#ListenAddress 0.0.0.0\\nProtocol 2\\n# HostKeys for protocol version 2\\nHostKey /etc/ssh/ssh_host_rsa_key\\nHostKey /etc/ssh/ssh_host_dsa_key\\nHostKey /etc/ssh/ssh_host_ecdsa_key\\nHostKey /etc/ssh/ssh_host_ed25519_key\\n#Privilege Separation is turned on for security\\nUsePrivilegeSeparation yes\\n\\n# Logging\\nSyslogFacility AUTH\\nLogLevel INFO\\n\\n# Authentication:\\nLoginGraceTime 120\\nPermitRootLogin prohibited-password\\nStrictModes yes\\n\\nRSAAuthentication yes\\nPubkeyAuthentication yes\\n#AuthorizedKeysFile	%h/.ssh/authorized_keys\\n\\n# Don\\'t read the user\\'s ~/.rhosts and ~/.shosts files\\nIgnoreRhosts yes\\n# For this to work you will also need host keys in /etc/ssh_known_hosts\\nRhostsRSAAuthentication no\\n# similar for protocol version 2\\nHostbasedAuthentication no\\n# Uncomment if you don\\'t trust ~/.ssh/known_hosts for RhostsRSAAuthentication\\n#IgnoreUserKnownHosts yes\\n\\n# To enable empty passwords, change to yes (NOT RECOMMENDED)\\nPermitEmptyPasswords no\\n\\n# Change to yes to enable challenge-response passwords (beware issues with\\n# some PAM modules and threads)\\nChallengeResponseAuthentication no\\n',
+      permissions: '0644'
+  },
+  '/home/ghost/security_audit.log': {
+      type: 'file',
+      content: '[WARN] Configuration drift detected in /etc/ssh/sshd_config.\\n[ACTION] Compare with backup (/etc/ssh/sshd_config.bak) to identify unauthorized changes.\\n[HINT] Use \\'diff file1 file2\\'.',
+      permissions: '0644'
   },
   '/etc/uplink.conf': {
     type: 'file',

@@ -210,6 +210,13 @@
 - **Mechanic:** Critical binary `secure_start` fails without `SECURE_TOKEN`. User must decode Base64 file (`token.enc`) to retrieve the value and `export` it.
 - **Status:** DEPLOYED
 
+## Cycle 271: The Configuration Drift (Diff)
+- **Date:** 2026-02-18
+- **Sector:** /etc/ssh/sshd_config
+- **Type:** Sysadmin / File Analysis (Diff)
+- **Mechanic:** User receives a warning about configuration drift. Must use `diff /etc/ssh/sshd_config /etc/ssh/sshd_config.bak` to find the unauthorized change (the flag).
+- **Status:** DEPLOYED
+
 ## Cycle 276: The Immutable File (Chattr)
 - **Date:** 2026-02-18
 - **Sector:** /var/secure/vault.lock
@@ -217,3 +224,9 @@
 - **Mechanic:** Critical file is locked (`+i`). User must use `lsattr` to inspect and `chattr -i` to unlock before deletion.
 - **Status:** DEPLOYED
 
+## Cycle 277: The Kernel Module (Modprobe)
+- **Date:** 2026-02-18
+- **Sector:** /lib/modules/5.4.0-ghost/kernel/crypto/crypto_sec.ko
+- **Type:** Sysadmin / Kernel Management
+- **Mechanic:** Binary `/usr/bin/decrypt_file` fails due to missing crypto module. User must use `modprobe crypto_sec` to load it.
+- **Status:** DEPLOYED
