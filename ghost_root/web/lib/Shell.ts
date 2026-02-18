@@ -6227,10 +6227,19 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
               if (line2 !== undefined) diffOutput += `> ${line2}\n`;
               
               // Check if it's the flag line
-              if ((line1 && line1.includes('FLAG:')) || (line2 && line2.includes('FLAG:'))) {
+              if ((line1 && (line1.includes('FLAG:') || line1.includes('GHOST_ROOT'))) || 
+                  (line2 && (line2.includes('FLAG:') || line2.includes('GHOST_ROOT')))) {
+                   
+                   // Cycle 204 Legacy
                    if (!VFS['/var/run/cycle204_solved']) {
                        VFS['/var/run/cycle204_solved'] = { type: 'file', content: 'TRUE' };
                        diffOutput += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: CONFIGURATION AUDITED.\x1b[0m`;
+                   }
+
+                   // Cycle 271
+                   if (!VFS['/var/run/cycle271_solved']) {
+                       VFS['/var/run/cycle271_solved'] = { type: 'file', content: 'TRUE' };
+                       diffOutput += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: CONFIGURATION DRIFT DETECTED.\x1b[0m`;
                    }
               }
               i++; j++;
@@ -9717,6 +9726,106 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
               }
           }
       }
+  }
+
+
+  // Cycle 277 Init (The Kernel Module)
+  if (!VFS['/lib/modules/5.4.0-ghost/kernel/crypto/crypto_sec.ko']) {
+       // Create module file
+       const modPath = '/lib/modules/5.4.0-ghost/kernel/crypto/crypto_sec.ko';
+       // Ensure dirs exist
+       const parts = modPath.split('/');
+       let currentPath = '';
+       for (let i = 1; i < parts.length - 1; i++) {
+           const parent = currentPath || '/';
+           const dir = parts[i];
+           currentPath = parent === '/' ? '/' + dir : parent + '/' + dir;
+           if (!VFS[currentPath]) {
+               VFS[currentPath] = { type: 'dir', children: [] };
+               const pNode = getNode(parent);
+               if (pNode && pNode.type === 'dir' && !pNode.children.includes(dir)) {
+                   pNode.children.push(dir);
+               }
+           }
+       }
+       
+       VFS[modPath] = {
+           type: 'file',
+           content: '[KERNEL_MODULE_V2]\n[NAME] crypto_sec\n[VER] 1.0.0\n[DEPS] \n[SIG] GHOST_SECURE_SIGNED',
+           permissions: '0644'
+       };
+       const dirNode = getNode('/lib/modules/5.4.0-ghost/kernel/crypto');
+       if (dirNode && dirNode.type === 'dir' && !dirNode.children.includes('crypto_sec.ko')) {
+           dirNode.children.push('crypto_sec.ko');
+       }
+
+       // Create Binary
+       if (!VFS['/usr/bin/decrypt_file']) {
+           VFS['/usr/bin/decrypt_file'] = {
+               type: 'file',
+               content: '[BINARY_ELF_X86_64] [DECRYPT_TOOL]\nNEEDED_MODULE: crypto_sec',
+               permissions: '0755'
+           };
+           const binDir = getNode('/usr/bin');
+           if (binDir && binDir.type === 'dir' && !binDir.children.includes('decrypt_file')) {
+               binDir.children.push('decrypt_file');
+           }
+       }
+       
+       // Create Hint
+       if (!VFS['/home/ghost/decrypt_issue.log']) {
+           VFS['/home/ghost/decrypt_issue.log'] = {
+               type: 'file',
+               content: '[ERROR] decrypt_file: crypto subsystem not initialized.\n[DIAGNOSTIC] Kernel module "crypto_sec" is missing or not loaded.\n[ACTION] Locate the module in /lib/modules and load it manually.'
+           };
+           const home = getNode('/home/ghost');
+           if (home && home.type === 'dir' && !home.children.includes('decrypt_issue.log')) {
+               home.children.push('decrypt_issue.log');
+           }
+       }
+  }
+
+  // Cycle 277 Command Injection
+  if (command === 'modprobe') {
+      if (args.length < 1) {
+          output = 'usage: modprobe <module>';
+      } else {
+          const modName = args[0];
+          // Check if module exists in the specific path (Simulated search)
+          const expectedPath = `/lib/modules/5.4.0-ghost/kernel/crypto/${modName}.ko`;
+          const node = getNode(expectedPath);
+          
+          if (node || modName === 'crypto_sec') {
+               if (LOADED_MODULES.includes(modName)) {
+                   output = ''; // Already loaded
+               } else {
+                   LOADED_MODULES.push(modName);
+                   output = ''; // Silent success
+               }
+          } else {
+               output = `modprobe: FATAL: Module ${modName} not found in directory /lib/modules/5.4.0-ghost`;
+          }
+      }
+      return finalize(output, newCwd);
+  }
+  
+  // Cycle 277 Binary Execution Logic
+  if (command === 'decrypt_file' || command === './decrypt_file' || command === '/usr/bin/decrypt_file') {
+       if (LOADED_MODULES.includes('crypto_sec')) {
+           if (!VFS['/var/run/cycle277_solved']) {
+               VFS['/var/run/cycle277_solved'] = { type: 'file', content: 'TRUE' };
+               const runDir = getNode('/var/run');
+               if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle277_solved')) {
+                   runDir.children.push('cycle277_solved');
+               }
+               output = '[DECRYPT] Crypto Subsystem: ONLINE\n[DECRYPT] Processing...\n[SUCCESS] File Decrypted.\nFLAG: GHOST_ROOT{K3RN3L_M0DUL3_L04D3D}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: KERNEL MODULE LOADED.\x1b[0m';
+           } else {
+               output = '[DECRYPT] Crypto Subsystem: ONLINE\n[SUCCESS] File Decrypted.\nFLAG: GHOST_ROOT{K3RN3L_M0DUL3_L04D3D}';
+           }
+       } else {
+           output = '[ERROR] decrypt_file: crypto subsystem not initialized.\n[REASON] Required kernel module "crypto_sec" not loaded.';
+       }
+       return finalize(output, newCwd);
   }
 
   switch (command) {
