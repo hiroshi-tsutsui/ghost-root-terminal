@@ -105,6 +105,13 @@
 - **Mechanic:** User receives an encrypted payload. Must use `base64 -d payload.b64` to decode it and retrieve the flag.
 - **Status:** DEPLOYED
 
+## Cycle 255: The Process Trace (Strace)
+- **Date:** 2026-02-19
+- **Sector:** /usr/bin/mystery_process
+- **Type:** Sysadmin / Debugging (Strace)
+- **Mechanic:** Binary fails silently. User must run `strace mystery_process` to see it trying to open `/tmp/secret_config.dat` (ENOENT). User creates the missing file to fix it.
+- **Status:** DEPLOYED
+
 ## Cycle 256: The Group Policy (Permissions)
 - **Date:** 2026-02-17
 - **Sector:** /usr/local/bin/deploy_weapon
@@ -222,13 +229,6 @@
 - **Sector:** /var/secure/vault.lock
 - **Type:** Sysadmin / File Attributes (Chattr)
 - **Mechanic:** Critical file is locked (`+i`). User must use `lsattr` to inspect and `chattr -i` to unlock before deletion.
-- **Status:** DEPLOYED
-
-## Cycle 255: The Process Trace (Strace)
-- **Date:** 2026-02-19
-- **Sector:** /usr/bin/mystery_process
-- **Type:** Sysadmin / Debugging (Strace)
-- **Mechanic:** Binary fails silently. User must run `strace mystery_process` to see it trying to open `/tmp/secret_config.dat` (ENOENT). User creates the missing file to fix it.
 - **Status:** DEPLOYED
 
 ## Cycle 277: The Kernel Module (Modprobe)

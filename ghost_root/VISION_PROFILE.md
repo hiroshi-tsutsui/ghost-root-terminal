@@ -3,6 +3,7 @@
 **Parent Agent:** Natasha
 **Role:** Adversarial Systems Architect / Netrunner
 **Project Root:** `/Users/tsutsuihiroshi/.openclaw/workspace/ghost_root/web`
+**Architecture Note:** The shell logic and VFS have been refactored to `ghost_root/web/lib/Shell.ts` and `ghost_root/web/lib/VFS.ts`. The old `commandProcessor.ts` is deprecated/removed.
 **Deployment:** Vercel (Production)
 **Interval:** 30 Minutes
 
