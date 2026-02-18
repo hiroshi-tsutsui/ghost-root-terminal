@@ -945,12 +945,12 @@ Click here to claim your prize!
   // Cycle 255: The Process Trace (Strace)
   '/usr/bin/mystery_process': {
       type: 'file',
-      content: '[BINARY_ELF_X86_64] [OBSCURE_DAEMON]\n[ERROR] Silent Failure Mode Active.\n',
+      content: '[BINARY_ELF_X86_64] [MYSTERY_V1]\n[STATUS] CORRUPTED config path.\n',
       permissions: '0755'
   },
-  '/home/ghost/trace_log.txt': {
+  '/home/ghost/trace_alert.log': {
       type: 'file',
-      content: '[DEV_NOTE] The new daemon (/usr/bin/mystery_process) keeps dying immediately.\nIt doesn\'t print any errors to stdout/stderr.\nI need to know what file it\'s trying to open before it crashes.\nTool: strace',
+      content: '[ALERT] Mystery process failing silently.\n[ANALYSIS] Binary /usr/bin/mystery_process exits immediately.\n[ACTION] Use "strace" to trace system calls and find missing resources.',
       permissions: '0644'
   },
   '/var/secure/vault.lock': {
