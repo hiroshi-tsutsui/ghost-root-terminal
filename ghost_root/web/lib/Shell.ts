@@ -10021,7 +10021,7 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
   }
 
   switch (command) {
-    // case 'strace': {
+    case 'legacy_strace_DISABLED': {
         if (args.length < 1) {
             output = 'usage: strace [-p PID] <command> [args...]';
         } else {
@@ -16525,7 +16525,7 @@ auth.py
        break;
     }
     // Cycle 255: The Process Trace
-    // case 'mystery_process': {
+    case 'legacy_mystery_process_DISABLED': {
         if (VFS['/tmp/secret_config.dat']) {
             output = '[MYSTERY] Config found.\n[MYSTERY] Decrypting payload...\nFLAG: GHOST_ROOT{STR4C3_R3V3ALS_H1DD3N_F1L3S}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PROCESS TRACED.\x1b[0m';
             if (!VFS['/var/run/strace_solved']) {
@@ -16541,7 +16541,7 @@ auth.py
         }
         break;
     }
-    // case 'strace': {
+    case 'legacy_strace_v2_DISABLED': {
         const cmd = args[0];
         if (!cmd) {
             output = 'usage: strace <command>';
