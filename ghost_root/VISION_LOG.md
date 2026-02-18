@@ -209,3 +209,11 @@
 - **Type:** Sysadmin / Environment Variables
 - **Mechanic:** Critical binary `secure_start` fails without `SECURE_TOKEN`. User must decode Base64 file (`token.enc`) to retrieve the value and `export` it.
 - **Status:** DEPLOYED
+
+## Cycle 276: The Immutable File (Chattr)
+- **Date:** 2026-02-18
+- **Sector:** /var/secure/vault.lock
+- **Type:** Sysadmin / File Attributes (Chattr)
+- **Mechanic:** Critical file is locked (`+i`). User must use `lsattr` to inspect and `chattr -i` to unlock before deletion.
+- **Status:** DEPLOYED
+
