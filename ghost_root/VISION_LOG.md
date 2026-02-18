@@ -218,7 +218,7 @@
 - **Status:** DEPLOYED
 
 ## Cycle 276: The Immutable File (Chattr)
-- **Date:** 2026-02-18
+- **Date:** 2026-02-19
 - **Sector:** /var/secure/vault.lock
 - **Type:** Sysadmin / File Attributes (Chattr)
 - **Mechanic:** Critical file is locked (`+i`). User must use `lsattr` to inspect and `chattr -i` to unlock before deletion.

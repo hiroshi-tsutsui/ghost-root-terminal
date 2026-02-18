@@ -5527,6 +5527,55 @@ export const tabCompletion = (cwd: string, inputBuffer: string): { matches: stri
             }
         }
     }
+
+    // Cycle 276 Init (The Immutable File V2)
+    if (!VFS['/var/secure/vault.lock']) {
+        if (!VFS['/var/secure']) {
+             VFS['/var/secure'] = { type: 'dir', children: [] };
+             const v = getNode('/var');
+             if (v && v.type === 'dir' && !v.children.includes('secure')) v.children.push('secure');
+        }
+        
+        VFS['/var/secure/vault.lock'] = { 
+            type: 'file', 
+            content: '[LOCKED_BY_ADMIN]\nDO NOT REMOVE UNDER PENALTY OF LAW.',
+            permissions: '0644' 
+        };
+        const secDir = getNode('/var/secure');
+        if (secDir && secDir.type === 'dir' && !secDir.children.includes('vault.lock')) {
+            secDir.children.push('vault.lock');
+        }
+
+        // Set Immutable Attribute
+        FILE_ATTRIBUTES['/var/secure/vault.lock'] = ['i'];
+
+        // Create Hint
+        if (!VFS['/home/ghost/cleanup_task.txt']) {
+            VFS['/home/ghost/cleanup_task.txt'] = {
+                type: 'file',
+                content: '[TASK] Cleanup secure vault lock.\n[ERROR] rm /var/secure/vault.lock fails with "Operation not permitted".\n[NOTE] Use `lsattr` to check for hidden attributes.\n[ACTION] Remove the immutable bit (`chattr -i`) before deletion.'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('cleanup_task.txt')) {
+                home.children.push('cleanup_task.txt');
+            }
+        }
+        
+        // Cycle 276 Playground
+        if (!VFS['/home/ghost/delete_me.txt']) {
+            VFS['/home/ghost/delete_me.txt'] = {
+                type: 'file',
+                content: 'I can\'t be deleted! Check my attributes with lsattr!',
+                permissions: '0644'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('delete_me.txt')) {
+                home.children.push('delete_me.txt');
+            }
+            // Set Immutable Attribute
+            FILE_ATTRIBUTES['/home/ghost/delete_me.txt'] = ['i'];
+        }
+    }
 };
 
 export const processCommand = (cwd: string, commandLine: string, stdin?: string): CommandResult => {
@@ -7077,6 +7126,16 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
                       }
                       return { output: out, newCwd: cwd };
                   }
+
+                  // Cycle 276
+                  if (fullPath === '/var/secure/vault.lock') {
+                      let out = '[CHATTR] Immutable bit removed.';
+                      if (!VFS['/var/run/cycle276_solved']) {
+                          VFS['/var/run/cycle276_solved'] = { type: 'file', content: 'TRUE' };
+                          out += '\n[SUCCESS] Vault Unlocked.\nFLAG: GHOST_ROOT{CH4TTR_UNL0CK_M4ST3R}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: IMMUTABLE FILE CLEARED.\x1b[0m';
+                      }
+                      return { output: out, newCwd: cwd };
+                  }
                   
                   return { output: '', newCwd: cwd };
               }
@@ -7089,16 +7148,22 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
       }
       return { output: 'usage: chattr [+-]i file', newCwd: cwd };
   }
-  // Intercept writes for Immutable Directory
+  // Intercept writes for Immutable Directory and Files
   if (['touch', 'mkdir', 'cp', 'mv', 'rm'].includes(cmdBase)) {
       const args = commandLine.trim().split(/\s+/).slice(1);
       const target = args.find(a => !a.startsWith('-'));
       if (target) {
           const fullPath = resolvePath(cwd, target);
           const parentPath = fullPath.substring(0, fullPath.lastIndexOf('/')) || '/';
+          
           // Check if parent has 'i' (Directory Immutable)
           if (FILE_ATTRIBUTES[parentPath]?.includes('i')) {
               return { output: `${cmdBase}: cannot modify '${target}': Operation not permitted (Directory immutable)`, newCwd: cwd };
+          }
+
+          // Check if file itself has 'i' (File Immutable)
+          if (FILE_ATTRIBUTES[fullPath]?.includes('i')) {
+              return { output: `${cmdBase}: cannot modify '${target}': Operation not permitted (File immutable)`, newCwd: cwd };
           }
       }
   }
@@ -20481,3 +20546,4 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
 
 
 export const execute = processCommand;
+// Verified Cycle 276 on 2026-02-19
