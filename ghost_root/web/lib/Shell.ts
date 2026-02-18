@@ -11815,6 +11815,58 @@ DROP       icmp --  10.10.99.1           anywhere`;
         }
         break;
     }
+    case 'chattr': {
+       if (args.length < 2) {
+          output = 'Usage: chattr [+-=][ASacDdIijsTtu] <file>';
+       } else {
+          const mode = args[0];
+          const target = args[1];
+          const path = resolvePath(cwd, target);
+          const node = getNode(path);
+          
+          if (!node) {
+              output = `chattr: No such file or directory: ${target}`;
+          } else {
+              const op = mode[0];
+              const attrChar = mode[1];
+              
+              if (attrChar !== 'i') {
+                  output = `chattr: Attribute '${attrChar}' not implemented in simulation.`;
+              } else {
+                  let currentAttrs = FILE_ATTRIBUTES[path] || [];
+                  if (op === '+') {
+                      if (!currentAttrs.includes('i')) currentAttrs.push('i');
+                  } else if (op === '-') {
+                      currentAttrs = currentAttrs.filter(a => a !== 'i');
+                  }
+                  
+                  FILE_ATTRIBUTES[path] = currentAttrs;
+                  saveSystemState();
+                  output = ''; // Silent success
+              }
+          }
+       }
+       break;
+    }
+    case 'lsattr': {
+       if (args.length < 1) {
+          output = 'Usage: lsattr <file>';
+       } else {
+          const target = args[0];
+          const path = resolvePath(cwd, target);
+          const node = getNode(path);
+          
+          if (!node) {
+              output = `lsattr: No such file or directory: ${target}`;
+          } else {
+              const attrs = FILE_ATTRIBUTES[path] || [];
+              const attrStr = '----------------'.split('');
+              if (attrs.includes('i')) attrStr[4] = 'i';
+              output = `${attrStr.join('')} ${path}`;
+          }
+       }
+       break;
+    }
     case 'chmod': {
        if (args.length < 2) {
           output = 'usage: chmod <mode> <file>';
