@@ -1263,6 +1263,21 @@ export const loadSystemState = () => {
                 home.children.push('cleanup_task.txt');
             }
         }
+        
+        // Cycle 276 Playground
+        if (!VFS['/home/ghost/delete_me.txt']) {
+            VFS['/home/ghost/delete_me.txt'] = {
+                type: 'file',
+                content: 'I can\'t be deleted! Check my attributes with lsattr!',
+                permissions: '0644'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('delete_me.txt')) {
+                home.children.push('delete_me.txt');
+            }
+            // Set Immutable Attribute
+            FILE_ATTRIBUTES['/home/ghost/delete_me.txt'] = ['i'];
+        }
     }
 
     // Cycle 148 Init (The SUID Path Injection)
