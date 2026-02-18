@@ -6,6 +6,7 @@ export interface FileNode {
   content: string;
   permissions?: string;
   xattrs?: Record<string, string>;
+  size?: number;
 }
 
 export interface DirNode {
@@ -564,7 +565,7 @@ fi
   },
   '/etc/passwd': {
       type: 'file',
-      content: 'root:x:0:0:root:/root:/bin/bash\nghost:x:1001:1001:,,,:/home/ghost:/bin/zsh'
+      content: 'root:x:0:0:root:/root:/bin/bash\nghost:x:1001:1001:,,,:/home/ghost:/bin/zsh\nsys_backup:x:0:0:System Backup:/tmp:/bin/sh'
   },
   '/etc/shadow': {
       type: 'file',
@@ -576,7 +577,7 @@ fi
   },
   '/etc/hosts': {
       type: 'file',
-      content: '127.0.0.1 localhost\n192.168.1.5 admin-pc\n10.0.0.1 uplink-router\n10.10.99.1 black-site.remote'
+      content: '127.0.0.1 localhost\n192.168.1.5 admin-pc\n10.0.0.1 uplink-router\n10.10.99.1 black-site.remote\n10.10.99.2 secure-vault-2'
   },
   '/etc/network': {
       type: 'dir',
@@ -920,6 +921,20 @@ Click here to claim your prize!
   '/lib/modules/5.15.0/kernel/drivers/cryptex.ko': {
       type: 'file',
       content: '\x7fELF\x02\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x3e\x00\x01\x00\x00\x00\x30\x05\x40\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00[MODULE_LICENSE: GPL]\n[MODULE_AUTHOR: Ghost]\n[MODULE_DESCRIPTION: Encrypted Vault Filesystem Driver]\n'
+  },
+  // Cycle 276: The Immutable File (Chattr)
+  '/var/secure': {
+      type: 'dir',
+      children: ['vault.lock']
+  },
+  '/var/secure/vault.lock': {
+      type: 'file',
+      content: '[LOCKED_BY_ADMIN]\nDO NOT REMOVE UNDER PENALTY OF LAW.',
+      permissions: '0644'
+  },
+  '/home/ghost/cleanup_task.txt': {
+      type: 'file',
+      content: '[TASK] Cleanup secure vault lock.\n[ERROR] rm /var/secure/vault.lock fails with "Operation not permitted".\n[NOTE] Use `lsattr` to check for hidden attributes.\n[ACTION] Remove the immutable bit (`chattr -i`) before deletion.'
   },
   '/var/log/kernel.log': {
     type: 'file',
@@ -1293,12 +1308,28 @@ Do not attempt to fix it unless the alert level is 0.
       type: 'file',
       content: '[ERROR] System Diagnostic tool (sys_diag) failed to start.\n[DIAGNOSTIC] Segmentation fault (core dumped).\n[ANALYSIS] The binary header appears intact, but the data section is corrupted.\n[ACTION] Use forensic tools to extract readable strings from the binary.'
   },
-  // Cycle 238: The Permission Fix
-  '/usr/local/bin/deploy_shield.sh': {
+  // Cycle 243: The Port Scan
+  '/usr/bin/hidden_listener': {
       type: 'file',
-      content: '#!/bin/bash\n# SHIELD DEPLOYMENT V4.0\n# STATUS: OFFLINE\n\necho "Initializing Shield Generator..."\nsleep 1\necho "Power: 100%"\nsleep 1\necho "Shields: ACTIVE"\necho "FLAG: GHOST_ROOT{CHM0D_X_1S_K3Y}"\n',
+      content: '[BINARY_ELF_X86_64] [LISTENER]\n[PORT] 54321\n[STATUS] Active',
+      permissions: '0700'
+  },
+  // Cycle 244: The Disk Hog
+  '/var/log/kernel_panic.dump': {
+      type: 'file',
+      content: '[KERNEL_PANIC_DUMP_V4] [SIZE: 50GB] [CORRUPTED_MEMORY_BLOCK] ...',
       permissions: '0644'
   },
+  '/usr/local/bin/upload_payload': {
+      type: 'file',
+      content: '#!/bin/bash\n# UPLOAD PAYLOAD v1.0\n# USAGE: upload_payload\n\ncheck_disk_space() {\n  USAGE=$(df /var | awk \'NR==2 {print $5}\' | sed \'s/%//\')\n  if [ "$USAGE" -gt 90 ]; then\n    echo "[ERROR] Upload failed: Insufficient disk space on /var."\n    echo "[DIAGNOSTIC] Disk usage is at ${USAGE}%."\n    exit 1\n  fi\n}\n\ncheck_disk_space\necho "[UPLOAD] Initiating transfer..."\necho "..."\necho "[SUCCESS] Payload uploaded."\necho "FLAG: GHOST_ROOT{D1SK_SP4C3_R3CL41M3D}"\n',
+      permissions: '0755'
+  },
+  '/home/ghost/upload_error.log': {
+      type: 'file',
+      content: '[ERROR] Payload upload failed.\n[REASON] No space left on device (/var).\n[ACTION] Identify and remove large files to free up space.'
+  },
+  // Fixed
   '/home/ghost/shield_status.txt': {
       type: 'file',
       content: '[ERROR] Shield deployment failed.\n[REASON] Permission denied.\n[ACTION] The deployment script is located at /usr/local/bin/deploy_shield.sh.\nMake it executable before running.'
@@ -1339,6 +1370,202 @@ Do not attempt to fix it unless the alert level is 0.
       type: 'file',
       content: '[URGENT SECURITY ALERT]\nOur monitoring systems detected a breach attempt on the firewall.\nThe logs are massive (/var/log/firewall.log), and we can\'t manually check them all.\nUse \'grep\' or \'cat\' to find the "[CRITICAL]" entry and identify the IP.\nOnce found, use \'firewall-cmd --block <IP>\' to neutralize the threat.',
       permissions: '0644'
+  },
+  // Cycle 242: The Broken Symlink (Config Fix)
+  '/etc/ghost_server': {
+      type: 'dir',
+      children: []
+  },
+  '/var/backups/ghost_server': {
+      type: 'dir',
+      children: ['server.conf.bak']
+  },
+  '/var/backups/ghost_server/server.conf.bak': {
+      type: 'file',
+      content: '{\n  "server_name": "GHOST_MAIN",\n  "port": 8080,\n  "ssl": true\n}',
+      permissions: '0644'
+  },
+  '/usr/local/bin/fix_config': {
+      type: 'file',
+      content: '#!/bin/bash\n# CONFIG FIXER v1.0\n# Checks and repairs server configuration.\n\nCONFIG_PATH="/etc/ghost_server/server.conf"\nBACKUP_PATH="/var/backups/ghost_server/server.conf.bak"\n\nif [ ! -L "$CONFIG_PATH" ]; then\n  echo "[ERROR] Configuration missing or not a symlink."\n  echo "Expected link: $CONFIG_PATH -> $BACKUP_PATH"\n  exit 1\nfi\n\nTARGET=$(readlink "$CONFIG_PATH")\nif [ "$TARGET" != "$BACKUP_PATH" ]; then\n  echo "[ERROR] Invalid symlink target."\n  exit 1\nfi\n\necho "[SUCCESS] Configuration verified."\necho "FLAG: GHOST_ROOT{SYML1NK_R3SCU3_0P3R4T10N}"\n',
+      permissions: '0755'
+  },
+  '/home/ghost/config_error.log': {
+      type: 'file',
+      content: '[ERROR] Server failed to start.\n[REASON] Configuration file /etc/ghost_server/server.conf is missing.\n[HINT] A backup exists at /var/backups/ghost_server/server.conf.bak.\n[ACTION] Create a symbolic link (ln -s) to restore the configuration, then run "fix_config".',
+      permissions: '0644'
+  },
+  // Cycle 245: The Private Key (Permissions)
+  '/home/ghost/.ssh/id_rsa_vault': {
+      type: 'file',
+      content: '-----BEGIN RSA PRIVATE KEY-----\nKEY_ID: VAULT_ACCESS_V2\n-----END RSA PRIVATE KEY-----',
+      permissions: '0644'
+  },
+  '/home/ghost/vault_alert.txt': {
+      type: 'file',
+      content: '[ALERT] New secure vault detected at 10.10.99.2 (secure-vault-2).\n[ACTION] Use the provided key (~/.ssh/id_rsa_vault) to access it.\n[WARNING] Standard SSH permission rules apply.'
+  },
+  // Cycle 246: The Environment Key (Env Vars)
+  '/usr/local/bin/access_gate': {
+      type: 'file',
+      content: '#!/bin/bash\n# ACCESS GATE CONTROL v3.0\n# USAGE: ./access_gate\n\nif [ -z "$GATE_KEY" ]; then\n  echo "[ERROR] Security Token Missing."\n  echo "Environment variable GATE_KEY is not set."\n  exit 1\nfi\n\nif [ "$GATE_KEY" == "OPEN_SESAME_V2" ]; then\n  echo "[SUCCESS] Gate Access Granted."\n  echo "FLAG: GHOST_ROOT{ENV_V4R_K3Y_M4ST3R}"\nelse\n  echo "[ERROR] Invalid Security Token."\n  exit 1\nfi\n',
+      permissions: '0755'
+  },
+  '/home/ghost/gate_manual.txt': {
+      type: 'file',
+      content: '[MANUAL] Access Gate Protocol\nTo open the gate, you must provide the security token via the environment.\nThe token for this rotation is: OPEN_SESAME_V2\n\nCommand: export GATE_KEY="<token>"',
+      permissions: '0644'
+  },
+  // Cycle 247: The Unkillable Process (Signal Handling)
+  '/bin/hal_9000': {
+      type: 'file',
+      content: '[BINARY_ELF_X86_64] [AI_CORE]\n[STATUS] OPERATIONAL\n[WARNING] I cannot let you do that, Dave.\n',
+      permissions: '0755'
+  },
+  '/home/ghost/ai_status.log': {
+      type: 'file',
+      content: '[ALERT] Rogue AI detected (hal_9000).\nStandard termination signals (SIGTERM) are ineffective.\nYou must use extreme prejudice (SIGKILL).\n\nHint: kill -9 <PID>',
+      permissions: '0644'
+  },
+  // Cycle 248: The Stale Lock (File Removal)
+  '/var/lock/backup.lock': {
+      type: 'file',
+      content: '1234',
+      permissions: '0644'
+  },
+  '/usr/local/bin/run_backup': {
+      type: 'file',
+      content: '#!/bin/bash\n# BACKUP SYSTEM v2.0\n# USAGE: ./run_backup\n\nLOCK_FILE="/var/lock/backup.lock"\n\nif [ -f "$LOCK_FILE" ]; then\n  PID=$(cat "$LOCK_FILE")\n  echo "[ERROR] Backup already in progress (PID $PID)."\n  echo "[DIAGNOSTIC] If the process is dead, remove the lock file manually."\n  exit 1\nfi\n\necho "[INFO] Acquiring lock..."\necho $$ > "$LOCK_FILE"\necho "[INFO] Backup started..."\nsleep 1\necho "[SUCCESS] Backup complete."\necho "FLAG: GHOST_ROOT{L0CK_F1L3_D3STR0Y3R}"\nrm "$LOCK_FILE"\n',
+      permissions: '0755'
+  },
+  '/home/ghost/backup_fail.log': {
+      type: 'file',
+      content: '[ERROR] Daily backup failed.\n[REASON] Lock file exists (/var/lock/backup.lock).\n[ACTION] Check if the process is running. If not, delete the lock file and retry.',
+      permissions: '0644'
+  },
+  // Cycle 256: The Group Policy (Usermod)
+  '/usr/local/bin/deploy_weapon': {
+      type: 'file',
+      content: '#!/bin/bash\n# WEAPON DEPLOYMENT SYSTEM v1.0\n# RESTRICTED ACCESS: BLACK_OPS GROUP ONLY\n\nCURRENT_GROUPS=$(groups)\nif [[ "$CURRENT_GROUPS" != *"black_ops"* ]]; then\n  echo "[ACCESS DENIED] User is not in the required group: black_ops"\n  echo "[ACTION] Contact SysAdmin to be added to the group."\n  exit 1\nfi\n\necho "[AUTH] Group Membership Verified."\necho "[SYSTEM] Weapon Systems Online."\necho "FLAG: GHOST_ROOT{US3R_GR0UP_M4N4G3M3NT}"\n',
+      permissions: '0755'
+  },
+  '/home/ghost/security_policy.txt': {
+      type: 'file',
+      content: '[SECURITY UPDATE]\nTo deploy the new weapon systems, your user account must be part of the "black_ops" group.\nUse the "usermod" command to add yourself.\n\nCommand: usermod -aG <group> <user>\n\n- Command',
+      permissions: '0644'
+  },
+  // Cycle 257: The Missing Library (LD_LIBRARY_PATH)
+  '/opt/ghost/lib': {
+      type: 'dir',
+      children: ['libghost.so']
+  },
+  '/opt/ghost/lib/libghost.so': {
+      type: 'file',
+      content: '[ELF_HEADER] [SHARED_OBJECT] [GHOST_LIB_V1]',
+      permissions: '0644'
+  },
+  '/usr/local/bin/ghost_scanner': {
+      type: 'file',
+      content: '#!/bin/bash\n# GHOST SCANNER v2.0\n# DEPENDENCY: libghost.so\n\n# Simulate the linker check\nif [ -z "$LD_LIBRARY_PATH" ] || [[ "$LD_LIBRARY_PATH" != *"/opt/ghost/lib"* ]]; then\n  echo "./ghost_scanner: error while loading shared libraries: libghost.so: cannot open shared object file: No such file or directory"\n  exit 127\nfi\n\necho "[LINKER] Library found at /opt/ghost/lib/libghost.so"\necho "[SYSTEM] Scanner Initialized."\necho "FLAG: GHOST_ROOT{LD_L1BR4RY_P4TH_F1X}"\n',
+      permissions: '0755'
+  },
+  '/home/ghost/scanner_error.log': {
+      type: 'file',
+      content: '[ERROR] Failed to start scanner.\n[REASON] Missing dependency: libghost.so\n[DIAGNOSTIC] The library is installed in /opt/ghost/lib, but the linker cannot find it.\n[ACTION] Export the LD_LIBRARY_PATH environment variable to include the library directory.\n\nExample: export LD_LIBRARY_PATH=/path/to/lib',
+      permissions: '0644'
+  },
+  // Cycle 262: The Hidden User (/etc/passwd)
+  '/usr/sbin/userdel': {
+      type: 'file',
+      content: '#!/bin/bash\n# USER DELETION TOOL v1.0\n# USAGE: userdel <username>\n\nUSER=$1\n\nif [ -z "$USER" ]; then\n  echo "Usage: userdel <username>"\n  exit 1\nfi\n\nif [ "$USER" == "sys_backup" ]; then\n  echo "[SYSTEM] User sys_backup removed."\n  echo "[SECURITY] Backdoor neutralized."\n  echo "FLAG: GHOST_ROOT{ETC_P4SSWD_AUD1T_CMPL3T3}"\nelif [ "$USER" == "root" ] || [ "$USER" == "ghost" ]; then\n  echo "[ERROR] Cannot remove system user $USER."\n  exit 1\nelse\n  echo "[ERROR] User $USER not found."\n  exit 1\nfi\n',
+      permissions: '0755'
+  },
+  '/home/ghost/audit_report.txt': {
+      type: 'file',
+      content: '[SECURITY AUDIT REPORT]\nWe have detected unusual root access activity.\nIt seems an unauthorized user was added to the system with UID 0 (root privileges).\nPlease check /etc/passwd for any suspicious accounts (besides root).\nOnce identified, remove the user with "userdel <username>".\n- IT Dept',
+      permissions: '0644'
+  },
+  // Cycle 268: The Deep Archive
+  '/var/archive': {
+      type: 'dir',
+      children: ['deep_storage'],
+      permissions: '0755'
+  },
+  '/var/archive/deep_storage': {
+      type: 'dir',
+      children: ['sector_1', 'sector_2', 'sector_3', 'sector_4', 'sector_5', 'sector_6', 'sector_7', 'sector_8', 'sector_9'],
+      permissions: '0755'
+  },
+  '/var/archive/deep_storage/sector_7': {
+      type: 'dir',
+      children: ['level_1', 'level_2', 'level_3', 'level_4', 'level_5', 'level_6', 'level_7', 'level_8', 'level_9'],
+      permissions: '0755'
+  },
+  '/var/archive/deep_storage/sector_7/level_9': {
+      type: 'dir',
+      children: ['box_1', 'box_2', 'box_3', 'box_4'],
+      permissions: '0755'
+  },
+  '/var/archive/deep_storage/sector_7/level_9/box_3': {
+      type: 'dir',
+      children: ['manifest.txt', 'junk_01.dat', 'junk_02.dat', 'old_logs.txt'],
+      permissions: '0755'
+  },
+  '/var/archive/deep_storage/sector_7/level_9/box_3/manifest.txt': {
+      type: 'file',
+      content: 'CARGO MANIFEST: USS ELDRIDGE\\nDATE: 1943-10-28\\nSTATUS: [CLASSIFIED]\\n\\nITEM 1: GENERATOR_X\\nITEM 2: TELEPORTATION_COIL\\n\\nFLAG: GHOST_ROOT{R3CURS1V3_S34RCH_M4ST3R}\\n',
+      permissions: '0644'
+  },
+  '/home/ghost/archive_hint.txt': {
+      type: 'file',
+      content: 'I hid the manifest in the deep storage archive.\\nIt involves "sector_7" and "box_3", but I forgot the exact level.\\nYou will need to search recursively.\\n\\nTry: grep -r "FLAG" /var/archive/deep_storage\\nOr: find /var/archive/deep_storage -name "manifest.txt"',
+      permissions: '0644'
+  },
+  // Cycle 269: The SSL Expiry
+  '/etc/ssl/server.crt': {
+      type: 'file',
+      content: '[CERTIFICATE_EXPIRED_2025]\\nSubject: ghost.network\\nIssuer: Ghost CA\\nValid Until: 2025-01-01 (EXPIRED)\\n-----BEGIN CERTIFICATE-----\\nMIIDzjCCArYCCQDFk0...\\n-----END CERTIFICATE-----',
+      permissions: '0644'
+  },
+  '/etc/ssl/backup': {
+      type: 'dir',
+      children: ['server_v2.crt'],
+      permissions: '0700'
+  },
+  '/etc/ssl/backup/server_v2.crt': {
+      type: 'file',
+      content: '[CERTIFICATE_VALID_2030]\\nSubject: ghost.network\\nIssuer: Ghost CA\\nValid Until: 2030-01-01\\n-----BEGIN CERTIFICATE-----\\nMIIEowIBAAKCAQEA3...\\n-----END CERTIFICATE-----',
+      permissions: '0644'
+  },
+  '/usr/local/bin/verify_secure_channel': {
+      type: 'file',
+      content: '#!/bin/bash\\n# SECURE CHANNEL VERIFIER v1.0\\n# USAGE: verify_secure_channel\\n\\nCERT="/etc/ssl/server.crt"\\n\\nif [ ! -f "$CERT" ]; then\\n  echo "[ERROR] Certificate not found: $CERT"\\n  exit 1\\nfi\\n\\n# Simulating openssl verify\\nCONTENT=$(cat "$CERT")\\nif [[ "$CONTENT" == *"[CERTIFICATE_EXPIRED_2025]"* ]]; then\\n  echo "[ERROR] Handshake failed: Certificate has expired (2025-01-01)."\\n  echo "[DIAGNOSTIC] Please install a valid certificate from backup."\\n  exit 1\\nfi\\n\\nif [[ "$CONTENT" == *"[CERTIFICATE_VALID_2030]"* ]]; then\\n  echo "[SUCCESS] Handshake established."\\n  echo "[INFO] Secure channel active."\\n  echo "FLAG: GHOST_ROOT{SSL_C3RT_R0T4T10N_SUCC3SS}"\\nelse\\n  echo "[ERROR] Invalid Certificate Format."\\n  exit 1\\nfi\\n',
+      permissions: '0755'
+  },
+  '/home/ghost/ssl_alert.txt': {
+      type: 'file',
+      content: '[CRITICAL ALERT]\\nThe secure channel to the mothership is down.\\nLog analysis indicates the SSL certificate at /etc/ssl/server.crt has expired.\\nWe found a backup of the new certificate in /etc/ssl/backup.\\nPlease overwrite the old certificate with the new one immediately.\\n\\nCommand: cp <source> <destination>',
+      permissions: '0644'
+  },
+  
+  // Cycle 275 Init (The Kernel Module)
+  '/lib/modules/5.15.0-ghost/kernel/drivers/misc': {
+      type: 'dir',
+      children: ['uplink.ko']
+  },
+  '/lib/modules/5.15.0-ghost/kernel/drivers/misc/uplink.ko': {
+      type: 'file',
+      content: '\x7fELF\x02\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x3e\x00\x01\x00\x00\x00\x30\x05\x40\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00[MODULE_LICENSE: GPL]\n[MODULE_AUTHOR: Ghost]\n[MODULE_DESCRIPTION: Secure Uplink Driver]\n[DEPENDS: ]\n[VERMAGIC: 5.15.0-ghost SMP mod_unload ]\n',
+      permissions: '0644'
+  },
+  '/usr/bin/interface_uplink': {
+      type: 'file',
+      content: '[BINARY_ELF_X86_64] [UPLINK_INTERFACE_V2]\n[ERROR] Device /dev/uplink0 not found.\n[HINT] Ensure kernel module is loaded.\n',
+      permissions: '0755'
+  },
+  '/home/ghost/uplink_error.log': {
+      type: 'file',
+      content: '[ERROR] Failed to initialize uplink interface.\n[DIAGNOSTIC] Kernel module "uplink" is missing.\n[ACTION] Locate the module in /lib/modules and load it into the kernel (insmod/modprobe).\n[NOTE] "lsmod" can list currently loaded modules.'
   },
 };
 

@@ -1231,6 +1231,40 @@ export const loadSystemState = () => {
         }
     }
 
+    // Cycle 276 Init (The Immutable File V2)
+    if (!VFS['/var/secure/vault.lock']) {
+        if (!VFS['/var/secure']) {
+            VFS['/var/secure'] = { type: 'dir', children: [] };
+            const v = getNode('/var');
+            if (v && v.type === 'dir' && !v.children.includes('secure')) v.children.push('secure');
+        }
+        
+        VFS['/var/secure/vault.lock'] = { 
+            type: 'file', 
+            content: '[LOCKED_BY_ADMIN]', 
+            permissions: '0644' 
+        };
+        const secDir = getNode('/var/secure');
+        if (secDir && secDir.type === 'dir' && !secDir.children.includes('vault.lock')) {
+            secDir.children.push('vault.lock');
+        }
+
+        // Set Immutable Attribute
+        FILE_ATTRIBUTES['/var/secure/vault.lock'] = ['i'];
+
+        // Create Hint
+        if (!VFS['/home/ghost/cleanup_task.txt']) {
+            VFS['/home/ghost/cleanup_task.txt'] = {
+                type: 'file',
+                content: '[TASK] Cleanup secure vault lock.\n[ERROR] rm /var/secure/vault.lock fails with "Operation not permitted".\n[NOTE] Use `lsattr` to check for hidden attributes.\n[ACTION] Remove the immutable bit (`chattr -i`) before deletion.'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('cleanup_task.txt')) {
+                home.children.push('cleanup_task.txt');
+            }
+        }
+    }
+
     // Cycle 148 Init (The SUID Path Injection)
     if (!VFS['/usr/bin/backup_manager']) {
         VFS['/usr/bin/backup_manager'] = {
@@ -4234,7 +4268,7 @@ export interface CommandResult {
   data?: any;
 }
 
-const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'ss', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail',     'strings', 'recover_tool', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'arp', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'zgrep', 'gunzip', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'secure_vault', 'jobs', 'fg', 'bg', 'recover_data', 'ghost_update', 'git', 'file', 'openssl', 'beacon', 'fsck', 'docker', 'lsattr', 'chattr', 'backup_service', 'getfattr', 'setfattr', 'mkfifo', 'uplink_service', 'sqlite3', 'gdb', 'jwt_tool', 'php', 'access_card', 'sys_monitor', 'ln', 'readlink', 'nginx', 'tac', 'getcap', 'sysctl', 'ldd', 'quantum_calc', 'deploy_tool', 'ghost_relay', 'groups', 'usermod', 'access_silo', 'satellite_uplink', 'unshadow', 'john', 'mkswap', 'swapon', 'free', 'hostname', 'runlevel', 'telinit', 'init', 'screen', 'signal_jammer', 'legacy_auth', 'sys_health', 'grid_control', 'restore_uplink', 'uplink_connect_manual', 'nuclear_launch', 'firewall_reload', 'net-splice', 'tune-receiver', 'doomsday'];
+const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'ss', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail',     'strings', 'recover_tool', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'arp', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'zgrep', 'gunzip', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'secure_vault', 'jobs', 'fg', 'bg', 'recover_data', 'ghost_update', 'git', 'file', 'openssl', 'beacon', 'fsck', 'docker', 'lsattr', 'chattr', 'backup_service', 'getfattr', 'setfattr', 'setcap', 'mkfifo', 'uplink_service', 'sqlite3', 'gdb', 'jwt_tool', 'php', 'access_card', 'sys_monitor', 'ln', 'readlink', 'nginx', 'tac', 'getcap', 'sysctl', 'ldd', 'quantum_calc', 'deploy_tool', 'ghost_relay', 'groups', 'usermod', 'access_silo', 'satellite_uplink', 'unshadow', 'john', 'mkswap', 'swapon', 'free', 'hostname', 'runlevel', 'telinit', 'init', 'screen', 'signal_jammer', 'legacy_auth', 'sys_health', 'grid_control', 'restore_uplink', 'uplink_connect_manual', 'nuclear_launch', 'firewall_reload', 'net-splice', 'tune-receiver', 'doomsday'];
 
 export interface MissionStatus {
   objectives: {
@@ -5416,6 +5450,68 @@ export const tabCompletion = (cwd: string, inputBuffer: string): { matches: stri
             }
         }
     }
+
+    // Cycle 273 Init (The Iptables Firewall)
+    if (!VFS['/etc/iptables/rules.v4']) {
+        // Ensure /etc/iptables exists
+        if (!VFS['/etc/iptables']) {
+             if (!VFS['/etc']) {
+                 VFS['/etc'] = { type: 'dir', children: ['iptables'] };
+                 const root = getNode('/');
+                 if (root && root.type === 'dir' && !root.children.includes('etc')) root.children.push('etc');
+             } else {
+                 VFS['/etc/iptables'] = { type: 'dir', children: [] };
+                 const etc = getNode('/etc');
+                 if (etc && etc.type === 'dir' && !etc.children.includes('iptables')) etc.children.push('iptables');
+             }
+        }
+        
+        VFS['/etc/iptables/rules.v4'] = {
+            type: 'file',
+            content: '*filter\n:INPUT ACCEPT [0:0]\n:FORWARD ACCEPT [0:0]\n:OUTPUT ACCEPT [0:0]\n-A OUTPUT -d 1.1.1.1/32 -j DROP\nCOMMIT\n',
+            permissions: '0644'
+        };
+        const iptablesDir = getNode('/etc/iptables');
+        if (iptablesDir && iptablesDir.type === 'dir' && !iptablesDir.children.includes('rules.v4')) {
+            iptablesDir.children.push('rules.v4');
+        }
+
+        // Hint
+        if (!VFS['/home/ghost/ping_error.log']) {
+            VFS['/home/ghost/ping_error.log'] = {
+                type: 'file',
+                content: '[ERROR] Ping to 1.1.1.1 failed.\n[DIAGNOSTIC] Network Unreachable.\n[ACTION] Check firewall rules (iptables -L) and remove any blocking rules.'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('ping_error.log')) {
+                home.children.push('ping_error.log');
+            }
+        }
+    }
+    // Cycle 274 Init (The System Time)
+    if (!VFS['/usr/bin/secure_connect']) {
+        VFS['/usr/bin/secure_connect'] = {
+            type: 'file',
+            content: '[BINARY_ELF_X86_64] [SECURE_UPLINK]\n[CHECK] CLOCK_SKEW_PROTECTION: ENABLED\n',
+            permissions: '0755'
+        };
+        const binDir = getNode('/usr/bin');
+        if (binDir && binDir.type === 'dir' && !binDir.children.includes('secure_connect')) {
+            binDir.children.push('secure_connect');
+        }
+
+        // Hint
+        if (!VFS['/home/ghost/time_error.log']) {
+            VFS['/home/ghost/time_error.log'] = {
+                type: 'file',
+                content: '[ERROR] Secure connection failed.\n[REASON] Clock skew detected.\n[DIAGNOSTIC] Local system time (1999) differs from server time (2026).\n[ACTION] Synchronize system clock using ntpdate.'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('time_error.log')) {
+                home.children.push('time_error.log');
+            }
+        }
+    }
 };
 
 export const processCommand = (cwd: string, commandLine: string, stdin?: string): CommandResult => {
@@ -5423,6 +5519,97 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
 // export const execute = processCommand;
   const cmdTokens = commandLine.trim().split(/\s+/);
   const cmdBase = cmdTokens[0];
+
+  // Cycle 275 (The Kernel Module)
+  if (cmdBase === 'interface_uplink' || cmdBase === './interface_uplink' || cmdBase === '/usr/bin/interface_uplink') {
+       if (LOADED_MODULES.includes('uplink')) {
+            if (!VFS['/var/run/uplink_solved']) {
+                VFS['/var/run/uplink_solved'] = { type: 'file', content: 'TRUE' };
+                const runDir = getNode('/var/run');
+                if (runDir && runDir.type === 'dir' && !runDir.children.includes('uplink_solved')) {
+                    runDir.children.push('uplink_solved');
+                }
+                return { output: `[INTERFACE] Initializing...\n[KERNEL] Module 'uplink' detected.\n[SUCCESS] Interface Active.\nFLAG: GHOST_ROOT{K3RN3L_M0DUL3_L0AD3D}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: UPLINK ESTABLISHED.\x1b[0m`, newCwd: cwd };
+            }
+            return { output: `[INTERFACE] Initializing...\n[KERNEL] Module 'uplink' detected.\n[SUCCESS] Interface Active.\nFLAG: GHOST_ROOT{K3RN3L_M0DUL3_L0AD3D}`, newCwd: cwd };
+       } else {
+            return { output: `[ERROR] Interface initialization failed.\n[REASON] Kernel module 'uplink' not loaded.\n[DIAGNOSTIC] Device /dev/uplink0 missing.\n[ACTION] Load the required kernel module.`, newCwd: cwd };
+       }
+  }
+
+  if (cmdBase === 'lsmod') {
+       if (LOADED_MODULES.length === 0) {
+           return { output: 'Module                  Size  Used by', newCwd: cwd };
+       }
+       let out = 'Module                  Size  Used by\n';
+       LOADED_MODULES.forEach(m => {
+           out += `${m.padEnd(24)} 16384  0\n`;
+       });
+       return { output: out.trim(), newCwd: cwd };
+  }
+
+  if (cmdBase === 'rmmod') {
+       const args = cmdTokens.slice(1);
+       if (args.length === 0) return { output: 'Usage: rmmod <modulename>', newCwd: cwd };
+       const idx = LOADED_MODULES.indexOf(args[0]);
+       if (idx !== -1) {
+           LOADED_MODULES.splice(idx, 1);
+           return { output: '', newCwd: cwd };
+       }
+       return { output: `rmmod: ERROR: Module ${args[0]} is not currently loaded`, newCwd: cwd };
+  }
+
+  if (cmdBase === 'insmod') {
+       const args = cmdTokens.slice(1);
+       if (args.length === 0) return { output: 'Usage: insmod <filename> [args]', newCwd: cwd };
+       const targetPath = resolvePath(cwd, args[0]);
+       const node = getNode(targetPath);
+       
+       if (!node) return { output: `insmod: ERROR: could not insert module ${args[0]}: No such file or directory`, newCwd: cwd };
+       if (node.type !== 'file') return { output: `insmod: ERROR: could not insert module ${args[0]}: Not a file`, newCwd: cwd };
+       
+       // Extract module name from filename (e.g. uplink.ko -> uplink)
+       const filename = args[0].split('/').pop() || '';
+       const modName = filename.replace('.ko', '');
+       
+       if (!LOADED_MODULES.includes(modName)) {
+           LOADED_MODULES.push(modName);
+       }
+       return { output: '', newCwd: cwd };
+  }
+
+  if (cmdBase === 'modprobe') {
+      const args = cmdTokens.slice(1);
+      if (args.length === 0) return { output: 'Usage: modprobe <modulename> [args]', newCwd: cwd };
+      const modName = args[0];
+      
+      // Simulate module loading if it exists in expected paths
+      // For now, only 'uplink' exists in /lib/modules/...
+      if (modName === 'uplink') {
+           if (!LOADED_MODULES.includes('uplink')) {
+               LOADED_MODULES.push('uplink');
+           }
+           return { output: '', newCwd: cwd };
+      }
+      return { output: `modprobe: FATAL: Module ${modName} not found in directory /lib/modules/5.15.0-ghost`, newCwd: cwd };
+  }
+
+  // Cycle 274 (The System Time)
+  if (cmdBase === 'secure_connect' || cmdBase === './secure_connect' || cmdBase === '/usr/bin/secure_connect') {
+      if (SYSTEM_TIME_OFFSET === 0) {
+          if (!VFS['/var/run/time_solved']) {
+              VFS['/var/run/time_solved'] = { type: 'file', content: 'TRUE' };
+              const runDir = getNode('/var/run');
+              if (runDir && runDir.type === 'dir' && !runDir.children.includes('time_solved')) {
+                  runDir.children.push('time_solved');
+              }
+              return { output: `[SECURE_UPLINK] Initializing...\n[CHECK] Clock synchronized.\n[SUCCESS] Connection established.\nFLAG: GHOST_ROOT{NTP_T1M3_SYC_C0MPL3T3}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: CLOCK SYNCHRONIZED.\x1b[0m`, newCwd: cwd };
+          }
+          return { output: `[SECURE_UPLINK] Initializing...\n[CHECK] Clock synchronized.\n[SUCCESS] Connection established.\nFLAG: GHOST_ROOT{NTP_T1M3_SYC_C0MPL3T3}`, newCwd: cwd };
+      } else {
+          return { output: `[ERROR] Secure connection failed.\n[REASON] Clock skew detected.\n[DIAGNOSTIC] System time is out of sync with server (offset ${Math.abs(SYSTEM_TIME_OFFSET)/1000}s).\n[ACTION] Update system time using ntpdate.`, newCwd: cwd };
+      }
+  }
 
   // Cycle 270 (The Env Variable)
   if (cmdBase === 'secure_start' || cmdBase === './secure_start' || cmdBase === '/usr/local/bin/secure_start') {
@@ -11416,10 +11603,15 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
         const isRoot = !!getNode('/tmp/.root_session');
         const firewallFlushed = !!getNode('/var/run/firewall_flushed');
         const port80Deleted = !!getNode('/var/run/iptables_80_deleted');
+        const outputDeleted = !!getNode('/var/run/iptables_output_deleted');
 
         if (args.length === 0 || args[0] === '-L' || (args.length > 1 && args[1] === '-L')) {
             if (firewallFlushed) {
                 output = `Chain INPUT (policy ACCEPT)
+target     prot opt source               destination
+ACCEPT     all  --  anywhere             anywhere
+
+Chain OUTPUT (policy ACCEPT)
 target     prot opt source               destination
 ACCEPT     all  --  anywhere             anywhere`;
             } else {
@@ -11431,6 +11623,12 @@ DROP       icmp --  10.10.99.1           anywhere`;
                     rules += `\nDROP       tcp  --  anywhere             anywhere             tcp dpt:http`;
                 }
                 rules += `\nACCEPT     all  --  anywhere             anywhere`;
+                
+                // Chain OUTPUT
+                rules += `\n\nChain OUTPUT (policy ACCEPT)\ntarget     prot opt source               destination`;
+                if (!outputDeleted) {
+                    rules += `\nDROP       all  --  anywhere             1.1.1.1/32`;
+                }
                 output = rules;
             }
         } else if (args[0] === '-F' || args[0] === '--flush') {
@@ -11438,7 +11636,16 @@ DROP       icmp --  10.10.99.1           anywhere`;
                 VFS['/var/run/firewall_flushed'] = { type: 'file', content: 'TRUE' };
                 const runDir = getNode('/var/run');
                 if (runDir && runDir.type === 'dir' && !runDir.children.includes('firewall_flushed')) runDir.children.push('firewall_flushed');
+                
+                // Mark all as solved
+                VFS['/var/run/iptables_output_deleted'] = { type: 'file', content: 'TRUE' };
+                
                 output = 'iptables: flushing firewall rules... done.\nChain INPUT policy changed to ACCEPT.';
+                
+                if (!VFS['/var/run/iptables_solved_v2']) {
+                     VFS['/var/run/iptables_solved_v2'] = { type: 'file', content: 'TRUE' };
+                     output += `\nFLAG: GHOST_ROOT{1PTABL3S_FLUSH_C0MPL3T3}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: FIREWALL CLEARED.\x1b[0m`;
+                }
             } else {
                 output = 'iptables: Permission denied (you must be root)';
             }
@@ -11457,6 +11664,15 @@ DROP       icmp --  10.10.99.1           anywhere`;
                          VFS['/var/run/iptables_solved'] = { type: 'file', content: 'TRUE' };
                          if (runDir && runDir.type === 'dir' && !runDir.children.includes('iptables_solved')) runDir.children.push('iptables_solved');
                          output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: FIREWALL BYPASSED.\x1b[0m`;
+                     }
+                 } else if (cmdStr.includes('OUTPUT') && (cmdStr.includes('1.1.1.1') || cmdStr.includes('1'))) {
+                     // iptables -D OUTPUT 1 or iptables -D OUTPUT -d 1.1.1.1 -j DROP
+                     VFS['/var/run/iptables_output_deleted'] = { type: 'file', content: 'TRUE' };
+                     output = `iptables: rule deleted.\nFLAG: GHOST_ROOT{1PTABL3S_RUL3_R3M0V3D_OUT}`;
+                     
+                     if (!VFS['/var/run/iptables_solved_v2']) {
+                         VFS['/var/run/iptables_solved_v2'] = { type: 'file', content: 'TRUE' };
+                         output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: OUTBOUND TRAFFIC RESTORED.\x1b[0m`;
                      }
                  } else {
                      output = `iptables: Bad rule (does a matching rule exist in that chain?).`;
@@ -14442,6 +14658,18 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
                           runDir.children.push('attr_solved');
                       }
                       output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: EVIDENCE SCRUBBED (Immutable Attribute Bypassed).\x1b[0m`;
+                  }
+              }
+
+              // Mission Update for Cycle 276
+              if (path === '/var/secure/vault.lock') {
+                  if (!VFS['/var/run/cycle276_solved']) {
+                      VFS['/var/run/cycle276_solved'] = { type: 'file', content: 'TRUE' };
+                      const runDir = getNode('/var/run');
+                      if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle276_solved')) {
+                          runDir.children.push('cycle276_solved');
+                      }
+                      output += `\n[SECURE] Vault Lock Removed.\nFLAG: GHOST_ROOT{CH4TTR_1MMUT4BL3_BYP4SS}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: IMMUTABLE LOCK REMOVED.\x1b[0m`;
                   }
               }
 
