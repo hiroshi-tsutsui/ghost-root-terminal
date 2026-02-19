@@ -10051,7 +10051,9 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
     // Process Trace logic moved below to consolidated block
 
     // Cycle 255: The Process Trace
-    case 'mystery_process': {
+    case 'mystery_process': 
+    case './mystery_process':
+    case '/usr/bin/mystery_process': {
         // Direct execution
         if (VFS['/tmp/secret_config.dat']) {
             output = "\x1b[1;32mConfiguration Loaded.\x1b[0m\n[SUCCESS] Process running normally.\nFLAG: \x1b[1;35mGHOST_ROOT{STR4C3_R3V34LS_H1DD3N_P4THS}\x1b[0m";
@@ -10081,11 +10083,20 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
                  target = args[args.length - 1];
             }
             
-            // Clean up target name
-            const cleanTarget = target.split('/').pop() || target;
+            // Check if file exists (robustness)
+            let node = getNode(resolvePath(cwd, target));
+            // Also check standard paths if not found and no path given
+            if (!node && !target.includes('/')) {
+                node = getNode('/usr/bin/' + target) || getNode('/bin/' + target) || getNode('/usr/local/bin/' + target);
+            }
 
-            if (cleanTarget === 'mystery_process') {
-                 output = `execve("/usr/bin/mystery_process", ["mystery_process"], 0x7ffd5d4b6390 /* 21 vars */) = 0
+            if (!node) {
+                 output = `strace: Can't stat '${target}': No such file or directory`;
+            } else {
+                const cleanTarget = target.split('/').pop() || target;
+
+                if (cleanTarget === 'mystery_process') {
+                     output = `execve("/usr/bin/mystery_process", ["mystery_process"], 0x7ffd5d4b6390 /* 21 vars */) = 0
 brk(NULL)                               = 0x559e3a628000
 access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
 openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
@@ -10135,6 +10146,7 @@ exit_group(1)                           = ?
             } else {
                  output = `strace: ${target}: command not found or simulation not implemented.`;
             }
+          }
         }
         break;
     }
@@ -15920,82 +15932,7 @@ auth.py
         }
     }
 
-    case 'strace': {
-        if (args.length < 1) {
-            output = 'usage: strace [-d] [-f] [-o file] command [args]';
-        } else {
-            const cmd = args[0];
-            const cmdArgs = args.slice(1).join(' '); 
-            
-            // Cycle 255: mystery_process
-            if (cmd.includes('mystery_process')) {
-                // Check for the secret config
-                const configExists = !!getNode('/tmp/secret_config.dat');
-                
-                let straceLog = `execve("${cmd}", ["${cmd}"], 0x7ffd5d4b6330 /* 21 vars */) = 0
-brk(NULL)                               = 0x559e215cb000
-access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
-openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
-fstat(3, {st_mode=S_IFREG|0644, st_size=96453, ...}) = 0
-mmap(NULL, 96453, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7f4337a35000
-close(3)                                = 0
-openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
-read(3, "\\177ELF\\2\\1\\1\\3\\0\\0\\0\\0\\0\\0\\0\\0\\3\\0>\\0\\1\\0\\0\\0\\360q\\2\\0\\0\\0\\0\\0"...`;
-
-                if (!configExists) {
-                    straceLog += `
-openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = -1 ENOENT (No such file or directory)
---- SIGSEGV {si_signo=SIGSEGV, si_code=SEGV_MAPERR, si_addr=NULL} ---
-+++ killed by SIGSEGV (core dumped) +++
-Segmentation fault`;
-                    output = straceLog;
-                } else {
-                    straceLog += `
-openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = 3
-fstat(3, {st_mode=S_IFREG|0644, st_size=32, ...}) = 0
-read(3, "CONF_V1: ENABLE_DEBUG=1\\n", 1024) = 24
-close(3)                                = 0
-write(1, "FLAG: GHOST_ROOT{STR4C3_M4ST3R_D3BUG}\\n", 38) = 38
-exit_group(0)                           = ?
-+++ exited with 0 +++`;
-                    output = straceLog + '\nFLAG: GHOST_ROOT{STR4C3_M4ST3R_D3BUG}';
-                    
-                    if (!VFS['/var/run/strace_solved']) {
-                        VFS['/var/run/strace_solved'] = { type: 'file', content: 'TRUE' };
-                         const runDir = getNode('/var/run');
-                         if (runDir && runDir.type === 'dir' && !runDir.children.includes('strace_solved')) {
-                             runDir.children.push('strace_solved');
-                         }
-                        output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SYSTEM CALL TRACED.\x1b[0m`;
-                    }
-                }
-            } else {
-                output = `execve("${cmd}", ["${cmd}", "${cmdArgs}"], 0x7ffd...) = 0\nbrk(NULL) = 0x555555554000\naccess("/etc/ld.so.preload", R_OK) = -1 ENOENT (No such file or directory)\n...`;
-                output += `\n[STRACE] Attached to process ${Math.floor(Math.random() * 10000)}.\n[STRACE] Detaching... process exited normally.`;
-            }
-        }
-        break;
-    }
-
-    case 'mystery_process':
-    case './mystery_process': 
-    case '/usr/bin/mystery_process': {
-        const configExists = !!getNode('/tmp/secret_config.dat');
-        if (configExists) {
-             output = 'FLAG: GHOST_ROOT{STR4C3_M4ST3R_D3BUG}';
-             if (!VFS['/var/run/strace_solved']) {
-                VFS['/var/run/strace_solved'] = { type: 'file', content: 'TRUE' };
-                 const runDir = getNode('/var/run');
-                 if (runDir && runDir.type === 'dir' && !runDir.children.includes('strace_solved')) {
-                     runDir.children.push('strace_solved');
-                 }
-                output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SYSTEM CALL TRACED.\x1b[0m`;
-            }
-        } else {
-            output = 'Segmentation fault'; 
-        }
-        break;
-    }
+// Duplicate strace removed (2)
 
     case 'access_card': {
         // Cycle 67: Environment Injection
@@ -20669,84 +20606,7 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
         break;
     }
 
-    // Cycle 255: The Process Trace (Strace)
-    case 'strace': {
-        const hasPID = args.includes('-p');
-        
-        if (hasPID) {
-            const pidIdx = args.indexOf('-p');
-            const pid = args[pidIdx + 1];
-
-            if (!pid) {
-                 output = 'usage: strace -p <pid>';
-            } else if (pid === '9001') {
-                 // Legacy/Alt Logic for PID 9001
-                 if (VFS['/tmp/ghost.token']) {
-                     const node = getNode('/tmp/ghost.token');
-                     const content = (node && node.type === 'file') ? (node as any).content.trim() : '';
-                     
-                     if (content === 's3cr3t_k3y') {
-                         output = `Process 9001 attached\nopen("/tmp/ghost.token", O_RDONLY) = 3\nread(3, "s3cr3t_k3y", 1024) = 10\nwrite(1, "Access Granted.\\n", 16) = 16\nclose(3) = 0`;
-                     } else {
-                         output = `Process 9001 attached\nopen("/tmp/ghost.token", O_RDONLY) = 3\nread(3, "${content}", 1024) = ${content.length}\nwrite(2, "Error: Token Mismatch\\n", 22) = 22\nclose(3) = 0`;
-                     }
-                 } else {
-                     output = `Process 9001 attached\nopen("/tmp/ghost.token", O_RDONLY) = -1 ENOENT (No such file or directory)\n...`;
-                 }
-            } else {
-                 output = `strace: attach: ptrace(PTRACE_SEIZE, ${pid}): Operation not permitted`;
-            }
-        } else if (args.length > 0) {
-            const cmd = args[0];
-            // Handle mystery_process
-            if (cmd === 'mystery_process' || cmd === './mystery_process' || cmd === '/usr/bin/mystery_process') {
-                 if (VFS['/tmp/secret_config.dat']) {
-                     output = `execve("/usr/bin/mystery_process", ["mystery_process"], 0x7ff...) = 0
-brk(NULL)                               = 0x559d7249a000
-access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
-openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = 3
-fstat(3, {st_mode=S_IFREG|0644, st_size=12, ...}) = 0
-read(3, "CONF=TRUE\\n", 1024)           = 10
-write(1, "Configuration Loaded.\\n", 22)  = 22
-write(1, "FLAG: GHOST_ROOT{STR4C3_R3V34LS_H1DD3N_F1L3S}\\n", 44) = 44
-exit_group(0)                           = ?
-+++ exited with 0 +++`;
-                     // Mark as solved
-                     if (!VFS['/var/run/cycle255_solved']) {
-                         VFS['/var/run/cycle255_solved'] = { type: 'file', content: 'TRUE' };
-                         output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PROCESS TRACE ANALYSIS.\x1b[0m`;
-                     }
-                 } else {
-                     output = `execve("/usr/bin/mystery_process", ["mystery_process"], 0x7ff...) = 0
-brk(NULL)                               = 0x559d7249a000
-access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
-openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = -1 ENOENT (No such file or directory)
-exit_group(1)                           = ?
-+++ exited with 1 +++`;
-                 }
-            } else {
-                output = `strace: ${cmd}: command not found or not supported in simulation`;
-            }
-        } else {
-             output = 'usage: strace [-p pid] <command> [args]';
-        }
-        break;
-    }
-
-    case 'mystery_process':
-    case './mystery_process':
-    case '/usr/bin/mystery_process': {
-        if (VFS['/tmp/secret_config.dat']) {
-             output = 'Configuration Loaded.\nFLAG: GHOST_ROOT{STR4C3_R3V34LS_H1DD3N_F1L3S}';
-             if (!VFS['/var/run/cycle255_solved']) {
-                 VFS['/var/run/cycle255_solved'] = { type: 'file', content: 'TRUE' };
-                 output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PROCESS TRACE ANALYSIS.\x1b[0m`;
-             }
-        } else {
-             output = ''; // Silent failure
-        }
-        break;
-    }
+// Duplicate strace removed
 
     // Cycle 256: The Group Policy
     case 'deploy_weapon':
