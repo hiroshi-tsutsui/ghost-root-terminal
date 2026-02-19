@@ -448,6 +448,7 @@ decrypt operation_blackout.enc
 dmesg | grep sdb
 mount /dev/sdb1 /mnt
 ./emergency_protocol.sh
+strace ./mystery_process
 exit`
   },
   '/home/ghost/projects': {

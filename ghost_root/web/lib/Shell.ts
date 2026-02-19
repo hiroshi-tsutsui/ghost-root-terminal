@@ -5678,12 +5678,28 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
       
       const targetCmd = args[args.length - 1]; // Simplified parsing
       if (targetCmd.includes('mystery_process')) {
-           let out = 'execve("/usr/bin/mystery_process", ["mystery_process"], [/* 21 vars */]) = 0\nbrk(NULL)                               = 0x12345678\naccess("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)\n';
+           let out = 'execve("/usr/bin/mystery_process", ["mystery_process"], [/* 21 vars */]) = 0\n' +
+                     'brk(NULL)                               = 0x55dc28e88000\n' +
+                     'access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)\n' +
+                     'access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)\n' +
+                     'openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3\n' +
+                     'fstat(3, {st_mode=S_IFREG|0644, st_size=96453, ...}) = 0\n' +
+                     'mmap(NULL, 96453, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7f0a9c803000\n' +
+                     'close(3)                                = 0\n';
            
            if (VFS['/tmp/secret_config.dat']) {
-               out += 'open("/tmp/secret_config.dat", O_RDONLY) = 3\nread(3, "CONFIG_V1", 1024) = 9\nwrite(1, "[INIT] Reading config... OK.\\n", 29) = 29\nwrite(1, "[SUCCESS] Process Started.\\n", 27) = 27\nexit_group(0)                           = ?\n+++ exited with 0 +++';
+               out += 'open("/tmp/secret_config.dat", O_RDONLY) = 3\n' +
+                      'fstat(3, {st_mode=S_IFREG|0644, st_size=1024, ...}) = 0\n' +
+                      'read(3, "CONFIG_V1", 1024) = 9\n' +
+                      'write(1, "[INIT] Reading config... OK.\\n", 29) = 29\n' +
+                      'write(1, "[SUCCESS] Process Started.\\n", 27) = 27\n' +
+                      'exit_group(0)                           = ?\n' +
+                      '+++ exited with 0 +++';
            } else {
-               out += 'open("/tmp/secret_config.dat", O_RDONLY) = -1 ENOENT (No such file or directory)\nexit_group(1)                           = ?\n+++ exited with 1 +++';
+               out += 'open("/tmp/secret_config.dat", O_RDONLY) = -1 ENOENT (No such file or directory)\n' +
+                      'write(2, "", 0)                         = 0\n' +
+                      'exit_group(1)                           = ?\n' +
+                      '+++ exited with 1 +++';
            }
            return { output: out, newCwd: cwd };
       } else if (targetCmd.includes('ghost_daemon')) {
