@@ -5158,14 +5158,14 @@ export const tabCompletion = (cwd: string, inputBuffer: string): { matches: stri
     }
 
     // Cycle 255 Init (The Process Trace - Strace)
-    if (!VFS['/home/ghost/trace_alert.txt']) {
-        VFS['/home/ghost/trace_alert.txt'] = {
+    if (!VFS['/home/ghost/trace_alert.log']) {
+        VFS['/home/ghost/trace_alert.log'] = {
             type: 'file',
             content: '[ALERT] Suspicious background process detected (PID 9001).\\n[ANALYSIS] Process "mystery_process" is active but silent.\\n[ACTION] Use "strace -p 9001" (or "strace mystery_process") to trace its system calls.\\n[GOAL] Identify the missing configuration file it is trying to open.'
         };
         const home = getNode('/home/ghost');
-        if (home && home.type === 'dir' && !home.children.includes('trace_alert.txt')) {
-            home.children.push('trace_alert.txt');
+        if (home && home.type === 'dir' && !home.children.includes('trace_alert.log')) {
+            home.children.push('trace_alert.log');
         }
 
         // Spawn the process
@@ -5199,33 +5199,6 @@ export const tabCompletion = (cwd: string, inputBuffer: string): { matches: stri
              if (binDir && binDir.type === 'dir' && !binDir.children.includes('mystery_process')) {
                  binDir.children.push('mystery_process');
              }
-        }
-    }
-
-    // Cycle 255 Init (The Process Trace - Strace)
-    if (!VFS['/home/ghost/trace_alert.txt']) {
-        VFS['/home/ghost/trace_alert.txt'] = {
-            type: 'file',
-            content: '[ALERT] Suspicious background process detected (PID 9001).\\n[ANALYSIS] Process "ghost_daemon" is active but silent.\\n[ACTION] Use "strace -p 9001" to trace its system calls and find what file it is trying to access.'
-        };
-        const home = getNode('/home/ghost');
-        if (home && home.type === 'dir' && !home.children.includes('trace_alert.txt')) {
-            home.children.push('trace_alert.txt');
-        }
-
-        // Spawn the process
-        if (!PROCESSES.find(p => p.pid === 9001)) {
-            PROCESSES.push({
-                pid: 9001,
-                ppid: 1,
-                user: 'ghost',
-                cpu: 0.1,
-                mem: 4.5,
-                time: '0:05',
-                command: '/usr/bin/ghost_daemon',
-                tty: '?',
-                stat: 'Ss'
-            });
         }
     }
 
@@ -10057,10 +10030,14 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
   }
 
   switch (command) {
+    // Process Trace logic moved below to consolidated block
+
+    // Cycle 255: The Process Trace
     case 'mystery_process': {
+        // Direct execution
         if (VFS['/tmp/secret_config.dat']) {
-            output = "Configuration Loaded.\n[SUCCESS] Process running normally.\nFLAG: GHOST_ROOT{STR4C3_D3BUG_M4ST3R}";
-            // Mark solved if they run it directly too
+            output = "\x1b[1;32mConfiguration Loaded.\x1b[0m\n[SUCCESS] Process running normally.\nFLAG: \x1b[1;35mGHOST_ROOT{STR4C3_D3BUG_M4ST3R}\x1b[0m";
+            // Mark solved
              if (!VFS['/var/run/strace_solved']) {
                  VFS['/var/run/strace_solved'] = { type: 'file', content: 'TRUE' };
                  const runDir = getNode('/var/run');
@@ -10070,7 +10047,8 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
                  output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PROCESS TRACED & FIXED.\x1b[0m`;
              }
         } else {
-            output = ""; // Silent failure
+            // Silent failure
+            output = ""; 
         }
         break;
     }
@@ -10079,38 +10057,48 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
             output = 'usage: strace [-p PID] <command> [args...]';
         } else {
             let target = args[0];
-            if (target === '-p' && args[1]) {
-                const pid = parseInt(args[1], 10);
-                const proc = PROCESSES.find(p => p.pid === pid);
-                if (proc) {
-                    target = proc.command; 
-                    // Handle command path
-                    if (target.startsWith('/')) target = target.split('/').pop() || target;
-                } else {
-                     output = `strace: attach: ptrace(PTRACE_SEIZE, ${pid}): No such process`;
-                     return finalize(output, newCwd);
-                }
-            } else if (target.startsWith('-')) {
-                 // Handle other flags (ignore) and assume command is last
+            // Handle basic flags like -p or -f (ignore for simulation simplicity or strip)
+            if (target.startsWith('-')) {
+                 // Assume command is last arg for now
                  target = args[args.length - 1];
             }
             
-            // Clean up target name (./mystery_process -> mystery_process)
-            if (target.startsWith('./')) target = target.substring(2);
-            if (target.includes('/')) target = target.split('/').pop() || target;
+            // Clean up target name
+            const cleanTarget = target.split('/').pop() || target;
 
-            if (target === 'mystery_process') {
-                 if (VFS['/tmp/secret_config.dat']) {
-                      output = `execve("/usr/bin/mystery_process", ["mystery_process"], 0x7ffd5d4b6390 /* 21 vars */) = 0
+            if (cleanTarget === 'mystery_process') {
+                 output = `execve("/usr/bin/mystery_process", ["mystery_process"], 0x7ffd5d4b6390 /* 21 vars */) = 0
 brk(NULL)                               = 0x559e3a628000
 access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
-openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = 3
+openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
+fstat(3, {st_mode=S_IFREG|0644, st_size=12345, ...}) = 0
+mmap(NULL, 12345, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7f0a1b2c3000
+close(3)                                = 0
+openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
+read(3, "\\177ELF\\2\\1\\1\\3\\0\\0\\0\\0\\0\\0\\0\\0\\3\\0>\\0\\1\\0\\0\\0\\360q\\2\\0\\0\\0\\0\\0", 832) = 832
+fstat(3, {st_mode=S_IFREG|0755, st_size=2029592, ...}) = 0
+mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f0a1b2c1000
+close(3)                                = 0
+arch_prctl(ARCH_SET_FS, 0x7f0a1b2c2740) = 0
+mprotect(0x7f0a1b2a4000, 16384, PROT_READ) = 0
+mprotect(0x559e3a626000, 4096, PROT_READ) = 0
+mprotect(0x7f0a1b2e6000, 4096, PROT_READ) = 0
+munmap(0x7f0a1b2c3000, 12345)           = 0
+openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = `;
+
+                 if (VFS['/tmp/secret_config.dat']) {
+                      output += `3
+fstat(3, {st_mode=S_IFREG|0644, st_size=1024, ...}) = 0
 read(3, "CONF: GHOST_ROOT{STR4C3_D3BUG_M4ST3R}", 1024) = 38
 close(3)                                = 0
 write(1, "Configuration Loaded.\\n", 22)  = 22
+write(1, "[SUCCESS] Process running normally.\\n", 35) = 35
+write(1, "FLAG: \x1b[1;35mGHOST_ROOT{STR4C3_D3BUG_M4ST3R}\x1b[0m\\n", 38) = 38
 exit_group(0)                           = ?
 +++ exited with 0 +++
-\x1b[1;32m[MISSION UPDATE] Objective Complete: PROCESS TRACED.\x1b[0m`;
+\x1b[1;32mConfiguration Loaded.\x1b[0m
+[SUCCESS] Process running normally.
+FLAG: \x1b[1;35mGHOST_ROOT{STR4C3_D3BUG_M4ST3R}\x1b[0m`;
 
                       if (!VFS['/var/run/strace_solved']) {
                           VFS['/var/run/strace_solved'] = { type: 'file', content: 'TRUE' };
@@ -10118,18 +10106,14 @@ exit_group(0)                           = ?
                           if (runDir && runDir.type === 'dir' && !runDir.children.includes('strace_solved')) {
                               runDir.children.push('strace_solved');
                           }
+                          output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PROCESS TRACED.\x1b[0m`;
                       }
                  } else {
-                      output = `execve("/usr/bin/mystery_process", ["mystery_process"], 0x7ffd5d4b6390 /* 21 vars */) = 0
-brk(NULL)                               = 0x559e3a628000
-access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
-openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = -1 ENOENT (No such file or directory)
-write(2, "Error: Config missing.\\n", 22) = 22
+                      output += `-1 ENOENT (No such file or directory)
+write(2, "", 0)                         = 0
 exit_group(1)                           = ?
 +++ exited with 1 +++`;
                  }
-            } else if (target === 'ls') {
-                 output = `execve("/bin/ls", ["ls"], 0x...) = 0\nopenat(AT_FDCWD, ".", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3\ngetdents64(3, /* 15 entries */, 32768) = 432\nclose(3) = 0\n+++ exited with 0 +++`;
             } else {
                  output = `strace: ${target}: command not found or simulation not implemented.`;
             }
@@ -15918,6 +15902,83 @@ auth.py
         }
     }
 
+    case 'strace': {
+        if (args.length < 1) {
+            output = 'usage: strace [-d] [-f] [-o file] command [args]';
+        } else {
+            const cmd = args[0];
+            const cmdArgs = args.slice(1).join(' '); 
+            
+            // Cycle 255: mystery_process
+            if (cmd.includes('mystery_process')) {
+                // Check for the secret config
+                const configExists = !!getNode('/tmp/secret_config.dat');
+                
+                let straceLog = `execve("${cmd}", ["${cmd}"], 0x7ffd5d4b6330 /* 21 vars */) = 0
+brk(NULL)                               = 0x559e215cb000
+access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
+fstat(3, {st_mode=S_IFREG|0644, st_size=96453, ...}) = 0
+mmap(NULL, 96453, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7f4337a35000
+close(3)                                = 0
+openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
+read(3, "\\177ELF\\2\\1\\1\\3\\0\\0\\0\\0\\0\\0\\0\\0\\3\\0>\\0\\1\\0\\0\\0\\360q\\2\\0\\0\\0\\0\\0"...`;
+
+                if (!configExists) {
+                    straceLog += `
+openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = -1 ENOENT (No such file or directory)
+--- SIGSEGV {si_signo=SIGSEGV, si_code=SEGV_MAPERR, si_addr=NULL} ---
++++ killed by SIGSEGV (core dumped) +++
+Segmentation fault`;
+                    output = straceLog;
+                } else {
+                    straceLog += `
+openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = 3
+fstat(3, {st_mode=S_IFREG|0644, st_size=32, ...}) = 0
+read(3, "CONF_V1: ENABLE_DEBUG=1\\n", 1024) = 24
+close(3)                                = 0
+write(1, "FLAG: GHOST_ROOT{STR4C3_M4ST3R_D3BUG}\\n", 38) = 38
+exit_group(0)                           = ?
++++ exited with 0 +++`;
+                    output = straceLog + '\nFLAG: GHOST_ROOT{STR4C3_M4ST3R_D3BUG}';
+                    
+                    if (!VFS['/var/run/strace_solved']) {
+                        VFS['/var/run/strace_solved'] = { type: 'file', content: 'TRUE' };
+                         const runDir = getNode('/var/run');
+                         if (runDir && runDir.type === 'dir' && !runDir.children.includes('strace_solved')) {
+                             runDir.children.push('strace_solved');
+                         }
+                        output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SYSTEM CALL TRACED.\x1b[0m`;
+                    }
+                }
+            } else {
+                output = `execve("${cmd}", ["${cmd}", "${cmdArgs}"], 0x7ffd...) = 0\nbrk(NULL) = 0x555555554000\naccess("/etc/ld.so.preload", R_OK) = -1 ENOENT (No such file or directory)\n...`;
+                output += `\n[STRACE] Attached to process ${Math.floor(Math.random() * 10000)}.\n[STRACE] Detaching... process exited normally.`;
+            }
+        }
+        break;
+    }
+
+    case 'mystery_process':
+    case './mystery_process': 
+    case '/usr/bin/mystery_process': {
+        const configExists = !!getNode('/tmp/secret_config.dat');
+        if (configExists) {
+             output = 'FLAG: GHOST_ROOT{STR4C3_M4ST3R_D3BUG}';
+             if (!VFS['/var/run/strace_solved']) {
+                VFS['/var/run/strace_solved'] = { type: 'file', content: 'TRUE' };
+                 const runDir = getNode('/var/run');
+                 if (runDir && runDir.type === 'dir' && !runDir.children.includes('strace_solved')) {
+                     runDir.children.push('strace_solved');
+                 }
+                output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SYSTEM CALL TRACED.\x1b[0m`;
+            }
+        } else {
+            output = 'Segmentation fault'; 
+        }
+        break;
+    }
+
     case 'access_card': {
         // Cycle 67: Environment Injection
         const clearance = ENV_VARS['CLEARANCE_LEVEL'];
@@ -20629,7 +20690,7 @@ openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = 3
 fstat(3, {st_mode=S_IFREG|0644, st_size=12, ...}) = 0
 read(3, "CONF=TRUE\\n", 1024)           = 10
 write(1, "Configuration Loaded.\\n", 22)  = 22
-write(1, "FLAG: GHOST_ROOT{STR4C3_F1L3_M1SS1NG_F0UND}\\n", 44) = 44
+write(1, "FLAG: GHOST_ROOT{STR4C3_R3V34LS_H1DD3N_F1L3S}\\n", 44) = 44
 exit_group(0)                           = ?
 +++ exited with 0 +++`;
                      // Mark as solved
