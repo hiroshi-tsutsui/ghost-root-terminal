@@ -946,7 +946,7 @@ Click here to claim your prize!
   // Cycle 255: The Process Trace (Strace)
   '/usr/bin/mystery_process': {
       type: 'file',
-      content: '[BINARY_ELF_X86_64] [MYSTERY_V1]\n[STATUS] CORRUPTED config path.\n',
+      content: '\x7fELF\x02\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x3e\x00\x01\x00\x00\x00\x30\x05\x40\x00\x00\x00\x00\x00@\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00',
       permissions: '0755'
   },
   '/usr/bin/strace': {
