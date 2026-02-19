@@ -10072,84 +10072,8 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
         }
         break;
     }
-    case 'strace': {
-        if (args.length < 1) {
-            output = 'usage: strace [-p PID] <command> [args...]';
-        } else {
-            let target = args[0];
-            // Handle basic flags like -p or -f (ignore for simulation simplicity or strip)
-            if (target.startsWith('-')) {
-                 // Assume command is last arg for now
-                 target = args[args.length - 1];
-            }
-            
-            // Check if file exists (robustness)
-            let node = getNode(resolvePath(cwd, target));
-            // Also check standard paths if not found and no path given
-            if (!node && !target.includes('/')) {
-                node = getNode('/usr/bin/' + target) || getNode('/bin/' + target) || getNode('/usr/local/bin/' + target);
-            }
+    // Old strace implementation removed - using newer one at end of file
 
-            if (!node) {
-                 output = `strace: Can't stat '${target}': No such file or directory`;
-            } else {
-                const cleanTarget = target.split('/').pop() || target;
-
-                if (cleanTarget === 'mystery_process') {
-                     output = `execve("/usr/bin/mystery_process", ["mystery_process"], 0x7ffd5d4b6390 /* 21 vars */) = 0
-brk(NULL)                               = 0x559e3a628000
-access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
-openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
-fstat(3, {st_mode=S_IFREG|0644, st_size=12345, ...}) = 0
-mmap(NULL, 12345, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7f0a1b2c3000
-close(3)                                = 0
-openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
-read(3, "\\177ELF\\2\\1\\1\\3\\0\\0\\0\\0\\0\\0\\0\\0\\3\\0>\\0\\1\\0\\0\\0\\360q\\2\\0\\0\\0\\0\\0", 832) = 832
-fstat(3, {st_mode=S_IFREG|0755, st_size=2029592, ...}) = 0
-mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f0a1b2c1000
-close(3)                                = 0
-arch_prctl(ARCH_SET_FS, 0x7f0a1b2c2740) = 0
-mprotect(0x7f0a1b2a4000, 16384, PROT_READ) = 0
-mprotect(0x559e3a626000, 4096, PROT_READ) = 0
-mprotect(0x7f0a1b2e6000, 4096, PROT_READ) = 0
-munmap(0x7f0a1b2c3000, 12345)           = 0
-openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = `;
-
-                 if (VFS['/tmp/secret_config.dat']) {
-                      output += `3
-fstat(3, {st_mode=S_IFREG|0644, st_size=1024, ...}) = 0
-read(3, "CONF: GHOST_ROOT{STR4C3_R3V34LS_H1DD3N_P4THS}", 1024) = 38
-close(3)                                = 0
-write(1, "Configuration Loaded.\\n", 22)  = 22
-write(1, "[SUCCESS] Process running normally.\\n", 35) = 35
-write(1, "FLAG: \x1b[1;35mGHOST_ROOT{STR4C3_R3V34LS_H1DD3N_P4THS}\x1b[0m\\n", 38) = 38
-exit_group(0)                           = ?
-+++ exited with 0 +++
-\x1b[1;32mConfiguration Loaded.\x1b[0m
-[SUCCESS] Process running normally.
-FLAG: \x1b[1;35mGHOST_ROOT{STR4C3_R3V34LS_H1DD3N_P4THS}\x1b[0m`;
-
-                      if (!VFS['/var/run/strace_solved']) {
-                          VFS['/var/run/strace_solved'] = { type: 'file', content: 'TRUE' };
-                          const runDir = getNode('/var/run');
-                          if (runDir && runDir.type === 'dir' && !runDir.children.includes('strace_solved')) {
-                              runDir.children.push('strace_solved');
-                          }
-                          output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PROCESS TRACED.\x1b[0m`;
-                      }
-                 } else {
-                      output += `-1 ENOENT (No such file or directory)
-write(2, "", 0)                         = 0
-exit_group(1)                           = ?
-+++ exited with 1 +++`;
-                 }
-            } else {
-                 output = `strace: ${target}: command not found or simulation not implemented.`;
-            }
-          }
-        }
-        break;
-    }
     case 'firewall_reload': {
         const confNode = getNode('/etc/firewall.conf');
         if (!confNode || confNode.type !== 'file') {
@@ -20802,6 +20726,113 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
             output = `no crontab for ${user} - using an empty one\ncrontab: no editor defined`;
         } else {
             output = 'usage: crontab [-u user] file\n       crontab [-u user] [-l | -r | -e]';
+        }
+        break;
+    }
+
+    // Cycle 255: The Process Trace (Strace)
+    case 'strace': {
+        const args = commandLine.trim().split(/\s+/).slice(1);
+        if (args.length < 1) {
+            output = 'usage: strace [-o <file>] <command> [args]';
+        } else {
+            const cmd = args[0];
+            const cmdPath = resolvePath(cwd, cmd);
+            const cmdNode = getNode(cmdPath);
+
+            if (!cmdNode && cmd !== 'ls' && cmd !== 'cat') { 
+                output = `strace: ${cmd}: command not found`;
+            } else {
+                if (cmd.includes('mystery_process')) {
+                     const secretPath = '/tmp/secret_config.dat';
+                     const secretNode = getNode(secretPath);
+                     
+                     output = `execve("${cmdPath}", ["${cmd}"], 0x7ff...) = 0
+brk(NULL)                               = 0x56083505c000
+access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)
+access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
+fstat(3, {st_mode=S_IFREG|0644, st_size=96453, ...}) = 0
+mmap(NULL, 96453, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7f8e35624000
+close(3)                                = 0
+arch_prctl(ARCH_SET_FS, 0x7f8e35625540) = 0
+set_tid_address(0x7f8e35625810)         = 5555
+set_robust_list(0x7f8e35625820, 24)     = 0
+rseq(0x7f8e35625e60, 0x20, 0, 0x53053053) = 0
+mprotect(0x560833a69000, 4096, PROT_READ) = 0
+mprotect(0x7f8e35649000, 4096, PROT_READ) = 0
+munmap(0x7f8e35624000, 96453)           = 0
+getpid()                                = 5555
+openat(AT_FDCWD, "${secretPath}", O_RDONLY) = `;
+
+                     if (secretNode) {
+                         output += `3
+fstat(3, {st_mode=S_IFREG|0644, st_size=32, ...}) = 0
+read(3, "CONF_V1: ENABLED\\n", 1024)    = 17
+close(3)                                = 0
+write(1, "System Config Loaded.\\n", 22) = 22
+write(1, "FLAG: GHOST_ROOT{STR4C3_D3BUG_M4ST3R}\\n", 38) = 38
+exit_group(0)                           = ?
++++ exited with 0 +++`;
+                         output += `\n\nSystem Config Loaded.\nFLAG: GHOST_ROOT{STR4C3_D3BUG_M4ST3R}`;
+
+                         if (!VFS['/var/run/cycle255_solved']) {
+                             VFS['/var/run/cycle255_solved'] = { type: 'file', content: 'TRUE' };
+                             // Ensure /var/run exists
+                             if (!VFS['/var/run']) {
+                                 VFS['/var/run'] = { type: 'dir', children: [] };
+                                 const varDir = getNode('/var');
+                                 if (varDir && varDir.type === 'dir' && !varDir.children.includes('run')) varDir.children.push('run');
+                             }
+                             const runDir = getNode('/var/run');
+                             if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle255_solved')) {
+                                 runDir.children.push('cycle255_solved');
+                             }
+                             output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SYSTEM CALL TRACED.\x1b[0m`;
+                         }
+                     } else {
+                         output += `-1 ENOENT (No such file or directory)
+write(2, "Error: Config missing.\\n", 23) = 23
+exit_group(1)                           = ?
++++ exited with 1 +++`;
+                     }
+                } else {
+                     // Generic trace for other commands
+                     output = `execve("/usr/bin/${cmd}", ["${cmd}"], 0x7ff...) = 0
+brk(NULL)                               = 0x555555554000
+access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
+read(3, "\\177ELF\\2\\1\\1\\3\\0\\0\\0\\0\\0\\0\\0\\0\\3\\0>\\0\\1\\0\\0\\0\\360q\\2\\0\\0\\0\\0\\0", 832) = 832
+fstat(3, {st_mode=S_IFREG|0755, st_size=2029592, ...}) = 0
+close(3)                                = 0
+write(1, "Command executed.\\n", 18)      = 18
+exit_group(0)                           = ?
++++ exited with 0 +++`;
+                }
+            }
+        }
+        break;
+    }
+
+    case 'mystery_process':
+    case './mystery_process':
+    case '/usr/bin/mystery_process': {
+        const secretPath = '/tmp/secret_config.dat';
+        const secretNode = getNode(secretPath);
+
+        if (secretNode) {
+             output = `System Config Loaded.\nFLAG: GHOST_ROOT{STR4C3_D3BUG_M4ST3R}`;
+             if (!VFS['/var/run/cycle255_solved']) {
+                 VFS['/var/run/cycle255_solved'] = { type: 'file', content: 'TRUE' };
+                 const runDir = getNode('/var/run');
+                 if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle255_solved')) {
+                     runDir.children.push('cycle255_solved');
+                 }
+                 output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SYSTEM CALL TRACED.\x1b[0m`;
+             }
+        } else {
+             // Silent failure or very minimal error
+             output = ''; 
         }
         break;
     }
