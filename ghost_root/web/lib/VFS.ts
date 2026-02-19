@@ -83,7 +83,7 @@ const VFS: Record<string, VFSNode> = {
   },
   '/usr/bin': {
     type: 'dir',
-    children: ['gcc', 'net-bridge', 'void_crypt', 'deploy_agent', 'otp_gen', 'recover_data', 'ghost_update', 'secure_vault', 'sys_monitor', 'escalate', 'upload_firmware']
+    children: ['gcc', 'net-bridge', 'void_crypt', 'deploy_agent', 'otp_gen', 'recover_data', 'ghost_update', 'secure_vault', 'sys_monitor', 'escalate', 'upload_firmware', 'mystery_process', 'strace']
   },
   '/usr/bin/secure_vault': {
     type: 'file',
@@ -311,7 +311,7 @@ KEY_ID: GHOST_PROTOCOL_INIT_V2
   },
   '/home/ghost': {
     type: 'dir',
-    children: ['project_alpha', 'secrets', '.bash_history', '.ssh', 'wifi_note.txt', 'journal', 'evidence.jpg', 'surveillance.jpg', 'tools', 'tools.zip', 'capture.cap', 'drone_manual.txt', 'beacon_protocol.txt', 'hashes.txt', 'wordlist.txt', 'operations', 'security_alert.txt', 'suid_notice.txt', 'backup_log.txt', 'security_notice.txt', 'security_audit.log']
+    children: ['project_alpha', 'secrets', '.bash_history', '.ssh', 'wifi_note.txt', 'journal', 'evidence.jpg', 'surveillance.jpg', 'tools', 'tools.zip', 'capture.cap', 'drone_manual.txt', 'beacon_protocol.txt', 'hashes.txt', 'wordlist.txt', 'operations', 'security_alert.txt', 'suid_notice.txt', 'backup_log.txt', 'security_notice.txt', 'security_audit.log', 'trace_alert.log']
   },
   '/home/ghost/suid_notice.txt': {
       type: 'file',
@@ -947,6 +947,11 @@ Click here to claim your prize!
   '/usr/bin/mystery_process': {
       type: 'file',
       content: '[BINARY_ELF_X86_64] [MYSTERY_V1]\n[STATUS] CORRUPTED config path.\n',
+      permissions: '0755'
+  },
+  '/usr/bin/strace': {
+      type: 'file',
+      content: '[BINARY_ELF_X86_64] [STRACE_V4]\nUsage: strace <command>',
       permissions: '0755'
   },
   '/home/ghost/trace_alert.log': {
