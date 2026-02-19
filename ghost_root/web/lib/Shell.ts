@@ -9186,6 +9186,26 @@ int main(int argc, char* argv[]) {
       }
   }
 
+  // Cycle 255 Init (The Process Trace)
+  if (!VFS['/usr/bin/mystery_process']) {
+      VFS['/usr/bin/mystery_process'] = {
+          type: 'file',
+          content: '[BINARY_ELF_X86_64] [UNKNOWN_DAEMON]\n[ERROR] Silent Failure Detected.\n',
+          permissions: '0755'
+      };
+      const bin = getNode('/usr/bin');
+      if (bin && bin.type === 'dir' && !bin.children.includes('mystery_process')) bin.children.push('mystery_process');
+
+      if (!VFS['/home/ghost/trace_alert.txt']) {
+          VFS['/home/ghost/trace_alert.txt'] = {
+              type: 'file',
+              content: '[ALERT] mystery_process is failing silently.\n[ACTION] Use "strace" to trace system calls and identify missing resources.\n[HINT] Look for ENOENT errors in the open/access calls.'
+          };
+          const home = getNode('/home/ghost');
+          if (home && home.type === 'dir' && !home.children.includes('trace_alert.txt')) home.children.push('trace_alert.txt');
+      }
+  }
+
 
   // 1. Handle Piping (|) recursively
   const segments = splitPipeline(commandLine);
@@ -10021,7 +10041,24 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
   }
 
   switch (command) {
-    case 'legacy_strace_DISABLED': {
+    case 'mystery_process': {
+        if (VFS['/tmp/secret_config.dat']) {
+            output = "Configuration Loaded.\n[SUCCESS] Process running normally.\nFLAG: GHOST_ROOT{STR4C3_D3BUG_M4ST3R}";
+            // Mark solved if they run it directly too
+             if (!VFS['/var/run/strace_solved']) {
+                 VFS['/var/run/strace_solved'] = { type: 'file', content: 'TRUE' };
+                 const runDir = getNode('/var/run');
+                 if (runDir && runDir.type === 'dir' && !runDir.children.includes('strace_solved')) {
+                     runDir.children.push('strace_solved');
+                 }
+                 output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PROCESS TRACED & FIXED.\x1b[0m`;
+             }
+        } else {
+            output = ""; // Silent failure
+        }
+        break;
+    }
+    case 'strace': {
         if (args.length < 1) {
             output = 'usage: strace [-p PID] <command> [args...]';
         } else {
@@ -10037,6 +10074,9 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
                      output = `strace: attach: ptrace(PTRACE_SEIZE, ${pid}): No such process`;
                      return finalize(output, newCwd);
                 }
+            } else if (target.startsWith('-')) {
+                 // Handle other flags (ignore) and assume command is last
+                 target = args[args.length - 1];
             }
             
             // Clean up target name (./mystery_process -> mystery_process)
