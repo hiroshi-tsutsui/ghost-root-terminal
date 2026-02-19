@@ -5649,16 +5649,34 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
       const args = cmdTokens.slice(1);
       if (args.length === 0) return { output: 'strace: usage: strace [-o <file>] [-p <pid>] <command>', newCwd: cwd };
       
-      const targetCmd = args[args.length - 1]; // Simplified parsing
-      if (targetCmd.includes('mystery_process')) {
-           let out = 'execve("/usr/bin/mystery_process", ["mystery_process"], [/* 21 vars */]) = 0\n' +
-                     'brk(NULL)                               = 0x55dc28e88000\n' +
-                     'access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)\n' +
-                     'access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)\n' +
-                     'openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3\n' +
-                     'fstat(3, {st_mode=S_IFREG|0644, st_size=96453, ...}) = 0\n' +
-                     'mmap(NULL, 96453, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7f0a9c803000\n' +
-                     'close(3)                                = 0\n';
+      let targetName = '';
+      const pIndex = args.indexOf('-p');
+      if (pIndex !== -1 && args[pIndex + 1]) {
+          const pid = parseInt(args[pIndex + 1], 10);
+          const proc = PROCESSES.find(p => p.pid === pid);
+          if (!proc) return { output: `strace: attach: ptrace(PTRACE_SEIZE, ${pid}): No such process`, newCwd: cwd };
+          // Extract binary name from command path (e.g., /usr/bin/mystery_process -> mystery_process)
+          targetName = proc.command.split('/').pop() || '';
+      } else {
+          // Assume last arg is command
+          targetName = args[args.length - 1];
+      }
+
+      if (targetName.includes('mystery_process')) {
+           let out = '';
+           if (pIndex !== -1) {
+               out += `strace: Process ${args[pIndex + 1]} attached\n`;
+           } else {
+               out += 'execve("/usr/bin/mystery_process", ["mystery_process"], [/* 21 vars */]) = 0\n' +
+                      'brk(NULL)                               = 0x55dc28e88000\n';
+           }
+           
+           out += 'access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)\n' +
+                  'access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)\n' +
+                  'openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3\n' +
+                  'fstat(3, {st_mode=S_IFREG|0644, st_size=96453, ...}) = 0\n' +
+                  'mmap(NULL, 96453, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7f0a9c803000\n' +
+                  'close(3)                                = 0\n';
            
            if (VFS['/tmp/secret_config.dat']) {
                out += 'open("/tmp/secret_config.dat", O_RDONLY) = 3\n' +
@@ -5675,12 +5693,12 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
                       '+++ exited with 1 +++';
            }
            return { output: out, newCwd: cwd };
-      } else if (targetCmd.includes('ghost_daemon')) {
-          // Cycle 273 (The Iptables Firewall) - Reusing strace for other puzzles if needed
+      } else if (targetName.includes('ghost_daemon')) {
+          // Cycle 273 (The Iptables Firewall)
            return { output: 'execve("/usr/bin/ghost_daemon", ...)\nconnect(3, {sa_family=AF_INET, sin_port=htons(80), sin_addr=inet_addr("1.1.1.1")}, 16) = -1 ENETUNREACH (Network is unreachable)\n', newCwd: cwd };
       }
       
-      return { output: `strace: ${targetCmd}: command not found`, newCwd: cwd };
+      return { output: `strace: ${targetName}: command not found`, newCwd: cwd };
   }
 
   // Cycle 275 (The Kernel Module)
@@ -10036,7 +10054,7 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
     case 'mystery_process': {
         // Direct execution
         if (VFS['/tmp/secret_config.dat']) {
-            output = "\x1b[1;32mConfiguration Loaded.\x1b[0m\n[SUCCESS] Process running normally.\nFLAG: \x1b[1;35mGHOST_ROOT{STR4C3_D3BUG_M4ST3R}\x1b[0m";
+            output = "\x1b[1;32mConfiguration Loaded.\x1b[0m\n[SUCCESS] Process running normally.\nFLAG: \x1b[1;35mGHOST_ROOT{STR4C3_R3V34LS_H1DD3N_P4THS}\x1b[0m";
             // Mark solved
              if (!VFS['/var/run/strace_solved']) {
                  VFS['/var/run/strace_solved'] = { type: 'file', content: 'TRUE' };
@@ -10089,16 +10107,16 @@ openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = `;
                  if (VFS['/tmp/secret_config.dat']) {
                       output += `3
 fstat(3, {st_mode=S_IFREG|0644, st_size=1024, ...}) = 0
-read(3, "CONF: GHOST_ROOT{STR4C3_D3BUG_M4ST3R}", 1024) = 38
+read(3, "CONF: GHOST_ROOT{STR4C3_R3V34LS_H1DD3N_P4THS}", 1024) = 38
 close(3)                                = 0
 write(1, "Configuration Loaded.\\n", 22)  = 22
 write(1, "[SUCCESS] Process running normally.\\n", 35) = 35
-write(1, "FLAG: \x1b[1;35mGHOST_ROOT{STR4C3_D3BUG_M4ST3R}\x1b[0m\\n", 38) = 38
+write(1, "FLAG: \x1b[1;35mGHOST_ROOT{STR4C3_R3V34LS_H1DD3N_P4THS}\x1b[0m\\n", 38) = 38
 exit_group(0)                           = ?
 +++ exited with 0 +++
 \x1b[1;32mConfiguration Loaded.\x1b[0m
 [SUCCESS] Process running normally.
-FLAG: \x1b[1;35mGHOST_ROOT{STR4C3_D3BUG_M4ST3R}\x1b[0m`;
+FLAG: \x1b[1;35mGHOST_ROOT{STR4C3_R3V34LS_H1DD3N_P4THS}\x1b[0m`;
 
                       if (!VFS['/var/run/strace_solved']) {
                           VFS['/var/run/strace_solved'] = { type: 'file', content: 'TRUE' };
@@ -20719,7 +20737,7 @@ exit_group(1)                           = ?
     case './mystery_process':
     case '/usr/bin/mystery_process': {
         if (VFS['/tmp/secret_config.dat']) {
-             output = 'Configuration Loaded.\nFLAG: GHOST_ROOT{STR4C3_F1L3_M1SS1NG_F0UND}';
+             output = 'Configuration Loaded.\nFLAG: GHOST_ROOT{STR4C3_R3V34LS_H1DD3N_F1L3S}';
              if (!VFS['/var/run/cycle255_solved']) {
                  VFS['/var/run/cycle255_solved'] = { type: 'file', content: 'TRUE' };
                  output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PROCESS TRACE ANALYSIS.\x1b[0m`;
