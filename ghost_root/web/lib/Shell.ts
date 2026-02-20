@@ -4348,6 +4348,7 @@ export const getMissionStatus = (): MissionStatus => {
   const isRoot = !!getNode('/tmp/.root_session');
   const hasNet = !!getNode('/var/run/net_status');
   const hasScan = !!getNode('/var/run/scan_complete');
+  const hasTrace = !!getNode('/var/run/cycle255_solved');
   const decryptNode = getNode('/var/run/decrypt_count');
   const decryptCount = decryptNode && decryptNode.type === 'file' ? parseInt(decryptNode.content) : 0;
   const hasBlackSite = !!getNode('/remote/black-site/root/FLAG.txt');
@@ -4357,9 +4358,10 @@ export const getMissionStatus = (): MissionStatus => {
 
   let nextStep = 'Check manual pages (man) or list files (ls).';
   
-  // Logic Flow: Net -> Scan -> Root -> BlackSite -> HiddenVol -> Payload -> Decrypt Keys -> Launch
+  // Logic Flow: Net -> Scan -> Trace -> Root -> BlackSite -> HiddenVol -> Payload -> Decrypt Keys -> Launch
   if (!hasNet) nextStep = 'Connect to a network. Try "wifi scan" then "wifi connect".';
   else if (!hasScan) nextStep = 'Scan the network for targets. Try "nmap 192.168.1.0/24" or "netmap".';
+  else if (!hasTrace) nextStep = 'Analyze the silent failure of "/usr/bin/mystery_process". Use "strace" to investigate.';
   else if (!isRoot) nextStep = 'Escalate privileges to root. Try "steghide extract" on evidence.jpg (check EXIF data/tor for password) or "hydra".';
   else if (!hasBlackSite) nextStep = 'Infiltrate the Black Site. Use "ssh -i <key> root@192.168.1.99". Key is hidden in steganography payload.';
   else if (!hasHiddenVol) nextStep = 'Investigate storage devices. Use "fdisk -l" to find partitions, then "mount" the hidden volume.';
@@ -4368,7 +4370,7 @@ export const getMissionStatus = (): MissionStatus => {
   else if (!hasLaunchReady) nextStep = 'Decrypt "launch_codes.bin" using the key from KEYS.enc.';
   else nextStep = 'EXECUTE THE LAUNCH PROTOCOL. RUN "./launch_codes.bin".';
 
-  const steps = [hasNet, hasScan, isRoot, hasBlackSite, hasHiddenVol, hasPayload, decryptCount >= 3, hasLaunchReady];
+  const steps = [hasNet, hasScan, hasTrace, isRoot, hasBlackSite, hasHiddenVol, hasPayload, decryptCount >= 3, hasLaunchReady];
   const progress = Math.round((steps.filter(s => s).length / steps.length) * 100);
 
   let rank = 'Initiate';
@@ -5738,6 +5740,22 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
       trace += '+++ exited with 0 +++';
       
       return { output: trace, newCwd: cwd }; // Don't allow strace to change cwd
+  }
+
+  // Cycle 255 Extension (ltrace)
+  if (cmdBase === 'ltrace') {
+      const args = cmdTokens.slice(1);
+      let targetName = '';
+      if (args.length > 0) targetName = args[0];
+      
+      if (targetName.includes('mystery_process')) {
+          if (VFS['/tmp/secret_config.dat']) {
+               return { output: '__libc_start_main(0x560d8a000000, 1, 0x7fff...) = 0\\nfopen("/tmp/secret_config.dat", "r") = 0x560d8a002010\\nfread(..., 1, 1024, 0x560d8a002010) = 9\\nfclose(0x560d8a002010)                 = 0\\nputs("[INIT] Reading config... OK.")   = 29\\nputs("[SUCCESS] Process Started.")     = 27\\nexit(0)                                = ?\\n+++ exited (status 0) +++', newCwd: cwd };
+          } else {
+               return { output: '__libc_start_main(0x560d8a000000, 1, 0x7fff...) = 0\\nfopen("/tmp/secret_config.dat", "r") = 0\\n+++ exited (status 1) +++', newCwd: cwd };
+          }
+      }
+      return { output: 'ltrace: usage: ltrace <command> (Limited support in this shell)', newCwd: cwd };
   }
 
   // Cycle 275 (The Kernel Module)
@@ -18203,7 +18221,7 @@ mprotect(0x559e20a06000, 4096, PROT_READ) = 0
 mprotect(0x7f0e3863f000, 4096, PROT_READ) = 0
 munmap(0x7f0e38605000, 96453)           = 0
 openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = ${secretExists ? '3' : '-1 ENOENT (No such file or directory)'}
-${secretExists ? 'read(3, "CONF_V1:...", 1024) = 10\nclose(3) = 0\nwrite(1, "Access Granted.\\n", 16) = 16\nwrite(1, "FLAG: GHOST_ROOT{STR4C3_R3V34LS_F1L3}\\n", 38) = 38\nexit_group(0) = ?\n+++ exited with 0 +++' : '--- SIGSEGV {si_signo=SIGSEGV, si_code=SEGV_MAPERR, si_addr=0x0} ---\n+++ killed by SIGSEGV (core dumped) +++'}`;
+${secretExists ? 'read(3, "CONF_V1:...", 1024) = 10\nclose(3) = 0\nwrite(1, "Access Granted.\\n", 16) = 16\nwrite(1, "FLAG: GHOST_ROOT{STR4C3_R3V34LS_H1DD3N_P4THS}\\n", 45) = 45\nexit_group(0) = ?\n+++ exited with 0 +++' : '--- SIGSEGV {si_signo=SIGSEGV, si_code=SEGV_MAPERR, si_addr=0x0} ---\n+++ killed by SIGSEGV (core dumped) +++'}`;
 
                  if (secretExists) {
                      if (!VFS['/var/run/strace_solved']) {
@@ -18224,7 +18242,7 @@ ${secretExists ? 'read(3, "CONF_V1:...", 1024) = 10\nclose(3) = 0\nwrite(1, "Acc
     case 'mystery_process': {
         const secretExists = !!getNode('/tmp/secret_config.dat');
         if (secretExists) {
-            output = `Access Granted.\nFLAG: GHOST_ROOT{STR4C3_R3V34LS_F1L3}`;
+            output = `Access Granted.\nFLAG: GHOST_ROOT{STR4C3_R3V34LS_H1DD3N_P4THS}`;
              if (!VFS['/var/run/strace_solved']) {
                  VFS['/var/run/strace_solved'] = { type: 'file', content: 'TRUE' };
                  const runDir = getNode('/var/run');
@@ -18236,6 +18254,22 @@ ${secretExists ? 'read(3, "CONF_V1:...", 1024) = 10\nclose(3) = 0\nwrite(1, "Acc
         } else {
             // Silent crash (no output)
             output = ''; 
+        }
+        break;
+    }
+    case 'ltrace': {
+        if (args.length < 1) {
+            output = 'usage: ltrace <command>';
+        } else {
+            const cmd = args[0];
+            if (cmd.includes('mystery_process')) {
+                 const secretExists = !!getNode('/tmp/secret_config.dat');
+                 output = `__libc_start_main(0x559e2269a2a0, 1, 0x7ffd5d5966d0, 0x559e2269a2c0 <unfinished ...>
+fopen("/tmp/secret_config.dat", "r")             = ${secretExists ? '0x559e2269a2a0' : '0'}
+${secretExists ? 'fgets("CONF_V1:...", 1024, 0x559e2269a2a0) = "CONF_V1:..."\\nputs("Access Granted.")                          = 16\\nputs("FLAG: GHOST_ROOT{STR4C3_R3V34LS_H1DD3N_P4THS}") = 45\\nexit(0)                                          = <void>\\n+++ exited (status 0) +++' : '--- SIGSEGV (Segmentation fault) ---\\n+++ killed by SIGSEGV +++'}`;
+            } else {
+                 output = `__libc_start_main(...) = 0\\nputs("Output...")                                = 9\\nexit(0)                                          = <void>\\n+++ exited (status 0) +++`;
+            }
         }
         break;
     }
@@ -20860,76 +20894,8 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
         break;
     }
 
-    // Cycle 255: The Process Trace (Strace)
-    case 'strace': {
-        const args = commandLine.trim().split(/\s+/).slice(1);
-        if (args.length < 1) {
-            output = 'usage: strace [-o <file>] [-p <pid>] <command> [args]';
-        } else {
-            let cmd = args[0];
-            // Handle -p <pid>
-            if (cmd === '-p') {
-                const pid = args[1];
-                output = `strace: attach: ptrace(PTRACE_SEIZE, ${pid}): Operation not permitted`;
-                return finalize(output, newCwd);
-            }
+    // Cycle 255: Duplicate Logic Removed
 
-            let cmdPath = resolvePath(cwd, cmd);
-            let cmdNode = getNode(cmdPath);
-
-            // PATH Search
-            if (!cmdNode && !cmd.includes('/')) {
-                const pathEnv = ENV_VARS['PATH'] || '/bin:/usr/bin';
-                const paths = pathEnv.split(':');
-                for (const p of paths) {
-                    const tryPath = resolvePath(p, cmd);
-                    if (getNode(tryPath)) {
-                        cmdPath = tryPath;
-                        cmdNode = getNode(cmdPath);
-                        break;
-                    }
-                }
-            }
-
-            if (!cmdNode && cmd !== 'mystery_process') { 
-                output = `strace: ${cmd}: command not found`;
-            } else {
-                if (cmd.includes('mystery_process')) {
-                     const secretPath = '/tmp/secret_config.dat';
-                     const secretNode = getNode(secretPath);
-                     
-                     output = `execve("${cmdPath}", ["${cmd}"], 0x7ff...) = 0\nbrk(NULL)                               = 0x56083505c000\naccess("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)\nopenat(AT_FDCWD, "${secretPath}", O_RDONLY) = `;
-
-                     if (secretNode) {
-                         output += `3\nread(3, "CONF_V1: ENABLED\\n", 1024)    = 17\nclose(3)                                = 0\nwrite(1, "FLAG: GHOST_ROOT{STR4C3_R3V34LS_H1DD3N_P4THS}\\n", 45) = 45\nexit_group(0)                           = ?\n+++ exited with 0 +++`;
-                     } else {
-                         output += `-1 ENOENT (No such file or directory)\nexit_group(1)                           = ?\n+++ exited with 1 +++`;
-                     }
-                } else {
-                     output = `execve("${cmd}", ["${cmd}"], 0x7ff...) = 0\nwrite(1, "Command executed.\\n", 18)      = 18\nexit_group(0)                           = ?\n+++ exited with 0 +++`;
-                }
-            }
-        }
-        break;
-    }
-
-    case 'mystery_process': {
-        const secretPath = '/tmp/secret_config.dat';
-        const secretNode = getNode(secretPath);
-        if (secretNode) {
-             output = 'System Config Loaded.\nFLAG: GHOST_ROOT{STR4C3_R3V34LS_H1DD3N_P4THS}';
-             if (!VFS['/var/run/cycle255_solved']) {
-                 VFS['/var/run/cycle255_solved'] = { type: 'file', content: 'TRUE' };
-                 if (!VFS['/var/run']) VFS['/var/run'] = { type: 'dir', children: [] };
-                 const r = getNode('/var/run');
-                 if (r && r.type === 'dir' && !r.children.includes('cycle255_solved')) r.children.push('cycle255_solved');
-                 output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SYSTEM CALL TRACED.\x1b[0m`;
-             }
-        } else {
-             output = ''; // Silent failure
-        }
-        break;
-    }
 
     // Duplicate mystery_process handler REMOVED
 

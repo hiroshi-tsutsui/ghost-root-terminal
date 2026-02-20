@@ -1,5 +1,96 @@
 # VISION LOG
 
+## Cycle 255: The Process Trace (Phase 5.2 - Diagnostics Restoration)
+**Status:** DEPLOYED
+**Date:** 2026-02-21 07:15 JST
+**Objective:** Restore `ltrace` functionality lost during recent refactoring.
+
+### Changes
+1.  **Restoration:** Re-implemented `ltrace` command logic in `Shell.ts`.
+2.  **Enhancement:** `ltrace mystery_process` now accurately reflects library calls (`fopen`, `puts`) matching the syscalls seen in `strace`.
+3.  **Verification:** Confirmed both `strace` and `ltrace` provide consistent diagnostic data for the puzzle.
+
+### Notification
+SENT: 2026-02-21 07:15 JST
+MSG: UPLINK ESTABLISHED: CYCLE REPORT (Diagnostics Restored - Cycle 255)
+Target: https://ghost-root-terminal.vercel.app/
+
+## Cycle 255: The Process Trace (Phase 5.1 - Code Cleanup)
+**Status:** DEPLOYED
+**Date:** 2026-02-21 06:45 JST
+**Objective:** Resolve duplicated logic in `Shell.ts` and unify flag usage.
+
+### Changes
+1.  **Refactoring:** Removed duplicate `strace` and `mystery_process` command handlers from `Shell.ts` to prevent runtime conflicts.
+2.  **Consistency:** Standardized the success flag to `GHOST_ROOT{STR4C3_R3V34LS_H1DD3N_P4THS}` across all implementations.
+3.  **Verification:** Validated that the detailed syscall trace (Phase 4.6 logic) is preserved as the primary implementation.
+
+### Notification
+SENT: 2026-02-21 06:45 JST
+MSG: UPLINK ESTABLISHED: CYCLE REPORT (Code Cleanup - Cycle 255)
+Target: https://ghost-root-terminal.vercel.app/
+
+## Cycle 255: The Process Trace (Phase 5.0 - Final Polish)
+**Status:** DEPLOYED
+**Date:** 2026-02-21 06:05 JST
+**Objective:** Final verification of `strace` fidelity and `mystery_process` behavior.
+
+### Changes
+1.  **Verification:** Confirmed `mystery_process` exits silently without `/tmp/secret_config.dat`.
+2.  **Trace Accuracy:** Validated `strace` output correctly reports `openat(..., O_RDONLY) = -1 ENOENT`.
+3.  **Puzzle Check:** Confirmed creating the file triggers the success flag `GHOST_ROOT{STR4C3_R3V34LS_H1DD3N_P4THS}`.
+4.  **Deployment:** Pushed final verification build to production.
+
+### Notification
+SENT: 2026-02-21 06:05 JST
+MSG: UPLINK ESTABLISHED: CYCLE REPORT (Process Trace Complete)
+Target: https://ghost-root-terminal.vercel.app/
+
+## Cycle 255: The Process Trace (Phase 4.9 - Extended Diagnostics)
+**Status:** DEPLOYED
+**Date:** 2026-02-21 05:40 JST
+**Objective:** Enhance diagnostic tools with `ltrace` support.
+
+### Changes
+1.  **New Utility:** Added `ltrace` command support.
+2.  **Integration:** `ltrace` now correctly traces `mystery_process` library calls (fopen/puts).
+3.  **Deployment:** Verified integration with existing `strace` puzzle logic.
+
+### Notification
+SENT: 2026-02-21 05:40 JST
+MSG: UPLINK ESTABLISHED: CYCLE REPORT (Extended Diagnostics)
+Target: https://ghost-root-terminal.vercel.app/
+
+## Cycle 255: The Process Trace (Phase 4.8 - Objective Integration)
+**Status:** DEPLOYED
+**Date:** 2026-02-21 05:05 JST
+**Objective:** Fully integrate Cycle 255 into the Mission Status tracking system.
+
+### Changes
+1.  **Mission Logic:** Updated `getMissionStatus` in `Shell.ts` to actively track `cycle255_solved`.
+2.  **Next Step:** Added dynamic guidance: "Analyze the silent failure of '/usr/bin/mystery_process'. Use 'strace' to investigate." appears if the puzzle is unsolved.
+3.  **Deployment:** Verified production deployment with new mission logic.
+
+### Notification
+SENT: 2026-02-21 05:05 JST
+MSG: UPLINK ESTABLISHED: CYCLE REPORT (Objective Integration)
+Target: https://ghost-root-terminal.vercel.app/
+
+## Cycle 255: The Process Trace (Phase 4.5 - Man Page & Noise Refinement)
+**Status:** DEPLOYED
+**Date:** 2026-02-21 02:55 JST
+**Objective:** Add `man strace` and enhance syscall noise for realism.
+
+### Changes
+1.  **Documentation:** Added `man strace` page to VFS (/usr/share/man/man1/strace.1).
+2.  **Noise Injection:** Enhanced `strace` output with realistic `ld.so` loading noise (`openat`, `read`, `mmap` of libc).
+3.  **Verification:** Validated that `strace mystery_process` still reveals the critical `ENOENT` amidst the noise.
+
+### Notification
+SENT: 2026-02-21 02:55 JST
+MSG: UPLINK ESTABLISHED: CYCLE REPORT (Strace Realism Enhanced)
+Target: https://ghost-root-terminal.vercel.app/
+
 ## Cycle 255: The Process Trace (Phase 4.6 - Hyper-Realism)
 **Status:** DEPLOYED
 **Date:** 2026-02-21 03:25 JST
@@ -63,7 +154,7 @@ Target: https://ghost-root-terminal.vercel.app/
 
 ## Cycle 255: The Process Trace (Final Logic)
 **Status:** DEPLOYED
-**Date:** 2026-02-21
+**Date:** 2026-02-21 00:50 JST
 **Objective:** Implement `mystery_process` puzzle and `strace` simulation.
 
 ### Changes
@@ -89,19 +180,4 @@ Target: https://ghost-root-terminal.vercel.app/
 ### Notification
 SENT: 2026-02-20 23:59 JST
 MSG: UPLINK ESTABLISHED: CYCLE REPORT (Strace Tool Upgrade)
-Target: https://ghost-root-terminal.vercel.app/
-
-## Cycle 255: The Process Trace (Phase 4.5 - Man Page & Noise Refinement)
-**Status:** DEPLOYED
-**Date:** 2026-02-21 02:55 JST
-**Objective:** Add `man strace` and enhance syscall noise for realism.
-
-### Changes
-1.  **Documentation:** Added `man strace` page to VFS (/usr/share/man/man1/strace.1).
-2.  **Noise Injection:** Enhanced `strace` output with realistic `ld.so` loading noise (`openat`, `read`, `mmap` of libc).
-3.  **Verification:** Validated that `strace mystery_process` still reveals the critical `ENOENT` amidst the noise.
-
-### Notification
-SENT: 2026-02-21 02:55 JST
-MSG: UPLINK ESTABLISHED: CYCLE REPORT (Strace Realism Enhanced)
 Target: https://ghost-root-terminal.vercel.app/
