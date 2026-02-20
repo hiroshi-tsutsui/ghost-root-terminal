@@ -5157,50 +5157,11 @@ export const tabCompletion = (cwd: string, inputBuffer: string): { matches: stri
         }
     }
 
-    // Cycle 255 Init (The Process Trace - Strace)
-    if (!VFS['/home/ghost/trace_alert.log']) {
-        VFS['/home/ghost/trace_alert.log'] = {
-            type: 'file',
-            content: '[ALERT] Suspicious background process detected (PID 9001).\\n[ANALYSIS] Process "mystery_process" is active but silent.\\n[ACTION] Use "strace -p 9001" (or "strace mystery_process") to trace its system calls.\\n[GOAL] Identify the missing configuration file it is trying to open.'
-        };
-        const home = getNode('/home/ghost');
-        if (home && home.type === 'dir' && !home.children.includes('trace_alert.log')) {
-            home.children.push('trace_alert.log');
-        }
+    // Cycle 255 Init (The Process Trace - Strace) - REMOVED (Duplicate)
 
-        // Spawn the process
-        if (!PROCESSES.find(p => p.pid === 9001)) {
-            PROCESSES.push({
-                pid: 9001,
-                ppid: 1,
-                user: 'ghost',
-                cpu: 0.1,
-                mem: 4.5,
-                time: '0:05',
-                command: '/usr/bin/mystery_process',
-                tty: '?',
-                stat: 'Ss'
-            });
-        }
+        // Process 9001 REMOVED
         
-        // Create the binary file
-        if (!VFS['/usr/bin/mystery_process']) {
-             if (!VFS['/usr/bin']) {
-                 const usr = getNode('/usr');
-                 if (usr && usr.type === 'dir' && !usr.children.includes('bin')) usr.children.push('bin');
-                 VFS['/usr/bin'] = { type: 'dir', children: [] };
-             }
-             VFS['/usr/bin/mystery_process'] = {
-                 type: 'file',
-                 content: '[BINARY_ELF_X86_64] [OBFUSCATED]\n',
-                 permissions: '0755'
-             };
-             const binDir = getNode('/usr/bin');
-             if (binDir && binDir.type === 'dir' && !binDir.children.includes('mystery_process')) {
-                 binDir.children.push('mystery_process');
-             }
-        }
-    }
+        // Binary 9001 REMOVED
 
     // Cycle 258 Init (The Broken Service)
     if (!VFS['/etc/systemd/system/firewall.service']) {
@@ -9195,25 +9156,7 @@ int main(int argc, char* argv[]) {
       }
   }
 
-  // Cycle 255 Init (The Process Trace)
-  if (!VFS['/usr/bin/mystery_process']) {
-      VFS['/usr/bin/mystery_process'] = {
-          type: 'file',
-          content: '[BINARY_ELF_X86_64] [UNKNOWN_DAEMON]\n[ERROR] Silent Failure Detected.\n',
-          permissions: '0755'
-      };
-      const bin = getNode('/usr/bin');
-      if (bin && bin.type === 'dir' && !bin.children.includes('mystery_process')) bin.children.push('mystery_process');
-
-      if (!VFS['/home/ghost/trace_alert.txt']) {
-          VFS['/home/ghost/trace_alert.txt'] = {
-              type: 'file',
-              content: '[ALERT] mystery_process is failing silently.\n[ACTION] Use "strace" to trace system calls and identify missing resources.\n[HINT] Look for ENOENT errors in the open/access calls.'
-          };
-          const home = getNode('/home/ghost');
-          if (home && home.type === 'dir' && !home.children.includes('trace_alert.txt')) home.children.push('trace_alert.txt');
-      }
-  }
+  // Cycle 255 Init removed (duplicate)
 
 
   // 1. Handle Piping (|) recursively
@@ -20783,28 +20726,7 @@ exit_group(0)                           = ?
         break;
     }
 
-    case 'mystery_process':
-    case './mystery_process':
-    case '/usr/bin/mystery_process': {
-        const secretPath = '/tmp/secret_config.dat';
-        const secretNode = getNode(secretPath);
-
-        if (secretNode) {
-             output = `System Config Loaded.\nFLAG: GHOST_ROOT{STR4C3_R3V34LS_H1DD3N_P4THS}`;
-             if (!VFS['/var/run/cycle255_solved']) {
-                 VFS['/var/run/cycle255_solved'] = { type: 'file', content: 'TRUE' };
-                 const runDir = getNode('/var/run');
-                 if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle255_solved')) {
-                     runDir.children.push('cycle255_solved');
-                 }
-                 output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SYSTEM CALL TRACED.\x1b[0m`;
-             }
-        } else {
-             // Silent failure or very minimal error
-             output = ''; 
-        }
-        break;
-    }
+    // Duplicate mystery_process handler REMOVED
 
     default:
       output = `bash: ${command}: command not found`;
