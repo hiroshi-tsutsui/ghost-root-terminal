@@ -20489,8 +20489,8 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
                  output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SYSTEM CALL TRACED.\x1b[0m`;
              }
         } else {
-             // Match strace output behavior
-             output = 'Error: Config missing.'; 
+             // Silent failure to force strace usage
+             output = ''; 
         }
         break;
     }
@@ -20799,7 +20799,6 @@ exit_group(0)                           = ?
                          }
                      } else {
                          output += `-1 ENOENT (No such file or directory)
-write(2, "Error: Config missing.\\n", 23) = 23
 exit_group(1)                           = ?
 +++ exited with 1 +++`;
                      }
