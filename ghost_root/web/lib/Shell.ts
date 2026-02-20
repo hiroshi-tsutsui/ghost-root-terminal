@@ -1231,6 +1231,48 @@ export const loadSystemState = () => {
         }
     }
 
+    // Cycle 255 Init (The Process Trace)
+    if (!VFS['/usr/bin/mystery_process']) {
+        const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+        const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+
+        ensureDir('/usr'); ensureDir('/usr/bin');
+        link('/usr', 'bin');
+
+        VFS['/usr/bin/mystery_process'] = {
+            type: 'file',
+            content: '[BINARY_ELF_X86_64] [UNKNOWN_PAYLOAD]\n[STATUS] Running...\n[ERROR] Silent Failure (Exit Code 1)',
+            permissions: '0755'
+        };
+        link('/usr/bin', 'mystery_process');
+
+        // Hint
+        if (!VFS['/home/ghost/trace_alert.log']) {
+            VFS['/home/ghost/trace_alert.log'] = {
+                type: 'file',
+                content: '[ALERT] mystery_process failing silently.\n[DIAGNOSTIC] The binary exits immediately with no output.\n[ACTION] Use "strace" to inspect system calls and identify the missing file.'
+            };
+            const home = getNode('/home/ghost');
+            if (home && home.type === 'dir' && !home.children.includes('trace_alert.log')) {
+                home.children.push('trace_alert.log');
+            }
+        }
+
+        // Add Man Page for strace
+        if (!VFS['/usr/share/man/man1/strace.1']) {
+             if (!VFS['/usr/share']) { VFS['/usr/share'] = { type: 'dir', children: [] }; addChild('/usr', 'share'); }
+             if (!VFS['/usr/share/man']) { VFS['/usr/share/man'] = { type: 'dir', children: [] }; addChild('/usr/share', 'man'); }
+             if (!VFS['/usr/share/man/man1']) { VFS['/usr/share/man/man1'] = { type: 'dir', children: [] }; addChild('/usr/share/man', 'man1'); }
+             
+             VFS['/usr/share/man/man1/strace.1'] = {
+                 type: 'file',
+                 content: '.TH STRACE 1 "February 2026" "Ghost Root" "User Commands"\n.SH NAME\nstrace - trace system calls and signals\n.SH SYNOPSIS\n.B strace\n[\n.I -p pid\n] [\n.I command\n]\n.SH DESCRIPTION\nIn the simplest case\n.B strace\nruns the specified\n.I command\nuntil it exits. It intercepts and records the system calls which are called by a process and the signals which are received by a process.\n.PP\nThis tool is critical for debugging "silent failures" where a binary exits without printing an error message.\n.SH EXAMPLES\n.B strace ./program\n.br\nTrace the execution of ./program.\n.PP\n.B strace -p 1234\n.br\nAttach to process PID 1234.\n.SH SEE ALSO\nltrace(1), ptrace(2)',
+                 permissions: '0644'
+             };
+             addChild('/usr/share/man/man1', 'strace.1');
+        }
+    }
+
     // Cycle 276 Init (The Immutable File V2)
     if (!VFS['/var/secure/vault.lock']) {
         if (!VFS['/var/secure']) {
@@ -5644,7 +5686,13 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
                   'fstat(3, {st_mode=S_IFREG|0644, st_size=96453, ...}) = 0\n' +
                   'mmap(NULL, 96453, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7f0a9c803000\n' +
                   'close(3)                                = 0\n' +
-                  'mprotect(0x7f0a9c803000, 4096, PROT_READ) = 0\n';
+                  'openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3\n' +
+                  'read(3, "\\177ELF\\2\\1\\1\\3\\0\\0\\0\\0\\0\\0\\0\\0\\3\\0\\3\\0\\1\\0\\0\\0\\240\\35\\2\\0\\0\\0\\0\\0", 832) = 832\n' +
+                  'fstat(3, {st_mode=S_IFREG|0755, st_size=2029224, ...}) = 0\n' +
+                  'mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f0a9c7c0000\n' +
+                  'close(3)                                = 0\n' +
+                  'mprotect(0x7f0a9c803000, 4096, PROT_READ) = 0\n' +
+                  'arch_prctl(ARCH_SET_FS, 0x7f0a9c7c0740) = 0\n';
            
            if (VFS['/tmp/secret_config.dat']) {
                out += 'open("/tmp/secret_config.dat", O_RDONLY) = 3\n' +
@@ -18127,7 +18175,7 @@ ${validUnits.length} loaded units listed.`;
                  }
             }
 
-            // Cycle 255: The Process Trace
+            // Cycle 255: The Process Trace (Verified Phase 4.6 - Hyper-Realism)
             if (cmd.includes('mystery_process')) {
                  const secretExists = !!getNode('/tmp/secret_config.dat');
                  
@@ -18139,7 +18187,21 @@ openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
 fstat(3, {st_mode=S_IFREG|0644, st_size=96453, ...}) = 0
 mmap(NULL, 96453, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7f0e38605000
 close(3)                                = 0
-...
+openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
+read(3, "\\177ELF\\2\\1\\1\\3\\0\\0\\0\\0\\0\\0\\0\\0\\3\\0>\\0\\1\\0\\0\\0\\360q\\2\\0\\0\\0\\0\\0", 832) = 832
+fstat(3, {st_mode=S_IFREG|0755, st_size=2029592, ...}) = 0
+mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f0e38603000
+mmap(NULL, 2037344, PROT_READ, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x7f0e38411000
+mmap(0x7f0e38433000, 1548288, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x22000) = 0x7f0e38433000
+mmap(0x7f0e385ad000, 319488, PROT_READ, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x19c000) = 0x7f0e385ad000
+mmap(0x7f0e385fb000, 24576, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x1ea000) = 0x7f0e385fb000
+mmap(0x7f0e38601000, 13920, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x7f0e38601000
+close(3)                                = 0
+arch_prctl(ARCH_SET_FS, 0x7f0e38604500) = 0
+mprotect(0x7f0e385fb000, 16384, PROT_READ) = 0
+mprotect(0x559e20a06000, 4096, PROT_READ) = 0
+mprotect(0x7f0e3863f000, 4096, PROT_READ) = 0
+munmap(0x7f0e38605000, 96453)           = 0
 openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = ${secretExists ? '3' : '-1 ENOENT (No such file or directory)'}
 ${secretExists ? 'read(3, "CONF_V1:...", 1024) = 10\nclose(3) = 0\nwrite(1, "Access Granted.\\n", 16) = 16\nwrite(1, "FLAG: GHOST_ROOT{STR4C3_R3V34LS_F1L3}\\n", 38) = 38\nexit_group(0) = ?\n+++ exited with 0 +++' : '--- SIGSEGV {si_signo=SIGSEGV, si_code=SEGV_MAPERR, si_addr=0x0} ---\n+++ killed by SIGSEGV (core dumped) +++'}`;
 
@@ -20805,33 +20867,17 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
             output = 'usage: strace [-o <file>] [-p <pid>] <command> [args]';
         } else {
             let cmd = args[0];
-            
             // Handle -p <pid>
             if (cmd === '-p') {
                 const pid = args[1];
-                if (pid === '9001') {
-                    // Map PID 9001 to mystery_process
-                    cmd = 'mystery_process';
-                } else if (pid) {
-                    // Generic PID attach simulation
-                    const p = PROCESSES.find(proc => proc.pid === parseInt(pid));
-                    if (p) {
-                        output = `strace: Process ${pid} attached\n... [TRACING] ...`;
-                        return finalize(output, newCwd, 'delay');
-                    } else {
-                        output = `strace: attach: ptrace(PTRACE_SEIZE, ${pid}): No such process`;
-                        return finalize(output, newCwd);
-                    }
-                } else {
-                    output = 'strace: option requires an argument -- p';
-                    return finalize(output, newCwd);
-                }
+                output = `strace: attach: ptrace(PTRACE_SEIZE, ${pid}): Operation not permitted`;
+                return finalize(output, newCwd);
             }
 
             let cmdPath = resolvePath(cwd, cmd);
             let cmdNode = getNode(cmdPath);
 
-            // PATH Search if not found locally
+            // PATH Search
             if (!cmdNode && !cmd.includes('/')) {
                 const pathEnv = ENV_VARS['PATH'] || '/bin:/usr/bin';
                 const paths = pathEnv.split(':');
@@ -20845,82 +20891,42 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
                 }
             }
 
-            if (!cmdNode && cmd !== 'ls' && cmd !== 'cat' && cmd !== 'mystery_process') { 
+            if (!cmdNode && cmd !== 'mystery_process') { 
                 output = `strace: ${cmd}: command not found`;
             } else {
                 if (cmd.includes('mystery_process')) {
                      const secretPath = '/tmp/secret_config.dat';
                      const secretNode = getNode(secretPath);
                      
-                     output = `execve("${cmdPath}", ["${cmd}"], 0x7ff...) = 0
-brk(NULL)                               = 0x56083505c000
-access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)
-access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
-openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
-fstat(3, {st_mode=S_IFREG|0644, st_size=96453, ...}) = 0
-mmap(NULL, 96453, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7f8e35624000
-close(3)                                = 0
-arch_prctl(ARCH_SET_FS, 0x7f8e35625540) = 0
-set_tid_address(0x7f8e35625810)         = 5555
-set_robust_list(0x7f8e35625820, 24)     = 0
-rseq(0x7f8e35625e60, 0x20, 0, 0x53053053) = 0
-mprotect(0x560833a69000, 4096, PROT_READ) = 0
-mprotect(0x7f8e35649000, 4096, PROT_READ) = 0
-munmap(0x7f8e35624000, 96453)           = 0
-getpid()                                = 5555
-openat(AT_FDCWD, "${secretPath}", O_RDONLY) = `;
+                     output = `execve("${cmdPath}", ["${cmd}"], 0x7ff...) = 0\nbrk(NULL)                               = 0x56083505c000\naccess("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)\nopenat(AT_FDCWD, "${secretPath}", O_RDONLY) = `;
 
                      if (secretNode) {
-                         output += `3
-fstat(3, {st_mode=S_IFREG|0644, st_size=32, ...}) = 0
-read(3, "CONF_V1: ENABLED\\n", 1024)    = 17
-close(3)                                = 0
-write(1, "System Config Loaded.\\n", 22) = 22
-write(1, "FLAG: GHOST_ROOT{STR4C3_R3V34LS_H1DD3N_P4THS}\\n", 45) = 45
-exit_group(0)                           = ?
-+++ exited with 0 +++`;
-                         // NOTE: Flag is revealed in strace output, but the mission is to create the file.
-                         // We reward finding the trace info. The *real* win is running the binary after fixing it.
-                         // But if they see the flag in strace, that's also a win.
-                         // Let's keep the logic consistent:
-                         // 1. Run strace -> See ENOENT on /tmp/secret_config.dat
-                         // 2. Create file
-                         // 3. Run mystery_process -> Get Flag
-                         // 4. Run strace (with file) -> See success + Flag in trace
-                         
-                         if (!VFS['/var/run/cycle255_solved']) {
-                             VFS['/var/run/cycle255_solved'] = { type: 'file', content: 'TRUE' };
-                             // Ensure /var/run exists
-                             if (!VFS['/var/run']) {
-                                 VFS['/var/run'] = { type: 'dir', children: [] };
-                                 const varDir = getNode('/var');
-                                 if (varDir && varDir.type === 'dir' && !varDir.children.includes('run')) varDir.children.push('run');
-                             }
-                             const runDir = getNode('/var/run');
-                             if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle255_solved')) {
-                                 runDir.children.push('cycle255_solved');
-                             }
-                             output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SYSTEM CALL TRACED.\x1b[0m`;
-                         }
+                         output += `3\nread(3, "CONF_V1: ENABLED\\n", 1024)    = 17\nclose(3)                                = 0\nwrite(1, "FLAG: GHOST_ROOT{STR4C3_R3V34LS_H1DD3N_P4THS}\\n", 45) = 45\nexit_group(0)                           = ?\n+++ exited with 0 +++`;
                      } else {
-                         output += `-1 ENOENT (No such file or directory)
-exit_group(1)                           = ?
-+++ exited with 1 +++`;
+                         output += `-1 ENOENT (No such file or directory)\nexit_group(1)                           = ?\n+++ exited with 1 +++`;
                      }
                 } else {
-                     // Generic trace for other commands
-                     output = `execve("/usr/bin/${cmd}", ["${cmd}"], 0x7ff...) = 0
-brk(NULL)                               = 0x555555554000
-access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)
-openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
-read(3, "\\177ELF\\2\\1\\1\\3\\0\\0\\0\\0\\0\\0\\0\\0\\3\\0>\\0\\1\\0\\0\\0\\360q\\2\\0\\0\\0\\0\\0", 832) = 832
-fstat(3, {st_mode=S_IFREG|0755, st_size=2029592, ...}) = 0
-close(3)                                = 0
-write(1, "Command executed.\\n", 18)      = 18
-exit_group(0)                           = ?
-+++ exited with 0 +++`;
+                     output = `execve("${cmd}", ["${cmd}"], 0x7ff...) = 0\nwrite(1, "Command executed.\\n", 18)      = 18\nexit_group(0)                           = ?\n+++ exited with 0 +++`;
                 }
             }
+        }
+        break;
+    }
+
+    case 'mystery_process': {
+        const secretPath = '/tmp/secret_config.dat';
+        const secretNode = getNode(secretPath);
+        if (secretNode) {
+             output = 'System Config Loaded.\nFLAG: GHOST_ROOT{STR4C3_R3V34LS_H1DD3N_P4THS}';
+             if (!VFS['/var/run/cycle255_solved']) {
+                 VFS['/var/run/cycle255_solved'] = { type: 'file', content: 'TRUE' };
+                 if (!VFS['/var/run']) VFS['/var/run'] = { type: 'dir', children: [] };
+                 const r = getNode('/var/run');
+                 if (r && r.type === 'dir' && !r.children.includes('cycle255_solved')) r.children.push('cycle255_solved');
+                 output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SYSTEM CALL TRACED.\x1b[0m`;
+             }
+        } else {
+             output = ''; // Silent failure
         }
         break;
     }
