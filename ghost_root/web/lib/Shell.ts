@@ -12163,6 +12163,84 @@ DROP       icmp --  10.10.99.1           anywhere`;
         }
         break;
     }
+    case 'mystery_process':
+    case './mystery_process': {
+        const secretPath = '/tmp/secret_config.dat';
+        const secretNode = getNode(secretPath);
+        if (!secretNode) {
+             output = ''; // Silent failure
+        } else {
+             output = '[MYSTERY_PROCESS] Config loaded: /tmp/secret_config.dat\n[SUCCESS] Process initialized.\nFLAG: GHOST_ROOT{STR4C3_D3BUG_M4ST3R}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PROCESS TRACED.\x1b[0m';
+             
+             if (!VFS['/var/run/strace_solved']) {
+                 VFS['/var/run/strace_solved'] = { type: 'file', content: 'TRUE' };
+                 const runDir = getNode('/var/run');
+                 if (runDir && runDir.type === 'dir' && !runDir.children.includes('strace_solved')) {
+                     runDir.children.push('strace_solved');
+                 }
+             }
+        }
+        break;
+    }
+    case 'strace': {
+        if (args.length < 1) {
+            output = 'usage: strace <command>';
+        } else {
+            const cmd = args[0];
+            const cmdArgs = args.slice(1);
+            
+            if (cmd === 'mystery_process' || cmd === './mystery_process' || cmd === '/usr/bin/mystery_process') {
+                 const secretPath = '/tmp/secret_config.dat';
+                 const secretNode = getNode(secretPath);
+                 
+                 output = `execve("${cmd}", ["${cmd}"], 0x7ffd5d4c3820 /* 24 vars */) = 0
+brk(NULL)                               = 0x559e3b482000
+access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)
+access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
+fstat(3, {st_mode=S_IFREG|0644, st_size=96453, ...}) = 0
+mmap(NULL, 96453, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7f0f3c5f6000
+close(3)                                = 0
+arch_prctl(ARCH_SET_FS, 0x7f0f3c61b500) = 0
+mprotect(0x7f0f3c5eb000, 16384, PROT_READ) = 0
+mprotect(0x559e39626000, 4096, PROT_READ) = 0
+mprotect(0x7f0f3c61e000, 4096, PROT_READ) = 0
+munmap(0x7f0f3c5f6000, 96453)           = 0
+openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = ${secretNode ? '3' : '-1 ENOENT (No such file or directory)'}
+`;
+                 if (secretNode) {
+                     output += `fstat(3, {st_mode=S_IFREG|0644, st_size=12, ...}) = 0
+read(3, "CONF_V1:OK\\n", 4096)          = 11
+close(3)                                = 0
+write(1, "[MYSTERY_PROCESS] Config loaded: /tmp/secret_config.dat\\n", 56) = 56
+write(1, "[SUCCESS] Process initialized.\\n", 31) = 31
+write(1, "FLAG: GHOST_ROOT{STR4C3_D3BUG_M4ST3R}\\n", 38) = 38
+exit_group(0)                           = ?
++++ exited with 0 +++`;
+
+                     if (!VFS['/var/run/strace_solved']) {
+                         VFS['/var/run/strace_solved'] = { type: 'file', content: 'TRUE' };
+                         const runDir = getNode('/var/run');
+                         if (runDir && runDir.type === 'dir' && !runDir.children.includes('strace_solved')) {
+                             runDir.children.push('strace_solved');
+                         }
+                         output += '\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PROCESS TRACED.\x1b[0m';
+                     }
+                 } else {
+                     output += `exit_group(1)                           = ?
++++ exited with 1 +++`;
+                 }
+            } else {
+                 output = `execve("${cmd}", ["${cmd}", "${cmdArgs.join('", "')}"], 0x7ff...) = 0
+brk(NULL)                               = 0x560...
+access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)
+write(1, "Executing ${cmd}...\\n", 20)      = 20
+exit_group(0)                           = ?
++++ exited with 0 +++`;
+            }
+        }
+        break;
+    }
     case 'find': {
         if (args.length === 0) {
             output = 'usage: find <path> [options]';
