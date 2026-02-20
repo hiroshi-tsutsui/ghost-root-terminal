@@ -5639,7 +5639,8 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
                   'openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3\n' +
                   'fstat(3, {st_mode=S_IFREG|0644, st_size=96453, ...}) = 0\n' +
                   'mmap(NULL, 96453, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7f0a9c803000\n' +
-                  'close(3)                                = 0\n';
+                  'close(3)                                = 0\n' +
+                  'mprotect(0x7f0a9c803000, 4096, PROT_READ) = 0\n';
            
            if (VFS['/tmp/secret_config.dat']) {
                out += 'open("/tmp/secret_config.dat", O_RDONLY) = 3\n' +
@@ -18002,6 +18003,75 @@ ${validUnits.length} loaded units listed.`;
       }
       break;
     }
+    case 'strace': {
+        if (args.length < 1) {
+            output = 'usage: strace <command>';
+        } else {
+            const cmd = args[0];
+            const cmdArgs = args.slice(1);
+            let cmdPath = resolvePath(cwd, cmd);
+            
+            // Handle relative paths without ./
+            if (!cmd.startsWith('/') && !cmd.startsWith('./') && !cmd.startsWith('../')) {
+                 if (['ls', 'cat', 'pwd', 'whoami', 'id', 'groups'].includes(cmd)) {
+                     cmdPath = `/usr/bin/${cmd}`; 
+                 } else if (VFS[`/usr/bin/${cmd}`]) {
+                     cmdPath = `/usr/bin/${cmd}`;
+                 } else if (VFS[`/usr/local/bin/${cmd}`]) {
+                     cmdPath = `/usr/local/bin/${cmd}`;
+                 }
+            }
+
+            // Cycle 255: The Process Trace
+            if (cmd.includes('mystery_process')) {
+                 const secretExists = !!getNode('/tmp/secret_config.dat');
+                 
+                 output = `execve("${cmdPath}", ["${cmd}"], 0x7ffd5d5966d0 /* 24 vars */) = 0
+brk(NULL)                               = 0x559e2269a000
+access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)
+access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
+fstat(3, {st_mode=S_IFREG|0644, st_size=96453, ...}) = 0
+mmap(NULL, 96453, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7f0e38605000
+close(3)                                = 0
+...
+openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = ${secretExists ? '3' : '-1 ENOENT (No such file or directory)'}
+${secretExists ? 'read(3, "CONF_V1:...", 1024) = 10\nclose(3) = 0\nwrite(1, "Access Granted.\\n", 16) = 16\nwrite(1, "FLAG: GHOST_ROOT{STR4C3_R3V34LS_F1L3}\\n", 38) = 38\nexit_group(0) = ?\n+++ exited with 0 +++' : '--- SIGSEGV {si_signo=SIGSEGV, si_code=SEGV_MAPERR, si_addr=0x0} ---\n+++ killed by SIGSEGV (core dumped) +++'}`;
+
+                 if (secretExists) {
+                     if (!VFS['/var/run/strace_solved']) {
+                         VFS['/var/run/strace_solved'] = { type: 'file', content: 'TRUE' };
+                         const runDir = getNode('/var/run');
+                         if (runDir && runDir.type === 'dir' && !runDir.children.includes('strace_solved')) {
+                             runDir.children.push('strace_solved');
+                         }
+                         output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SYSTEM CALL TRACED.\x1b[0m`;
+                     }
+                 }
+            } else {
+                 output = `execve("${cmdPath}", ["${cmd}"], 0x7fff...) = 0\n[...]\nwrite(1, "Output...", 9) = 9\nexit_group(0) = ?\n+++ exited with 0 +++`;
+            }
+        }
+        break;
+    }
+    case 'mystery_process': {
+        const secretExists = !!getNode('/tmp/secret_config.dat');
+        if (secretExists) {
+            output = `Access Granted.\nFLAG: GHOST_ROOT{STR4C3_R3V34LS_F1L3}`;
+             if (!VFS['/var/run/strace_solved']) {
+                 VFS['/var/run/strace_solved'] = { type: 'file', content: 'TRUE' };
+                 const runDir = getNode('/var/run');
+                 if (runDir && runDir.type === 'dir' && !runDir.children.includes('strace_solved')) {
+                     runDir.children.push('strace_solved');
+                 }
+                 output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SYSTEM CALL TRACED.\x1b[0m`;
+             }
+        } else {
+            // Silent crash (no output)
+            output = ''; 
+        }
+        break;
+    }
     case 'tcpdump': {
        const fileIdx = args.indexOf('-r');
        if (fileIdx !== -1 && args[fileIdx + 1]) {
@@ -20399,6 +20469,31 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
     }
 
 // Duplicate strace removed
+
+    // Cycle 255 (The Process Trace)
+    case 'mystery_process':
+    case './mystery_process':
+    case '/usr/bin/mystery_process': {
+        const secretPath = '/tmp/secret_config.dat';
+        const secretNode = getNode(secretPath);
+        
+        if (secretNode && secretNode.type === 'file') {
+             output = 'System Config Loaded.\nFLAG: GHOST_ROOT{STR4C3_R3V34LS_H1DD3N_P4THS}';
+             if (!VFS['/var/run/cycle255_solved']) {
+                 VFS['/var/run/cycle255_solved'] = { type: 'file', content: 'TRUE' };
+                 // Ensure directory exists
+                 const runDir = getNode('/var/run');
+                 if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle255_solved')) {
+                     runDir.children.push('cycle255_solved');
+                 }
+                 output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SYSTEM CALL TRACED.\x1b[0m`;
+             }
+        } else {
+             // Match strace output behavior
+             output = 'Error: Config missing.'; 
+        }
+        break;
+    }
 
     // Cycle 256: The Group Policy
     case 'deploy_weapon':
