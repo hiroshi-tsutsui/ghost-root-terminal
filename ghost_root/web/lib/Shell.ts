@@ -19726,7 +19726,7 @@ mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f9
 open("/tmp/secret_config.dat", O_RDONLY) = 3
 read(3, "CONF_V2", 7)                   = 7
 close(3)                                = 0
-write(1, "FLAG: GHOST_ROOT{STR4C3_D3BUG_M4ST3R}\\n", 38) = 38
+write(1, "FLAG: GHOST_ROOT{STR4C3_R3V34LS_H1DD3N_P4THS}\\n", 38) = 38
 exit_group(0)                           = ?
 +++ exited with 0 +++`;
                    
@@ -19749,16 +19749,6 @@ exit_group(0)                           = ?
            }
        }
        break;
-    }
-    case 'mystery_process':
-    case './mystery_process':
-    case '/usr/bin/mystery_process': {
-        if (VFS['/tmp/secret_config.dat']) {
-            output = 'FLAG: GHOST_ROOT{STR4C3_D3BUG_M4ST3R}';
-        } else {
-            output = ''; // Silent fail
-        }
-        break;
     }
     case 'lsmod': {
         output = 'Module                  Size  Used by\n';
