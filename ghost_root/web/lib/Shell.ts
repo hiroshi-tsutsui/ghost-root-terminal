@@ -5612,25 +5612,29 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
       const args = cmdTokens.slice(1);
       if (args.length === 0) return { output: 'strace: usage: strace [-o <file>] [-p <pid>] <command>', newCwd: cwd };
       
+      let targetCmdLine = '';
       let targetName = '';
+      
       const pIndex = args.indexOf('-p');
       if (pIndex !== -1 && args[pIndex + 1]) {
           const pid = parseInt(args[pIndex + 1], 10);
           const proc = PROCESSES.find(p => p.pid === pid);
           if (!proc) return { output: `strace: attach: ptrace(PTRACE_SEIZE, ${pid}): No such process`, newCwd: cwd };
-          // Extract binary name from command path (e.g., /usr/bin/mystery_process -> mystery_process)
           targetName = proc.command.split('/').pop() || '';
+          targetCmdLine = proc.command;
       } else {
-          // Assume last arg is command
-          targetName = args[args.length - 1];
+          // Simple parsing: first non-flag arg is command
+          targetName = args[0];
+          targetCmdLine = args.join(' ');
       }
 
+      // Special Case: mystery_process (Cycle 255)
       if (targetName.includes('mystery_process')) {
            let out = '';
            if (pIndex !== -1) {
                out += `strace: Process ${args[pIndex + 1]} attached\n`;
            } else {
-               out += 'execve("/usr/bin/mystery_process", ["mystery_process"], [/* 21 vars */]) = 0\n' +
+               out += `execve("/usr/bin/${targetName}", ["${targetName}"], [/* 21 vars */]) = 0\n` +
                       'brk(NULL)                               = 0x55dc28e88000\n';
            }
            
@@ -5662,7 +5666,30 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
            return { output: 'execve("/usr/bin/ghost_daemon", ...)\nconnect(3, {sa_family=AF_INET, sin_port=htons(80), sin_addr=inet_addr("1.1.1.1")}, 16) = -1 ENETUNREACH (Network is unreachable)\n', newCwd: cwd };
       }
       
-      return { output: `strace: ${targetName}: command not found`, newCwd: cwd };
+      // Generic Tracing for other commands
+      // Recursive call to get output
+      const result = processCommand(cwd, targetCmdLine, stdin);
+      
+      let trace = `execve("/usr/bin/${targetName}", ["${targetName}"], [/* env */]) = 0\n`;
+      trace += 'brk(NULL)                               = 0x560d8a000000\n';
+      trace += 'access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)\n';
+      trace += 'mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f8a9c000000\n';
+      
+      // Interleave output (simplified)
+      if (result.output) {
+          const lines = result.output.split('\n');
+          lines.forEach(line => {
+              if (line.trim()) {
+                  trace += `write(1, "${line.substring(0, 20).replace(/"/g, '\\"')}${line.length > 20 ? '...' : ''}", ${line.length}) = ${line.length}\n`;
+              }
+              trace += line + '\n';
+          });
+      }
+      
+      trace += 'exit_group(0)                           = ?\n';
+      trace += '+++ exited with 0 +++';
+      
+      return { output: trace, newCwd: cwd }; // Don't allow strace to change cwd
   }
 
   // Cycle 275 (The Kernel Module)
