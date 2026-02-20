@@ -11586,6 +11586,52 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
         }
         break;
     }
+    case 'mystery_process': {
+        if (VFS['/tmp/secret_config.dat']) {
+            output = 'GHOST_ROOT{STR4C3_M4ST3R_D3T3CT1V3}\n[SUCCESS] Configuration loaded.\n[SYSTEM] Uplink established.';
+        } else {
+            // Simulate silent failure
+            output = ''; 
+        }
+        break;
+    }
+    case 'strace': {
+        if (args.length < 1) {
+            output = 'strace: must have PROG [ARGS]';
+        } else {
+            const cmd = args[0];
+            if (cmd === 'mystery_process' || cmd === './mystery_process' || cmd === '/usr/bin/mystery_process') {
+                output = `execve("${cmd}", ["${cmd}"], 0x7ff...) = 0\n`;
+                output += `brk(NULL)                               = 0x565083515000\n`;
+                output += `access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)\n`;
+                output += `openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3\n`;
+                output += `read(3, "\\177ELF\\2\\1\\1\\3\\0\\0\\0\\0\\0\\0\\0\\0\\3\\0>\\0\\1\\0\\0\\0\\360q\\2\\0\\0\\0\\0\\0", 832) = 832\n`;
+                output += `fstat(3, {st_mode=S_IFREG|0755, st_size=2029592, ...}) = 0\n`;
+                output += `mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f4b8e217000\n`;
+                output += `close(3)                                = 0\n`;
+                
+                if (VFS['/tmp/secret_config.dat']) {
+                    output += `open("/tmp/secret_config.dat", O_RDONLY) = 3\n`;
+                    output += `read(3, "CONF_V2: LOADED", 15)          = 15\n`;
+                    output += `write(1, "GHOST_ROOT{STR4C3_M4ST3R_D3T3CT1V3}\\n", 36) = 36\n`;
+                    output += `write(1, "[SUCCESS] Configuration loaded.\\n", 31) = 31\n`;
+                    output += `exit_group(0)                           = ?\n`;
+                    output += `+++ exited with 0 +++`;
+                } else {
+                    output += `open("/tmp/secret_config.dat", O_RDONLY) = -1 ENOENT (No such file or directory)\n`;
+                    output += `--- SIGSEGV {si_signo=SIGSEGV, si_code=SEGV_MAPERR, si_addr=0x0} ---\n`;
+                    output += `+++ killed by SIGSEGV (core dumped) +++`;
+                }
+            } else {
+                // Generic strace for other commands (simple simulation)
+                output = `execve("${cmd}", ["${cmd}"], 0x7ff...) = 0\n`;
+                output += `write(1, "${cmd}: command not found or not traceable in simulation", 55) = 55\n`;
+                output += `exit_group(1)                           = ?\n`;
+                output += `+++ exited with 1 +++`;
+            }
+        }
+        break;
+    }
     case 'ls': {
       const flags = args.filter(arg => arg.startsWith('-'));
       const paths = args.filter(arg => !arg.startsWith('-'));
@@ -19645,6 +19691,72 @@ postgres            14-alpine 1234567890ab   5 days ago     214MB`;
                      output = `tac: ${target}: Permission denied`;
                  }
             }
+        }
+        break;
+    }
+    case 'strace': {
+       if (args.length < 1) {
+           output = 'usage: strace <command>';
+       } else {
+           const cmd = args[0];
+           // Handle "./mystery_process" or "mystery_process"
+           if (cmd.includes('mystery_process')) {
+               output = `execve("${cmd}", ["${cmd}"], 0x7ff...) = 0
+brk(NULL)                               = 0x56087548c000
+access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
+read(3, "\\177ELF\\2\\1\\1\\3\\0\\0\\0\\0\\0\\0\\0\\0\\3\\0>\\0\\1\\0\\0\\0\\360q\\2\\0\\0\\0\\0\\0"..., 832) = 832
+fstat(3, {st_mode=S_IFREG|0755, st_size=2029592, ...}) = 0
+mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f9d8540c000
+...
+open("/tmp/secret_config.dat", O_RDONLY) = -1 ENOENT (No such file or directory)
+write(2, "Error: Config missing\\n", 22)  = 22
+exit_group(1)                           = ?
++++ exited with 1 +++`;
+
+               if (VFS['/tmp/secret_config.dat']) {
+                   output = `execve("${cmd}", ["${cmd}"], 0x7ff...) = 0
+brk(NULL)                               = 0x56087548c000
+access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
+read(3, "\\177ELF\\2\\1\\1\\3\\0\\0\\0\\0\\0\\0\\0\\0\\3\\0>\\0\\1\\0\\0\\0\\360q\\2\\0\\0\\0\\0\\0"..., 832) = 832
+fstat(3, {st_mode=S_IFREG|0755, st_size=2029592, ...}) = 0
+mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f9d8540c000
+...
+open("/tmp/secret_config.dat", O_RDONLY) = 3
+read(3, "CONF_V2", 7)                   = 7
+close(3)                                = 0
+write(1, "FLAG: GHOST_ROOT{STR4C3_D3BUG_M4ST3R}\\n", 38) = 38
+exit_group(0)                           = ?
++++ exited with 0 +++`;
+                   
+                   if (!VFS['/var/run/strace_solved']) {
+                        VFS['/var/run/strace_solved'] = { type: 'file', content: 'TRUE' };
+                        const runDir = getNode('/var/run');
+                        if (runDir && runDir.type === 'dir' && !runDir.children.includes('strace_solved')) {
+                            runDir.children.push('strace_solved');
+                        }
+                        output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PROCESS TRACED (STRACE).\x1b[0m`;
+                   }
+               }
+           } else {
+               output = `execve("${cmd}", ["${cmd}"], 0x7ff...) = 0
+brk(NULL)                               = 0x55d4e1...
+access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)
+write(1, "Executing ${cmd}...\\n", ${14 + cmd.length}) = ${14 + cmd.length}
+exit_group(0)                           = ?
++++ exited with 0 +++`;
+           }
+       }
+       break;
+    }
+    case 'mystery_process':
+    case './mystery_process':
+    case '/usr/bin/mystery_process': {
+        if (VFS['/tmp/secret_config.dat']) {
+            output = 'FLAG: GHOST_ROOT{STR4C3_D3BUG_M4ST3R}';
+        } else {
+            output = ''; // Silent fail
         }
         break;
     }
