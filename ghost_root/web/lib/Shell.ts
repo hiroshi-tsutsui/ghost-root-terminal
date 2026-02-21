@@ -15000,6 +15000,82 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
       }
       break;
     }
+    case 'mystery_process':
+    case './mystery_process':
+    case '/usr/bin/mystery_process': {
+        const secret = getNode('/tmp/secret_config.dat');
+        if (secret && secret.type === 'file') {
+            output = 'CONF_V1: SECRET\nAccess Granted.\nFLAG: GHOST_ROOT{STR4C3_R3V34LS_H1DD3N_P4THS}';
+            
+            // Mark solved
+            if (!VFS['/var/run/strace_solved']) {
+                VFS['/var/run/strace_solved'] = { type: 'file', content: 'TRUE' };
+                const runDir = getNode('/var/run');
+                if (runDir && runDir.type === 'dir' && !runDir.children.includes('strace_solved')) {
+                    runDir.children.push('strace_solved');
+                }
+                output += '\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PROCESS TRACED.\x1b[0m';
+            }
+        } else {
+            output = ''; // Silent failure
+        }
+        break;
+    }
+    case 'strace': {
+        if (args.length < 1) {
+            output = 'usage: strace [-p pid] <command>';
+        } else {
+            const target = args[0] === '-p' ? args[1] : args[0];
+            const isMystery = target.includes('mystery_process');
+            
+            if (isMystery) {
+                 const secret = getNode('/tmp/secret_config.dat');
+                 if (secret && secret.type === 'file') {
+                     output = `execve("/usr/bin/mystery_process", ["mystery_process"], 0x7ffd5d336820 /* 21 vars */) = 0
+brk(NULL)                               = 0x559e33486000
+access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = 3
+read(3, "CONF_V1: SECRET\\n", 1024)      = 16
+close(3)                                = 0
+fstat(1, {st_mode=S_IFCHR|0620, st_rdev=makedev(0x88, 0), ...}) = 0
+write(1, "Access Granted.\\n", 16)       = 16
+write(1, "FLAG: GHOST_ROOT{STR4C3_R3V34LS_H1DD3N_P4THS}\\n", 43) = 43
+exit_group(0)                           = ?
++++ exited with 0 +++
+CONF_V1: SECRET
+Access Granted.
+FLAG: GHOST_ROOT{STR4C3_R3V34LS_H1DD3N_P4THS}`;
+                 } else {
+                     output = `execve("/usr/bin/mystery_process", ["mystery_process"], 0x7ffd5d336820 /* 21 vars */) = 0
+brk(NULL)                               = 0x559e33486000
+access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
+fstat(3, {st_mode=S_IFREG|0644, st_size=96453, ...}) = 0
+mmap(NULL, 96453, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7f8e833f4000
+close(3)                                = 0
+openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
+read(3, "\\177ELF\\2\\1\\1\\3\\0\\0\\0\\0\\0\\0\\0\\0\\3\\0>\\0\\1\\0\\0\\0\\360q\\2\\0\\0\\0\\0\\0"..., 832) = 832
+pread64(3, "\\6\\0\\0\\0\\4\\0\\0\\0@\\0\\0\\0\\0\\0\\0\\0@\\0\\0\\0\\0\\0\\0\\0@\\0\\0\\0\\0\\0\\0\\0"..., 784, 64) = 784
+fstat(3, {st_mode=S_IFREG|0755, st_size=2029592, ...}) = 0
+mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f8e833f2000
+...
+openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = -1 ENOENT (No such file or directory)
+exit_group(1)                           = ?
++++ exited with 1 +++`;
+                 }
+            } else {
+                // Generic trace for other commands
+                output = `execve("${target}", ["${target}"], 0x7ffd5d336820 /* 21 vars */) = 0
+brk(NULL)                               = 0x559e33486000
+access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
+...
+write(1, "Command executed.\\n", 18)      = 18
+exit_group(0)                           = ?
++++ exited with 0 +++`;
+            }
+        }
+        break;
+    }
     case 'du': {
         const args = commandLine.trim().split(/\s+/).slice(1);
         const target = args.find(a => !a.startsWith('-')) || '.';
