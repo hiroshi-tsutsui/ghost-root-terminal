@@ -5861,6 +5861,53 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
       return { output: '[SECURE] Resolving secure.corp...\\n[ERROR] Host not found.\\n[HINT] Update local DNS configuration.', newCwd: cwd };
   }
 
+  // Cycle 255 (The Process Trace)
+  if (cmdBase === 'mystery_process' || cmdBase === './mystery_process' || cmdBase === '/usr/bin/mystery_process') {
+       if (VFS['/tmp/secret_config.dat']) {
+            return { output: 'FLAG: GHOST_ROOT{STR4C3_M4ST3R_D3BUG}', newCwd: cwd };
+       }
+       return { output: '', newCwd: cwd };
+  }
+
+  if (cmdBase === 'strace' || cmdBase === '/usr/bin/strace') {
+       const args = commandLine.trim().split(/\s+/).slice(1);
+       if (args.length === 0) return { output: 'strace: must have PROG [ARGS] or -p PID', newCwd: cwd };
+
+       const target = args[0];
+       if (target === 'mystery_process' || target === './mystery_process' || target === '/usr/bin/mystery_process') {
+            let out = 'execve("/usr/bin/mystery_process", ["mystery_process"], 0x7ffd5d36e050 /* 22 vars */) = 0\\n';
+            out += 'brk(NULL)                               = 0x559d70df8000\\n';
+            out += 'access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)\\n';
+            out += 'openat(AT_FDCWD, "/usr/lib/libc.so.6", O_RDONLY|O_CLOEXEC) = 3\\n';
+            out += 'read(3, "\\177ELF\\2\\1\\1\\3\\0\\0\\0\\0\\0\\0\\0\\0\\3\\0>\\0\\1\\0\\0\\0\\20\\35\\2\\0\\0\\0\\0\\0"..., 832) = 832\\n';
+
+            if (VFS['/tmp/secret_config.dat']) {
+                out += 'openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = 3\\n';
+                out += 'fstat(3, {st_mode=S_IFREG|0644, st_size=16, ...}) = 0\\n';
+                out += 'read(3, "CONF_KEY=SECRET\\n", 1024) = 16\\n';
+                out += 'close(3)                                = 0\\n';
+                out += 'write(1, "FLAG: GHOST_ROOT{STR4C3_M4ST3R_D3BUG}\\n", 38) = 38\\n';
+                out += 'exit_group(0)                           = ?\\n';
+                out += '+++ exited with 0 +++';
+
+                if (!VFS['/var/run/cycle255_solved']) {
+                    VFS['/var/run/cycle255_solved'] = { type: 'file', content: 'TRUE' };
+                    const runDir = getNode('/var/run');
+                    if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle255_solved')) {
+                        runDir.children.push('cycle255_solved');
+                    }
+                    out += '\\n\\x1b[1;32m[MISSION UPDATE] Objective Complete: SYSTEM CALL TRACED.\\x1b[0m';
+                }
+            } else {
+                out += 'openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = -1 ENOENT (No such file or directory)\\n';
+                out += 'exit_group(1)                           = ?\\n';
+                out += '+++ exited with 1 +++';
+            }
+            return { output: out, newCwd: cwd };
+       }
+       return { output: `strace: ${target}: command not found`, newCwd: cwd };
+  }
+
   // Cycle 249 Init (The Disk Hog)
   if (!VFS['/home/ghost/disk_space_alert.txt']) {
       VFS['/home/ghost/disk_space_alert.txt'] = {
