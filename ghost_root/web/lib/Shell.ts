@@ -17006,6 +17006,47 @@ auth.py
        }
        break;
     }
+    case 'strace': {
+        if (args.length < 1) {
+            output = 'strace: usage: strace <command>';
+        } else {
+            const cmd = args[0];
+            const cmdArgs = args.slice(1);
+            
+            if (cmd === 'mystery_process' || cmd === './mystery_process' || cmd === '/usr/bin/mystery_process') {
+                 output = `execve("/usr/bin/mystery_process", ["mystery_process"], 0x7ff...) = 0
+brk(NULL)                               = 0x560875600000
+access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = -1 ENOENT (No such file or directory)
+exit_group(1)                           = ?
++++ exited with 1 +++`;
+            } else if (ALIASES[cmd] || Object.keys(VFS).some(p => p.endsWith(`/${cmd}`))) {
+                 output = `execve("${cmd}", ["${cmd}", ${cmdArgs.map(a => `"${a}"`).join(', ')}], 0x7ff...) = 0
+write(1, "Output...", 9)                = 9
+exit_group(0)                           = ?
++++ exited with 0 +++`;
+            } else {
+                 output = `strace: ${cmd}: command not found`;
+            }
+        }
+        break;
+    }
+    case 'mystery_process': {
+        if (VFS['/tmp/secret_config.dat']) {
+            output = `[SUCCESS] Configuration Loaded.\n[PAYLOAD] DECRYPTING...\n\nFLAG: GHOST_ROOT{STR4C3_TR4C3_M4ST3R}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SYSTEM CALL TRACED.\x1b[0m`;
+            
+            if (!VFS['/var/run/cycle255_solved']) {
+                VFS['/var/run/cycle255_solved'] = { type: 'file', content: 'TRUE' };
+                const runDir = getNode('/var/run');
+                if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle255_solved')) {
+                    runDir.children.push('cycle255_solved');
+                }
+            }
+        } else {
+            output = ''; 
+        }
+        break;
+    }
     case 'neofetch': {
        output = `
        \x1b[1;32m       .           \x1b[0m  ghost@ghost-root
