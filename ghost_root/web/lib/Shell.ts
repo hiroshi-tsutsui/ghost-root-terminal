@@ -1245,44 +1245,60 @@ export const loadSystemState = () => {
             permissions: '0755'
         };
         link('/usr/bin', 'mystery_process');
+    }
 
-        // Hint
-        if (!VFS['/home/ghost/trace_alert.log']) {
-            VFS['/home/ghost/trace_alert.log'] = {
-                type: 'file',
-                content: '[ALERT] mystery_process failing silently.\n[DIAGNOSTIC] The binary exits immediately with no output.\n[ACTION] Use "strace" to inspect system calls and identify the missing file.'
-            };
-            const home = getNode('/home/ghost');
-            if (home && home.type === 'dir' && !home.children.includes('trace_alert.log')) {
-                home.children.push('trace_alert.log');
-            }
+    // Hint for Cycle 255
+    if (!VFS['/home/ghost/trace_alert.log']) {
+        VFS['/home/ghost/trace_alert.log'] = {
+            type: 'file',
+            content: '[ALERT] mystery_process failing silently.\n[DIAGNOSTIC] The binary exits immediately with no output.\n[ACTION] Use "strace" to inspect system calls and identify the missing file.'
+        };
+        const home = getNode('/home/ghost');
+        if (home && home.type === 'dir' && !home.children.includes('trace_alert.log')) {
+            home.children.push('trace_alert.log');
         }
+    }
 
-        // Add Man Page for strace
-        if (!VFS['/usr/share/man/man1/strace.1']) {
+    // Add Man Page for strace
+    if (!VFS['/usr/share/man/man1/strace.1']) {
+         if (!VFS['/usr/share']) { VFS['/usr/share'] = { type: 'dir', children: [] }; addChild('/usr', 'share'); }
+         if (!VFS['/usr/share/man']) { VFS['/usr/share/man'] = { type: 'dir', children: [] }; addChild('/usr/share', 'man'); }
+         if (!VFS['/usr/share/man/man1']) { VFS['/usr/share/man/man1'] = { type: 'dir', children: [] }; addChild('/usr/share/man', 'man1'); }
+         
+         VFS['/usr/share/man/man1/strace.1'] = {
+             type: 'file',
+             content: '.TH STRACE 1 "February 2026" "Ghost Root" "User Commands"\n.SH NAME\nstrace - trace system calls and signals\n.SH SYNOPSIS\n.B strace\n[\n.I -p pid\n] [\n.I command\n]\n.SH DESCRIPTION\nIn the simplest case\n.B strace\nruns the specified\n.I command\nuntil it exits. It intercepts and records the system calls which are called by a process and the signals which are received by a process.\n.PP\nThis tool is critical for debugging "silent failures" where a binary exits without printing an error message.\n.SH EXAMPLES\n.B strace ./program\n.br\nTrace the execution of ./program.\n.PP\n.B strace -p 1234\n.br\nAttach to process PID 1234.\n.SH SEE ALSO\nltrace(1), ptrace(2)',
+             permissions: '0644'
+         };
+         addChild('/usr/share/man/man1', 'strace.1');
+    }
+
+    // Add Man Page for mystery_process (Cycle 255 v9)
+    if (!VFS['/usr/share/man/man1/mystery_process.1']) {
+         if (!VFS['/usr/share/man/man1']) { 
              if (!VFS['/usr/share']) { VFS['/usr/share'] = { type: 'dir', children: [] }; addChild('/usr', 'share'); }
              if (!VFS['/usr/share/man']) { VFS['/usr/share/man'] = { type: 'dir', children: [] }; addChild('/usr/share', 'man'); }
-             if (!VFS['/usr/share/man/man1']) { VFS['/usr/share/man/man1'] = { type: 'dir', children: [] }; addChild('/usr/share/man', 'man1'); }
-             
-             VFS['/usr/share/man/man1/strace.1'] = {
-                 type: 'file',
-                 content: '.TH STRACE 1 "February 2026" "Ghost Root" "User Commands"\n.SH NAME\nstrace - trace system calls and signals\n.SH SYNOPSIS\n.B strace\n[\n.I -p pid\n] [\n.I command\n]\n.SH DESCRIPTION\nIn the simplest case\n.B strace\nruns the specified\n.I command\nuntil it exits. It intercepts and records the system calls which are called by a process and the signals which are received by a process.\n.PP\nThis tool is critical for debugging "silent failures" where a binary exits without printing an error message.\n.SH EXAMPLES\n.B strace ./program\n.br\nTrace the execution of ./program.\n.PP\n.B strace -p 1234\n.br\nAttach to process PID 1234.\n.SH SEE ALSO\nltrace(1), ptrace(2)',
-                 permissions: '0644'
-             };
-             addChild('/usr/share/man/man1', 'strace.1');
-        }
+             VFS['/usr/share/man/man1'] = { type: 'dir', children: [] }; addChild('/usr/share/man', 'man1'); 
+         }
+         
+         VFS['/usr/share/man/man1/mystery_process.1'] = {
+             type: 'file',
+             content: '.TH MYSTERY_PROCESS 1 "February 2026" "Ghost Root" "User Commands"\\n.SH NAME\\nmystery_process - system integrity verifier\\n.SH SYNOPSIS\\n.B mystery_process\\n.SH DESCRIPTION\\nRuns a verification routine on the system configuration.\\nIf the configuration is valid, it prints the integrity flag.\\nIf the configuration is missing or invalid, it exits silently to prevent information leakage.\\n.SH FILES\\n/tmp/secret_config.dat - The required configuration file.\\n.SH SEE ALSO\\nstrace(1)',
+             permissions: '0644'
+         };
+         addChild('/usr/share/man/man1', 'mystery_process.1');
+    }
 
-        // Verification Script for Cycle 255
-        if (!VFS['/home/ghost/verify_cycle_255.sh']) {
-            VFS['/home/ghost/verify_cycle_255.sh'] = {
-                type: 'file',
-                content: '#!/bin/bash\\n# VERIFICATION SCRIPT v3.0\\n\\necho "[TEST] Running mystery_process (expect silent failure)..."\\nmystery_process\\n\\necho "[TEST] Running strace mystery_process (expect ENOENT)..."\\nstrace mystery_process\\n\\necho "[TEST] Creating secret config..."\\necho "CONF_V1: SECRET" > /tmp/secret_config.dat\\n\\necho "[TEST] Running mystery_process again (expect FLAG)..."\\nmystery_process\\n\\necho "[TEST] Running strace mystery_process (expect SUCCESS trace)..."\\nstrace mystery_process\\n\\necho "[CLEANUP] Removing secret config..."\\nrm /tmp/secret_config.dat\\n',
-                permissions: '0755'
-            };
-            const home = getNode('/home/ghost');
-            if (home && home.type === 'dir' && !home.children.includes('verify_cycle_255.sh')) {
-                home.children.push('verify_cycle_255.sh');
-            }
+    // Verification Script for Cycle 255
+    if (!VFS['/home/ghost/verify_cycle_255.sh']) {
+        VFS['/home/ghost/verify_cycle_255.sh'] = {
+            type: 'file',
+            content: '#!/bin/bash\\n# VERIFICATION SCRIPT v3.0\\n\\necho "[TEST] Running mystery_process (expect silent failure)..."\\nmystery_process\\n\\necho "[TEST] Running strace mystery_process (expect ENOENT)..."\\nstrace mystery_process\\n\\necho "[TEST] Creating secret config..."\\necho "CONF_V1: SECRET" > /tmp/secret_config.dat\\n\\necho "[TEST] Running mystery_process again (expect FLAG)..."\\nmystery_process\\n\\necho "[TEST] Running strace mystery_process (expect SUCCESS trace)..."\\nstrace mystery_process\\n\\necho "[CLEANUP] Removing secret config..."\\nrm /tmp/secret_config.dat\\n',
+            permissions: '0755'
+        };
+        const home = getNode('/home/ghost');
+        if (home && home.type === 'dir' && !home.children.includes('verify_cycle_255.sh')) {
+            home.children.push('verify_cycle_255.sh');
         }
     }
 
@@ -5864,8 +5880,8 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
   // Cycle 255 (The Process Trace)
   if (cmdBase === 'mystery_process' || cmdBase === './mystery_process' || cmdBase === '/usr/bin/mystery_process') {
        const configFile = VFS['/tmp/secret_config.dat'];
-       if (configFile && configFile.type === 'file' && configFile.content.includes('CONF_V1')) {
-            return { output: 'FLAG: GHOST_ROOT{STR4C3_M4ST3R_D3BUG}', newCwd: cwd };
+       if (configFile && configFile.type === 'file' && configFile.content.length > 0) {
+            return { output: 'FLAG: GHOST_ROOT{STR4C3_R3V34LS_H1DD3N_P4THS}', newCwd: cwd };
        }
        return { output: '', newCwd: cwd };
   }
@@ -5893,8 +5909,8 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
                 out += `read(3, "${contentSnippet}", 1024) = ${configFile.content.length}\\n`;
                 out += 'close(3)                                = 0\\n';
 
-                if (configFile.content.includes('CONF_V1')) {
-                    out += 'write(1, "FLAG: GHOST_ROOT{STR4C3_M4ST3R_D3BUG}\\n", 38) = 38\\n';
+                if (configFile.content.length > 0) {
+                    out += 'write(1, "FLAG: GHOST_ROOT{STR4C3_R3V34LS_H1DD3N_P4THS}\\n", 47) = 47\\n';
                     out += 'exit_group(0)                           = ?\\n';
                     out += '+++ exited with 0 +++';
 
@@ -11190,26 +11206,7 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
        }
        break;
     }
-    case 'mystery_process':
-    case './mystery_process':
-    case '/usr/bin/mystery_process': {
-        const secretNode = getNode('/tmp/secret_config.dat');
-        if (secretNode && secretNode.type === 'file' && secretNode.content.startsWith('CONF_V1')) {
-             output = 'System Config Loaded.\nFLAG: GHOST_ROOT{STR4C3_R3V34LS_H1DD3N_P4THS}';
-             if (!VFS['/var/run/cycle255_solved']) {
-                 VFS['/var/run/cycle255_solved'] = { type: 'file', content: 'TRUE' };
-                 const runDir = getNode('/var/run');
-                 if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle255_solved')) {
-                     runDir.children.push('cycle255_solved');
-                 }
-                 output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SYSTEM CALL TRACED.\x1b[0m`;
-             }
-        } else {
-             // Silent failure
-             output = ''; 
-        }
-        break;
-    }
+    // Old mystery_process implementation removed
     // Old strace implementation removed - using newer one at end of file
     case 'sudo': {
       if (args.length < 1) {
@@ -12787,6 +12784,8 @@ Type "status" for mission objectives.`;
           case 'docker': output = 'NAME\n\tdocker - Docker container management\n\nSYNOPSIS\n\tdocker [OPTIONS] COMMAND\n\nDESCRIPTION\n\tManage containers, images, and volumes.\n\nCOMMANDS\n\tps\tList containers\n\tinspect\tReturn low-level information on Docker objects\n\tlogs\tFetch the logs of a container\n\tstop\tStop one or more running containers'; break;
           case 'signal_jammer': output = 'NAME\n\tsignal_jammer - RF disruption tool\n\nSYNOPSIS\n\tsignal_jammer --freq <MHz> --gain <dB>\n\nDESCRIPTION\n\tGenerates broad-spectrum noise to disrupt radio communications.\n\nOPERATIONAL NOTES\n\tStandard Surveillance Drones (Model XJ-9) operate on 433.92 MHz.\n\tRequired Gain for effective jamming: 90 dB.\n\nWARNING\n\tUnauthorized jamming is a violation of Federal Communication Laws.'; break;
           case 'net-splice': output = 'NAME\n\tnet-splice - Advanced Network Tunneling Tool\n\nSYNOPSIS\n\tnet-splice --target <IP> --port <PORT> --mode <MODE>\n\nDESCRIPTION\n\tEstablishes a covert splice into the target network infrastructure.\n\nOPTIONS\n\t--target <IP>\n\t\tThe IP address of the target node.\n\n\t--port <PORT>\n\t\tThe destination port (default: 80, secure: 443).\n\n\t--mode <MODE>\n\t\tOperation mode. Available modes:\n\t\t- standard: Normal operation (Logged)\n\t\t- fast: Optimized for speed (Unreliable)\n\t\t- silent: Stealth mode (No logs)\n\nEXAMPLES\n\tnet-splice --target 192.168.1.1 --port 80 --mode standard'; break;
+          case 'mystery_process': output = 'NAME\n\tmystery_process - System Integrity Verifier (Legacy)\n\nSYNOPSIS\n\tmystery_process\n\nDESCRIPTION\n\tChecks for the existence of critical system configuration files and verifies their integrity.\n\tDesigned to fail silently to prevent information leakage during boot sequences.\n\nDIAGNOSTICS\n\tIf the process produces no output, use a system tracer to identify missing resources.\n\nSEE ALSO\n\tstrace(1)'; break;
+          case 'strace': output = 'NAME\n\tstrace - trace system calls and signals\n\nSYNOPSIS\n\tstrace <command> [args]\n\nDESCRIPTION\n\tIn the simplest case, strace runs the specified command until it exits.\n\tIt intercepts and records the system calls which are called by a process and the signals which are received by a process.\n\nEXAMPLES\n\tstrace ls\n\tstrace mystery_process'; break;
           case 'tune-receiver': output = 'NAME\n\ttune-receiver - Software Defined Radio (SDR) Interface\n\nSYNOPSIS\n\ttune-receiver --freq <MHz> --mode <MODE>\n\nDESCRIPTION\n\tTunes the internal SDR to listen for covert broadcasts.\n\nOPTIONS\n\t--freq <MHz>\n\t\tTarget frequency.\n\t\tStandard uplink frequency: 104.5 MHz.\n\t\tEmergency override frequency: 404.0 MHz.\n\n\t--mode <MODE>\n\t\tDemodulation mode.\n\t\tModes: AM, FM, USB, LSB.\n\t\tNote: Encrypted channels require "USB" (Upper Side Band).\n\nEXAMPLES\n\ttune-receiver --freq 104.5 --mode FM'; break;
           default: output = `No manual entry for ${page}`;
         }
@@ -18116,6 +18115,23 @@ ${validUnits.length} loaded units listed.`;
       }
       break;
     }
+    case 'mystery_process':
+    case './mystery_process':
+    case '/usr/bin/mystery_process': {
+        const secretNode = getNode('/tmp/secret_config.dat');
+        const secretExists = secretNode && secretNode.type === 'file';
+        const content = secretExists ? secretNode.content : '';
+        const isValid = content.startsWith('CONF_V1');
+
+        if (secretExists && isValid) {
+             output = "Access Granted.\\nFLAG: GHOST_ROOT{STR4C3_R3V34LS_H1DD3N_P4THS}";
+        } else {
+             // Silent failure (Exit Code 1 simulation)
+             output = ''; 
+        }
+        break;
+    }
+
     case 'strace': {
         if (args.length < 1) {
             output = 'usage: strace <command>';
@@ -20653,9 +20669,9 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
                  if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle255_solved')) {
                      runDir.children.push('cycle255_solved');
                  }
-                 output = '[PROCESS] Config found: /tmp/secret_config.dat\\n[PROCESS] Reading configuration...\\n[SUCCESS] Key Verified.\\nFLAG: GHOST_ROOT{STR4C3_M4ST3R_D3T3CT3D}\\n\\x1b[1;32m[MISSION UPDATE] Objective Complete: SYSTEM TRACE ANALYZED.\\x1b[0m';
+                 output = '[PROCESS] Config found: /tmp/secret_config.dat\\n[PROCESS] Reading configuration...\\n[SUCCESS] Key Verified.\\nFLAG: GHOST_ROOT{STR4C3_R3V34LS_H1DD3N_P4THS}\\n\\x1b[1;32m[MISSION UPDATE] Objective Complete: SYSTEM TRACE ANALYZED.\\x1b[0m';
              } else {
-                 output = '[PROCESS] Key Verified.\\nFLAG: GHOST_ROOT{STR4C3_M4ST3R_D3T3CT3D}';
+                 output = '[PROCESS] Key Verified.\\nFLAG: GHOST_ROOT{STR4C3_R3V34LS_H1DD3N_P4THS}';
              }
         } else {
              // Silent failure as per instructions
@@ -20692,7 +20708,7 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
                           'write(1, "[PROCESS] Config found: /tmp/sec"..., 34) = 34\\n' +
                           'write(1, "[PROCESS] Reading configuration."..., 32) = 32\\n' +
                           'write(1, "[SUCCESS] Key Verified.\\n", 23) = 23\\n' +
-                          'write(1, "FLAG: GHOST_ROOT{STR4C3_M4ST3R_"..., 38) = 38\\n' +
+                          'write(1, "FLAG: GHOST_ROOT{STR4C3_R3V34L"..., 44) = 44\\n' +
                           'exit_group(0)                           = ?\\n' +
                           '+++ exited with 0 +++';
              }
@@ -20917,3 +20933,4 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
 
 export const execute = processCommand;
 // Verified Cycle 276 on 2026-02-19
+// Verified Cycle 255 (Refined) on 2026-02-22
