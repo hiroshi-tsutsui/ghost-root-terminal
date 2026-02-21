@@ -5654,31 +5654,51 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
   // Cycle 255 Command (strace)
   if (cmdBase === 'strace') {
       const args = cmdTokens.slice(1);
-      if (args.length === 0) return { output: 'strace: usage: strace [-o <file>] [-p <pid>] <command>', newCwd: cwd };
+      if (args.length === 0) return { output: 'strace: usage: strace [-o <file>] [-p <pid>] [-e <expr>] <command>', newCwd: cwd };
       
       let targetCmdLine = '';
       let targetName = '';
+      let pidToAttach = -1;
+      let filterExpr = '';
       
-      const pIndex = args.indexOf('-p');
-      if (pIndex !== -1 && args[pIndex + 1]) {
-          const pid = parseInt(args[pIndex + 1], 10);
-          const proc = PROCESSES.find(p => p.pid === pid);
-          if (!proc) return { output: `strace: attach: ptrace(PTRACE_SEIZE, ${pid}): No such process`, newCwd: cwd };
-          targetName = proc.command.split('/').pop() || '';
-          targetCmdLine = proc.command;
-      } else {
-          // Simple parsing: first non-flag arg is command
-          targetName = args[0];
-          targetCmdLine = args.join(' ');
+      // Argument Parsing
+      let cmdStartIndex = -1;
+      for (let i = 0; i < args.length; i++) {
+          if (args[i] === '-p' && args[i+1]) {
+              pidToAttach = parseInt(args[i+1], 10);
+              i++; // skip val
+          } else if (args[i] === '-e' && args[i+1]) {
+              filterExpr = args[i+1];
+              i++; // skip val
+          } else if (args[i] === '-o' && args[i+1]) {
+              // ignore output file for now
+              i++;
+          } else if (!args[i].startsWith('-')) {
+              cmdStartIndex = i;
+              break;
+          }
       }
 
+      if (pidToAttach !== -1) {
+          const proc = PROCESSES.find(p => p.pid === pidToAttach);
+          if (!proc) return { output: `strace: attach: ptrace(PTRACE_SEIZE, ${pidToAttach}): No such process`, newCwd: cwd };
+          targetName = proc.command.split('/').pop() || '';
+          targetCmdLine = proc.command;
+      } else if (cmdStartIndex !== -1) {
+          targetName = args[cmdStartIndex];
+          targetCmdLine = args.slice(cmdStartIndex).join(' ');
+      } else {
+          return { output: 'strace: must have PROG [ARGS] or -p PID', newCwd: cwd };
+      }
+
+      let out = '';
+      
       // Special Case: mystery_process (Cycle 255)
       if (targetName.includes('mystery_process')) {
-           let out = '';
-           if (pIndex !== -1) {
-               out += `strace: Process ${args[pIndex + 1]} attached\n`;
+           if (pidToAttach !== -1) {
+               out += `strace: Process ${pidToAttach} attached\n`;
            } else {
-               out += `execve("/usr/bin/${targetName}", ["${targetName}"], [/* 21 vars */]) = 0\n` +
+               out += `execve("/usr/bin/mystery_process", ["mystery_process"], [/* 21 vars */]) = 0\n` +
                       'brk(NULL)                               = 0x55dc28e88000\n';
            }
            
@@ -5710,36 +5730,44 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
                       'exit_group(1)                           = ?\n' +
                       '+++ exited with 1 +++';
            }
-           return { output: out, newCwd: cwd };
       } else if (targetName.includes('ghost_daemon')) {
           // Cycle 273 (The Iptables Firewall)
-           return { output: 'execve("/usr/bin/ghost_daemon", ...)\nconnect(3, {sa_family=AF_INET, sin_port=htons(80), sin_addr=inet_addr("1.1.1.1")}, 16) = -1 ENETUNREACH (Network is unreachable)\n', newCwd: cwd };
+           out = 'execve("/usr/bin/ghost_daemon", ...)\nconnect(3, {sa_family=AF_INET, sin_port=htons(80), sin_addr=inet_addr("1.1.1.1")}, 16) = -1 ENETUNREACH (Network is unreachable)\n';
+      } else {
+          // Generic Tracing for other commands
+          // Recursive call to get output
+          const result = processCommand(cwd, targetCmdLine, stdin);
+          
+          out = `execve("/usr/bin/${targetName}", ["${targetName}"], [/* env */]) = 0\n`;
+          out += 'brk(NULL)                               = 0x560d8a000000\n';
+          out += 'access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)\n';
+          out += 'mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f8a9c000000\n';
+          
+          // Interleave output (simplified)
+          if (result.output) {
+              const lines = result.output.split('\n');
+              lines.forEach(line => {
+                  if (line.trim()) {
+                      out += `write(1, "${line.substring(0, 20).replace(/"/g, '\\"')}${line.length > 20 ? '...' : ''}", ${line.length}) = ${line.length}\n`;
+                  }
+                  out += line + '\n';
+              });
+          }
+          
+          out += 'exit_group(0)                           = ?\n';
+          out += '+++ exited with 0 +++';
       }
-      
-      // Generic Tracing for other commands
-      // Recursive call to get output
-      const result = processCommand(cwd, targetCmdLine, stdin);
-      
-      let trace = `execve("/usr/bin/${targetName}", ["${targetName}"], [/* env */]) = 0\n`;
-      trace += 'brk(NULL)                               = 0x560d8a000000\n';
-      trace += 'access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)\n';
-      trace += 'mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f8a9c000000\n';
-      
-      // Interleave output (simplified)
-      if (result.output) {
-          const lines = result.output.split('\n');
-          lines.forEach(line => {
-              if (line.trim()) {
-                  trace += `write(1, "${line.substring(0, 20).replace(/"/g, '\\"')}${line.length > 20 ? '...' : ''}", ${line.length}) = ${line.length}\n`;
-              }
-              trace += line + '\n';
-          });
+
+      // Filter Logic
+      if (filterExpr) {
+          if (filterExpr.includes('open') || filterExpr.includes('file')) {
+               out = out.split('\n').filter(line => line.includes('open') || line.includes('access') || line.includes('stat')).join('\n');
+          } else if (filterExpr.includes('write')) {
+               out = out.split('\n').filter(line => line.includes('write')).join('\n');
+          }
       }
-      
-      trace += 'exit_group(0)                           = ?\n';
-      trace += '+++ exited with 0 +++';
-      
-      return { output: trace, newCwd: cwd }; // Don't allow strace to change cwd
+
+      return { output: out, newCwd: cwd };
   }
 
   // Cycle 255 Extension (ltrace)
@@ -12229,84 +12257,7 @@ DROP       icmp --  10.10.99.1           anywhere`;
         }
         break;
     }
-    case 'mystery_process':
-    case './mystery_process': {
-        const secretPath = '/tmp/secret_config.dat';
-        const secretNode = getNode(secretPath);
-        if (!secretNode) {
-             output = ''; // Silent failure
-        } else {
-             output = '[MYSTERY_PROCESS] Config loaded: /tmp/secret_config.dat\n[SUCCESS] Process initialized.\nFLAG: GHOST_ROOT{STR4C3_D3BUG_M4ST3R}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PROCESS TRACED.\x1b[0m';
-             
-             if (!VFS['/var/run/strace_solved']) {
-                 VFS['/var/run/strace_solved'] = { type: 'file', content: 'TRUE' };
-                 const runDir = getNode('/var/run');
-                 if (runDir && runDir.type === 'dir' && !runDir.children.includes('strace_solved')) {
-                     runDir.children.push('strace_solved');
-                 }
-             }
-        }
-        break;
-    }
-    case 'strace': {
-        if (args.length < 1) {
-            output = 'usage: strace <command>';
-        } else {
-            const cmd = args[0];
-            const cmdArgs = args.slice(1);
-            
-            if (cmd === 'mystery_process' || cmd === './mystery_process' || cmd === '/usr/bin/mystery_process') {
-                 const secretPath = '/tmp/secret_config.dat';
-                 const secretNode = getNode(secretPath);
-                 
-                 output = `execve("${cmd}", ["${cmd}"], 0x7ffd5d4c3820 /* 24 vars */) = 0
-brk(NULL)                               = 0x559e3b482000
-access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)
-access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
-openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
-fstat(3, {st_mode=S_IFREG|0644, st_size=96453, ...}) = 0
-mmap(NULL, 96453, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7f0f3c5f6000
-close(3)                                = 0
-arch_prctl(ARCH_SET_FS, 0x7f0f3c61b500) = 0
-mprotect(0x7f0f3c5eb000, 16384, PROT_READ) = 0
-mprotect(0x559e39626000, 4096, PROT_READ) = 0
-mprotect(0x7f0f3c61e000, 4096, PROT_READ) = 0
-munmap(0x7f0f3c5f6000, 96453)           = 0
-openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = ${secretNode ? '3' : '-1 ENOENT (No such file or directory)'}
-`;
-                 if (secretNode) {
-                     output += `fstat(3, {st_mode=S_IFREG|0644, st_size=12, ...}) = 0
-read(3, "CONF_V1:OK\\n", 4096)          = 11
-close(3)                                = 0
-write(1, "[MYSTERY_PROCESS] Config loaded: /tmp/secret_config.dat\\n", 56) = 56
-write(1, "[SUCCESS] Process initialized.\\n", 31) = 31
-write(1, "FLAG: GHOST_ROOT{STR4C3_D3BUG_M4ST3R}\\n", 38) = 38
-exit_group(0)                           = ?
-+++ exited with 0 +++`;
-
-                     if (!VFS['/var/run/strace_solved']) {
-                         VFS['/var/run/strace_solved'] = { type: 'file', content: 'TRUE' };
-                         const runDir = getNode('/var/run');
-                         if (runDir && runDir.type === 'dir' && !runDir.children.includes('strace_solved')) {
-                             runDir.children.push('strace_solved');
-                         }
-                         output += '\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PROCESS TRACED.\x1b[0m';
-                     }
-                 } else {
-                     output += `exit_group(1)                           = ?
-+++ exited with 1 +++`;
-                 }
-            } else {
-                 output = `execve("${cmd}", ["${cmd}", "${cmdArgs.join('", "')}"], 0x7ff...) = 0
-brk(NULL)                               = 0x560...
-access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)
-write(1, "Executing ${cmd}...\\n", 20)      = 20
-exit_group(0)                           = ?
-+++ exited with 0 +++`;
-            }
-        }
-        break;
-    }
+    // Cycle 255: Logic moved to consolidated block at end of file
     case 'find': {
         if (args.length === 0) {
             output = 'usage: find <path> [options]';
