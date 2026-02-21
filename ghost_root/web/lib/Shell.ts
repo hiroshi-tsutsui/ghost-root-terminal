@@ -1276,7 +1276,7 @@ export const loadSystemState = () => {
         if (!VFS['/home/ghost/verify_cycle_255.sh']) {
             VFS['/home/ghost/verify_cycle_255.sh'] = {
                 type: 'file',
-                content: '#!/bin/bash\\n# VERIFICATION SCRIPT v2.1\\n\\necho "[TEST] Running mystery_process (expect silent failure)..."\\nmystery_process\\n\\necho "[TEST] Running strace mystery_process (expect ENOENT)..."\\nstrace mystery_process\\n\\necho "[TEST] Creating secret config..."\\necho "CONF_V1: SECRET" > /tmp/secret_config.dat\\n\\necho "[TEST] Running mystery_process again (expect FLAG)..."\\nmystery_process\\n\\necho "[CLEANUP] Removing secret config..."\\nrm /tmp/secret_config.dat\\n',
+                content: '#!/bin/bash\\n# VERIFICATION SCRIPT v3.0\\n\\necho "[TEST] Running mystery_process (expect silent failure)..."\\nmystery_process\\n\\necho "[TEST] Running strace mystery_process (expect ENOENT)..."\\nstrace mystery_process\\n\\necho "[TEST] Creating secret config..."\\necho "CONF_V1: SECRET" > /tmp/secret_config.dat\\n\\necho "[TEST] Running mystery_process again (expect FLAG)..."\\nmystery_process\\n\\necho "[TEST] Running strace mystery_process (expect SUCCESS trace)..."\\nstrace mystery_process\\n\\necho "[CLEANUP] Removing secret config..."\\nrm /tmp/secret_config.dat\\n',
                 permissions: '0755'
             };
             const home = getNode('/home/ghost');
@@ -11085,15 +11085,19 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
        }
        break;
     }
-    case 'mystery_process': {
-        if (VFS['/tmp/secret_config.dat']) {
-             output = 'CONF_V1: SECRET\n[SUCCESS] Configuration Loaded.\nFLAG: GHOST_ROOT{STR4C3_D3BUG_M4ST3R}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PROCESS TRACING (STRACE).\x1b[0m';
-             if (!VFS['/var/run/strace_solved']) {
-                 VFS['/var/run/strace_solved'] = { type: 'file', content: 'TRUE' };
+    case 'mystery_process':
+    case './mystery_process':
+    case '/usr/bin/mystery_process': {
+        const secretNode = getNode('/tmp/secret_config.dat');
+        if (secretNode && secretNode.type === 'file' && secretNode.content.startsWith('CONF_V1')) {
+             output = 'System Config Loaded.\nFLAG: GHOST_ROOT{STR4C3_R3V34LS_H1DD3N_P4THS}';
+             if (!VFS['/var/run/cycle255_solved']) {
+                 VFS['/var/run/cycle255_solved'] = { type: 'file', content: 'TRUE' };
                  const runDir = getNode('/var/run');
-                 if (runDir && runDir.type === 'dir' && !runDir.children.includes('strace_solved')) {
-                     runDir.children.push('strace_solved');
+                 if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle255_solved')) {
+                     runDir.children.push('cycle255_solved');
                  }
+                 output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SYSTEM CALL TRACED.\x1b[0m`;
              }
         } else {
              // Silent failure
@@ -11101,24 +11105,7 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
         }
         break;
     }
-    case 'strace': {
-        const target = args[0];
-        if (!target) {
-            output = 'usage: strace [-p pid] <command> [args]';
-        } else if (target === 'mystery_process' || target.endsWith('/mystery_process')) {
-            output = `execve("${target}", ["${target}"], 0x7ffd5d6c8b90 /* 21 vars */) = 0
-brk(NULL)                               = 0x55f3a2b1c000
-access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)
-access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
-openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = -1 ENOENT (No such file or directory)
-write(2, "", 0)                         = 0
-exit_group(1)                           = ?
-+++ exited with 1 +++`;
-        } else {
-            output = `execve("${target}", ["${target}"], 0x...) = 0\n... (Trace output simplified for simulation) ...\n+++ exited with 0 +++`;
-        }
-        break;
-    }
+    // Old strace implementation removed - using newer one at end of file
     case 'sudo': {
       if (args.length < 1) {
         output = 'usage: sudo <command>';
@@ -17006,47 +16993,8 @@ auth.py
        }
        break;
     }
-    case 'strace': {
-        if (args.length < 1) {
-            output = 'strace: usage: strace <command>';
-        } else {
-            const cmd = args[0];
-            const cmdArgs = args.slice(1);
-            
-            if (cmd === 'mystery_process' || cmd === './mystery_process' || cmd === '/usr/bin/mystery_process') {
-                 output = `execve("/usr/bin/mystery_process", ["mystery_process"], 0x7ff...) = 0
-brk(NULL)                               = 0x560875600000
-access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
-openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = -1 ENOENT (No such file or directory)
-exit_group(1)                           = ?
-+++ exited with 1 +++`;
-            } else if (ALIASES[cmd] || Object.keys(VFS).some(p => p.endsWith(`/${cmd}`))) {
-                 output = `execve("${cmd}", ["${cmd}", ${cmdArgs.map(a => `"${a}"`).join(', ')}], 0x7ff...) = 0
-write(1, "Output...", 9)                = 9
-exit_group(0)                           = ?
-+++ exited with 0 +++`;
-            } else {
-                 output = `strace: ${cmd}: command not found`;
-            }
-        }
-        break;
-    }
-    case 'mystery_process': {
-        if (VFS['/tmp/secret_config.dat']) {
-            output = `[SUCCESS] Configuration Loaded.\n[PAYLOAD] DECRYPTING...\n\nFLAG: GHOST_ROOT{STR4C3_TR4C3_M4ST3R}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SYSTEM CALL TRACED.\x1b[0m`;
-            
-            if (!VFS['/var/run/cycle255_solved']) {
-                VFS['/var/run/cycle255_solved'] = { type: 'file', content: 'TRUE' };
-                const runDir = getNode('/var/run');
-                if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle255_solved')) {
-                    runDir.children.push('cycle255_solved');
-                }
-            }
-        } else {
-            output = ''; 
-        }
-        break;
-    }
+    // Duplicate strace removed - using newer one at end of file
+    // Duplicate mystery_process removed
     case 'neofetch': {
        output = `
        \x1b[1;32m       .           \x1b[0m  ghost@ghost-root
@@ -18176,30 +18124,7 @@ openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = ${secretExists ? '3' : '-
         }
         break;
     }
-    case 'mystery_process': {
-        const secretNode = getNode('/tmp/secret_config.dat');
-        const secretExists = secretNode && secretNode.type === 'file';
-        
-        if (secretExists) {
-            if (secretNode.content.startsWith('CONF_V1')) {
-                output = `Access Granted.\nFLAG: GHOST_ROOT{STR4C3_R3V34LS_H1DD3N_P4THS}`;
-                if (!VFS['/var/run/strace_solved']) {
-                    VFS['/var/run/strace_solved'] = { type: 'file', content: 'TRUE' };
-                    const runDir = getNode('/var/run');
-                    if (runDir && runDir.type === 'dir' && !runDir.children.includes('strace_solved')) {
-                        runDir.children.push('strace_solved');
-                    }
-                    output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SYSTEM CALL TRACED.\x1b[0m`;
-                }
-            } else {
-                output = 'Invalid Configuration Header';
-            }
-        } else {
-            // Silent crash (no output)
-            output = ''; 
-        }
-        break;
-    }
+    // Duplicate mystery_process removed (v2)
     case 'ltrace': {
         if (args.length < 1) {
             output = 'usage: ltrace <command>';
@@ -20615,29 +20540,7 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
 // Duplicate strace removed
 
     // Cycle 255 (The Process Trace)
-    case 'mystery_process':
-    case './mystery_process':
-    case '/usr/bin/mystery_process': {
-        const secretPath = '/tmp/secret_config.dat';
-        const secretNode = getNode(secretPath);
-        
-        if (secretNode && secretNode.type === 'file') {
-             output = 'System Config Loaded.\nFLAG: GHOST_ROOT{STR4C3_R3V34LS_H1DD3N_P4THS}';
-             if (!VFS['/var/run/cycle255_solved']) {
-                 VFS['/var/run/cycle255_solved'] = { type: 'file', content: 'TRUE' };
-                 // Ensure directory exists
-                 const runDir = getNode('/var/run');
-                 if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle255_solved')) {
-                     runDir.children.push('cycle255_solved');
-                 }
-                 output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SYSTEM CALL TRACED.\x1b[0m`;
-             }
-        } else {
-             // Silent failure to force strace usage
-             output = ''; 
-        }
-        break;
-    }
+    // Duplicate mystery_process removed (v3)
 
     // Cycle 256: The Group Policy
     case 'deploy_weapon':
@@ -20838,51 +20741,9 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
     }
 
     // Cycle 255: The Process Trace
-    case 'mystery_process':
-    case './mystery_process':
-    case '/usr/bin/mystery_process': {
-        const configPath = '/tmp/secret_config.dat';
-        const node = getNode(configPath);
-        
-        // Relaxed check: File existence is enough (Cycle 255)
-        if (node && node.type === 'file') {
-            if (!VFS['/var/run/cycle255_solved']) {
-                VFS['/var/run/cycle255_solved'] = { type: 'file', content: 'TRUE' };
-                const runDir = getNode('/var/run');
-                if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle255_solved')) {
-                    runDir.children.push('cycle255_solved');
-                }
-                output = '[PROCESS] Config loaded successfully.\n[STATUS] Online.\nFLAG: GHOST_ROOT{STR4C3_D3BUG_M4ST3R}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PROCESS TRACED.\x1b[0m';
-            } else {
-                output = '[PROCESS] Config loaded successfully.\nFLAG: GHOST_ROOT{STR4C3_D3BUG_M4ST3R}';
-            }
-        } else {
-            // Silent failure
-            output = ''; 
-        }
-        break;
-    }
+    // Duplicate mystery_process removed (v4)
 
-    case 'strace': {
-        if (args.length < 1) {
-            output = 'strace: must have PROG [ARGS] or -p PID\nTry \'strace -h\' for more information.';
-        } else {
-            const target = args[0];
-            if (target.includes('mystery_process')) {
-                output = `execve("${target}", ["${target}"], 0x7ffd5e2c3b40 /* 21 vars */) = 0
-brk(NULL)                               = 0x560d8a1b6000
-access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)
-access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
-openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = -1 ENOENT (No such file or directory)
---- SIGSEGV {si_signo=SIGSEGV, si_code=SEGV_MAPERR, si_addr=NULL} ---
-+++ killed by SIGSEGV (core dumped) +++
-Segmentation fault`;
-            } else {
-                output = `execve("${target}", ["${target}"], 0x...) = 0\n[STRACE] Attached to process.\n... (Tracing ${target}) ...\n+++ exited with 0 +++`;
-            }
-        }
-        break;
-    }
+    // Duplicate strace removed
 
 
 
