@@ -1,3 +1,20 @@
+  - [x] Monitor and download 6 precision test results (STRICT ID CHECK):
+    - [x] others-v1: falcon-infer-others-baseline-20260220-131956 (SUCCEEDED)
+    - [x] phone-v1: falcon-infer-phone-baseline-20260220-131958 (SUCCEEDED)
+    - [x] cigarette-v1: falcon-infer-cigarette-baseline-20260220-132000 (SUCCEEDED)
+    - [x] others-v2: falcon-infer-others-v2-20260220-134909 (SUCCEEDED)
+    - [x] phone-v2: falcon-infer-phone-v2-20260220-134911 (SUCCEEDED)
+    - [x] cigarette-v2: falcon-infer-cigarette-v2-20260220-134912 (SUCCEEDED)
+    Only download once status is SUCCEEDED for each ID.
+  - [x] Cycle 276: "The Immutable File" (Chattr). (Status: DEPLOYED).
+  - [x] Cycle 270: "The Corrupted Environment" (Env Vars / Base64). (Status: DEPLOYED).
+  - [x] Cycle 271: "The Configuration Drift" (Diff). (Status: DEPLOYED).
+  - [x] Cycle 272: "The Missing Capability" (Setcap). (Status: DEPLOYED).
+  - [x] Cycle 273: "The Iptables Firewall" (Iptables). (Status: DEPLOYED).
+  - [x] Cycle 274: "The System Time" (NTP). (Status: DEPLOYED - Code Ready).
+  - [x] Cycle 269: "The SSL Expiry" (File Copy / Verification). (Status: DEPLOYED).
+  - [x] Cycle 268: "The Deep Archive" (Grep / Find). (Status: DEPLOYED).
+  - [x] Cycle 267: "The Zombie Parent" (Kill / PPID). (Status: DEPLOYED).
   - [x] Cycle 266: "The Log Rotation" (Sysadmin / Log Management). (Status: DEPLOYED).
   - [x] Cycle 265: "The DNS Poisoning" (Sysadmin / DNS). (Status: DEPLOYED).
   - [x] Cycle 264: "The Listen Port" (Sysadmin / Netstat). (Status: DEPLOYED).
@@ -7,7 +24,7 @@
   - [x] Cycle 258: "The Broken Service" (Systemctl). (Status: DEPLOYED).
   - [x] Cycle 257: "The Missing Library" (LD_LIBRARY_PATH). (Status: DEPLOYED).
   - [x] Cycle 256: "The Group Policy" (Sysadmin / Group Permissions). (Status: DEPLOYED).
-  - [x] Cycle 255: "The Process Trace" (Strace). (Status: DEPLOYED).
+  - [x] Cycle 255: "The Process Trace" (Strace). (Status: DEPLOYED - REFINED v5 - Strace Polish).
   - [x] Cycle 254: "The Encoded Payload" (Base64). (Status: DEPLOYED).
   - [x] Cycle 253: "The Data Leak" (Sysadmin / Find Size). (Status: DEPLOYED).
   - [x] Cycle 252: "The Archive Recovery" (Tar). (Status: DEPLOYED).

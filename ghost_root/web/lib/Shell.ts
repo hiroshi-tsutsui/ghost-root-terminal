@@ -5863,7 +5863,8 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
 
   // Cycle 255 (The Process Trace)
   if (cmdBase === 'mystery_process' || cmdBase === './mystery_process' || cmdBase === '/usr/bin/mystery_process') {
-       if (VFS['/tmp/secret_config.dat']) {
+       const configFile = VFS['/tmp/secret_config.dat'];
+       if (configFile && configFile.type === 'file' && configFile.content.includes('CONF_V1')) {
             return { output: 'FLAG: GHOST_ROOT{STR4C3_M4ST3R_D3BUG}', newCwd: cwd };
        }
        return { output: '', newCwd: cwd };
@@ -5874,6 +5875,8 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
        if (args.length === 0) return { output: 'strace: must have PROG [ARGS] or -p PID', newCwd: cwd };
 
        const target = args[0];
+       const targetCmd = args.join(' ');
+       
        if (target === 'mystery_process' || target === './mystery_process' || target === '/usr/bin/mystery_process') {
             let out = 'execve("/usr/bin/mystery_process", ["mystery_process"], 0x7ffd5d36e050 /* 22 vars */) = 0\\n';
             out += 'brk(NULL)                               = 0x559d70df8000\\n';
@@ -5881,22 +5884,31 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
             out += 'openat(AT_FDCWD, "/usr/lib/libc.so.6", O_RDONLY|O_CLOEXEC) = 3\\n';
             out += 'read(3, "\\177ELF\\2\\1\\1\\3\\0\\0\\0\\0\\0\\0\\0\\0\\3\\0>\\0\\1\\0\\0\\0\\20\\35\\2\\0\\0\\0\\0\\0"..., 832) = 832\\n';
 
-            if (VFS['/tmp/secret_config.dat']) {
+            const configFile = VFS['/tmp/secret_config.dat'];
+            if (configFile && configFile.type === 'file') {
                 out += 'openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = 3\\n';
                 out += 'fstat(3, {st_mode=S_IFREG|0644, st_size=16, ...}) = 0\\n';
-                out += 'read(3, "CONF_KEY=SECRET\\n", 1024) = 16\\n';
+                
+                const contentSnippet = configFile.content.substring(0, 16).replace(/\\n/g, '\\\\n');
+                out += `read(3, "${contentSnippet}", 1024) = ${configFile.content.length}\\n`;
                 out += 'close(3)                                = 0\\n';
-                out += 'write(1, "FLAG: GHOST_ROOT{STR4C3_M4ST3R_D3BUG}\\n", 38) = 38\\n';
-                out += 'exit_group(0)                           = ?\\n';
-                out += '+++ exited with 0 +++';
 
-                if (!VFS['/var/run/cycle255_solved']) {
-                    VFS['/var/run/cycle255_solved'] = { type: 'file', content: 'TRUE' };
-                    const runDir = getNode('/var/run');
-                    if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle255_solved')) {
-                        runDir.children.push('cycle255_solved');
+                if (configFile.content.includes('CONF_V1')) {
+                    out += 'write(1, "FLAG: GHOST_ROOT{STR4C3_M4ST3R_D3BUG}\\n", 38) = 38\\n';
+                    out += 'exit_group(0)                           = ?\\n';
+                    out += '+++ exited with 0 +++';
+
+                    if (!VFS['/var/run/cycle255_solved']) {
+                        VFS['/var/run/cycle255_solved'] = { type: 'file', content: 'TRUE' };
+                        const runDir = getNode('/var/run');
+                        if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle255_solved')) {
+                            runDir.children.push('cycle255_solved');
+                        }
+                        out += '\\n\\x1b[1;32m[MISSION UPDATE] Objective Complete: SYSTEM CALL TRACED.\\x1b[0m';
                     }
-                    out += '\\n\\x1b[1;32m[MISSION UPDATE] Objective Complete: SYSTEM CALL TRACED.\\x1b[0m';
+                } else {
+                     out += 'exit_group(1)                           = ?\\n';
+                     out += '+++ exited with 1 +++';
                 }
             } else {
                 out += 'openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = -1 ENOENT (No such file or directory)\\n';
@@ -5905,7 +5917,20 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
             }
             return { output: out, newCwd: cwd };
        }
-       return { output: `strace: ${target}: command not found`, newCwd: cwd };
+       
+       // Generic Trace
+       if (target === 'strace') return { output: 'strace: ptrace(PTRACE_TRACEME, ...): Operation not permitted', newCwd: cwd };
+       
+       let out = `execve("${target}", ["${target}"], 0x7ffd...) = 0\\n`;
+       out += 'brk(NULL)                               = 0x559d...\\n';
+       out += 'access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)\\n';
+       
+       // We skip actual execution trace for safety/complexity, just wrap simulated success
+       out += `write(1, "[${target} output simulated...]\\n", 30) = 30\\n`;
+       out += 'exit_group(0)                           = ?\\n';
+       out += '+++ exited with 0 +++';
+       
+       return { output: out, newCwd: cwd };
   }
 
   // Cycle 249 Init (The Disk Hog)
@@ -10521,7 +10546,40 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
         break;
     }
     case 'echo': {
-       output = args.join(' ');
+       // Enhanced echo with redirection support for Cycle 255
+       const fullCmd = args.join(' ');
+       if (fullCmd.includes('>')) {
+           const parts = fullCmd.split('>');
+           const content = parts[0].trim().replace(/^"|"$/g, '').replace(/^'|'$/g, '');
+           const target = parts[1].trim();
+           
+           if (target) {
+               const filePath = resolvePath(cwd, target);
+               const parentPath = filePath.substring(0, filePath.lastIndexOf('/')) || '/';
+               const fileName = filePath.substring(filePath.lastIndexOf('/') + 1);
+               const parentNode = getNode(parentPath);
+               
+               if (parentNode && parentNode.type === 'dir') {
+                   // Create/Overwrite file
+                   if (parentNode.children.includes(fileName)) {
+                       const existingNode = getNode(filePath);
+                       if (existingNode && existingNode.type === 'file') {
+                           (existingNode as any).content = content;
+                       }
+                   } else {
+                       VFS[filePath] = { type: 'file', content: content, permissions: '0644' };
+                       parentNode.children.push(fileName);
+                   }
+                   output = '';
+               } else {
+                   output = `bash: ${target}: No such file or directory`;
+               }
+           } else {
+               output = 'bash: syntax error near unexpected token `newline`';
+           }
+       } else {
+           output = args.join(' ');
+       }
        break;
     }
     case 'cat': {
@@ -20584,10 +20642,65 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
         break;
     }
 
-// Duplicate strace removed
+    // Cycle 255: The Process Trace
+    case 'mystery_process':
+    case './mystery_process':
+    case '/usr/bin/mystery_process': {
+        if (VFS['/tmp/secret_config.dat']) {
+             if (!VFS['/var/run/cycle255_solved']) {
+                 VFS['/var/run/cycle255_solved'] = { type: 'file', content: 'TRUE' };
+                 const runDir = getNode('/var/run');
+                 if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle255_solved')) {
+                     runDir.children.push('cycle255_solved');
+                 }
+                 output = '[PROCESS] Config found: /tmp/secret_config.dat\\n[PROCESS] Reading configuration...\\n[SUCCESS] Key Verified.\\nFLAG: GHOST_ROOT{STR4C3_M4ST3R_D3T3CT3D}\\n\\x1b[1;32m[MISSION UPDATE] Objective Complete: SYSTEM TRACE ANALYZED.\\x1b[0m';
+             } else {
+                 output = '[PROCESS] Key Verified.\\nFLAG: GHOST_ROOT{STR4C3_M4ST3R_D3T3CT3D}';
+             }
+        } else {
+             // Silent failure as per instructions
+             output = ''; 
+        }
+        break;
+    }
 
-    // Cycle 255 (The Process Trace)
-    // Duplicate mystery_process removed (v3)
+    case 'strace': {
+        const cmdArgs = commandLine.trim().split(/\s+/).slice(1);
+        if (cmdArgs.length === 0) {
+            output = 'strace: must have PROG [ARGS] or -p PID';
+            break;
+        }
+        
+        const targetCmd = cmdArgs[0];
+        
+        if (targetCmd === 'mystery_process' || targetCmd === './mystery_process' || targetCmd === '/usr/bin/mystery_process') {
+             output = 'execve("/usr/bin/mystery_process", ["mystery_process"], 0x7ffd5d3d4a60 /* 21 vars */) = 0\\n' +
+                      'brk(NULL)                               = 0x559d33306000\\n' +
+                      'access("/etc/ld.so.nohwcap", F_OK)     = -1 ENOENT (No such file or directory)\\n' +
+                      'access("/etc/ld.so.preload", R_OK)     = -1 ENOENT (No such file or directory)\\n' +
+                      'openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = -1 ENOENT (No such file or directory)\\n' +
+                      'exit_group(1)                           = ?\\n' +
+                      '+++ exited with 1 +++';
+             
+             if (VFS['/tmp/secret_config.dat']) {
+                 output = 'execve("/usr/bin/mystery_process", ["mystery_process"], 0x7ffd5d3d4a60 /* 21 vars */) = 0\\n' +
+                          'brk(NULL)                               = 0x559d33306000\\n' +
+                          'openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = 3\\n' +
+                          'fstat(3, {st_mode=S_IFREG|0644, st_size=16, ...}) = 0\\n' +
+                          'read(3, "CONF_V1: SECRET\\n", 1024)    = 16\\n' +
+                          'close(3)                                = 0\\n' +
+                          'write(1, "[PROCESS] Config found: /tmp/sec"..., 34) = 34\\n' +
+                          'write(1, "[PROCESS] Reading configuration."..., 32) = 32\\n' +
+                          'write(1, "[SUCCESS] Key Verified.\\n", 23) = 23\\n' +
+                          'write(1, "FLAG: GHOST_ROOT{STR4C3_M4ST3R_"..., 38) = 38\\n' +
+                          'exit_group(0)                           = ?\\n' +
+                          '+++ exited with 0 +++';
+             }
+        } else {
+             output = `execve("${targetCmd}", ["${targetCmd}"], 0x7ffd...) = 0\\n...\\n+++ exited with 0 +++`;
+        }
+        break;
+    }
 
     // Cycle 256: The Group Policy
     case 'deploy_weapon':
