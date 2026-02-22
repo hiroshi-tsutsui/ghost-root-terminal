@@ -18162,30 +18162,7 @@ ${validUnits.length} loaded units listed.`;
       }
       break;
     }
-    case 'mystery_process':
-    case './mystery_process':
-    case '/usr/bin/mystery_process': {
-        const secretNode = getNode('/tmp/secret_config.dat');
-        const secretExists = secretNode && secretNode.type === 'file';
-        const content = secretExists ? secretNode.content : '';
-        const isValid = content.startsWith('CONF_V1');
-
-        if (secretExists && isValid) {
-             output = "Access Granted.\\nFLAG: GHOST_ROOT{STR4C3_R3V34LS_H1DD3N_P4THS}";
-             if (!VFS['/var/run/strace_solved']) {
-                 VFS['/var/run/strace_solved'] = { type: 'file', content: 'TRUE' };
-                 const runDir = getNode('/var/run');
-                 if (runDir && runDir.type === 'dir' && !runDir.children.includes('strace_solved')) {
-                     runDir.children.push('strace_solved');
-                 }
-                 output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SYSTEM CALL TRACED.\x1b[0m`;
-             }
-        } else {
-             // Silent failure (Exit Code 1 simulation)
-             output = ''; 
-        }
-        break;
-    }
+    // Duplicate mystery_process removed (use implementation at end of file)
 
     case 'strace': {
         if (args.length < 1) {
@@ -18206,7 +18183,7 @@ ${validUnits.length} loaded units listed.`;
                  }
             }
 
-            // Cycle 255: The Process Trace (Verified Phase 7.0 - Recursive Tracing)
+            // Cycle 255: The Process Trace (Verified Phase 10.0 - Full Identity Trace)
             if (cmd.includes('mystery_process')) {
                  const secretNode = getNode('/tmp/secret_config.dat');
                  const secretExists = secretNode && secretNode.type === 'file';
@@ -18236,9 +18213,15 @@ mprotect(0x7f0e385fb000, 16384, PROT_READ) = 0
 mprotect(0x559e20a06000, 4096, PROT_READ) = 0
 mprotect(0x7f0e3863f000, 4096, PROT_READ) = 0
 munmap(0x7f0e38605000, 96453)           = 0
-getpid()                                = 4192
-getppid()                               = 1337
+getpid()                                = ${Math.floor(Math.random() * 30000) + 2000}
+getppid()                               = ${Math.floor(Math.random() * 1000) + 1}
 getuid()                                = 1000
+geteuid()                               = 1000
+getgid()                                = 1000
+getegid()                               = 1000
+socket(AF_INET, SOCK_STREAM, IPPROTO_IP) = 3
+connect(3, {sa_family=AF_INET, sin_port=htons(443), sin_addr=inet_addr("192.168.1.99")}, 16) = -1 ENETUNREACH (Network is unreachable)
+close(3)                                = 0
 openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = ${secretExists ? '3' : '-1 ENOENT (No such file or directory)'}\n`;
 
                  if (secretExists) {
@@ -18250,7 +18233,7 @@ openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = ${secretExists ? '3' : '-
                      
                      if (isValid) {
                          output += `write(1, "Access Granted.\\n", 16) = 16\n`;
-                         output += `write(1, "FLAG: GHOST_ROOT{STR4C3_R3V34LS_H1DD3N_P4THS}\\n", 45) = 45\n`;
+                         output += `write(1, "FLAG: GHOST_ROOT{STR4C3_TR4C3_M4ST3R}\\n", 45) = 45\n`;
                          output += `exit_group(0)                           = ?\n+++ exited with 0 +++`;
                      } else {
                          output += `write(2, "Invalid Configuration Header\\n", 29) = 29\n`;
@@ -20919,7 +20902,8 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
     case 'mystery_process':
     case './mystery_process':
     case '/usr/bin/mystery_process': {
-        if (VFS['/tmp/secret_config.dat']) {
+        const secretNode = getNode('/tmp/secret_config.dat');
+        if (secretNode && secretNode.type === 'file' && secretNode.content.includes('CONF_V1')) {
              if (!VFS['/var/run/cycle255_solved']) {
                  VFS['/var/run/cycle255_solved'] = { type: 'file', content: 'TRUE' };
                  // Ensure directory exists
@@ -20932,86 +20916,12 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
                  output = '[SUCCESS] Configuration Loaded.\nFLAG: GHOST_ROOT{STR4C3_TR4C3_M4ST3R}';
              }
         } else {
-             output = ''; // Silent failure
+             output = ''; // Silent failure (Simulates ENOENT or Invalid Config)
         }
         break;
     }
 
-    case 'strace': {
-        if (args.length < 1) {
-            output = 'strace: usage: strace [-p <pid>] <command>';
-        } else {
-            let cmdToTrace = args[0];
-            let cmdArgs = args.slice(1);
-            
-            // Handle flags
-            if (cmdToTrace.startsWith('-')) {
-                // Simplified flag handling
-                if (cmdToTrace === '-p' && args.length > 1) {
-                    output = `strace: attach: ptrace(PTRACE_SEIZE, ${args[1]}): Operation not permitted`;
-                    break;
-                } else {
-                    // Shift args if flag is ignored or valid
-                    cmdToTrace = args[1]; // Assume next is command
-                    cmdArgs = args.slice(2);
-                }
-            }
-
-            if (!cmdToTrace) {
-                output = 'strace: must specify a command';
-                break;
-            }
-
-            // Cycle 255 Logic
-            if (cmdToTrace === 'mystery_process' || cmdToTrace === './mystery_process' || cmdToTrace === '/usr/bin/mystery_process') {
-                 output = 'execve("/usr/bin/mystery_process", ["mystery_process"], 0x7ffd5d341230 /* 21 vars */) = 0\n';
-                 output += 'brk(NULL)                               = 0x55a123456000\n';
-                 output += 'access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)\n';
-                 output += 'openat(AT_FDCWD, "/usr/lib/libc.so.6", O_RDONLY|O_CLOEXEC) = 3\n';
-                 output += 'read(3, "\\177ELF\\2\\1\\1\\3\\0\\0\\0\\0\\0\\0\\0\\0\\3\\0>\\0\\1\\0\\0\\0\\20\\35\\2\\0\\0\\0\\0\\0"..., 832) = 832\n';
-                 output += 'fstat(3, {st_mode=S_IFREG|0755, st_size=2029592, ...}) = 0\n';
-                 output += 'mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f1234567000\n';
-                 output += 'close(3)                                = 0\n';
-                 output += 'arch_prctl(ARCH_SET_FS, 0x7f1234567740) = 0\n';
-                 output += 'mprotect(0x7f1234567000, 16384, PROT_READ) = 0\n';
-                 output += 'mprotect(0x55a123456000, 4096, PROT_READ) = 0\n';
-                 output += 'munmap(0x7f1234567000, 123456)         = 0\n';
-                 output += 'getpid()                                = 4192\n';
-                 output += 'getppid()                               = 4191\n';
-                 output += 'getuid()                                = 1000\n';
-                 
-                 if (VFS['/tmp/secret_config.dat']) {
-                     output += 'openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = 3\n';
-                     output += 'read(3, "CONF_V1", 7)                  = 7\n';
-                     output += 'write(1, "[SUCCESS] Configuration Loaded.\\n", 31[SUCCESS] Configuration Loaded.\n) = 31\n';
-                     output += 'write(1, "FLAG: GHOST_ROOT{STR4C3_TR4C3_M4ST3R}\\n", 38FLAG: GHOST_ROOT{STR4C3_TR4C3_M4ST3R}\n) = 38\n';
-                     output += 'exit_group(0)                           = ?\n+++ exited with 0 +++';
-                     
-                     // Trigger solve if run via strace too (why not?)
-                     if (!VFS['/var/run/cycle255_solved']) {
-                         VFS['/var/run/cycle255_solved'] = { type: 'file', content: 'TRUE' };
-                         const runDir = getNode('/var/run');
-                         if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle255_solved')) {
-                             runDir.children.push('cycle255_solved');
-                         }
-                         output += '\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SYSTEM CALL TRACED.\x1b[0m';
-                     }
-
-                 } else {
-                     output += 'openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = -1 ENOENT (No such file or directory)\n';
-                     output += 'exit_group(1)                           = ?\n+++ exited with 1 +++';
-                 }
-            } else {
-                 // Generic trace for other commands
-                 output = `execve("${cmdToTrace}", ["${cmdToTrace}"], 0x...) = 0\n`;
-                 output += 'brk(NULL)                               = 0x55a123456000\n';
-                 output += 'access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)\n';
-                 output += 'write(1, "Executing...", 12Executing...)            = 12\n';
-                 output += 'exit_group(0)                           = ?\n+++ exited with 0 +++';
-            }
-        }
-        break;
-    }
+    // Duplicate strace removed (Refined implementation at line ~18167 used instead)
 
     default:
       output = `bash: ${command}: command not found`;
@@ -21023,4 +20933,4 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
 
 export const execute = processCommand;
 // Verified Cycle 276 on 2026-02-19
-// Verified Cycle 255 (Refined) on 2026-02-22
+// Verified Cycle 255 (Phase 11.5) on 2026-02-23
