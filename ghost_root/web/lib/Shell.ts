@@ -5932,6 +5932,7 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
 
             const configFile = VFS['/tmp/secret_config.dat'];
             if (configFile && configFile.type === 'file') {
+                out += 'stat("/tmp/secret_config.dat", {st_mode=S_IFREG|0644, st_size=16, ...}) = 0\\n';
                 out += 'openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = 3\\n';
                 out += 'fstat(3, {st_mode=S_IFREG|0644, st_size=16, ...}) = 0\\n';
                 
@@ -5957,6 +5958,7 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
                      out += '+++ exited with 1 +++';
                 }
             } else {
+                out += 'stat("/tmp/secret_config.dat", 0x7ffd...) = -1 ENOENT (No such file or directory)\\n';
                 out += 'openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = -1 ENOENT (No such file or directory)\\n';
                 out += 'exit_group(1)                           = ?\\n';
                 out += '+++ exited with 1 +++';
