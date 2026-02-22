@@ -5760,6 +5760,73 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
       return { output: `modprobe: FATAL: Module ${modName} not found in directory /lib/modules/5.15.0-ghost`, newCwd: cwd };
   }
 
+  // Cycle 255 (The Process Trace)
+  if (cmdBase === 'mystery_process' || cmdBase === './mystery_process' || cmdBase === '/usr/bin/mystery_process') {
+       if (VFS['/tmp/secret_config.dat']) {
+           if (!VFS['/var/run/strace_solved']) {
+               VFS['/var/run/strace_solved'] = { type: 'file', content: 'TRUE' };
+               const runDir = getNode('/var/run');
+               if (runDir && runDir.type === 'dir' && !runDir.children.includes('strace_solved')) {
+                   runDir.children.push('strace_solved');
+               }
+               return { output: `[SUCCESS] Configuration Loaded.\n[SYSTEM] Integrity Verified.\nFLAG: GHOST_ROOT{STR4C3_D3BUG_M4ST3R}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PROCESS TRACED.\x1b[0m`, newCwd: cwd };
+           }
+           return { output: `[SUCCESS] Configuration Loaded.\n[SYSTEM] Integrity Verified.\nFLAG: GHOST_ROOT{STR4C3_D3BUG_M4ST3R}`, newCwd: cwd };
+       } else {
+           // Silent failure
+           return { output: '', newCwd: cwd };
+       }
+  }
+
+  if (cmdBase === 'strace') {
+       const args = cmdTokens.slice(1);
+       if (args.length === 0) return { output: 'Usage: strace <command>', newCwd: cwd };
+       
+       const target = args[0];
+       let traceOutput = '';
+       
+       // Generic header
+       traceOutput += `execve("/usr/bin/${target}", ["${target}"], 0x7ff...) = 0\n`;
+       traceOutput += `brk(NULL) = 0x560d8a000000\n`;
+       traceOutput += `access("/etc/ld.so.preload", R_OK) = -1 ENOENT (No such file or directory)\n`;
+       traceOutput += `openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3\n`;
+       traceOutput += `fstat(3, {st_mode=S_IFREG|0644, st_size=4096, ...}) = 0\n`;
+       traceOutput += `mmap(NULL, 4096, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7f8a12300000\n`;
+       traceOutput += `close(3) = 0\n`;
+
+       if (target === 'mystery_process' || target.endsWith('mystery_process')) {
+           traceOutput += `openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3\n`;
+           traceOutput += `read(3, "\\177ELF...", 832) = 832\n`;
+           traceOutput += `close(3) = 0\n`;
+           traceOutput += `mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f8a12200000\n`;
+           traceOutput += `arch_prctl(ARCH_SET_FS, 0x7f8a12200000) = 0\n`;
+           traceOutput += `mprotect(0x7f8a12000000, 16384, PROT_READ) = 0\n`;
+           traceOutput += `stat("/tmp", {st_mode=S_IFDIR|0777, ...}) = 0\n`;
+           
+           if (VFS['/tmp/secret_config.dat']) {
+               traceOutput += `openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = 3\n`;
+               traceOutput += `fstat(3, {st_mode=S_IFREG|0644, st_size=128, ...}) = 0\n`;
+               traceOutput += `read(3, "CONF_V1: SECRET...", 128) = 16\n`;
+               traceOutput += `close(3) = 0\n`;
+               traceOutput += `write(1, "[SUCCESS] Configuration Loaded.\\n", 30) = 30\n`;
+               traceOutput += `write(1, "[SYSTEM] Integrity Verified.\\n", 29) = 29\n`;
+               traceOutput += `exit_group(0) = ?\n`;
+               traceOutput += `+++ exited with 0 +++`;
+           } else {
+               traceOutput += `openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = -1 ENOENT (No such file or directory)\n`;
+               traceOutput += `exit_group(1) = ?\n`;
+               traceOutput += `+++ exited with 1 +++`;
+           }
+       } else {
+           // Generic fallback
+           traceOutput += `write(1, "Generic execution trace...\\n", 27) = 27\n`;
+           traceOutput += `exit_group(0) = ?\n`;
+           traceOutput += `+++ exited with 0 +++`;
+       }
+       
+       return { output: traceOutput, newCwd: cwd };
+  }
+
   // Cycle 274 (The System Time)
   if (cmdBase === 'secure_connect' || cmdBase === './secure_connect' || cmdBase === '/usr/bin/secure_connect') {
       if (SYSTEM_TIME_OFFSET === 0) {
@@ -18190,7 +18257,9 @@ ${validUnits.length} loaded units listed.`;
                  const content = secretExists ? secretNode.content : '';
                  const isValid = content.startsWith('CONF_V1');
                  
-                 output = `execve("${cmdPath}", ["${cmd}"], 0x7ffd5d5966d0 /* 24 vars */) = 0
+                 const argsStr = cmdArgs.length > 0 ? `, "${cmdArgs.join('", "')}"` : '';
+
+                 output = `execve("${cmdPath}", ["${cmd}"${argsStr}], 0x7ffd5d5966d0 /* 24 vars */) = 0
 brk(NULL)                               = 0x559e2269a000
 access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)
 access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
@@ -20902,6 +20971,10 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
     case 'mystery_process':
     case './mystery_process':
     case '/usr/bin/mystery_process': {
+        if (args.includes('--help') || args.includes('-h')) {
+            output = 'Usage: mystery_process [CONFIG_PATH]\n\nStandard verification process.\n(Internal Use Only)';
+            break;
+        }
         const secretNode = getNode('/tmp/secret_config.dat');
         if (secretNode && secretNode.type === 'file' && secretNode.content.includes('CONF_V1')) {
              if (!VFS['/var/run/cycle255_solved']) {

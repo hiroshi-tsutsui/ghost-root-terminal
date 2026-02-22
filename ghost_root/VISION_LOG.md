@@ -1,22 +1,20 @@
-## Cycle 255: The Process Trace (Phase 4.5 - Syscall Accuracy)
+## Cycle 255: The Process Trace (Phase 12.0 - Refinement)
 **Status:** DEPLOYED
 **Sector:** /usr/bin/mystery_process
 **Mechanism:** 
-- Full `strace` simulation implemented.
-- Traces `execve`, `brk`, `getpid`, `getuid`, `access`, `openat`.
-- Handles conditional logic: checks for `/tmp/secret_config.dat`.
-- Returns `ENOENT` + exit(1) on failure.
-- Returns FLAG + exit(0) on success.
+- Enhanced `strace` simulation to include argument tracing (`execve` args).
+- Added `--help` and `-h` handling to `mystery_process` (internal use hint).
+- Verified `mystery_process` silent failure mode (Exit Code 1 simulation).
 **Tools:** `strace`, `mystery_process`
-**Objective:** Teach users to use tracing tools for debugging silent failures.
-**Flag:** `GHOST_ROOT{STR4C3_R3V34LS_H1DD3N_P4THS}`
-**Timestamp:** 2026-02-23 04:05 JST
+**Objective:** Polished interaction. Added misleading help text to encourage tracing.
+**Flag:** `GHOST_ROOT{STR4C3_TR4C3_M4ST3R}`
+**Timestamp:** 2026-02-23 06:45 JST
 
 ### SLACK MESSAGE
 ```text
 📟 **UPLINK ESTABLISHED: CYCLE REPORT**
 **Sector:** /usr/bin/mystery_process
-**New Protocol:** Syscall Trace Simulation (Phase 4.5)
+**New Protocol:** Cycle 255 Refined (Phase 12.0)
 **Encryption Level:** High
 **Target:** https://ghost-root-terminal.vercel.app/
 ```
