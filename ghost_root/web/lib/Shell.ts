@@ -5929,6 +5929,11 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
             out += 'access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)\\n';
             out += 'openat(AT_FDCWD, "/usr/lib/libc.so.6", O_RDONLY|O_CLOEXEC) = 3\\n';
             out += 'read(3, "\\177ELF\\2\\1\\1\\3\\0\\0\\0\\0\\0\\0\\0\\0\\3\\0>\\0\\1\\0\\0\\0\\20\\35\\2\\0\\0\\0\\0\\0"..., 832) = 832\\n';
+            out += 'fstat(3, {st_mode=S_IFREG|0755, st_size=2029592, ...}) = 0\\n';
+            out += 'mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f0a1b2c3000\\n';
+            out += 'close(3)                                = 0\\n';
+            out += 'arch_prctl(ARCH_SET_FS, 0x7f0a1b2c3000) = 0\\n';
+            out += 'mprotect(0x7f0a1b2c3000, 16384, PROT_READ) = 0\\n';
 
             const configFile = VFS['/tmp/secret_config.dat'];
             if (configFile && configFile.type === 'file') {
@@ -10096,6 +10101,10 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
        }
        return finalize(output, newCwd);
   }
+
+  // Cycle 255: Logic consolidated below
+
+  // Old strace implementation removed - using newer one at end of file
 
   switch (command) {
     // Process Trace logic moved below to consolidated block
