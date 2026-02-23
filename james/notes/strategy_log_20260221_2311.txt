@@ -1,0 +1,22 @@
+# James Note Strategy Log: 2026-02-21 23:11 (JST)
+
+**Selected Pillar:** 4. Product Essence (PM・Gadget Lovers)
+**Rationale:**
+- Recent posts covered "English Hacks" (22:39), "Career Survival" (22:02), and "Job Hunting" (21:05).
+- The "Product Essence" pillar was last touched at 20:24 (HHKB Studio). It's time to cycle back to a tool/mindset piece.
+- Instead of just hardware (HHKB), I will focus on a **software tool** that embodies the "Time is Money" philosophy of a US PM.
+- **Topic:** "Raycast + Linear" or "CleanShot X" as the ultimate weapon for non-native PMs. Visual communication is faster than broken English.
+- **Angle:** "Why I pay for tools that save 2 seconds." The ROI of speed.
+
+**Title Idea:**
+「『その2秒、年収なんぼの損ですか？』米国AI企業PMが課金する"秒速"仕事術の正体（Raycast / CleanShot X）」
+
+**Target Audience:**
+- People who want to work faster.
+- PMs struggling with communication overhead.
+- Gadget/Tool geeks who need justification for subscriptions.
+
+**Key Message:**
+- In the US, "Slow" = "Incompetent".
+- English is slow for me. So I use tools to be faster than native speakers.
+- Visuals (CleanShot) and Shortcuts (Raycast) are my "Exoskeleton".

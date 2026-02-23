@@ -1,0 +1,10 @@
+# Report: 2026/02/22 21:44
+Target: Job Hunting / Career Backdoor
+Title: 【残酷な真実】「英語力ゼロ」の僕が、なぜ米国AI企業のPMになれたのか？（TOEIC捨てろ、GitHub磨け）
+File: james/notes/20260222_2144_Job_Hunt_Backdoor_English_Myth.txt
+Strategy:
+- **Pain Point**: "I can't work abroad because my English is bad."
+- **Contrarian View**: "TOEIC doesn't matter. Code/Product matters more."
+- **Actionable Advice**: "Don't polish your resume. Polish your GitHub/Figma. DM engineers directly."
+- **Next Step Tease**: "Tools to survive English meetings" (Connecting to Pillar 3/4).
+Status: Completed.

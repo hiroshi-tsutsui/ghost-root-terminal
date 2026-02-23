@@ -1,0 +1,21 @@
+# Report: Note Generation
+
+## File Info
+- **Path:** `james/notes/20260223_1636_Product_Visual_Communication_CleanShot.txt`
+- **Title:** 【実話】「英語力」よりも「図解力」で殴れ。TOEIC 900点超えのエリートが現場で沈む理由。
+- **Pillar:** 4. Product Essence (PM/Gadget) & 3. English Hack (Hybrid)
+  - Although it touches on English, the core solution is a *tool* (CleanShot X) and *visual communication* (Product Skill). It bridges the gap between language barriers and product management tools.
+
+## Strategy Analysis
+- **Target:** Japanese PMs/Engineers who struggle with English in global environments.
+- **Hook:** "Stop studying English." A contrarian approach to the common belief that fluency is key.
+- **Solution:** Shift the battlefield from "Audio (Speaking)" to "Visual (Screen Sharing/Documentation)".
+- **Actionable Advice:**
+  1. Seize screen sharing immediately in meetings.
+  2. Use CleanShot X for instant visual communication.
+  3. Rely on structured documentation (bullet points) over long prose.
+- **Tone:** Kansai dialect, fast-paced, authoritative yet practical.
+
+## Next Steps
+- Promote the article on social media (Twitter/X) with a snippet of the "Screen Share" rule.
+- Monitor engagement to see if the "Tool x Soft Skill" angle resonates.

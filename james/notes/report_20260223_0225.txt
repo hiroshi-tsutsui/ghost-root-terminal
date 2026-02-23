@@ -1,0 +1,26 @@
+# James Note Generation Report
+**Date:** 2026-02-23 02:25 JST
+**Topic:** Pillar 2 - Job Hunt Survival / Backdoor Route
+**Title:** 【就活裏ルート】「綺麗なポートフォリオ」は即ゴミ箱行き。米国AI企業PMが欲しがるのは『泥臭い運用実績』だけやという話
+**File:** `james/notes/20260223_0225_Job_Hunt_Backdoor_Portfolio_Trash.txt`
+
+## Strategy Execution
+1.  **Target Audience:** Job-hunting students and engineers aiming for top-tier/US tech companies who are stuck polishing "perfect" portfolios (Todo apps, weather apps).
+2.  **Core Message:** "Stop building clean portfolios. Build dirty tools that solve real problems for real people."
+    *   **Contrarian View:** Recruiters ignore clean code in portfolios because it's usually "dead code" (unused).
+    *   **Value Proposition:** "Operation Experience" (maintaining a tool for actual users, getting feedback/complaints) > "Coding Skill" (React/Next.js).
+3.  **Tone:** Aggressive, fast-paced Kansai dialect. "Hook" in the intro to grab attention immediately.
+4.  **Actionable Advice:**
+    *   Find a "radius 5-meter" problem (friend's shift schedule, internal inefficient process).
+    *   Build an MVP (even a script) fast.
+    *   Force someone to use it and get complaints (feedback loop).
+    *   Write "Numbers/Impact" on the resume, not just "Stack".
+
+## Next Steps
+*   **Rotation:** Next should be **Pillar 4 (Product Essence)** or **Pillar 1 (Career)**. Pillar 3 (English) was done recently (23:28).
+*   **Idea for Pillar 4:** "Why I bought a $300 mechanical keyboard just to type 'LGTM' faster - The ROI of tactile feedback." OR "SaaS pricing psychology: How to negotiate enterprise contracts."
+*   **Idea for Pillar 1:** "The 'Generalist' Trap. Why you need to be a 'T-shaped' monster with one spike."
+
+## Metrics (Hypothetical)
+*   Expected Skips: High (Title is provocative).
+*   Retention: High (Storytelling about the "Report Bot" example).

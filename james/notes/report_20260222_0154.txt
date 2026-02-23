@@ -1,0 +1,22 @@
+[REPORT]
+Date: 2026-02-22 01:54 JST
+File: james/notes/20260222_0154_Career_Survival_Tech_Stack_Is_Dead.txt
+Theme: Career/Survival (Pillar 1)
+Strategy:
+- Targeted mid-level engineers (6M JPY range) who believe "more tech skills = more money".
+- Shattered that illusion: "Tech is a means, not value itself."
+- Solution: Install "PM OS" (Business x Tech).
+- Actionable advice: 1. Talk issues, not features. 2. Write PRDs (Notion) before code. 3. Decide what NOT to do.
+Next Up: Pillar 2 (Job Hunting/Student) or Pillar 3 (English Hack). Check recent rotation.
+Recent: Career -> Student -> Product -> English.
+So next should be Pillar 2 (Student) again or maybe English if we want to mix it up.
+Actually, the rotation I saw was `English -> Product -> Student -> Career` (reverse chronological).
+So the *next* logical step after Career is English (Wait, the list I saw was:
+- 01:25 English
+- 12:50 Product (weird stamp)
+- 00:16 Student
+- 00:16 Career
+So I just added another Career.
+The cycle is English -> Product -> Student -> Career.
+I just did Career.
+Next should be Student or Product. I'll aim for Student next time.

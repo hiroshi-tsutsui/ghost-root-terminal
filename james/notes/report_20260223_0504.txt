@@ -1,0 +1,26 @@
+# Report: 20260223_0504
+
+## Output
+- **File:** `james/notes/20260223_0504_Career_Survival_Engineer_Trap.txt`
+- **Title:** 【年収1000万の壁】「英語力」と「技術力」だけで勝負してるエンジニア、一生搾取される説。【米国PMの生存戦略】
+
+## Strategy Analysis
+- **Pillar:** ① Career/Survival Strategy (Career & Survival)
+- **Rationale:**
+  - Recent posts focused heavily on Job Hunting (Pillar 2) and English/Product Hacks (Pillar 3/4).
+  - Rotated back to Pillar 1 to reinforce the core "PM branding" and target existing engineers feeling stuck/undervalued.
+  - Addressed the "Tech is not enough" pain point directly, introducing "PM OS" as the solution.
+- **Tone/Style:**
+  - Aggressive opening ("Cruel reality").
+  - Strong contrast between "Function" (Engineer) and "Experience/Outcome" (PM).
+  - Practical examples of "Translation" vs. "Super-translation" (Bridge PM role).
+  - Call to action with specific tool mentions (CleanShot X, Notion) as force multipliers, linking back to efficiency/ROI.
+
+## Next Steps
+- Monitor reaction to the "PM OS" concept.
+- Next rotation should likely be **Pillar 2 (Job Hunting/Backdoor)** or **Pillar 4 (Product Essence)**, but Pillar 2 was very recent.
+- **Recommendation:** Rotate to **Pillar 3 (English Hack)** or **Pillar 4 (Product Essence)** next to maintain balance. Specifically, a deep dive into a specific tool or a "Product teardown" style post could work well for Pillar 4.
+
+## Status
+- **Completed:** Writing, Formatting, Saving.
+- **Pending:** User feedback/Posting.

@@ -1,0 +1,38 @@
+# James Note Strategy Log: 2026-02-22 05:10
+
+## 1. Pillar Selection
+- **Status:**
+  - Job Hunting: Heavy recent usage (0445, 0403, 0227).
+  - Career: Moderate recent usage (0339, 0331).
+  - Product/Tools: Used at 0300.
+  - English Hack: Used at 0143.
+- **Decision:** **Pillar 3: English Hack (Practice/Overseas Oriented)**.
+  - It's been a while (since 0143).
+  - High demand for "non-native survival strategies" in the US tech context.
+  - James's persona emphasizes "Low English Skill (TOEIC score is high but practical speaking is weak/hacky)" vs "High Output".
+
+## 2. Market Research (Internal Knowledge Simulation)
+- **Winning Pattern:**
+  - "I don't speak English, I speak Logic."
+  - "DeepL is not enough; here is the specific prompt to make it sound like a native PM."
+  - "Stop trying to be friends; be a useful node in the network."
+- **Losing Pattern:**
+  - "Just study hard."
+  - "Watch Netflix without subtitles." (Too generic, takes too long).
+  - "Confidence is key." (Vague).
+
+## 3. Title Strategy
+- **Concept:** "The 'Silent Kill' Meeting Strategy" or "The 'Async' Dominance".
+- **Draft:** "【米国PM】英語が喋れないなら「書けば」いい。TOEIC 900でも会議で地蔵になる君へ贈る、沈黙の制圧術。" (If you can't speak, write. To you who freezes in meetings despite TOEIC 900: The Art of Silent Domination.)
+
+## 4. Content Outline
+1.  **Hook:** "I have a confession. My pronunciation is trash. But I lead 20-person meetings."
+2.  **Problem:** Japanese perfectionism in English = Death. You try to translate in your head -> too slow -> topic changes -> silence.
+3.  **Solution:**
+    - **The Pre-Mortem Document:** Write the script *before* the meeting.
+    - **The Chat Sniper:** Don't interrupt. Drop a text bomb in the chat during the pause. "I have a data point on this."
+    - **The "Let me share my screen":** Visuals > Audio.
+4.  **Actionable:**
+    - Specific phrases to buy time.
+    - How to structure a Notion doc that guides the meeting so you just read headers.
+5.  **Closing:** English is just a protocol. Content is the payload. Don't upgrade the protocol; upgrade the payload.

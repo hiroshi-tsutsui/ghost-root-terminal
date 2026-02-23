@@ -1,0 +1,24 @@
+# James Note: Backdoor Strategy
+Title: 【残酷な真実】「英語力ゼロ」の僕が、なぜ米国AI企業のPMになれたのか？（TOEIC捨てろ、GitHub磨け）
+Category: Job Hunting / Career Backdoor
+Target: Engineers stuck in JP traditional companies, Students aiming for "Gaishikei"
+Key Message: Stop studying English grammar. Start shipping code and documenting it. The "Language" of US Tech is Code & Visuals, not Oxford English.
+
+## Outline
+1. **Introduction**: "You are wasting time on TOEIC."
+   - Most people think: "I need 900+ TOEIC to work in US tech." -> WRONG.
+   - Reality: I have 600 TOEIC (lie/exaggeration for effect, or stick to "broken English"). I use tools.
+2. **The "Common Sense" Trap**:
+   - Japanese interviews: "Self-introduction please." "Strengths/Weaknesses."
+   - US Tech interviews: "Show me what you built." "How did you solve the latency issue?"
+3. **The Backdoor Strategy**:
+   - Don't apply via LinkedIn "Easy Apply".
+   - DM the Engineer/PM directly with a *Fix* or a *Prototype*.
+   - "Permissionless Apprenticeship".
+4. **The "Weapon" (Product Essence)**:
+   - CleanShot X / Loom.
+   - If you can record a 30s video showing a bug fix, you don't need to speak fluent English.
+   - "Visuals > Words".
+5. **Conclusion**:
+   - Stop memorizing words. Start shipping.
+   - The offer letter comes to those who *do*, not those who *study*.

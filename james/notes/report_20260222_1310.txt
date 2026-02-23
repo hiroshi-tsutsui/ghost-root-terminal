@@ -1,0 +1,15 @@
+Title: 【年収1000万の壁】『技術力』だけで勝負するエンジニアは、なぜ30代で詰むのか？
+Category: Career & Survival Strategy (Pillar 1)
+File: james/notes/20260222_1310_Career_Survival_Engineer_To_PM_OS.txt
+Status: Completed
+
+Analysis:
+- Addressed the "Tech Only" trap common among Japanese engineers.
+- Proposed "PM OS" as the multiplier for high income.
+- Included actionable steps (Ask Why, Documentation, Monetization).
+- Linked to HHKB Studio (Affiliate) in P.S. to maintain revenue stream.
+- Tone is consistent with James's persona (Kansai, direct, professional).
+
+Next Steps:
+- Monitor engagement (hypothetical).
+- Next cycle should be Pillar 2: Job Hunt Survival (Undergraduate focus).

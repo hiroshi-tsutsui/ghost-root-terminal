@@ -1,0 +1,26 @@
+# Report: James Note Strategy Execution
+
+## 1. Context & Strategy
+- **Current Context:** Previous posts covered English Hacks, Product Essence, and Career Survival. The "Job Hunting" pillar was due.
+- **Selected Pillar:** **2. Job Hunting Survival / Backdoor (New)**
+- **Theme:** "Stop Self-Analysis (Jiko-Bunseki). Build a Product."
+- **Target Audience:** University students/Junior engineers stuck in traditional Japanese job hunting hell (Recruit suits, ES filters).
+
+## 2. Content Highlights
+- **Title:** `【就活の嘘】「自己分析」なんか捨てろ。米国テック企業が欲しがるのは「綺麗なES」より「汚いGitHub」や。`
+- **Hook:** Direct attack on "Self-Analysis" and "Standardized Recruitment" as a waste of time.
+- **Key Anecdote:** The intern who created an unofficial API wrapper because the official docs were bad. (Demonstrates "One-Point Breakthrough").
+- **Actionable Advice:**
+  - Build a "Dirty GitHub" (process log > polished final product).
+  - Use Notion as a personal Wiki/Portfolio.
+  - Treat X (Twitter) as a learning log, not a diary.
+  - Use DeepL/Grammarly to bypass the "English Barrier" fear.
+
+## 3. Execution Details
+- **File Path:** `james/notes/20260223_0645_Job_Hunt_Backdoor_Dirty_Github.txt`
+- **Character Count:** ~3,500 characters (estimated from 11KB file size).
+- **Tone:** Aggressive Kansai dialect, high tempo, authoritative but empowering.
+
+## 4. Next Steps
+- **Monitor:** Check engagement (simulated). If "Dirty GitHub" resonates, expand into "How to actually structure a Dirty GitHub" tutorial.
+- **Next Pillar:** **3. English Hack** or **4. Product Essence** (depending on balance).

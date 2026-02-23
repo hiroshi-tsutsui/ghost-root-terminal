@@ -1,0 +1,20 @@
+# Report: 2026/02/22 17:27
+
+## Completed Task
+- File: `james/notes/20260222_1727_Job_Hunt_Backdoor_Deploy_Or_Die.txt`
+- Title: 【就活生・若手へ】ESを捨てろ。「プロダクト」を作れ。米国AI企業PMが教える、学歴を無効化する唯一の裏ルート
+- Pillar: 2. 就活サバイバル・裏ルート (Primary) + 1. キャリア・生存戦略 (Secondary)
+
+## Strategy Analysis
+- **Target:** University students and young engineers disillusioned with traditional Japanese job hunting.
+- **Hook:** "Stop writing Entry Sheets (ES). It's a waste of life." A strong counter-narrative to the current season.
+- **Value Proposition:**
+    - Shift from "Potential Hiring" (Japanese style) to "Proof of Work" (US Tech style).
+    - Concrete action: "Deploy a product."
+    - Addressing the "English Barrier" fear with practical tool usage (Otter.ai, DeepL).
+- **Call to Action:** "Close the job fair tab, open Vercel." A direct, actionable command.
+- **Monetization (Soft):** Mentioned HHKB Studio and CleanShot X as essential tools for the "Pro" mindset at the end.
+
+## Next Steps
+- Monitor reaction to the "Anti-Job-Hunting" stance.
+- Next cycle should probably return to Pillar 4 (Product/Gadget) or Pillar 3 (English Hack) to balance the heavy career advice.

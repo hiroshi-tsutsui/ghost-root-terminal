@@ -1,0 +1,19 @@
+# Report: 2026-02-23 13:55
+
+## Strategy Execution
+- **Pillar**: 2. 就活サバイバル・裏ルート (Job Hunt Survival / Backdoor)
+- **Target**: University students & Job seekers disillusioned with traditional Japanese "Shukatsu".
+- **Concept**: "Unauthorized PM Internship" (勝手にPM実習). Instead of asking for a job, do the job first (PRD/Mockup) and send it to founders.
+- **Tone**: High-energy, provocative, Kansai dialect. "Don't wait for training, be ready to ship code/tickets from day 1."
+
+## Content Details
+- **Title**: 【就活不要】日本の大学生が「新卒カード」を捨てて米国AI企業に潜り込むための『勝手にPM実習』戦略（年収1000万への裏ルート）
+- **File**: `james/notes/20260223_1355_Job_Hunt_Hacking_New_Grad_Trap.txt`
+- **Key Takeaways**:
+    - "New Grad" in US = "Already started painting", not "Blank canvas".
+    - Actionable advice: Pick a SaaS, write a PRD, make a Figma mock, send it to the founder.
+    - Redefining "Stability" as "Employability", not "Company Brand".
+
+## Next Steps
+- Rotate to Pillar 3 (English Hack) or Pillar 4 (Product Essence) for the next article.
+- Consider a "Deep Dive" into specific tools mentioned (Figma, CleanShot X, Mermaid.js) in a future product post.

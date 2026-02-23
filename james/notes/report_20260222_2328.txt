@@ -1,0 +1,40 @@
+# Report: 20260222_2328 Strategy Analysis
+
+## 1. Context & Cycle Check
+- **Previous 3 Articles:**
+  - `20260222_2248_Career_Survival_PM_OS.txt` (Career)
+  - `20260222_2215_Gadget_Headphone_ROI_Silence.txt` (Gadget)
+  - `20260222_2144_Job_Hunt_Backdoor_English_Myth.txt` (Job Hunt)
+- **Selected Pillar:** ③ English Hack (Practical/Overseas Oriented)
+  - **Reasoning:** "English Hack" was last covered at 21:11 (`20260222_2111_English_Hack_Visual_Kill.txt`). To maintain the 4-pillar balance, it is the optimal choice now.
+  - **Topic:** Moving from "Visual Kill" (general concept) to specific tool usage (CleanShot X / Screenshot domination) in meetings.
+
+## 2. Market Research (Simulated Analysis)
+### Success Cases (100+ Likes / Viral Notes)
+- **Structure:**
+  - **Title:** High contrast. "TOEIC 300 but working at Google" type hooks.
+  - **Content:** Extremely specific tool names (Notion, DeepL, CleanShot X).
+  - **Tone:** "I cheated my way here" (Relatable/Hack) vs "I worked hard" (Boring).
+  - **Key Differentiator:** The "Visual/Async" approach is currently trending in remote-work contexts.
+
+### Failure Cases (Self-Aggrandizement)
+- **Pattern:**
+  - "My English Learning Journey" (Nobody cares about the process, only the result).
+  - Abstract advice: "Be confident," "Speak up more." (Useless for introverts/non-natives).
+  - Lack of actionable takeaways.
+
+## 3. Writing Strategy
+- **Title:** `米国AI企業PMが教える「TOEIC900点でも会議で死ぬ人」と「中学英語で無双する人」の決定的な差`
+  - **Hook:** High TOEIC score (Elite) failing vs Low English (Underdog) winning.
+  - **Core Message:** "Fluency is a trap. Control the visual flow."
+- **Tone:** Kansai dialect, fast-paced, authoritative yet slightly self-deprecating ("I was beaten up at first").
+- **Actionable Advice:**
+  1.  Stop talking, start showing.
+  2.  Use **CleanShot X** to annotate everything.
+  3.  "Silent Meeting" protocol (Notion doc reading time).
+  4.  "Can I share my screen?" as the ultimate interruption technique.
+
+## 4. Output
+- **File:** `james/notes/20260222_2328_English_Hack_Screenshot_Control.txt`
+- **Status:** Complete.
+- **Next Step:** Monitor reaction. If positive, expand on "Silent Meeting" templates in the next cycle.

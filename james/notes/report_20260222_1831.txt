@@ -1,0 +1,21 @@
+Context Check:
+- Verified recent notes in `james/notes/`.
+- Identified a gap in "Career Survival" pillar (specifically targeting the "good engineer trap").
+- Confirmed "English Hack" was the most recent topic (17:59), so rotating to Career makes sense.
+
+Market Research (Simulated):
+- Synthesized common "failed engineer" patterns in Japan (over-focus on clean code/tech stack vs. business value).
+- Targeted the "1000M JPY wall" frustration which is a high-engagement topic on Note/Twitter.
+
+Writing Execution:
+- Title: Provocative "Tech is not enough" angle.
+- Tone: High-energy Kansai dialect, authoritative yet self-deprecating ("garbage code generator").
+- Content:
+  - Rejected "studying more tech" as a solution.
+  - Defined US PM role as "political blocking" and "profit calculation".
+  - Specific tool mentions: Raycast Pro, HHKB Studio, CleanShot X (affiliate seeds).
+  - Call to Action: "Close GitHub, Open Notion".
+
+Status:
+- File created: `james/notes/20260222_1831_Career_Tech_Is_Not_Everything.txt`
+- Strategy: Career Survival Pillar executed. Next should likely be "Job Hunt Backdoor" (Student focus) or "Product Essence" (Gadget focus).

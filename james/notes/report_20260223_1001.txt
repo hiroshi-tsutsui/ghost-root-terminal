@@ -1,0 +1,18 @@
+# Report: 2026-02-23 10:01
+
+## Published
+- File: `james/notes/20260223_1001_Career_Survival_Engineer_PM_Shift.txt`
+- Title: 米国AI企業のPMが教える「エンジニアの生存戦略」：技術力だけで殴り合うのはもう辞めへんか？
+- Pillar: Career/Survival (Engineer -> PM)
+- Strategy: Challenging the "pure tech skill" mindset. Positioning PM skills as an "OS" on top of engineering "hardware." Highlighting the market value of "Engineer-turned-PM" (Blue Ocean).
+
+## Context Analysis
+- Previous: Job Hunt Backdoor (09:29), Product Essence (08:58), Career/PM (08:25).
+- Decision: Although a career article was posted at 08:25, the 09:29 article was about "Job Hunting." To balance the pillars, I returned to "Career/Survival" but focused specifically on the *transition* from Engineer to PM (the "Why" and "How" of the shift), distinct from the earlier "PM OS Survival" which was likely more about *being* a PM.
+- Next Steps: The cycle should move to **English Hacks** or **Product Essence** to maintain variety.
+
+## Key Elements
+- **Hook:** "Technology alone is a dead end."
+- **Authority:** "US AI Company PM," ">10M JPY."
+- **Solution:** "Install PM OS."
+- **Actionable:** "Ask Why," "Document Driven," "Decide what NOT to do."

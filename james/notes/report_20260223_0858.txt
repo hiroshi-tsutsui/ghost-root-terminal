@@ -1,0 +1,34 @@
+# Report: Content Strategy & Analysis (2026-02-23)
+
+## 1. Context Analysis
+Looking at the last 5 files:
+- `20260223_0825_Career_PM_OS_Survival.txt` (Pillar 1: Career/PM OS)
+- `20260223_0810_English_Hack_Dirt_Script_Strategy.txt` (Pillar 3: English Hack/Scripts)
+- `20260223_0730_Career_Engineer_Senior_Trap.txt` (Pillar 1: Career/Trap)
+- `20260223_0645_Job_Hunt_Backdoor_Dirty_Github.txt` (Pillar 2: Job Hunt/Github)
+- `20260223_0608_Tech_vs_English.txt` (Pillar 3: English/Tech)
+
+**Gap Identified:**
+Pillar 4 (Product Essence / PM Realities / Gadgets) has been underrepresented recently compared to the heavy focus on Career (Pillar 1) and Job Hunt (Pillar 2). The last clear entry was `20260223_0536_Product_Essence_Tool_ROI_Buy_Time.txt`, which was several cycles ago.
+
+## 2. Market Research (Simulated)
+- **Winning Pattern:** Articles that combine "Process Visualization" (showing exactly *how* a US PM works) with "Tool Recommendations" perform exceptionally well. Readers crave the "behind the scenes" of a high-income role.
+- **Losing Pattern:** Generic "PM Mindset" posts without actionable tools or workflows. Just saying "communication is key" gets ignored.
+- **Opportunity:** Combine the "US AI Company Speed" narrative with a specific tool stack that enables that speed. Focus on "Async Communication" and "Visual Documentation" as the core weapon.
+
+## 3. Selected Strategy: Pillar 4 (Product Essence - PM Reality & Tools)
+**Theme:** "The 15-Minute Meeting Rule & The Death of Slides."
+**Angle:** How US AI companies kill synchronous meetings to move faster.
+**Specific Tools to Highlight:** CleanShot X (Visuals), Linear (Ticket velocity), Notion (Doc-driven culture).
+**Target Audience:** Japanese PMs/Engineers drowning in meetings who want the "US Tech Style" efficiency.
+
+## 4. Execution Plan
+- **Title Strategy:** Contrarian. "Stop making PowerPoint." "Why I ban meetings."
+- **Tone:** Aggressive, fast-paced Kansai dialect. "Efficiency Freak."
+- **Structure:**
+    1. The "Hell" of Japanese corporate meetings.
+    2. The "Heaven" of US AI async culture (but it's brutal in its own way).
+    3. The Toolkit (CleanShot X, Linear).
+    4. The ROI (Salary vs. Time).
+
+Proceeding to draft.

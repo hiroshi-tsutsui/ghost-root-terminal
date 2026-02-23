@@ -1,0 +1,38 @@
+# Report: James's Note Strategy Execution (2026-02-23)
+
+## 1. Context Analysis
+Recent articles have heavily covered:
+- Career Survival (Engineer to PM)
+- Job Hunting Hacks (Ignoring Rikunabi, Portfolio Myths)
+- English Hacks (Dirt Survival, Screenshot Control)
+- Product Essence (Document vs Slide, Discard Noise)
+
+**Missing/Opportunity:**
+- While "Product Essence" has been touched upon, a deep dive into a specific **"Workflow Revolution"** or **"Tool-Driven Mindset"** that connects directly to income/value hasn't been the main focus for a few cycles.
+- Alternatively, **Category 3 (English Hack)** could be approached from a "Mental Model" perspective rather than just "Dirt Survival".
+- However, looking at the cycle, we have a lot of "Career" and "Job Hunt" recently.
+- Let's go with a **Category 4 (Product Essence)** but framed as a **"Time = Money"** survival strategy. Specifically, **"Why I Pay for Tools: The ROI of Speed in a US Tech Company"**.
+
+**Selected Theme:**
+**Category 4: Product Essence (PM & Gadget/Tool ROI)**
+**Topic:** "Why I spend $300/month on SaaS/Tools? The 'Buy Time' Strategy of a High-Income PM."
+(Why free tools kill your career. The difference between 'consuming' and 'investing' in tools.)
+
+## 2. Article Strategy
+- **Title:** 【年収1000万の常識】「無料ツール」を使ってるPMは一生二流。米国テックで生き残るための『課金』という投資戦略
+- **Target:** PMs, Engineers, Aspiring Tech Workers who hesitate to pay for productivity tools.
+- **Hook:** "You think saving $10/month is smart? You are losing millions in opportunity cost."
+- **Core Message:** In US Tech, speed is everything. Tools like CleanShot X, Raycast, Notion AI are not "expenses", they are "employees" you hire for cheap.
+- **Actionable:** List specific tools (CleanShot X, Raycast, Grammarly/DeepL Pro) and calculate their ROI in terms of "hourly rate".
+
+## 3. Execution Plan
+- Tone: Aggressive Kansai dialect. Fast.
+- Length: 4000+ chars.
+- Structure:
+    1.  **The Trap of "Free":** Why relying on OS default tools is a poverty mindset.
+    2.  **The US Tech Reality:** Speed is the only metric. If you are slow, you are dead.
+    3.  **My Stack:** The "Exoskeleton" of a PM (CleanShot X, Raycast, Perplexity/ChatGPT Team).
+    4.  **The ROI Calculation:** How $50/month creates $5000/month value.
+    5.  **Closing:** Stop being a "consumer". Be an "investor".
+
+Writing now...

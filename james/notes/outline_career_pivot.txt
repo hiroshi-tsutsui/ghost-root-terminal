@@ -1,0 +1,30 @@
+# James Note: Career Pivot & Tech Survival
+Title: 【残酷な現実】日本のエンジニアが「技術力だけ」で年収1000万を超えられない理由（PMという生存戦略）
+Target: Young Engineers (2-5 years exp) feeling the ceiling in JP traditional tech.
+Pillar: 1 (Career / Survival Strategy)
+
+## Structure
+1. **Hook**:
+   - "Technology is just a tool."
+   - "If you want 10M JPY, stop optimizing your code, start optimizing your leverage."
+   - Why do many brilliant JP engineers get paid 5M while mediocre US PMs get 15M?
+
+2. **The "Value Gap"**:
+   - JP market pays for "hours" or "stability".
+   - US/Global market pays for "outcome" and "leverage".
+   - A PM who saves 10 engineers 1 hour each is worth 10x more than the best coder.
+
+3. **My Pivot**:
+   - I realized coding was a race to the bottom (outsourcing, AI).
+   - I switched to PM, using my "Technical Background" as a weapon.
+   - "Technical PM" is the rarest breed. You speak both 'Business' and 'Engineering'.
+
+4. **Actionable Step**:
+   - Stop reading O'Reilly books on weekends.
+   - Start reading Product Requirement Documents (PRDs) from top companies.
+   - Learn SQL not to write queries, but to answer business questions without asking engineers.
+   - Learn "Visual Communication" (Figma/CleanShot) to spec out features faster.
+
+5. **Conclusion**:
+   - Don't just be a "coder". Be a "Product Builder".
+   - The path to 10M is not in `git commit`, it's in `product launch`.

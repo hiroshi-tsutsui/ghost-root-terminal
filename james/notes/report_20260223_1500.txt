@@ -1,0 +1,19 @@
+# Report: 20260223_1500_English_Hack_Drop_Pride
+
+## Strategy
+- **Pillar:** 3. English Hack (Mindset Shift)
+- **Target:** "English Complex" sufferers, potential global workers.
+- **Concept:** "Drop the Pride." Shift from "Perfect English" to "Survival Communication."
+- **Key Message:** 
+    1.  Abandon perfect pronunciation; embrace "Japanese Accent" as identity.
+    2.  Abandon listening; use "Async/Text" tactics (Clarify, Document).
+    3.  Abandon grammar; use "Visuals" (CleanShot X) to communicate.
+- **Tone:** Kansai dialect, punchy, bold assertions, "Reversal of Common Sense."
+
+## File
+`james/notes/20260223_1500_English_Hack_Drop_Pride.txt`
+
+## Status
+- **Word Count:** Approx. 2000+ characters (Japanese).
+- **Formatting:** Bold text used for emphasis.
+- **Next Steps:** Consider a follow-up on specific "CleanShot X" workflows or "Async Meeting" templates.

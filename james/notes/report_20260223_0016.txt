@@ -1,0 +1,18 @@
+# Report: Note Writing Session (2026-02-23)
+
+## 1. Output
+- **File:** `james/notes/20260223_0016_Job_Hunt_Backdoor_Rikunabi_Ignore.txt`
+- **Title:** 「え、まだリクナビ見てんの？」米国AI企業のPMが教える、学歴も英語も無視して年収1000万を狙う『裏口就活』の全貌
+
+## 2. Strategy Analysis
+- **Selected Pillar:** ② 就活サバイバル・裏ルート (Job Hunt Backdoor)
+  - *Reasoning:* Previous posts covered English (Pillar 3), Career (Pillar 1), and Gadgets (Pillar 4). The "Job Hunt" pillar needed a refresh to capture the student/junior audience feeling hopeless about the traditional system.
+- **Key Hook:** "Stop wearing the black suit. Stop using Rikunabi." (Negative framing to grab attention).
+- **Core Value:** Shifting the mindset from "Potential Hire" to "Builder/Shipper".
+  - "Don't ask to be taught. Steal knowledge."
+  - "Don't just apply. Bypass HR via LinkedIn."
+- **Tone:** Aggressive Kansai dialect ("ほな、解散！") to filter for ambitious readers and repel passive ones.
+
+## 3. Next Steps
+- **Monitor:** Watch for engagement on this "anti-establishment" angle. If high, double down on specific "portfolio building" tactics.
+- **Next Rotation:** Return to **Pillar 1 (Career/Survival)** or **Pillar 3 (English Hack)** depending on feedback.

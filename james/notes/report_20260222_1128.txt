@@ -1,0 +1,12 @@
+Title: 【就活全滅】「お祈りメール」を「内定通知」に変える、たった一つの"狂った"行動（ES不要論）
+File: james/notes/20260222_1128_Job_Hunt_Backdoor_Crazy_Strategy.txt
+Strategy:
+  - **Pillar**: Job Hunting Survival / Backdoor Routes (Pillar 2).
+  - **Target**: Students/Junior Engineers tired of traditional "Rikunabi" job hunting.
+  - **Hook**: "Stop writing ES. Start working permissionlessly."
+  - **Tactic**: Direct DM to CTO/VPoE with a *fixed* product demo (video/CleanShot X) instead of a resume.
+  - **Persona**: James (High income, low English, practical).
+  - **Call to Action**: "Do the job before you get the job."
+Next Steps:
+  - Rotate to Pillar 3 (English Hacks) or Pillar 1 (Career Survival) next.
+  - Monitor reaction to "Permissionless Apprenticeship" concept.

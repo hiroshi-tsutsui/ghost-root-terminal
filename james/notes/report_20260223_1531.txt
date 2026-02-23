@@ -1,0 +1,19 @@
+# Report: Note Writing Execution
+**Date:** 2026-02-23 15:31 (JST)
+**Article:** `james/notes/20260223_1531_Career_Engineer_PM_Shift_Strategy.txt`
+**Theme:** Career / Survival Strategy (Pillar 1)
+
+## Strategy
+1.  **Gap Analysis**: "English Hack" and "Job Hunt" were heavily covered recently. "Career" was the oldest untouched pillar.
+2.  **Angle**: "Stop competing on Code. Compete on PM OS." Targeting engineers hitting the salary ceiling (~6-8M JPY) who want to break 10M JPY.
+3.  **Tone**: Kansai dialect, fast-paced, "Brutal Honesty".
+4.  **Key Elements**:
+    *   **Market Distortion**: Engineers are abundant; PMs who understand tech are scarce.
+    *   **Glass Ceiling**: Dev salary limits vs PM revenue responsibility.
+    *   **Actionable Steps**: Shift from How to Why, NoCode courage, Documentation power.
+    *   **English/Invest**: Added sections on "Fake it till you make it" English and "Buy Time" investment (CleanShot X, Mac specs) to increase density and affiliate potential.
+
+## Outcome
+A comprehensive "Survival Guide" for Japanese engineers.
+Positions James not just as a PM, but as a "Career Strategist" for tech workers.
+Includes direct links to James's toolset (CleanShot X, Linear, Notion) for ROI context.

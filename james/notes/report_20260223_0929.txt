@@ -1,0 +1,21 @@
+# Report: 20260223_0929_Job_Hunt_Backdoor_Strategy_No_Lie
+
+## File Path
+`james/notes/20260223_0929_Job_Hunt_Backdoor_Strategy_No_Lie.txt`
+
+## Strategy Execution
+- **Selected Pillar:** ② Job Hunting Survival / Backdoor Routes (Target: University Students / Job Seekers)
+- **Concept:** Denying the traditional Japanese job hunting system ("Shu-katsu") and proposing a "Backdoor Route" via practical skills and internships.
+- **Key Elements:**
+  - **Provocative Title:** "【就活全否定】...君の負け確やで。" (Complete denial of job hunting... you've already lost).
+  - **Pain Point:** The inefficiency and dishonesty of the traditional entry sheet/interview process.
+  - **Solution:** 
+    1.  Treat GitHub/Zenn/Qiita as the real resume.
+    2.  Use long-term internships as a "trial period" for direct hiring.
+    3.  Overcome English barriers with tools (CleanShot X) and visual communication.
+- **Tone:** Strong Kansai dialect, dismissive of "average" approaches, empowering for those willing to take action.
+- **Differentiation:** Unlike typical "how to pass interviews" articles, this focuses on *bypassing* the standard process entirely through tangible output and market value.
+
+## Next Steps
+- Monitor reaction to the strong "anti-system" stance.
+- Next article should likely rotate to Pillar ③ (English Hacks) or ④ (Product Essence) to maintain variety.

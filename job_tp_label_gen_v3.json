@@ -5,11 +5,11 @@
         "runnables": [
           {
             "container": {
-              "imageUri": "us-central1-docker.pkg.dev/dev-dotsfty/yolo/yolo:latest",
+              "imageUri": "us-central1-docker.pkg.dev/dev-dotsfty/rf/rf:latest",
               "entrypoint": "bash",
               "commands": [
                 "-c",
-                "pip install ultralytics && mkdir -p tmp && python3 /mnt/disks/scripts/generate_training_data.py --input_dir /mnt/disks/input --output_dir /mnt/disks/output --mode tp"
+                "mkdir -p tmp && python3 /mnt/disks/scripts/generate_training_data_v2.py --input_dir /mnt/disks/input --output_dir /mnt/disks/output --mode tp"
               ],
               "volumes": [
                 "/mnt/disks/input:/mnt/disks/input:rw",

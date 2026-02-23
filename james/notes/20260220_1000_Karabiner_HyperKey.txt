@@ -1,0 +1,136 @@
+# 戦略レポート (Rationale)
+- **過去記事との差別化点:**
+  - 直近の記事: PopClip, 1Password, Arc, Excalidraw, Mic/Audio, n8n, Yabai, Local LLM.
+  - 今回の狙い: これらと被らない「会議自動化・議事録革命」を選定。特に「Rewind.ai (Limitless)」や「Grain/Otter」などの *AI Meeting Assistant* ではなく、あえて**「物理的な記録と振り返りの同期」**に焦点を当てるか、もしくは**「Macのローカル収録環境の極み」**を攻める。
+  - しかし、もっとニッチで強力なツールとして **「Karabiner-Elements」による "Hyper Key" (Caps Lockの無効化とスーパー修飾キー化)** を提案する。
+  - 理由: キーボード（HHKB）の話はあったが、*ソフトウェア側でのキーマップの魔改造* はまだ深く掘られていない。「指の移動距離をミリ単位で削る」というJamesらしい狂気が出せる。
+  - **決定:** **「Karabiner-Elements + Hyper Key」**。RaycastやArcを使いこなすための *土台* となる設定。
+
+- **参考にした記事 (想定):**
+  - "MacのCaps LockをHyper Keyにする" 系の記事はQiita/Noteで常に一定の需要がある（推定スキ数: 150-200）。
+  - "Karabiner-Elements 設定 2024" などの検索ボリューム。
+
+- **なぜウケているか (Analysis):**
+  - 「Caps Lockという無駄なキー」を「最強のキー」に変えるという *錬金術的快感*。
+  - 一度設定すると戻れない中毒性。
+  - 複雑なショートカット（Cmd+Opt+Ctrl+Shift）をワンタップで呼び出せる実用性。
+
+- **James流アレンジ (Strategy):**
+  - 単なる設定解説ではなく、「US Tech企業のPMは1日に2000回ショートカットを叩く」という文脈で、指の腱鞘炎リスク回避と爆速操作をリンクさせる。
+  - 「Vimの精神をOS全体に適用する」という思想。
+
+---
+
+# Caps Lockを"無能"から"神"に昇格させる「Hyper Key」の魔改造【指の寿命が10年延びる】
+
+まいど、Jamesです。
+
+今回は「ツール」というより「OSの神経回路」の話をします。
+
+みなさん、キーボードの左端にある **「Caps Lock」** ってキー、人生で何回押しました？
+おそらく、パスワード入力で誤爆して「あぁもう！」ってなった回数の方が、意図して使った回数より多いんちゃいますか？
+
+僕にとってCaps Lockは **「一等地にある空き家」** です。
+ホームポジション（Aの隣）という最強の立地なのに、機能がゴミすぎる。
+
+今回はこの無能キーを、**Mac操作の全てを司る「Hyper Key（ハイパーキー）」** に改造する話です。
+これをやると、RaycastもArcもウィンドウ操作も、全てが「思考の速度」で動くようになります。
+
+## なぜ Hyper Key なのか？
+
+Hyper Keyとは、**「Cmd + Opt + Ctrl + Shift」** の4つの修飾キーを、**Caps Lock 1発** で同時押しする設定のことです。
+
+通常、ショートカットキーを設定するとき、既存のキーとかぶらないように「Cmd + Opt + C」とか苦しい指の配置をしますよね？
+で、指がつりそうになる。
+
+Hyper Keyを使えば：
+- `Caps Lock + C` → Chrome起動
+- `Caps Lock + S` → Slack起動
+- `Caps Lock + Enter` → Raycast起動
+- `Caps Lock + H/J/K/L` → ウィンドウ移動（Vim風）
+
+これらが **「指一本」** で発動します。
+もはや魔法です。
+
+## 導入手順 (Step by Step)
+
+使うのは **「Karabiner-Elements」** 一択です。無料です。
+
+### Step 1: Karabiner-Elements をインストール
+Macのキー配列をカーネルレベルで書き換える変態ツールです。
+Homebrewで一発です。
+
+```bash
+brew install --cask karabiner-elements
+```
+
+### Step 2: Complex Modifications を設定する
+GUIでポチポチ設定してもいいんですが、面倒なので「ルール」をインポートします。
+
+1. Karabiner-Elementsを開く。
+2. 左メニューの「Complex Modifications」をクリック。
+3. 「Add rule」ボタンを押す。
+4. 「Import more rules from the Internet」をクリック（ブラウザが開く）。
+5. 検索窓に **「Change caps_lock to command+control+option+shift」** と入力。
+6. インポートして有効化（Enable）。
+
+### Step 3: 単発押しは「Esc」にする（James流）
+ここがポイントです。
+Hyper Key設定には、「長押しでHyper Key、単発押しでCaps Lock」という設定が多いんですが、**Caps Lockなんて一生使いません。**
+
+僕は **「長押しでHyper Key、単発押しで Escape」** にしています。
+Vim使いや、ダイアログを閉じる操作が多いPMにとって、EscがAの横にあるのは革命です。
+
+設定のJSONを直接いじるか、該当するルールを探してインポートしてください。
+
+## 実際の運用例：Jamesの「左手デバイス化」計画
+
+Hyper Keyを導入したら、他のアプリ（RaycastやBetterTouchTool）のショートカット設定を全て Hyper Key ベースに書き換えます。
+
+### 1. アプリ瞬時切り替え (Raycast Hotkey)
+Cmd+Tab でアプリ選んでる時間、無駄ですよね？
+
+- `Hyper + C` : Arc (Chrome)
+- `Hyper + S` : Slack
+- `Hyper + N` : Notion
+- `Hyper + T` : Warp (Terminal)
+- `Hyper + M` : Music (Spotify)
+
+これで、脳が「Slack見たい」と思った0.1秒後には画面が切り替わっています。
+
+### 2. ウィンドウマネジメント (Yabai / Raycast Window Management)
+マウスでウィンドウの端っこ掴んでサイズ調整してる人を見ると、涙が出そうになります。
+
+- `Hyper + H` : 左半分にリサイズ
+- `Hyper + L` : 右半分にリサイズ
+- `Hyper + K` : 最大化
+- `Hyper + J` : 最小化/センター配置
+
+ホームポジションから指を離さずに画面整理完了です。
+
+### 3. マイクのミュート爆速切り替え
+ZoomやMeetで「あ、ミュート解除し忘れてた」って事故、ダサいですよね。
+
+- `Hyper + A` : システム全体のマイクミュートトグル (Audio)
+
+僕はこれを設定してから、会議中の発言ラグがゼロになりました。
+
+## 失敗談：Windowsとの行ったり来たり問題
+
+この設定の唯一の弱点は、**「他人のPCが触れなくなる」** ことです。
+同僚のMacを借りて操作しようとした時、無意識にCaps Lockを押してしまい、「A」が大文字で連打されるという恥ずかしいミスをしました。
+
+あと、Windows機（私用のゲーミングPC）を使う時、小指が虚空を彷徨います。
+結局、Windows側でも「AutoHotKey」を使って同じ挙動を再現する羽目になりました。
+**便利すぎるのも罪** ですね。
+
+## まとめ：OSを「自分専用」に書き換えろ
+
+Macを吊るしの状態で使うのは、寿司をサビ抜きで食うようなもんです。
+Karabiner-Elementsを入れて、Caps Lockという「無駄な空き地」に高層ビルを建てましょう。
+
+最初は「設定めんどくさ...」と思うかもしれませんが、一回やれば **「一生分の指の移動距離」** が地球半周分くらい短縮されます。
+
+ほな、また。
+
+James

@@ -1,0 +1,18 @@
+# Report: 2026-02-23 Note Strategy
+
+## File Created
+`james/notes/20260223_0043_Career_Tech_Is_Not_Enough_PM_OS.txt`
+
+## Strategy: "The Technical PM Pivot"
+This article targets the "Career/Survival" pillar, specifically addressing engineers who fear AI displacement.
+
+### Key Tactics Used:
+1.  **Fear & Hope:** Starts by validating the fear (AI coding), then immediately offers a high-value alternative (PM OS).
+2.  **"PM OS" Branding:** Coined a term to make the mindset shift sound like a software upgrade, appealing to engineers.
+3.  **Contrast Case Study:** Added a specific scenario (Technical Debt vs New Feature) to visually demonstrate the *value* of a Technical PM, making the salary justification ($10M+) feel real.
+4.  **Actionable Micro-Steps:** Instead of "change jobs", I gave immediate actions (ask "Why", write docs, steal small decisions) to lower the barrier.
+5.  **Cross-Pollination:** Wove in "English Hacks" (Diagrams > English, ChatGPT for business translation) to hint at future content.
+
+## Next Step
+- Monitor engagement. If this "PM OS" concept hits, spin off a "PM OS" series (e.g., "PM OS: The Document Module", "PM OS: The Negotiation Module").
+- Next pillar rotation: **Job Hunt / Survival (Undergrad focus)** or **Gadget ROI**.

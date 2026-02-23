@@ -1,0 +1,23 @@
+# Report: 20260223_1110
+
+## 1. Output
+*   **File:** `james/notes/20260223_1110_Job_Hunt_Backdoor_Portfolio_Trash.txt`
+*   **Title:** 【就活】「ポートフォリオ」はゴミ箱行き？米国AI企業が"即採用"する学生のたった一つの共通点
+
+## 2. Strategy Analysis
+*   **Pillar:** ② Job Hunting Survival / Backdoor Routes (Focus on "Breaking the Rules")
+*   **Target Audience:** Frustrated job seekers/students who feel the traditional "recruit suit" and "ES" system is a waste of time.
+*   **Core Message:** "Stop building generic Todo apps. Start solving real problems for the company you want to join without asking permission."
+*   **Differentiation:** 
+    *   Most career advice says "Polish your portfolio."
+    *   James says "Portfolios are trash; send a bug fix PR instead."
+    *   This controversial stance drives engagement and positions James as an insider who knows the *real* rules of the global game.
+
+## 3. Key Elements
+*   **The "Permissionless" Mindset:** Emphasizing that US/AI companies value agency over obedience.
+*   **The "CleanShot X" Plug:** Integrating the tool recommendation naturally as a communication hack for non-native English speakers.
+*   **Call to Action:** Don't just study; *deploy* solutions.
+
+## 4. Next Steps
+*   Monitor reaction to "Job Hunt" themes. If high engagement, double down on specific "How to DM CEOs" templates.
+*   Next pillar rotation: ③ English Hacks or ④ Product Essence (ROI focus).

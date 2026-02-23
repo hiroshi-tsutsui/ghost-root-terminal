@@ -1,0 +1,32 @@
+# Strategy Report: 2026/02/22 06:45
+
+## 1. Status Check & Pillar Selection
+直近の投稿（時系列順）:
+1. `06:12` - HHKB Studio (Pillar 4: Product)
+2. `05:40` - English Hack (Pillar 3: English)
+3. `04:45` - Job Hunt (Pillar 2: Job Hunt)
+4. `04:03` - Job Hunt GitHub (Pillar 2: Job Hunt)
+5. `03:39` - Salary Negotiation (Pillar 1: Career)
+
+Pillar 1 (Career/Survival) has not been touched since 03:39. It is time to rotate back to **Pillar 1: Career & Survival Strategy**.
+Target Audience: Young Engineers / Junior PMs feeling stuck in the "Tech Skill" race.
+
+## 2. Concept: "The 'Technical Debt' of Your Career"
+エンジニアとしての「技術的負債」ではなく、キャリア戦略における「負債」をテーマにする。
+多くのエンジニアは「技術力向上＝年収アップ」と信じているが、実は「ビジネス視点の欠如」が最大の負債となり、30代で詰む構造を指摘する。
+
+Title Idea: **「技術力さえあれば食っていける」という最大の嘘。年収1000万の壁は "コード" じゃなくて "泥臭さ" で越える。**
+
+## 3. Structure
+1. **Hook**: "Tech is King" is a lie. The moment you think code solves everything, your salary caps at 8M JPY.
+2. **Reality (US Tech)**: In the US, engineers who only code are commodities. The ones who survive are "Business-First Engineers".
+3. **The "Debt"**: Avoiding negotiation, avoiding documentation, avoiding "human" problems. This debt compounds.
+4. **Solution**: Stop studying a new framework for one weekend. Study the P/L (Profit and Loss) of your product instead.
+5. **Actionable**:
+    - "Don't ask 'How do I implement this?', ask 'Why does this make money?'"
+    - Write a "Business Spec" before the "Tech Spec".
+6. **Closing**: You are not a code monkey. You are a product builder.
+
+## 4. Execution
+Writing in James's fast-paced Kansai dialect.
+File: `james/notes/20260222_0645_Career_Survival_Tech_Is_Not_Enough.txt`

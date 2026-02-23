@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body, html { margin: 0; padding: 0; width: 1920px; height: 1080px; overflow: hidden; background: #000; }
+    canvas { display: block; }
+  </style>
+</head>
+<body>
+<canvas id="canvas" width="1920" height="1080"></canvas>
+<script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    // 1. Background (Sleek Mac Desktop Wallpaper Style)
+    // Create a modern, abstract gradient background
+    const gradient = ctx.createLinearGradient(0, 0, 1920, 1080);
+    gradient.addColorStop(0, '#0f172a'); // Dark blue/slate
+    gradient.addColorStop(0.5, '#1e293b'); // Mid slate
+    gradient.addColorStop(1, '#334155'); // Lighter slate
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, 1920, 1080);
+
+    // Add some subtle "glassmorphism" shapes for depth
+    ctx.save();
+    ctx.globalAlpha = 0.05;
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.arc(1600, 200, 500, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(300, 900, 600, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+
+
+    // 2. Simulated Window (The "Subject")
+    const winX = 400, winY = 200, winW = 1120, winH = 680;
+    
+    // Window Shadow
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+    ctx.shadowBlur = 80;
+    ctx.shadowOffsetY = 30;
+    
+    // Window Body
+    ctx.fillStyle = '#1e1e1e'; // Dark mode window
+    // Round Rect Polyfill-ish
+    ctx.beginPath();
+    ctx.roundRect(winX, winY, winW, winH, 12);
+    ctx.fill();
+    
+    // Reset shadow
+    ctx.shadowColor = 'transparent';
+    ctx.shadowBlur = 0;
+
+    // Window Header
+    ctx.fillStyle = '#2d2d2d';
+    ctx.beginPath();
+    ctx.roundRect(winX, winY, winW, 40, [12, 12, 0, 0]);
+    ctx.fill();
+
+    // Window Controls (Traffic Lights)
+    ctx.fillStyle = '#ff5f56'; // Red
+    ctx.beginPath(); ctx.arc(winX + 20, winY + 20, 6, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#ffbd2e'; // Yellow
+    ctx.beginPath(); ctx.arc(winX + 40, winY + 20, 6, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#27c93f'; // Green
+    ctx.beginPath(); ctx.arc(winX + 60, winY + 20, 6, 0, Math.PI * 2); ctx.fill();
+
+    // Window Content Placeholder (Code or Data vibe)
+    ctx.fillStyle = '#252526';
+    ctx.fillRect(winX, winY + 40, winW, winH - 40);
+    
+    // Draw some "content" lines
+    ctx.fillStyle = '#333333';
+    for(let i=0; i<15; i++) {
+        // Random width lines
+        const width = Math.random() * 400 + 200;
+        const xOffset = 40; 
+        ctx.fillRect(winX + xOffset, winY + 80 + (i * 30), width, 12);
+    }
+
+    // 3. CleanShot X Overlay Elements
+    
+    // A. Highlight Box (The classic CleanShot highlight)
+    const hlX = winX + 80, hlY = winY + 120, hlW = 400, hlH = 150;
+    ctx.save();
+    ctx.strokeStyle = '#3b82f6'; // CleanShot Blue
+    ctx.lineWidth = 4;
+    ctx.setLineDash([10, 5]); // Dashed line often seen in selection
+    ctx.strokeRect(hlX, hlY, hlW, hlH);
+    
+    // Semi-transparent fill for highlight
+    ctx.fillStyle = 'rgba(59, 130, 246, 0.1)';
+    ctx.fillRect(hlX, hlY, hlW, hlH);
+    ctx.restore();
+
+    // B. The "Counter" Badge (1)
+    ctx.beginPath();
+    ctx.fillStyle = '#3b82f6';
+    ctx.arc(hlX, hlY, 16, 0, Math.PI * 2); // Top-left corner badge
+    ctx.fill();
+    
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 16px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('1', hlX, hlY);
+
+    // C. Arrow (Pointing to a specific line)
+    // Draw Arrow Line
+    ctx.strokeStyle = '#ef4444'; // Red arrow
+    ctx.lineWidth = 6;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    
+    const arrowStartX = winX + 900;
+    const arrowStartY = winY + 500;
+    const arrowEndX = winX + 700;
+    const arrowEndY = winY + 300;
+    
+    ctx.beginPath();
+    ctx.moveTo(arrowStartX, arrowStartY);
+    // Quadratic curve for smooth arrow
+    ctx.quadraticCurveTo(arrowStartX - 100, arrowStartY - 50, arrowEndX, arrowEndY);
+    ctx.stroke();
+
+    // Arrowhead (Manually calculated rotation)
+    ctx.save();
+    ctx.translate(arrowEndX, arrowEndY);
+    // Angle pointing roughly up-left
+    ctx.rotate(-2.5); 
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(-15, -10);
+    ctx.lineTo(-15, 10);
+    ctx.fillStyle = '#ef4444';
+    ctx.fill();
+    ctx.restore();
+
+    // D. Pixelate / Blur Effect (Censoring sensitive data)
+    // Let's pretend the bottom right area is sensitive
+    const blurX = winX + 700, blurY = winY + 500, blurW = 300, blurH = 100;
+    
+    // Draw mosaic effect
+    const pixelSize = 10;
+    for (let x = blurX; x < blurX + blurW; x += pixelSize) {
+        for (let y = blurY; y < blurY + blurH; y += pixelSize) {
+            // Pick a random gray color to simulate blurred text
+            const val = Math.floor(Math.random() * 50) + 40; 
+            ctx.fillStyle = `rgb(${val},${val},${val})`;
+            ctx.fillRect(x, y, pixelSize, pixelSize);
+        }
+    }
+
+    // 4. Subtle Logo / Text
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+    ctx.font = 'bold 32px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText('CleanShot X', 1850, 1030);
+
+</script>
+</body>
+</html>

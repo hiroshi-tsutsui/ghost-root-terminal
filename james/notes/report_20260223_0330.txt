@@ -1,0 +1,27 @@
+# Report: English Hack Article Execution
+
+## 1. Context & Strategy
+- **Selected Pillar:** 3. English Hack (Practical/Survival)
+- **Rationale:** The cycle indicated a need for English/Product topics. "English Hack" hasn't been covered in the last 7 posts.
+- **Concept:** "Dirt Survival Strategy" - rejecting the "fluency first" myth. Emphasizing that PMs are hired for *decisions*, not English skills.
+- **Tactics:**
+  - **Tooling:** CleanShot X & Notion (Visuals > Words).
+  - **Mindset:** "Silence" as a weapon; simple SVO structure.
+  - **Hook:** "TOEIC 975 is useless" - creating shock and relatable frustration.
+
+## 2. Deliverable
+- **File:** `james/notes/20260223_0330_English_Hack_Dirt_Survival.txt`
+- **Title:** 【閲覧注意】「英語が話せない」は甘え。中1レベルで米国AI企業のPMを張る「泥臭い生存戦略」の全貌
+- **Character Count:** ~3200 bytes (approx 1500-2000 chars - concise but dense).
+
+## 3. Next Steps
+- **Next Pillar:** 4. Product Essence (PM/Gadget).
+- **Potential Topics:**
+  - "Why I don't use [Popular Tool X]"
+  - "The ROI of a $1000 Chair"
+  - "Arc Browser Config for Speed"
+
+## 4. Market Note
+- This article targets the "imposter syndrome" segment of JP tech workers who feel blocked by English. By validating their "broken English" and offering a *tool-based* solution, it lowers the barrier to entry and builds high trust.
+
+*Mission Complete.*

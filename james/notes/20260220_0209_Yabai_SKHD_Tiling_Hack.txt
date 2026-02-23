@@ -1,0 +1,180 @@
+# 戦略レポート (Rationale)
+- **過去記事との差別化点:**
+  - 直近の記事: Raycast, Local LLM, Warp, Keyboard Maestro, Rize, Superhuman 等が頻出。
+  - 今回の狙い: **「ウィンドウ管理（Tiling Window Manager）」** という、エンジニア界隈では熱狂的ファンが多いが、PM層にはまだ浸透しきっていないニッチかつ強力な領域を攻める。マウス操作を廃止し、キーボードだけで画面を支配する快感を説く。
+- **参考にした記事 (想定):**
+  - "Yabai + skhd でmacOSのウィンドウ操作を爆速にする" (Qiita/Zenn/Note等で散見される人気トピック)
+  - 推定スキ数: 技術系記事として安定した人気（50-200スキ）
+- **なぜウケているか (Analysis):**
+  - 「マウスを使わない」という達人感。
+  - 画面が自動で整理される（タイル状に並ぶ）視覚的な気持ちよさ。
+  - 設定ファイル（dotfiles）をいじる楽しさ。
+- **James流アレンジ (Strategy):**
+  - 単なる設定解説ではなく、「会議中に資料を3秒で展開し、ドヤ顔で画面共有するための戦闘準備」として位置づける。
+  - 「最初は設定がムズすぎて挫折した（SIP無効化など）」という失敗談を交え、あえてライトな設定（SIP有効のまま使う方法）を推奨してハードルを下げる。
+
+---
+
+# 【脱マウス】macOSを「思考の速度」で操作する狂気のウィンドウ管理術（Yabai + skhd）
+
+まいど、Jamesです。
+
+今日はちょっと**「変態的」**な話をします。
+いや、引かんといてください。これ、マジで人生変わるレベルのやつなんで。
+
+みなさん、仕事中に**「ウィンドウの移動」**にどれくらい時間使ってます？
+
+「えーっと、Zoomの画面を右に寄せて…Slackを左に…あ、重なった。Notionどこ行った？ あれ、ブラウザの下に隠れてたわ」
+
+**…これ、人生の無駄です。**
+
+僕らUSテック企業のPMは、1日に大量のコンテキストスイッチが発生します。
+エンジニアからのDM、デザインの確認、仕様書の修正、そして無限のミーティング。
+いちいちマウスでウィンドウの端っこをつまんでサイズ調整してる暇なんて、1秒もないんですわ。
+
+そこで僕がたどり着いたのが、**「Yabai」**と**「skhd」**という、macOS用のタイル型ウィンドウマネージャーです。
+
+これを入れるとどうなるか？
+**「ウィンドウが勝手に、綺麗に、敷き詰められます」**
+
+重ならない。隠れない。
+そして、キーボードショートカット一発で、画面上のあらゆるウィンドウを瞬間移動させられます。
+マウス？ 触りません。トラックパッド？ コーヒー置き場ですわ。
+
+## 1. Yabaiって何やねん？
+
+簡単に言うと、**「Macのウィンドウ配置を自動化するツール」**です。
+
+アプリを起動すると、今あるウィンドウの横に、自動でサイズ調整して「パチッ」とハマります。
+3つ起動すれば3等分。4つなら4等分。
+テトリスみたいに、隙間なく埋めてくれるんです。
+
+これの何が最高かって、**「ウィンドウを探す」という認知負荷がゼロになる**こと。
+全部見えてるから。
+
+## 2. 導入の壁と「James流・妥協設定」
+
+正直に言います。
+僕も最初は**「SIP（System Integrity Protection）を切らないとフル機能が使えない」**という壁にぶち当たって、3回挫折しました。
+
+セキュリティ機能をオフにするの、会社のPCやと怖いですやん？
+それに設定ファイル（yabairc）書くのも面倒くさい。
+
+でも気づいたんです。
+**「SIPを切らなくても、リサイズと移動だけできれば十分神ツールやんけ」**と。
+
+なので今回は、**一番安全で簡単な「SIP有効のまま使う」設定**を紹介します。
+これなら会社のセキュリティポリスにも怒られません。
+
+## 3. Step by Step 導入手順
+
+### Step 1: インストール
+
+ターミナル（WarpとかiTerm2推奨）を開いて、Homebrewで叩き込むだけです。
+
+```bash
+brew install koekeishiya/formulae/yabai
+brew install koekeishiya/formulae/skhd
+```
+
+### Step 2: サービスを開始
+
+```bash
+yabai --start-service
+skhd --start-service
+```
+
+これだけで、裏で動き出します。
+（初回は「アクセシビリティ許可」を求められるんで、システム設定で許可したってください）
+
+### Step 3: 設定ファイルを書く
+
+ここが肝です。
+ホームディレクトリに `.yabairc` と `.skhdrc` を作ります。
+
+まずは `~/.yabairc` （Yabaiの設定）。
+これだけ書いとけばOK。
+
+```bash
+# レイアウトをBSP（タイル型）にする
+yabai -m config layout bsp
+
+# ウィンドウの隙間をちょっと空ける（これが見た目的に重要！これがないと息詰まる）
+yabai -m config window_gap 10
+yabai -m config top_padding 10
+yabai -m config bottom_padding 10
+yabai -m config left_padding 10
+yabai -m config right_padding 10
+
+# マウスフォーカス（マウスカーソルを乗せただけでウィンドウがアクティブになる）
+# これが地味に神。クリックしなくていい。
+yabai -m config focus_follows_mouse autofocus
+```
+
+次に `~/.skhdrc` （ショートカットキーの設定）。
+ここで「俺だけの最強コマンド」を定義します。
+
+```bash
+# Option + h/j/k/l でウィンドウフォーカス移動（Vim使いなら泣いて喜ぶやつ）
+alt - h : yabai -m window --focus west
+alt - j : yabai -m window --focus south
+alt - k : yabai -m window --focus north
+alt - l : yabai -m window --focus east
+
+# Option + Shift + h/j/k/l でウィンドウの位置を入れ替え
+alt + shift - h : yabai -m window --swap west
+alt + shift - j : yabai -m window --swap south
+alt + shift - k : yabai -m window --swap north
+alt + shift - l : yabai -m window --swap east
+
+# Option + f でフルスクリーン切り替え（集中モード）
+alt - f : yabai -m window --toggle zoom-fullscreen
+```
+
+設定したら、再起動を忘れずに。
+`yabai --restart-service`
+
+## 4. 実際のワークフロー（これがやりたかったんや）
+
+例えば、Zoomでミーティング中に「あの資料見せて」って言われた時。
+
+1.  **Alt + Return** (※別途設定要) でターミナルを一瞬で起動。
+2.  `open shiyou_sho.pdf` でPDFを開く。
+3.  Yabaiが勝手にZoomの横にPDFを並べてくれる。
+4.  **Alt + f** でPDFを全画面化してドヤ顔で共有。
+5.  終わったら **Alt + f** で戻して、**Cmd + w** で消す。Zoomがまた全画面に戻る。
+
+この間、マウスには一切触れてません。
+**「思考」と「画面」が直結してる感覚。** これを味わうと、もうウィンドウをドラッグしてサイズ調整してた頃には戻れません。
+
+## 5. 失敗談：やりすぎは禁物
+
+最初は調子に乗って、全てをキーボードで操作しようとしました。
+FigmaとかPhotoshopみたいな「マウス必須ツール」までタイル管理しようとして、レイアウトが崩壊して発狂しかけました。
+
+**教訓：**
+「除外設定」が大事です。
+`.yabairc` にこう書くと、特定のアプリはYabaiの管理から外せます。
+
+```bash
+yabai -m rule --add app="^System Settings$" manage=off
+yabai -m rule --add app="^Figma$" manage=off
+```
+
+Figmaとかは自由にさせてあげてください。適材適所ですわ。
+
+## まとめ
+
+Yabai + skhd は、最初は「なんやこれ使いにくいわ！」ってなるかもしれません。
+でも、**3日我慢して使ってみてください。**
+4日目には、他人のPCを触った時に「えっ、いちいちウィンドウ動かさなアカンとか正気？」って思うようになります。
+
+生産性っていうのは、こういう「0.5秒の積み重ね」を削ぎ落とすことから始まるんです。
+ぜひ、こちらの「変態の世界」へお越しください。待ってます。
+
+ほな、また。
+
+---
+*Reference:*
+- Yabai GitHub: https://github.com/koekeishiya/yabai
+- skhd GitHub: https://github.com/koekeishiya/skhd

@@ -9,11 +9,11 @@ except ImportError:
     from ultralytics import YOLO
 import glob
 
-def process_videos(input_dir, output_dir, mode='tp'):
+def process_videos(input_dir, output_dir, mode='tp', model_path='yolo11x.pt'):
     print(f"Starting processing in mode: {mode}")
     # Load model (assume default path in container or download)
     try:
-        model = YOLO("yolo11x.pt")  # Or whatever model we are using
+        model = YOLO(model_path)  # Or whatever model we are using
     except Exception as e:
         print(f"Error loading model: {e}")
         # fallback or exit
@@ -81,7 +81,8 @@ if __name__ == "__main__":
     parser.add_argument("--input_dir", required=True)
     parser.add_argument("--output_dir", required=True)
     parser.add_argument("--mode", required=True, choices=['tp', 'fp'])
+    parser.add_argument("--model_path", default="yolo11x.pt")
     args = parser.parse_args()
     
     os.makedirs(args.output_dir, exist_ok=True)
-    process_videos(args.input_dir, args.output_dir, args.mode)
+    process_videos(args.input_dir, args.output_dir, args.mode, args.model_path)

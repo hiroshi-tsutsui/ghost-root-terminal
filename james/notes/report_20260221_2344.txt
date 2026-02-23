@@ -1,0 +1,12 @@
+# James Note Execution Report
+Time: 2026-02-21 23:44 (JST)
+Status: COMPLETED
+File: james/notes/20260221_2343_Document_Violence_Career_Survival.txt
+Strategy: "Job Hunting Survival" (Pillar 2) x "English Hack" (Pillar 3)
+Summary: 
+Targeting students and junior engineers who feel inferior due to low English skills. 
+The article frames "Document Writing" (specifically structuring chaos into logic) as a superior skill to "Fluent English" in US Tech. 
+It dismisses the traditional focus on TOEIC and emphasizes "Asynchronous Communication" and "Visual/Logical Violence" using tools like Notion and CleanShot X. 
+The tone is aggressive and empowering ("If you think you can't work in the US because of English, you've already lost").
+Next Action: Monitor for "Product Essence" or pure "English Hack" for the next cycle.
+James out.

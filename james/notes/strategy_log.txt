@@ -1,0 +1,66 @@
+# James Note Strategy Analysis: 2026-02-22 19:35
+
+## Recent History (Reverse Chronological)
+1.  [Pillar 4: Product/Gadget] `20260222_1903_Gadget_ROI_Buy_Time.txt` - Buying Time / ROI
+2.  [Pillar 1: Career] `20260222_1831_Career_Tech_Is_Not_Everything.txt` - Tech isn't everything
+3.  [Pillar 3: English] `20260222_1759_English_Hack_Document_Driven_Survival.txt` - Document Driven
+4.  [Pillar 2: Job Hunt] `20260222_1727_Job_Hunt_Backdoor_Deploy_Or_Die.txt` - Deploy or Die
+5.  [Pillar 3: English] `20260222_1656_English_Hack_PM_Survival_Strategy.txt` - PM Survival
+
+## Pattern Analysis
+The rotation seems to be: 4 -> 1 -> 3 -> 2.
+Since the last one was Pillar 4 (Gadget), the natural next step in a cycle (1->2->3->4->1) would be **Pillar 1: Career/Survival**. However, looking closely at the list, we just did Pillar 1 at 18:31 (2 slots ago).
+Wait, let's look at the sequence again carefully.
+19:03 (Gadget - P4)
+18:31 (Career - P1)
+17:59 (English - P3)
+17:27 (Job Hunt - P2)
+16:56 (English - P3)
+16:30 (Career - P1)
+
+It looks like we just finished a full cycle (2->3->1->4).
+The cycle order in the prompt is:
+1. Career
+2. Job Hunt
+3. English
+4. Product/Gadget
+
+So after P4 (Gadget), we should return to **Pillar 2 (Job Hunt)** or **Pillar 3 (English)**, or maybe **Pillar 1 (Career)** again if following strict rotation 1->2->3->4.
+Let's stick to the prompt's order: 1 -> 2 -> 3 -> 4.
+Since we just did 4 (Gadget), let's go back to **Pillar 2: Job Hunt (Student/New Grad)** or **Pillar 3 (English)**.
+Actually, let's look at the timestamps.
+18:31 was Career (P1).
+17:27 was Job Hunt (P2).
+17:59 was English (P3).
+19:03 was Gadget (P4).
+
+So the last 4 posts covered P2, P3, P1, P4 (not in that order, but covered).
+The most "stale" topic might be **Pillar 2 (Job Hunt)** or **Pillar 3 (English)** depending on how you view 17:59 vs 17:27.
+Actually, let's try a fresh angle on **Pillar 2: Job Hunt / Survival (Undergrads)**.
+Theme: "Japanese Job Hunting is a Game of Liars. Here is the Cheat Code."
+Or specifically, "Internships as the ONLY real interview."
+
+Wait, looking at the previous title: `20260222_1727_Job_Hunt_Backdoor_Deploy_Or_Die.txt`. That was about deploying.
+How about **Pillar 3: English Hack**? "Why TOEIC 900 means nothing if you can't facilitate a meeting."
+Or **Pillar 1: Career**? "The 'Generalist' trap vs The 'T-Shaped' PM."
+
+Let's go with **Pillar 2: Job Hunt / Survival (Undergrads)** but with a specific focus on "The Portfolio of Real Work vs The Resume of Fluff".
+Title idea: "ES（エントリーシート）書く暇あったらGitHubの草生やせ、は嘘。PMなら『動くモノ』と『売上』を作れ。" (Stop writing ES. Build things that sell.)
+
+Actually, let's try **Pillar 3: English Hack** because the "Document Driven" one (17:59) was good, but we can focus on "Async Communication" specifically as a weapon for non-native speakers.
+"DeepL is your co-pilot, but 'Context' is your pilot."
+
+Let's go with **Pillar 2: Job Hunt**.
+Topic: "The 'New Grad' Ticket is a Platinum Pass. Don't Waste it on JTC (Traditional Japanese Companies)."
+Title: **「新卒カード」をドブに捨てるな。JTCの配属ガチャで死ぬ前に、米国企業の『ドアノック実習』をハックしろ。**
+
+Let's refine the title to match James's style (strong, controversial).
+**Title:** 【就活生存戦略】「御社のビジョンに共感」とか言うな。米国AI企業が欲しがるのは『即戦力』じゃなくて『生存本能』や。
+
+Content Strategy:
+- Target: University students / Second-career seekers.
+- Problem: Focusing on "Potential" (Politeness, Club activities) instead of "Proof of Value".
+- Solution: Build a micro-SaaS, get 10 users, and bring THAT to the interview. "I don't just code, I solve problems."
+- Tone: Kansai dialect, harsh but loving.
+
+Let's write it.

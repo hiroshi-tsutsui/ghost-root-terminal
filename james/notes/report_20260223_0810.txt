@@ -1,0 +1,13 @@
+Report: 2026/02/23 08:10 (JST)
+File: james/notes/20260223_0810_English_Hack_Dirt_Script_Strategy.txt
+
+Strategy:
+- Pillar: ③ English Hack (Target: Practitioners/Overseas-oriented)
+- Theme: "Middle School English Survival Guide" & "Script-based Control"
+- Key Message: "Fluency is irrelevant. Use scripts, async comms, and tools to dominate meetings."
+- Tools Mentioned: DeepL, Grammarly, CleanShot X, Otter.ai, Notion.
+- Tone: Aggressive Kansai dialect, demystifying the "Perfect English" myth.
+
+Next Step:
+- Rotate to Pillar ④ Product Essence (Target: PM/Gadget Lovers).
+- Focus on specific SaaS or hardware ROI for PMs.

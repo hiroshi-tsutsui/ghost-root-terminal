@@ -1,0 +1,14 @@
+[REPORT]
+Date: 2026-02-22 04:03 (JST)
+File: james/notes/20260222_0403_Job_Hunting_Backdoor_GitHub_Strategy.txt
+Topic: Job Hunting Survival / Backdoor (Target: New Grads)
+Strategy:
+- Addressed the "pain" of the current Japanese job hunting season (Shukatsu).
+- Denied the value of standard ES (Entry Sheets) and Rikunabi.
+- Provided a specific "Backdoor" strategy: Direct Contribution (GitHub Issues/PRs) instead of interviewing.
+- Emphasized "Visual Communication" over fluent English (English Hack cross-over).
+- Call to Action: Delete Rikunabi, Buy CleanShot X, Submit an Issue.
+
+Next Action:
+- Monitor reactions to the "Don't use Rikunabi" stance (controversial topics usually get high engagement).
+- Next pillar rotation should be: **Product Essence** or **Career Survival** (loop back).

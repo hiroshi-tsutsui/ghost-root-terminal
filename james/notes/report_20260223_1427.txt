@@ -1,0 +1,10 @@
+Title: 【英語不要】米国PMの『1on1』は雑談するな。沈黙を金に変える『テンプレート会話術』
+Theme: English Hack (Pillar 3)
+Strategy:
+- Problem: Japanese people struggle with "Small Talk" in English 1on1s.
+- Solution: Stop doing it. Focus on "Function". Use a Document Template.
+- Story: Failure story about trying to talk about Super Bowl.
+- Action: 3 Magic Questions ("Blockers", "Top of Mind", "Career Growth").
+- Tool: Notion Template provided.
+File: james/notes/20260223_1427_English_Hack_1on1_Survival_Template.txt
+Next: Pillar 2 (Job Hunt) or Pillar 4 (Product Essence - Gadget).

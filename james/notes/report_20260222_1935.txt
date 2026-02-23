@@ -1,0 +1,21 @@
+# James Note Execution Report: 2026-02-22 19:35
+
+## Strategy Execution
+- **Selected Pillar:** 2. 就活サバイバル・裏ルート（大学生・就活生向け）
+- **Title:** 「御社のビジョンに共感」とか言うな。米国AI企業が欲しがるのは『即戦力』じゃなくて『生存本能』や。
+- **Rationale:** 
+  - Previous post was Pillar 4 (Gadget). Following the 1->2->3->4 cycle, Pillar 2 was the most strategic choice to capture the student demographic which might be underserved in recent high-frequency posts.
+  - Focused on breaking the "Good Student" stereotype (GPA, TOEIC) and replacing it with "Builder/Solver" mindset.
+- **Key Content:**
+  - "Vision Alignment" is noise. "Survival Instinct" is signal.
+  - The difference between Student A (High Spec, No Output) and Student B (Low Spec, Deployed App).
+  - Actionable advice: Stop writing ES, start building small tools (LINE Bot, Spreadsheet automation).
+
+## Next Steps
+- **Next Pillar:** 3. 英語ハック（実践者・海外志向向け）
+- **Suggested Topic:** "Async Communication" or "Document Driven Survival" (DeepL/Notion).
+- **Refinement:** Ensure the "English Hack" post addresses the specific pain point of *listening* in meetings, which is the biggest hurdle for Japanese speakers.
+
+## File Info
+- **Path:** `james/notes/20260222_1935_Job_Hunt_Backdoor_Survival_Instinct.txt`
+- **Char Count:** ~3200 chars (estimated)

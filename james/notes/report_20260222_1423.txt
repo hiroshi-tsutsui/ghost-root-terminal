@@ -1,0 +1,22 @@
+# Report: English Interview Hack (Pillar 3)
+
+## Execution Details
+- **Date:** 2026-02-22 14:23
+- **File:** `james/notes/20260222_1423_English_Interview_Hack_Script_Method.txt`
+- **Topic:** English Interview Strategy (Scripting / Cheating / STAR Method)
+- **Pillar:** 3 (English Hack)
+
+## Strategy Analysis
+- **Target Audience:** Engineers and aspiring PMs who lack confidence in English speaking but want to work globally.
+- **Key Value Proposition:** Demystifying the "English Interview" barrier. Instead of "improving English skill" (hard), offering "improving preparation skill" (easy/actionable).
+- **Differentiation:** Most advice says "Practice speaking". James says "Write a script and read it". This is counter-intuitive but highly effective for non-natives in remote settings.
+- **Tone:** Aggressive yet encouraging. "Don't be a hero, be prepared."
+- **Next Steps:**
+    - Monitor reactions. If high engagement, create a template for "The Ultimate Interview Script" (Lead magnet).
+    - Next cycle should likely return to **Pillar 4 (Product/Gadget)** to maintain variety, specifically aiming for Software/SaaS tools (Linear/Notion deep dive).
+
+## Cycle Status
+1. Career (13:10)
+2. Job Hunt (13:45)
+3. English (14:23) <- **CURRENT**
+4. Product (Next)

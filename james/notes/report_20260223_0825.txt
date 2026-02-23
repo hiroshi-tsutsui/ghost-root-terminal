@@ -1,0 +1,13 @@
+Title: **「コードだけ書いて食っていける」は幻想や。米国PMが教える、エンジニアが年収1000万超えるための『PM OS』生存戦略**
+File: `james/notes/20260223_0825_Career_PM_OS_Survival.txt`
+Pillar: Career/Survival Strategy (Technology x Business)
+
+Strategy:
+1. **Target Audience**: Engineers who believe "tech skills = market value" and are hitting a salary ceiling.
+2. **Hook**: Bluntly state that coding skills alone will lead to obsolescence by AI.
+3. **Core Message**: Install "PM OS" (shifting from "How to build" to "What NOT to build" and ROI focus).
+4. **Differentiation**: 
+   - Not just "become a manager," but "use tech as a weapon to command business."
+   - Specific actionable advice (CleanShot X for async comms, calculating own hourly ROI).
+   - "Middle school English is enough" angle to lower psychological hurdles.
+5. **Call to Action**: Stop being a "worker" and start being a "PM with engineering weapons" immediately.

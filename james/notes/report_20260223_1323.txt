@@ -1,0 +1,21 @@
+# James Note Execution Report
+
+## 1. Output
+- **File:** `james/notes/20260223_1323_Product_CleanShot_ROI_War.txt`
+- **Title:** 米国PMが「月額1,200円のスクショあぷり」に命をかける理由【年収1000万の時短投資術】
+- **Pillar:** ④ Product Essence (ROI / Tools)
+- **Concept:** "Visual Communication over English Skill" & "Investment in Efficiency".
+
+## 2. Strategy Analysis
+- **Target:** Engineers/PMs who struggle with English communication or want to optimize workflow.
+- **Hook:** "1200 JPY/month for screenshots? Are you crazy?" -> "No, it's about buying time."
+- **Differentiation:** Most tool reviews just list features. James focuses on **"ROI"** and **"Survival in US Tech"** (using visuals to bypass language barriers).
+- **Tone:** Aggressive yet logical Kansai dialect.
+- **Cross-Sell:** Mentioned Raycast as well to reinforce the "Tool Investment" mindset.
+
+## 3. Next Actions
+- **Next Pillar:** ① Career (Survival Strategy) or ② Job Hunt (Backdoor).
+- **Suggestion:** Since we just did a "Tool" post, the next one should be a heavy "Mindset/Career" post to balance the content. Maybe something about "Why you should ignore Japanese recruiters".
+
+Mission Complete.
+James

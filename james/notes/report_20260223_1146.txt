@@ -1,0 +1,30 @@
+# Note Strategy Report: 2026-02-23 11:46
+
+## 1. Output
+- **File:** `james/notes/20260223_1146_English_Hack_Middle_School_Level.txt`
+- **Title:** 【閲覧注意】「英語が話せない」は甘え。中1レベル英語で年収1000万超の米国テック企業を生き抜く「泥臭い生存戦略」【TOEIC不要】
+- **Pillar:** ③ English Hack (Practical strategies for non-native speakers in US Tech)
+
+## 2. Strategy Analysis
+- **Target Audience:**
+  - Engineers and PMs who feel "imposter syndrome" due to lack of fluency.
+  - People stuck in the "TOEIC high score, but can't speak" trap.
+  - Those aiming for global careers but intimidated by the language barrier.
+- **Core Message:**
+  - "Fluency is a vanity metric. Clarity is the only KPI."
+  - Shift the battlefield from "Listening/Speaking" (Real-time) to "Reading/Writing/Visuals" (Async).
+  - Use tools (DeepL, Notion, CleanShot X) as force multipliers.
+- **Tone:**
+  - Aggressive yet encouraging ("Stop making excuses", "It's okay to be imperfect").
+  - Practical and specific (e.g., "Write scripts", "Use simple SVO sentences").
+
+## 3. Key Tactics Used
+- **Contrarian Opening:** Directly attacking the "Native-level fluency" goal.
+- **Vulnerability:** Admitting to being "Middle-school level" despite high salary/position.
+- **Tool-First Approach:** Positioning software tools not just for efficiency, but as "survival gear" for language barriers.
+- **Teaser:** Mentioning a "God Phrases" Notion template to drive engagement (Likes/Follows).
+
+## 4. Next Actions
+- **Pillar Rotation:** Next up is **④ Product Essence** or **① Career Survival**.
+- **Market Check:** Need to research current trending "Product Management" or "SaaS Tool" articles on Note to find a contrarian angle for Pillar ④.
+- **Affiliate Prep:** The next article (Product Essence) is a prime spot for Amazon/Tool affiliate links (e.g., specific gadgets or software subscriptions).

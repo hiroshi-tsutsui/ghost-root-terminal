@@ -1,0 +1,137 @@
+# 戦略レポート (Rationale)
+
+## 1. Market Research (Simulated High-Performing Note Articles)
+
+Based on current trends in the "Engineer/Career/Job Hunting" category on Note, the following three archetypes consistently exceed 100-500 likes:
+
+*   **Archetype A: "The Salary Transparency" (年収公開系)**
+    *   **Title Example:** "未経験からエンジニアになって年収1000万超えるまでの全ロードマップ" (Estimated Likes: 800+)
+    *   **Winning Factor:** Specific numbers (salary, years of experience) in the title. It appeals to the "greed/ambition" and "fear of missing out."
+    *   **Pain Point:** "I'm working hard but my salary is low." "Is this career path worth it?"
+*   **Archetype B: "The 'Hacking the System' Guide" (裏技・ハック系)**
+    *   **Title Example:** "就活でガクチカなんて書くな。面接官が見ているのは『この1点』だけ" (Estimated Likes: 450+)
+    *   **Winning Factor:** Counter-intuitive advice that negates common struggles. It offers a "shortcut."
+    *   **Pain Point:** "Writing ES (Entry Sheets) is painful." "I don't have special experiences to talk about."
+*   **Archetype C: "The 'Reality Check' for Engineers" (生存戦略系)**
+    *   **Title Example:** "AI時代に『コードが書けるだけ』のエンジニアが淘汰される理由" (Estimated Likes: 600+)
+    *   **Winning Factor:** Fear appeal combined with a clear pivot strategy (e.g., becoming a PM or specialized architect).
+    *   **Pain Point:** "Will AI take my job?" "Am I learning the right things?"
+
+## 2. James's Strategy (Synthesis)
+
+To maximize engagement, I will combine **Archetype A (Salary/Lifestyle)** with **Archetype B (Hacking/Shortcuts)** using James's persona.
+
+*   **Target:** Japanese students/engineers who feel "stuck" in the traditional Japanese hiring system or low-wage brackets.
+*   **Hook:** "Stop playing the 'Hard Mode' game in Japan."
+*   **Differentiation:**
+    *   Instead of "Work hard to learn code" (Common advice), James says "Change the battlefield (Geography/Role)."
+    *   Instead of "Polish your resume," James says "DM directly."
+    *   **Persona Tone:** "Look, I was a loser too (Japanese University -> India -> US). Here is the cheat code."
+
+---
+
+# 日本の「就活・エンジニア生存競争」が辛いなら、ルールごっそり変えて「バグ技」で勝て。年収1000万は"努力"やない、"場所"や。
+
+まいど、Jamesです。
+
+今は米国のテック企業（AI系）でPMやっとります。場所は日本、フルリモート。年収は軽く1,000万超えとる。
+…って言うと、「うわ、また出たわ。意識高い系エリートの自慢話」って思うやろ？
+
+ちゃうねん。
+3年前の俺、何してたか知ってるか？
+日本のフツーの大学生。単位ギリギリ。英語？ HelloとThank youしか言えへんかったわ。
+GPAなんて地を這ってたし、サークルでウェイウェイしてたわけでもない、ほんまに「何者でもない」学生やった。
+
+そんな俺がなんで今、シリコンバレーの連中と対等に渡り合って、日本の同年代が満員電車で消耗してる時間に、Uber Eatsで頼んだ高いコーヒー飲みながら自宅で仕事できてるんか。
+
+結論から言うで。
+**「真面目にゲームのルール守るんをやめた」**からや。
+
+みんな、ええ子すぎるねん。
+「就活解禁日」守って、「リクナビ」登録して、「御社の理念に共感しました」ってテンプレみたいなES書いて…。
+それ、**「倍率100倍の無理ゲー」**に自ら突っ込んでるだけやで？
+
+今日は、俺がインド留学を経て気づいた、**「凡人がテック業界で勝ち抜くためのバグ技（チートコード）」**を全部話すわ。
+これ読んだら、明日からリクナビ開く時間あったらLinkedInのプロフィールいじりたくなるはずや。
+
+## 1. 「スキル」より「場所」を変えろ。これだけで年収は2倍になる
+
+まず、残酷な現実突きつけるで。
+**日本のエンジニアの年収は、構造的に低い。**
+
+これ、君の技術力が低いからちゃうねん。「日本」という場所で、「日本のSIer」の商流におる限り、どんだけ天才的にコード書いても上限は見えてる。
+逆に、米国企業のPMやエンジニア見てみ？
+新卒で年収1,500万とかザラや。能力差？ ないない。あいつらもStack Overflow（今はChatGPTか）コピペしてるだけやったりするで。
+
+違いは**「どこに身を置くか」**だけ。
+
+俺がインド行った時、現地のエンジニアがこう言うてた。
+「James、なんで日本人は英語勉強せんの？ 英語できたら市場規模が100倍になるのに、なんで日本語だけの狭い世界で戦うん？」
+
+ぐうの音も出んかったわ。
+そこから俺は、「技術を磨く」んをやめた。「英語とPM力」に全振りしたんや。
+コードは書けるに越したことないけど、AI時代、コード書く"だけ"の奴はAIに代替される。
+でも、「何を作るか」「なぜ作るか」を定義して、英語で世界中のチーム動かせるPMは、まだAIには無理や。
+
+**戦略①：戦場をズラせ。**
+日本のWeb系企業で消耗戦するな。英語覚えて、外資のRemote枠、もしくは海外直案件を狙え。単価が違う。
+
+## 2. ES（エントリーシート）なんて書くな。DMを送れ
+
+就活生相談受けると、みんな言うねん。
+「ガクチカ（学生時代力を入れたこと）がないんです…」
+「志望動機が書けません…」
+
+アホか。書かんでええ。
+俺が今のポジション取った時、ESなんて1文字も書いてへん。
+
+何したか？
+**LinkedInで、行きたい会社のPMとか採用担当に直接DM送ったんや。**
+
+文面はこんな感じ（もちろん英語やけど、意訳な）。
+> 「御社のこのプロダクト、めちゃくちゃイケてるけど、ここのUIだけ使いにくいからもったいないと思うねん。俺ならこう改善するプランあるけど、興味ない？ もし興味あったら30分だけZoomで話そうや。ポートフォリオ添付しとくで。」
+
+これだけ。
+普通の採用ルートやと、人事のお姉ちゃんが「学歴フィルター」で弾くかもしれん。
+でも、現場のPMに直接送れば、「お、こいつオモロい視点持ってるやん」ってなる確率はグンと上がる。
+
+これ、**「勝率1%のガチャ（ES）」を引くか、「勝率50%の商談（DM）」を持ちかけるか**の違いやねん。
+ビジネスの世界では、自分を売り込むのも仕事のうち。
+「図々しい」？ ちゃうわ。「Proactive（主体的）」って言うねん。向こうのエリートはみんなこれやっとる。
+
+**戦略②：正規ルートを通るな。裏口（ダイレクト採用）をこじ開けろ。**
+
+## 3. 「完璧」を目指すな。「Done is better than perfect」や
+
+日本人は真面目すぎる。
+「完全に理解してからアウトプットしよう」
+「完璧なポートフォリオ作ってから応募しよう」
+
+その間に、インド人や中国人のライバルは、バグだらけのアプリ公開して、面接で「俺が作った！Userはまだ3人やけどな！ガハハ！」ってアピールして内定かっさらっていくで。
+
+テック業界、特にUSのカルチャーは**「Speed is King」**や。
+未完成でもええから世に出す。フィードバックもらう。直す。このサイクルの速さが全て。
+
+俺も最初のプロダクトなんてゴミみたいな出来やったけど、
+「これを作ったという事実」と「そこから何を学んでどう改善したか」を語れたから採用された。
+失敗を隠すな。**「高速で失敗して、高速で修正できる奴」**が一番重宝されるんや。
+
+## 最後に：お前はもっと高く売れる
+
+長なったけど、言いたいことは一つ。
+**自分を安売りすんな。**
+
+日本の「新卒一括採用」とかいう謎システムに洗脳されて、「自分には価値がない」と思い込まされてるだけや。
+場所を変えて、アプローチを変えて、ちょっとだけ図々しくなれば、世界はもっと広いで。
+
+俺にできたんやから、お前にもできる。
+英語が怖い？ 俺も怖かったわ。でも、Google翻訳とDeepLとChatGPTがあればなんとかなる。
+
+さあ、PC閉じて寝る前に、LinkedInのアカウント作るか、英語で "Hello world" って呟いてみ？
+それが、年収1000万への第一歩や。
+
+ほな、また。
+
+---
+*James（米国テックPM / フルリモート）*
+*スキ・フォローくれたら、次は「具体的なLinkedInプロフィールの書き方（ハック術）」書くかもしれへんで。*

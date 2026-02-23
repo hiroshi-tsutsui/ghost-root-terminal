@@ -1,0 +1,23 @@
+# Strategy Report - 2026/02/22 03:31
+
+## Context Analysis
+- **Previous 4:**
+  1. Product Essence (Tools) - 03:00
+  2. Job Hunting - 02:27
+  3. Career Survival - 01:54
+  4. English Hack - 01:43
+- **Rotation Logic:** The cycle is English -> Career -> Job -> Product.
+- **Correction:** Initially drafted "English Hack", but realized the last one was Product, so the next logical step is **Career Survival** (1->2->3->4).
+- **Adjustment:** Rewrote content to "Career Survival" pillar to maintain balance.
+
+## Content Strategy
+- **Title:** 【年収1000万】エンジニアを辞めて「PM OS」をインストールせよ。勝ち筋はそこにある。
+- **Pillar:** ① Career/Survival Strategy (For Engineers)
+- **Pain Point:** Fear of AI replacing coders, "Tech-only" career limit.
+- **Solution:** "PM OS" (Product Manager Mindset) + Engineering Background = Unbeatable.
+- **Tone:** Cruel reality check -> Hopeful roadmap.
+- **Action:** Change PR descriptions, ask about KPI, suggest "not building".
+
+## Next Step
+- Next pillar should be **② Job Hunting (Student/New Grad)** or **③ English Hack**.
+- Watch for "Job Hunting" saturation (02:27 was recent). English Hack might be safer next.

@@ -1,0 +1,17 @@
+Title: 【実話】「英語力ゼロ」で米国テック企業のPMとして生存する、たった一つの泥臭い戦術
+File: james/notes/20260222_2111_English_Hack_Visual_Kill.txt
+Strategy:
+- Pillar: English Hack (Focus on "Visual" & "Async" as weapons for non-native speakers).
+- Target: Engineers/PMs who feel inferior about their English skills and hesitate to work globally.
+- Key Message: "Fluency is overrated. Resolution and Structure (Visuals) win arguments."
+- Tone: Kansai dialect, confident, practical. "Don't study English, study Figma."
+- Structure:
+    1. Hook: "My TOEIC was 400. I still win arguments."
+    2. Problem: "Native speakers are too fast. Verbal battles are losing games."
+    3. Solution 1: "Visual Kill" (Use diagrams to control the narrative).
+    4. Solution 2: "Async Battle" (Shift to text/Slack where you have time to think).
+    5. Solution 3: "Templates" (Automate routine communication).
+    6. Conclusion: "English complex forces you to prepare more. That preparation makes you a better PM."
+Next Step:
+- Rotate to "Gadget/Product Essence" or "Career/Survival" pillar next.
+- Consider a topic like "The ROI of a $2000 Chair" or "Why I don't use a mouse."

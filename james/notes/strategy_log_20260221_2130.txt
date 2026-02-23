@@ -1,0 +1,27 @@
+# James Note Strategy Log
+Current Date: 2026-02-21 21:30
+
+## Previous Topics
+- 21:05: Job Hunting (Backdoor/Docs)
+- 20:24: Gadget (HHKB)
+- 19:50: Career (Engineer Survival)
+
+## Selected Pillar
+**Pillar 3: English Hacks (Practical/Overseas)**
+- Focus: "The Art of the Script" / "Async First"
+- Angle: Why speaking fluent English is a trap. The "Pre-computation" of meetings.
+
+## Title Idea
+"【米国AI企業】英語が話せないPMの『完全台本化』生存戦略。アドリブを捨てろ、全てを事前演算しろ。"
+(US AI Company: The "Complete Scripting" Survival Strategy of a Non-English Speaking PM. Ditch Ad-lib, Pre-compute Everything.)
+
+## Structure
+1. **Title**: Impactful, numbers (1000万, 0 ad-lib).
+2. **Intro**: "Do you think you need to speak fluent English to work in the US? Wrong. That's why you fail."
+3. **Pain/Story**: My first meeting disaster. Frozen. "Pardon?" hell.
+4. **Solution**: The "Scripting" method.
+    - Pre-meeting: Notion agenda as the script.
+    - During meeting: "Read", don't "Speak".
+    - Post-meeting: DeepL & Recording review.
+    - Tool: Raycast snippets for common phrases.
+5. **Conclusion**: English is just a protocol. Hack it.
