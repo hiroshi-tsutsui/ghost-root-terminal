@@ -18305,7 +18305,7 @@ openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = ${secretExists ? '3' : '-
                          output += `write(1, "FLAG: GHOST_ROOT{STR4C3_TR4C3_M4ST3R}\\n", 45) = 45\n`;
                          output += `exit_group(0)                           = ?\n+++ exited with 0 +++`;
                      } else {
-                         output += `write(2, "Invalid Configuration Header\\n", 29) = 29\n`;
+                         output += `write(2, "Invalid Configuration Header (Expected: CONF_V1)\\n", 49) = 49\n`;
                          output += `exit_group(1)                           = ?\n+++ exited with 1 +++`;
                      }
                  } else {
@@ -21006,4 +21006,4 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
 
 export const execute = processCommand;
 // Verified Cycle 276 on 2026-02-19
-// Verified Cycle 255 (Phase 11.5) on 2026-02-23
+// Verified Cycle 255 (Phase 12.0) on 2026-02-23 09:30 JST
