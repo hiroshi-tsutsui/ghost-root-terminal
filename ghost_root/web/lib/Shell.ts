@@ -5904,7 +5904,7 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
   // Cycle 255 (The Process Trace)
   if (cmdBase === 'mystery_process' || cmdBase === './mystery_process' || cmdBase === '/usr/bin/mystery_process') {
        const configFile = VFS['/tmp/secret_config.dat'];
-       if (configFile && configFile.type === 'file' && configFile.content.trim() === 'CONF_V1: SECRET') {
+       if (configFile && configFile.type === 'file') {
             let out = 'FLAG: GHOST_ROOT{STR4C3_D3BUG_M4ST3R}';
             if (!VFS['/var/run/cycle255_solved']) {
                 VFS['/var/run/cycle255_solved'] = { type: 'file', content: 'TRUE' };
@@ -5954,23 +5954,17 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
                 out += `read(3, "${contentSnippet}", 1024) = ${configFile.content.length}\\n`;
                 out += 'close(3)                                = 0\\n';
 
-                if (configFile.content.trim() === 'CONF_V1: SECRET') {
-                    out += 'write(1, "FLAG: GHOST_ROOT{STR4C3_D3BUG_M4ST3R}\\n", 40) = 40\\n';
-                    out += 'exit_group(0)                           = ?\\n';
-                    out += '+++ exited with 0 +++';
+                out += 'write(1, "FLAG: GHOST_ROOT{STR4C3_D3BUG_M4ST3R}\\n", 40) = 40\\n';
+                out += 'exit_group(0)                           = ?\\n';
+                out += '+++ exited with 0 +++';
 
-                    if (!VFS['/var/run/cycle255_solved']) {
-                        VFS['/var/run/cycle255_solved'] = { type: 'file', content: 'TRUE' };
-                        const runDir = getNode('/var/run');
-                        if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle255_solved')) {
-                            runDir.children.push('cycle255_solved');
-                        }
-                        out += '\\n\\x1b[1;32m[MISSION UPDATE] Objective Complete: SYSTEM CALL TRACED.\\x1b[0m';
+                if (!VFS['/var/run/cycle255_solved']) {
+                    VFS['/var/run/cycle255_solved'] = { type: 'file', content: 'TRUE' };
+                    const runDir = getNode('/var/run');
+                    if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle255_solved')) {
+                        runDir.children.push('cycle255_solved');
                     }
-                } else {
-                     // Silent failure on wrong content
-                     out += 'exit_group(1)                           = ?\\n';
-                     out += '+++ exited with 1 +++';
+                    out += '\\n\\x1b[1;32m[MISSION UPDATE] Objective Complete: SYSTEM CALL TRACED.\\x1b[0m';
                 }
             } else {
                 out += 'stat("/tmp/secret_config.dat", 0x7ffd...) = -1 ENOENT (No such file or directory)\\n';
@@ -21062,7 +21056,7 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
             break;
         }
         if (args.includes('--version') || args.includes('-v')) {
-            output = 'mystery_process v1.1.0 (Build 256)';
+            output = 'mystery_process v1.1.1 (Build 257)';
             break;
         }
         const secretNode = getNode('/tmp/secret_config.dat');
