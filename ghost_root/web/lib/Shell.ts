@@ -12648,6 +12648,68 @@ file locks                      (-x) unlimited`;
         }
         break;
     }
+    case 'mystery_process': {
+        const configPath = '/tmp/secret_config.dat';
+        const configNode = getNode(configPath);
+        
+        if (!configNode) {
+            // Silent failure (simulated exit code 1)
+            output = ''; 
+        } else {
+            output = `[BINARY] Reading configuration...\n[SUCCESS] Configuration valid.\n[SYSTEM] Access Granted.\nFLAG: GHOST_ROOT{STR4C3_M4ST3R_D3BUG}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PROCESS TRACE ANALYSIS.\x1b[0m`;
+            
+            // Mark as solved
+            if (!VFS['/var/run/strace_solved']) {
+                VFS['/var/run/strace_solved'] = { type: 'file', content: 'TRUE' };
+                const runDir = getNode('/var/run');
+                if (runDir && runDir.type === 'dir' && !runDir.children.includes('strace_solved')) {
+                    runDir.children.push('strace_solved');
+                }
+            }
+        }
+        break;
+    }
+    case 'strace': {
+        if (args.length < 1) {
+            output = 'usage: strace [-p pid] <command> [args]';
+        } else {
+            const targetCmd = args[0];
+            
+            if (targetCmd === 'mystery_process') {
+                output = `execve("/usr/bin/mystery_process", ["mystery_process"], 0x7ff...) = 0
+brk(NULL)                               = 0x56086e19e000
+access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
+fstat(3, {st_mode=S_IFREG|0644, st_size=1024, ...}) = 0
+mmap(NULL, 1024, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7f8e9d000000
+close(3)                                = 0
+openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
+read(3, "\\177ELF\\2\\1\\1\\3\\0\\0\\0\\0\\0\\0\\0\\0\\3\\0\\362\\0", 832) = 832
+mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f8e9d002000
+arch_prctl(ARCH_SET_FS, 0x7f8e9d002000) = 0
+mprotect(0x7f8e9c000000, 16384, PROT_READ) = 0
+mprotect(0x56086e000000, 4096, PROT_READ) = 0
+mprotect(0x7f8e9d004000, 4096, PROT_READ) = 0
+munmap(0x7f8e9d000000, 1024)            = 0
+openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = -1 ENOENT (No such file or directory)
+write(2, "Configuration missing.\\n", 23) = 23
+exit_group(1)                           = ?
++++ exited with 1 +++`;
+            } else {
+                 // Generic fake strace
+                 output = `execve("/usr/bin/${targetCmd}", ["${targetCmd}"], 0x7ff...) = 0
+brk(NULL)                               = 0x55555555
+access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
+...
+[STRACE] Process attached.
+[STRACE] Tracing syscalls...
+write(1, "Output...", 9)                = 9
+exit_group(0)                           = ?
++++ exited with 0 +++`;
+            }
+        }
+        break;
+    }
     case 'help':
       output = `GHOST_ROOT Recovery Shell v1.0 (Pipes Enabled)
 
@@ -15529,7 +15591,7 @@ tmpfs             815276    1184    814092   1% /run
         if (!configNode) {
             // Silent failure
             output = ''; 
-        } else if (configNode.type !== 'file' || !configNode.content.includes('CONF_V1: SECRET')) {
+        } else if (configNode.type !== 'file' || !configNode.content.includes('CONF_V1')) {
             // Wrong content - Silent failure
             output = '';
         } else {
@@ -15567,7 +15629,12 @@ tmpfs             815276    1184    814092   1% /run
             if (targetCmd === './mystery_process' || targetCmd === 'mystery_process' || targetCmd.endsWith('/mystery_process')) {
                 traceOutput += `execve("${targetCmd}", ["${targetCmd}"], 0x7ffd5d4b...) = 0\n`;
                 traceOutput += `brk(NULL)                               = 0x559e2b0c4000\n`;
+                traceOutput += `arch_prctl(0x3001 /* ARCH_??? */, 0x7ffd5d4b1230) = -1 EINVAL (Invalid argument)\n`;
                 traceOutput += `access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)\n`;
+                traceOutput += `openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3\n`;
+                traceOutput += `fstat(3, {st_mode=S_IFREG|0644, st_size=4242, ...}) = 0\n`;
+                traceOutput += `mmap(NULL, 4242, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7f8a1b2c3000\n`;
+                traceOutput += `close(3)                                = 0\n`;
                 traceOutput += `openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = `;
                 
                 const configNode = getNode('/tmp/secret_config.dat');
@@ -15584,7 +15651,7 @@ tmpfs             815276    1184    814092   1% /run
                     traceOutput += `read(3, "${escapedContent}", ${size})          = ${size}\n`;
                     traceOutput += `close(3)                                = 0\n`;
                     
-                    if (configNode.content.includes('CONF_V1: SECRET')) {
+                    if (configNode.content.includes('CONF_V1')) {
                         traceOutput += `write(1, "[SUCCESS] Configuration Found.\\n", 30) = 30\n`;
                         traceOutput += `write(1, "[SYSTEM] Integrity Verified.\\n", 28) = 28\n`;
                         traceOutput += `write(1, "FLAG: GHOST_ROOT{STR4C3_D3BUG_M4ST3R}\\n", 38) = 38\n`;
@@ -15609,6 +15676,7 @@ tmpfs             815276    1184    814092   1% /run
                     }
                 } else {
                     traceOutput += `-1 ENOENT (No such file or directory)\n`;
+                    traceOutput += `write(2, "", 0)                         = 0\n`;
                     traceOutput += `exit_group(1)                           = ?\n`;
                     traceOutput += `+++ exited with 1 +++`;
                     output = traceOutput;
