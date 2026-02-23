@@ -20976,6 +20976,10 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
             output = 'Usage: mystery_process [CONFIG_PATH]\n\nStandard verification process.\n(Internal Use Only)';
             break;
         }
+        if (args.includes('--version') || args.includes('-v')) {
+            output = 'mystery_process v1.0.4 (Build 255)';
+            break;
+        }
         const secretNode = getNode('/tmp/secret_config.dat');
         if (secretNode && secretNode.type === 'file' && secretNode.content.includes('CONF_V1')) {
              if (!VFS['/var/run/cycle255_solved']) {
@@ -20989,8 +20993,10 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
              } else {
                  output = '[SUCCESS] Configuration Loaded.\nFLAG: GHOST_ROOT{STR4C3_TR4C3_M4ST3R}';
              }
+        } else if (secretNode && secretNode.type === 'file') {
+             output = 'Error: Invalid Configuration Format (Expected: CONF_V1).\n'; // Partial success feedback
         } else {
-             output = ''; // Silent failure (Simulates ENOENT or Invalid Config)
+             output = ''; // Silent failure (Simulates ENOENT or Missing Config)
         }
         break;
     }
