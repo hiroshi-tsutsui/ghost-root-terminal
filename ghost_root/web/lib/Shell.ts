@@ -16458,7 +16458,74 @@ auth.py
       }
       break;
     }
-    // Cycle 255: Logic consolidated below
+    case 'mystery_process': {
+      const secret = getNode('/tmp/secret_config.dat');
+      if (secret && secret.type === 'file') {
+          output = 'GHOST_ROOT{STR4C3_R3V34L5_H1DD3N_F1L35}\n[SUCCESS] Configuration Loaded.\n\x1b[1;32m[MISSION UPDATE] Objective Complete: HIDDEN FILE DISCOVERED.\x1b[0m';
+          if (!VFS['/var/run/cycle255_solved']) {
+              VFS['/var/run/cycle255_solved'] = { type: 'file', content: 'TRUE' };
+              const runDir = getNode('/var/run');
+              if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle255_solved')) {
+                  runDir.children.push('cycle255_solved');
+              }
+          }
+      } else {
+           output = ''; // Silent failure
+      }
+      break;
+    }
+    case 'strace': {
+        if (args.length < 1) {
+            output = 'strace: usage: strace <command>';
+        } else {
+            const cmd = args[0];
+            if (cmd === 'mystery_process' || cmd === './mystery_process' || cmd === '/usr/bin/mystery_process') {
+                 const secret = getNode('/tmp/secret_config.dat');
+                 if (secret) {
+                     output = `execve("/usr/bin/mystery_process", ["mystery_process"], 0x7ffd5d4c3b50 /* 64 vars */) = 0
+brk(NULL)                               = 0x55d4e1b76000
+access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = 3
+fstat(3, {st_mode=S_IFREG|0644, st_size=15, ...}) = 0
+read(3, "CONF_V1: SECRET", 15)          = 15
+close(3)                                = 0
+write(1, "GHOST_ROOT{STR4C3_R3V34L5_H1DD3N_F1L35}\\n", 39) = 39
+write(1, "[SUCCESS] Configuration Loaded.\\n", 31) = 31
+exit_group(0)                           = ?
++++ exited with 0 +++`;
+                     
+                     if (!VFS['/var/run/cycle255_solved']) {
+                        VFS['/var/run/cycle255_solved'] = { type: 'file', content: 'TRUE' };
+                        const runDir = getNode('/var/run');
+                        if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle255_solved')) {
+                            runDir.children.push('cycle255_solved');
+                        }
+                        output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: HIDDEN FILE DISCOVERED.\x1b[0m`;
+                    }
+
+                 } else {
+                     output = `execve("/usr/bin/mystery_process", ["mystery_process"], 0x7ffd5d4c3b50 /* 64 vars */) = 0
+brk(NULL)                               = 0x55d4e1b76000
+access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
+fstat(3, {st_mode=S_IFREG|0644, st_size=105948, ...}) = 0
+mmap(NULL, 105948, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7f8e3f4e1000
+close(3)                                = 0
+openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
+read(3, "\\177ELF\\2\\1\\1\\3\\0\\0\\0\\0\\0\\0\\0\\0\\3\\0\\3\\0\\1\\0\\0\\0\\360p\\2\\0\\0\\0\\0\\0", 832) = 832
+fstat(3, {st_mode=S_IFREG|0755, st_size=2029592, ...}) = 0
+mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f8e3f4df000
+...
+openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = -1 ENOENT (No such file or directory)
+exit_group(1)                           = ?
++++ exited with 1 +++`;
+                 }
+            } else {
+                output = `execve("${cmd}", ["${cmd}", ...], 0x7ffd...) = 0\nbrk(NULL) = 0x5608234000\naccess("/etc/ld.so.preload", R_OK) = -1 ENOENT\nwrite(1, "Running ${cmd}...", 15) = 15\nexit_group(0) = ?\n+++ exited with 0 +++`;
+            }
+        }
+        break;
+    }
     case 'cp': {
       if (args.length < 2) output = 'usage: cp <source> <dest>';
       else {
@@ -18231,6 +18298,13 @@ ${validUnits.length} loaded units listed.`;
       break;
     }
     // Duplicate mystery_process removed (use implementation at end of file)
+
+    case 'mystery_process': {
+        // Cycle 255: The Process Trace (Silent Failure)
+        // This mimics a binary that fails immediately due to missing config, without printing error to stdout/stderr.
+        output = ''; // Silent exit
+        break;
+    }
 
     case 'strace': {
         if (args.length < 1) {
@@ -20977,7 +21051,7 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
             break;
         }
         if (args.includes('--version') || args.includes('-v')) {
-            output = 'mystery_process v1.0.4 (Build 255)';
+            output = 'mystery_process v1.1.0 (Build 256)';
             break;
         }
         const secretNode = getNode('/tmp/secret_config.dat');
