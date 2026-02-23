@@ -15620,9 +15620,37 @@ tmpfs             815276    1184    814092   1% /run
                 traceOutput += `close(3)                                = 0\n`;
                 traceOutput += `+++ exited with 0 +++`;
                 output = traceOutput;
+            } else if (targetCmd === 'whoami') {
+                traceOutput += `execve("/usr/bin/whoami", ["whoami"], 0x...) = 0\n`;
+                traceOutput += `geteuid()                               = 1000\n`;
+                traceOutput += `openat(AT_FDCWD, "/etc/passwd", O_RDONLY|O_CLOEXEC) = 3\n`;
+                traceOutput += `read(3, "root:x:0:0:root:/root:/bin/bash\\n...", 4096) = 1200\n`;
+                traceOutput += `close(3)                                = 0\n`;
+                traceOutput += `write(1, "ghost\\n", 6)                     = 6\n`;
+                traceOutput += `close(1)                                = 0\n`;
+                traceOutput += `exit_group(0)                           = ?\n`;
+                traceOutput += `+++ exited with 0 +++`;
+                output = traceOutput;
+            } else if (targetCmd === 'pwd') {
+                traceOutput += `execve("/bin/pwd", ["pwd"], 0x...) = 0\n`;
+                traceOutput += `getcwd("${cwd}", 4096)                 = ${cwd.length + 1}\n`;
+                traceOutput += `write(1, "${cwd}\\n", ${cwd.length + 1})                     = ${cwd.length + 1}\n`;
+                traceOutput += `exit_group(0)                           = ?\n`;
+                traceOutput += `+++ exited with 0 +++`;
+                output = traceOutput;
+            } else if (targetCmd === 'id') {
+                traceOutput += `execve("/usr/bin/id", ["id"], 0x...) = 0\n`;
+                traceOutput += `getuid()                                = 1000\n`;
+                traceOutput += `getgid()                                = 1000\n`;
+                traceOutput += `getgroups()                             = [1000, 4, 24, 27, 30, 46, 113, 128]\n`;
+                traceOutput += `write(1, "uid=1000(ghost) gid=1000(ghost) groups=1000(ghost)...\\n", 50) = 50\n`;
+                traceOutput += `exit_group(0)                           = ?\n`;
+                traceOutput += `+++ exited with 0 +++`;
+                output = traceOutput;
             } else {
                 traceOutput += `execve("${targetCmd}", ["${targetCmd}"], 0x...) = 0\n`;
-                traceOutput += `write(1, "Hello World", 11)             = 11\n`;
+                traceOutput += `write(1, "Command Output...", 17)       = 17\n`;
+                traceOutput += `exit_group(0)                           = ?\n`;
                 traceOutput += `+++ exited with 0 +++`;
                 output = traceOutput;
             }
