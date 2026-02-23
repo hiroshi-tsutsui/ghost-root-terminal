@@ -1284,7 +1284,7 @@ export const loadSystemState = () => {
          
          VFS['/usr/share/man/man1/mystery_process.1'] = {
              type: 'file',
-             content: '.TH MYSTERY_PROCESS 1 "February 2026" "Ghost Root" "User Commands"\\n.SH NAME\\nmystery_process - system integrity verifier\\n.SH SYNOPSIS\\n.B mystery_process\\n.SH DESCRIPTION\\nRuns a verification routine on the system configuration.\\nIf the configuration is valid, it prints the integrity flag.\\nIf the configuration is missing or invalid, it exits silently to prevent information leakage.\\n.SH FILES\\n/tmp/secret_config.dat - The required configuration file.\\n.SH SEE ALSO\\nstrace(1)',
+             content: '.TH MYSTERY_PROCESS 1 "February 2026" "Ghost Root" "User Commands"\\n.SH NAME\\nmystery_process - system integrity verifier\\n.SH SYNOPSIS\\n.B mystery_process\\n.SH DESCRIPTION\\nRuns a verification routine on the system configuration.\\nIf the configuration is valid, it prints the integrity flag.\\nIf the configuration is missing or invalid, it exits silently to prevent information leakage.\\n.SH FILES\\n/tmp/secret_config.dat - The required configuration file.\\n.SH SEE ALSO\\nstrace(1), ltrace(1)',
              permissions: '0644'
          };
          addChild('/usr/share/man/man1', 'mystery_process.1');
@@ -18541,7 +18541,7 @@ openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = ${secretExists ? '3' : '-
                  
                  output = `__libc_start_main(0x559e2269a2a0, 1, 0x7ffd5d5966d0, 0x559e2269a2c0 <unfinished ...>
 fopen("/tmp/secret_config.dat", "r")             = ${secretExists ? '0x559e2269a2a0' : '0'}
-${secretExists ? 'fgets("CONF_V1:...", 1024, 0x559e2269a2a0) = "CONF_V1:..."\\nputs("Access Granted.")                          = 16\\nputs("FLAG: GHOST_ROOT{STR4C3_TR4C3_M4ST3R}") = 45\\nexit(0)                                          = <void>\\n+++ exited (status 0) +++' : 'exit(1)                                          = <void>\\n+++ exited (status 1) +++'}`;
+${secretExists ? 'fgets("CONF_V1:...", 1024, 0x559e2269a2a0) = "CONF_V1:..."\\nputs("Access Granted.")                          = 16\\nputs("FLAG: GHOST_ROOT{STR4C3_D3BUG_M4ST3R}") = 38\\nexit(0)                                          = <void>\\n+++ exited (status 0) +++' : 'exit(1)                                          = <void>\\n+++ exited (status 1) +++'}`;
             } else {
                  output = `__libc_start_main(...) = 0\\nputs("Output...")                                = 9\\nexit(0)                                          = <void>\\n+++ exited (status 0) +++`;
             }
@@ -21155,6 +21155,10 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
             output = 'mystery_process v1.1.1 (Build 257)';
             break;
         }
+        if (args.includes('--verbose')) {
+            output = '[VERBOSE] Initializing...\n[VERBOSE] Loading configuration...\n[VERBOSE] Error: Config file not found.';
+            break;
+        }
         const secretNode = getNode('/tmp/secret_config.dat');
         if (secretNode && secretNode.type === 'file' && secretNode.content.trim() === 'CONF_V1: SECRET') {
              if (!VFS['/var/run/cycle255_solved']) {
@@ -21188,4 +21192,4 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
 
 export const execute = processCommand;
 // Verified Cycle 276 on 2026-02-19
-// Verified Cycle 255 (Phase 4.5 - Verification) on 2026-02-23 11:45 JST
+// Verified Cycle 255 (Phase 4.8 - Final Verification) on 2026-02-24 06:10 JST
