@@ -18316,8 +18316,31 @@ ${validUnits.length} loaded units listed.`;
       }
       break;
     }
-// Duplicate mystery_process removed (use implementation at end of file)
+// Cycle 255: The Process Trace (Direct Execution)
+    case 'mystery_process': {
+        const secretNode = getNode('/tmp/secret_config.dat');
+        const secretExists = secretNode && secretNode.type === 'file';
+        const content = secretExists ? secretNode.content : '';
+        const isValid = content.trim() === 'CONF_V1: SECRET';
 
+        if (secretExists && isValid) {
+            output = 'Access Granted.\nFLAG: GHOST_ROOT{STR4C3_D3BUG_M4ST3R}';
+            
+            // Mark solved if not already
+            if (!VFS['/var/run/strace_solved']) {
+                 VFS['/var/run/strace_solved'] = { type: 'file', content: 'TRUE' };
+                 const runDir = getNode('/var/run');
+                 if (runDir && runDir.type === 'dir' && !runDir.children.includes('strace_solved')) {
+                     runDir.children.push('strace_solved');
+                 }
+                 output += '\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SYSTEM CALL TRACED.\x1b[0m';
+            }
+        } else {
+            // Silent failure (Exit Code 1 simulated by no output)
+            output = '';
+        }
+        break;
+    }
 
     case 'strace': {
         if (args.length < 1) {
