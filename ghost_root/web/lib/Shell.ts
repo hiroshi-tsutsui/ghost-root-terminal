@@ -1335,7 +1335,7 @@ export const loadSystemState = () => {
          
          VFS['/usr/share/man/man1/mystery_process.1'] = {
              type: 'file',
-             content: '.TH MYSTERY_PROCESS 1 "February 2026" "Ghost Root" "User Commands"\\n.SH NAME\\nmystery_process - system integrity verifier\\n.SH SYNOPSIS\\n.B mystery_process\\n.SH DESCRIPTION\\nRuns a verification routine on the system configuration.\\nIf the configuration is valid, it prints the integrity flag.\\nIf the configuration is missing or invalid, it exits silently to prevent information leakage.\\n.SH FILES\\n/tmp/secret_config.dat - The required configuration file.\\n.SH SEE ALSO\\nstrace(1), ltrace(1)',
+             content: '.TH MYSTERY_PROCESS 1 "February 2026" "Ghost Root" "User Commands"\\n.SH NAME\\nmystery_process - system integrity verifier\\n.SH SYNOPSIS\\n.B mystery_process\\n.SH DESCRIPTION\\nRuns a verification routine on the system configuration.\\nIf the configuration is valid, it prints the integrity flag.\\nIf the configuration is missing or invalid, it exits silently to prevent information leakage.\\n.SH FILES\\nConfiguration is loaded from a temporary location.\\nUse standard debugging tools (e.g., strace) to identify the required path if the process fails.\\n.SH SEE ALSO\\nstrace(1), ltrace(1)',
              permissions: '0644'
          };
          addChild('/usr/share/man/man1', 'mystery_process.1');
@@ -1345,7 +1345,7 @@ export const loadSystemState = () => {
     if (!VFS['/home/ghost/verify_cycle_255.sh']) {
         VFS['/home/ghost/verify_cycle_255.sh'] = {
             type: 'file',
-            content: '#!/bin/bash\\n# VERIFICATION SCRIPT v4.0 (Multi-Stage)\\n\\necho "[TEST] Running mystery_process (expect silent failure)..."\\nmystery_process\\n\\necho "[TEST] Running strace mystery_process (expect ENOENT on config)..."\\nstrace mystery_process\\n\\necho "[TEST] Creating secret config..."\\necho "CONF_V1: SECRET" > /tmp/secret_config.dat\\n\\necho "[TEST] Running strace again (expect ENOENT on token)..."\\nstrace mystery_process\\n\\necho "[TEST] Creating auth token..."\\ntouch /tmp/auth_token.bin\\n\\necho "[TEST] Running mystery_process again (expect FLAG)..."\\nmystery_process\\n\\necho "[CLEANUP] Removing temp files..."\\nrm /tmp/secret_config.dat\\nrm /tmp/auth_token.bin\\n',
+            content: '#!/bin/bash\\n# VERIFICATION SCRIPT v4.2 (Fixed)\\n\\necho "[TEST] Running mystery_process (expect silent failure)..."\\nmystery_process\\n\\necho "[TEST] Running strace mystery_process (expect ENOENT on config)..."\\nstrace mystery_process\\n\\necho "[TEST] Creating secret config..."\\necho "CONF_V1: SECRET" > /tmp/secret_config.dat\\n\\necho "[TEST] Running mystery_process again (expect FLAG)..."\\nmystery_process\\n\\necho "[CLEANUP] Removing temp files..."\\nrm /tmp/secret_config.dat\\n',
             permissions: '0755'
         };
         const home = getNode('/home/ghost');
@@ -5733,54 +5733,7 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
   const cmdTokens = commandLine.trim().split(/\s+/);
   const cmdBase = cmdTokens[0];
 
-  // Cycle 255: The Process Trace
-  if (cmdBase === 'mystery_process' || cmdBase === './mystery_process' || cmdBase === '/usr/bin/mystery_process') {
-      const configPath = '/tmp/secret_config.dat';
-      if (VFS[configPath]) {
-          return { 
-              output: `[BINARY] Reading configuration...\\n[SUCCESS] Configuration loaded.\\n[DECRYPTING] Payload...\\nFLAG: GHOST_ROOT{STR4C3_D3BUG_M4ST3R}\\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PROCESS TRACED.\x1b[0m`, 
-              newCwd: cwd 
-          };
-      } else {
-          return { output: '', newCwd: cwd };
-      }
-  }
-
-  if (cmdBase === 'strace') {
-      const args = cmdTokens.slice(1);
-      if (args.length === 0) return { output: 'strace: must have PROG [ARGS] or -p PID', newCwd: cwd };
-      
-      const targetCmd = args[0];
-      if (targetCmd === 'mystery_process' || targetCmd === './mystery_process' || targetCmd === '/usr/bin/mystery_process') {
-          const configPath = '/tmp/secret_config.dat';
-          let trace = `execve("${targetCmd}", ["${targetCmd}"], 0x7ff...) = 0\\n`;
-          trace += `brk(NULL)                                  = 0x555555558000\\n`;
-          trace += `access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)\\n`;
-          trace += `openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3\\n`;
-          trace += `read(3, "\\177ELF\\2\\1\\1\\3\\0\\0\\0\\0\\0\\0\\0\\0\\3\\0>\\0\\1\\0\\0\\0\\360q\\2\\0\\0\\0\\0\\0", 832) = 832\\n`;
-          
-          if (VFS[configPath]) {
-               trace += `openat(AT_FDCWD, "${configPath}", O_RDONLY) = 3\\n`;
-               trace += `fstat(3, {st_mode=S_IFREG|0644, st_size=16, ...}) = 0\\n`;
-               trace += `read(3, "CONF_V1: SECRET\\n", 1024) = 16\\n`;
-               trace += `close(3)                                = 0\\n`;
-               trace += `write(1, "[BINARY] Reading configuration...\\n", 34) = 34\\n`;
-               trace += `write(1, "[SUCCESS] Configuration loaded.\\n", 31) = 31\\n`;
-               trace += `exit_group(0)                           = ?\\n`;
-               trace += `+++ exited with 0 +++`;
-          } else {
-               trace += `openat(AT_FDCWD, "${configPath}", O_RDONLY) = -1 ENOENT (No such file or directory)\\n`;
-               trace += `exit_group(1)                           = ?\\n`;
-               trace += `+++ exited with 1 +++`;
-          }
-          return { output: trace, newCwd: cwd };
-      }
-      return { output: `strace: ${targetCmd}: command not found`, newCwd: cwd };
-  }
-
-  // Cycle 255 Init Moved to loadSystemState
-
- // Legacy blocks removed for Cycle 255
+  // Cycle 255: Logic consolidated in switch statement (see below)
 
 
   // Cycle 275 (The Kernel Module)
@@ -15715,24 +15668,21 @@ tmpfs             815276    1184    814092   1% /run
     // Removed duplicate df case
     case 'mystery_process': {
         // Cycle 255: The Process Trace
+        if (ENV_VARS['GHOST_DEBUG']) {
+             output = '[DEBUG] Loading config from /tmp/secret_config.dat...\n';
+        } else {
+             output = '';
+        }
+
         const configPath = '/tmp/secret_config.dat';
         const configNode = getNode(configPath);
-        
-        const tokenPath = '/tmp/auth_token.bin';
-        const tokenNode = getNode(tokenPath);
 
         if (!configNode) {
-            // Silent failure
-            output = ''; 
-        } else if (configNode.type !== 'file' || !configNode.content.includes('CONF_V1')) {
-            // Wrong content - Silent failure
-            output = '';
-        } else if (!tokenNode || tokenNode.type !== 'file') {
-            // Missing Token - Silent failure (Stage 2)
-            output = '';
+            // Silent failure - File missing
+            // output remains empty (or debug only)
         } else {
-            // Check content if needed, but existence is the main check
-            output = '[SUCCESS] Configuration Found.\n[SUCCESS] Auth Token Verified.\n[SYSTEM] Integrity Verified.\nFLAG: GHOST_ROOT{STR4C3_D3BUG_M4ST3R}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SILENT PROCESS DEBUGGED.\x1b[0m';
+            // Success - File exists (Content doesn't matter for this level)
+            output += '[SUCCESS] Configuration Found.\n[SYSTEM] Integrity Verified.\nFLAG: GHOST_ROOT{STR4C3_D3BUG_M4ST3R}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SILENT PROCESS DEBUGGED.\x1b[0m';
             
             // Mark solved
             if (!VFS['/var/run/cycle255_solved']) {
@@ -15765,6 +15715,7 @@ tmpfs             815276    1184    814092   1% /run
             if (targetCmd === './mystery_process' || targetCmd === 'mystery_process' || targetCmd.endsWith('/mystery_process')) {
                 traceOutput += `execve("${targetCmd}", ["${targetCmd}"], 0x7ffd5d4b...) = 0\n`;
                 traceOutput += `brk(NULL)                               = 0x559e2b0c4000\n`;
+                traceOutput += `getenv("GHOST_DEBUG")                   = ${ENV_VARS['GHOST_DEBUG'] ? '"' + ENV_VARS['GHOST_DEBUG'] + '"' : 'NULL'}\n`;
                 traceOutput += `arch_prctl(0x3001 /* ARCH_??? */, 0x7ffd5d4b1230) = -1 EINVAL (Invalid argument)\n`;
                 traceOutput += `access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)\n`;
                 traceOutput += `openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3\n`;
@@ -15776,56 +15727,35 @@ tmpfs             815276    1184    814092   1% /run
                 const configNode = getNode('/tmp/secret_config.dat');
                 if (configNode && configNode.type === 'file') {
                     traceOutput += `3\n`;
-                    // Simulate stat and read of actual content
+                    // Simulate stat and read
                     const size = configNode.content.length;
                     traceOutput += `fstat(3, {st_mode=S_IFREG|0644, st_size=${size}, ...}) = 0\n`;
                     
                     const contentSnippet = configNode.content.length > 20 ? configNode.content.substring(0, 20) + '...' : configNode.content;
-                    // Escape newlines for C string look
                     const escapedContent = contentSnippet.replace(/\n/g, '\\n').replace(/"/g, '\\"');
                     
                     traceOutput += `read(3, "${escapedContent}", ${size})          = ${size}\n`;
                     traceOutput += `close(3)                                = 0\n`;
                     
-                    if (configNode.content.includes('CONF_V1')) {
-                        // Stage 2 Check
-                        traceOutput += `openat(AT_FDCWD, "/tmp/auth_token.bin", O_RDONLY) = `;
-                        const tokenNode = getNode('/tmp/auth_token.bin');
-                        
-                        if (tokenNode && tokenNode.type === 'file') {
-                             traceOutput += `4\n`;
-                             traceOutput += `close(4)                                = 0\n`;
-                             traceOutput += `write(1, "[SUCCESS] Configuration Found.\\n", 30) = 30\n`;
-                             traceOutput += `write(1, "[SUCCESS] Auth Token Verified.\\n", 29) = 29\n`;
-                             traceOutput += `write(1, "[SYSTEM] Integrity Verified.\\n", 28) = 28\n`;
-                             traceOutput += `write(1, "FLAG: GHOST_ROOT{STR4C3_D3BUG_M4ST3R}\\n", 38) = 38\n`;
-                             traceOutput += `exit_group(0)                           = ?\n`;
-                             traceOutput += `+++ exited with 0 +++`;
-                             
-                             output = traceOutput + '\n' + '[SUCCESS] Configuration Found.\n[SUCCESS] Auth Token Verified.\n[SYSTEM] Integrity Verified.\nFLAG: GHOST_ROOT{STR4C3_D3BUG_M4ST3R}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SILENT PROCESS DEBUGGED.\x1b[0m';
-                             
-                             if (!VFS['/var/run/cycle255_solved']) {
-                                VFS['/var/run/cycle255_solved'] = { type: 'file', content: 'TRUE' };
-                                const runDir = getNode('/var/run');
-                                if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle255_solved')) {
-                                    runDir.children.push('cycle255_solved');
-                                }
-                             }
-                        } else {
-                             traceOutput += `-1 ENOENT (No such file or directory)\n`;
-                             traceOutput += `exit_group(1)                           = ?\n`;
-                             traceOutput += `+++ exited with 1 +++`;
-                             output = traceOutput;
-                        }
-                    } else {
-                        // Wrong content
-                        traceOutput += `exit_group(1)                           = ?\n`;
-                        traceOutput += `+++ exited with 1 +++`;
-                        output = traceOutput;
+                    // Success Path
+                    traceOutput += `write(1, "[SUCCESS] Configuration Found.\\n", 30) = 30\n`;
+                    traceOutput += `write(1, "[SYSTEM] Integrity Verified.\\n", 28) = 28\n`;
+                    traceOutput += `write(1, "FLAG: GHOST_ROOT{STR4C3_D3BUG_M4ST3R}\\n", 38) = 38\n`;
+                    traceOutput += `exit_group(0)                           = ?\n`;
+                    traceOutput += `+++ exited with 0 +++`;
+                    
+                    output = traceOutput + '\n' + '[SUCCESS] Configuration Found.\n[SYSTEM] Integrity Verified.\nFLAG: GHOST_ROOT{STR4C3_D3BUG_M4ST3R}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SILENT PROCESS DEBUGGED.\x1b[0m';
+                    
+                    if (!VFS['/var/run/cycle255_solved']) {
+                       VFS['/var/run/cycle255_solved'] = { type: 'file', content: 'TRUE' };
+                       const runDir = getNode('/var/run');
+                       if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle255_solved')) {
+                           runDir.children.push('cycle255_solved');
+                       }
                     }
                 } else {
+                    // Failure Path (Missing File)
                     traceOutput += `-1 ENOENT (No such file or directory)\n`;
-                    traceOutput += `write(2, "", 0)                         = 0\n`;
                     traceOutput += `exit_group(1)                           = ?\n`;
                     traceOutput += `+++ exited with 1 +++`;
                     output = traceOutput;
