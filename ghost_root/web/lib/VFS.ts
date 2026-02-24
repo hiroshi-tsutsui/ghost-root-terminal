@@ -956,7 +956,7 @@ Click here to claim your prize!
   },
   '/home/ghost/trace_alert.log': {
       type: 'file',
-      content: '[ALERT] Mystery process failing silently.\n[ANALYSIS] Binary /usr/bin/mystery_process exits immediately.\n[ACTION] Use "strace" to trace system calls and find missing resources.',
+      content: '[ALERT] Mystery process failing silently.\n[ANALYSIS] Binary /usr/bin/mystery_process exits immediately.\n[ACTION] Use "strace" to trace system calls (execve, openat) and identify the missing configuration file.',
       permissions: '0644'
   },
   '/var/secure/vault.lock': {
