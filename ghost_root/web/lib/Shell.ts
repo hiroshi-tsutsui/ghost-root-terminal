@@ -16692,7 +16692,9 @@ auth.py
        output = 'Login: ghost...';
        break;
     }
-    case 'mystery_process': {
+    case 'mystery_process':
+    case '/usr/bin/mystery_process':
+    case './mystery_process': {
         // Cycle 255: The Process Trace
         if (VFS['/tmp/secret_config.dat']) {
             output = '[SUCCESS] Configuration Loaded.\n[SYSTEM] Integrity Verified.\nFLAG: GHOST_ROOT{STR4C3_F1L3_ACC3SS_V3R1F13D}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SILENT FAILURE DEBUGGED.\x1b[0m';
