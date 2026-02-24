@@ -1001,7 +1001,8 @@ MIIEpQIBAAKCAQEA3...
   },
   '/tmp': {
     type: 'dir',
-    children: ['system_crash.dump', 'sess_a1b2c3d4']
+    children: ['system_crash.dump', 'sess_a1b2c3d4'],
+    permissions: '1777'
   },
   '/tmp/system_crash.dump': {
     type: 'file',

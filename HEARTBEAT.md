@@ -24,7 +24,7 @@
   - [x] Cycle 258: "The Broken Service" (Systemctl). (Status: DEPLOYED).
   - [x] Cycle 257: "The Missing Library" (LD_LIBRARY_PATH). (Status: DEPLOYED).
   - [x] Cycle 256: "The Group Policy" (Sysadmin / Group Permissions). (Status: DEPLOYED).
-  - [x] Cycle 255: "The Process Trace" (Strace). (Status: DEPLOYED - Refined).
+  - [x] Cycle 255: "The Process Trace" (Strace). (Status: DEPLOYED - Strace Logic Optimized).
   - [x] Cycle 254: "The Encoded Payload" (Base64). (Status: DEPLOYED).
   - [x] Cycle 253: "The Data Leak" (Sysadmin / Find Size). (Status: DEPLOYED).
   - [x] Cycle 252: "The Archive Recovery" (Tar). (Status: DEPLOYED).
