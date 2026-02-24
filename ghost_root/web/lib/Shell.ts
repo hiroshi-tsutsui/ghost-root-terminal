@@ -16692,6 +16692,70 @@ auth.py
        output = 'Login: ghost...';
        break;
     }
+    case 'mystery_process': {
+        // Cycle 255: The Process Trace
+        if (VFS['/tmp/secret_config.dat']) {
+            output = '[SUCCESS] Configuration Loaded.\n[SYSTEM] Integrity Verified.\nFLAG: GHOST_ROOT{STR4C3_F1L3_ACC3SS_V3R1F13D}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SILENT FAILURE DEBUGGED.\x1b[0m';
+            
+            // Persistence
+            if (!VFS['/var/run/trace_solved']) {
+                VFS['/var/run/trace_solved'] = { type: 'file', content: 'TRUE' };
+                const runDir = getNode('/var/run');
+                if (runDir && runDir.type === 'dir' && !runDir.children.includes('trace_solved')) {
+                    runDir.children.push('trace_solved');
+                }
+            }
+        } else {
+            // Silent failure (simulated exit code 1)
+            output = ''; 
+            // We use a special return to indicate silent exit if needed, or just empty string.
+            // Shell component usually prints output. If empty, it prints nothing but the prompt.
+        }
+        break;
+    }
+    case 'strace': {
+        if (args.length < 1) {
+            output = 'strace: must have PROG [ARGS] or -p PID';
+        } else {
+            const cmd = args[0];
+            const cmdArgs = args.slice(1);
+            
+            if (cmd === 'mystery_process') {
+                // Simulated Trace
+                output = `execve("/usr/bin/mystery_process", ["mystery_process"], 0x7ffd5d4a1230 /* 24 vars */) = 0
+brk(NULL)                               = 0x559d3e1a1000
+access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)
+access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
+fstat(3, {st_mode=S_IFREG|0644, st_size=96453, ...}) = 0
+mmap(NULL, 96453, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7f8a1d2e1000
+close(3)                                = 0
+openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
+read(3, "\\177ELF\\2\\1\\1\\3\\0\\0\\0\\0\\0\\0\\0\\0\\3\\0>\\0\\1\\0\\0\\0\\360q\\2\\0\\0\\0\\0\\0", 832) = 832
+fstat(3, {st_mode=S_IFREG|0755, st_size=2029592, ...}) = 0
+mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f8a1d2df000
+...
+write(1, "[BINARY_ELF_X86_64] [UNKNOWN_PAYLOAD]\\n", 38) = 38
+write(1, "[STATUS] Running...\\n", 20) = 20
+openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = ${VFS['/tmp/secret_config.dat'] ? '3' : '-1 ENOENT (No such file or directory)'}
+${VFS['/tmp/secret_config.dat'] ? 'read(3, "CONF_V1: SECRET\\n", 1024) = 16\nclose(3) = 0\nwrite(1, "[SUCCESS] Configuration Loaded.\\n", 32) = 32\nwrite(1, "FLAG: GHOST_ROOT{STR4C3_F1L3_ACC3SS_V3R1F13D}\\n", 47) = 47\nexit_group(0) = ?' : 'exit_group(1) = ?\n+++ exited with 1 +++'}`;
+            } else {
+                 // Generic trace for other commands
+                 output = `execve("/usr/bin/${cmd}", ["${cmd}", "${cmdArgs.join('", "')}"], 0x7ffd...) = 0
+brk(NULL) = 0x560d...
+mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f...
+access("/etc/ld.so.preload", R_OK) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
+close(3) = 0
+...
+[Process Execution Follows]
+...
+exit_group(0) = ?
++++ exited with 0 +++`;
+            }
+        }
+        break;
+    }
     // Duplicate mystery_process/strace removed
     case 'curl': {
       // Basic argument parsing
