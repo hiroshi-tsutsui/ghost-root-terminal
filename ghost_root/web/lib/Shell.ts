@@ -1247,6 +1247,17 @@ export const loadSystemState = () => {
         };
         link('/usr/bin', 'mystery_process');
     }
+    
+    // Ensure strace binary exists (Cycle 255)
+    if (!VFS['/usr/bin/strace']) {
+        const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+        VFS['/usr/bin/strace'] = {
+            type: 'file',
+            content: '[BINARY_ELF_X86_64] [STRACE_V4]\nUsage: strace <command>',
+            permissions: '0755'
+        };
+        link('/usr/bin', 'strace');
+    }
 
     // Hint for Cycle 255
     if (!VFS['/home/ghost/trace_alert.log']) {
@@ -1272,6 +1283,33 @@ export const loadSystemState = () => {
              permissions: '0644'
          };
          addChild('/usr/share/man/man1', 'strace.1');
+    }
+
+    // Add Man Page for ltrace
+    if (!VFS['/usr/share/man/man1/ltrace.1']) {
+         if (!VFS['/usr/share/man/man1']) { 
+             if (!VFS['/usr/share']) { VFS['/usr/share'] = { type: 'dir', children: [] }; addChild('/usr', 'share'); }
+             if (!VFS['/usr/share/man']) { VFS['/usr/share/man'] = { type: 'dir', children: [] }; addChild('/usr/share', 'man'); }
+             VFS['/usr/share/man/man1'] = { type: 'dir', children: [] }; addChild('/usr/share/man', 'man1'); 
+         }
+         
+         VFS['/usr/share/man/man1/ltrace.1'] = {
+             type: 'file',
+             content: '.TH LTRACE 1 "February 2026" "Ghost Root" "User Commands"\\n.SH NAME\\nltrace - A library call tracer\\n.SH SYNOPSIS\\n.B ltrace\\n[\\n.I command\\n]\\n.SH DESCRIPTION\\nltrace is a program that simply runs the specified command until it exits. It intercepts and records the dynamic library calls which are called by the executed process and the signals which are received by that process.\\n.SH SEE ALSO\\nstrace(1)',
+             permissions: '0644'
+         };
+         addChild('/usr/share/man/man1', 'ltrace.1');
+    }
+
+    // Ensure ltrace binary exists (Refinement for Cycle 255)
+    if (!VFS['/usr/bin/ltrace']) {
+        const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+        VFS['/usr/bin/ltrace'] = {
+            type: 'file',
+            content: '[BINARY_ELF_X86_64] [LTRACE_V1]\nUsage: ltrace <command>',
+            permissions: '0755'
+        };
+        link('/usr/bin', 'ltrace');
     }
 
     // Add Man Page for mystery_process (Cycle 255 v9)
@@ -5988,6 +6026,40 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
        out += '+++ exited with 0 +++';
        
        return { output: out, newCwd: cwd };
+  }
+
+  if (cmdBase === 'ltrace' || cmdBase === '/usr/bin/ltrace') {
+       const args = commandLine.trim().split(/\s+/).slice(1);
+       if (args.length === 0) return { output: 'ltrace: too few arguments', newCwd: cwd };
+
+       const target = args[0];
+       
+       if (target === 'mystery_process' || target === './mystery_process' || target === '/usr/bin/mystery_process') {
+            let out = '__libc_start_main(0x559d..., 0x7ffd..., 0x559d...) = 0x7ffd...\\n';
+            out += 'getenv("CONF_V1")                                = NULL\\n';
+            
+            // Config search
+            out += 'fopen("/etc/mystery.conf", "r")                  = 0\\n';
+            out += 'fopen("/home/ghost/.config/mystery/config", "r") = 0\\n';
+
+            const configFile = VFS['/tmp/secret_config.dat'];
+            if (configFile && configFile.type === 'file') {
+                out += 'fopen("/tmp/secret_config.dat", "r")             = 0x559d70df9010\\n';
+                out += 'fgets(..., 1024, 0x559d70df9010)                 = "CONF_V1: SECRET..."\\n';
+                out += 'fclose(0x559d70df9010)                           = 0\\n';
+                out += 'puts("FLAG: GHOST_ROOT{STR4C3_D3BUG_M4ST3R}")    = 40\\n';
+                out += 'exit(0)                                          = ?\\n';
+                out += '+++ exited (status 0) +++';
+            } else {
+                out += 'fopen("/tmp/secret_config.dat", "r")             = 0\\n';
+                out += 'exit(1)                                          = ?\\n';
+                out += '+++ exited (status 1) +++';
+            }
+            return { output: out, newCwd: cwd };
+       }
+       
+       // Generic Ltrace
+       return { output: 'printf("Simulated execution...\\n")             = 23\\n+++ exited (status 0) +++', newCwd: cwd };
   }
 
   // Cycle 249 Init (The Disk Hog)
