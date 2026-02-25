@@ -15,8 +15,16 @@
 - **Status:** DEPLOYED
 
 ## Cycle 255: The Process Trace (Strace)
-- **Date:** 2026-02-23
+- **Date:** 2026-02-25
 - **Sector:** /usr/bin/mystery_process
 - **Type:** Sysadmin / Debugging (Strace)
 - **Mechanic:** Mystery process exits silently. User must trace syscalls (`strace`) to discover it is failing to open a specific config file (`/tmp/secret_config.dat`). Creating the file unlocks the flag.
-- **Status:** DEPLOYED (Verified v3.0)
+- **Status:** DEPLOYED (Verified Phase 4.5)
+
+## Cycle 255 (Refinement): The Process Trace
+- **Date:** 2026-02-26
+- **Sector:** /usr/bin/mystery_process
+- **Type:** Sysadmin / Debugging (Strace)
+- **Mechanic:** Enhanced puzzle fidelity: `mystery_process` now verifies `/tmp/secret_config.dat` content (`CONF_V1`). `strace` simulation updated to preview file content.
+- **Status:** DEPLOYED (Refined Logic)
+
