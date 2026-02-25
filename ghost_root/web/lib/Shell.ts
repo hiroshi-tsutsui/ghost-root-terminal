@@ -5956,16 +5956,21 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
   if (cmdBase === 'mystery_process' || cmdBase === './mystery_process' || cmdBase === '/usr/bin/mystery_process') {
        const configFile = VFS['/tmp/secret_config.dat'];
        if (configFile && configFile.type === 'file') {
-            let out = 'FLAG: GHOST_ROOT{STR4C3_D3BUG_M4ST3R}';
-            if (!VFS['/var/run/cycle255_solved']) {
-                VFS['/var/run/cycle255_solved'] = { type: 'file', content: 'TRUE' };
-                const runDir = getNode('/var/run');
-                if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle255_solved')) {
-                    runDir.children.push('cycle255_solved');
+            if (configFile.content.includes('CONF_V1')) {
+                let out = 'FLAG: GHOST_ROOT{STR4C3_D3BUG_M4ST3R}';
+                if (!VFS['/var/run/cycle255_solved']) {
+                    VFS['/var/run/cycle255_solved'] = { type: 'file', content: 'TRUE' };
+                    const runDir = getNode('/var/run');
+                    if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle255_solved')) {
+                        runDir.children.push('cycle255_solved');
+                    }
+                    out += '\\n\\x1b[1;32m[MISSION UPDATE] Objective Complete: SYSTEM CALL TRACED.\\x1b[0m';
                 }
-                out += '\\n\\x1b[1;32m[MISSION UPDATE] Objective Complete: SYSTEM CALL TRACED.\\x1b[0m';
+                return { output: out, newCwd: cwd };
+            } else {
+                // Silent exit or minimal error if config is wrong but exists
+                return { output: '', newCwd: cwd };
             }
-            return { output: out, newCwd: cwd };
        }
        return { output: '', newCwd: cwd };
   }
@@ -6005,9 +6010,14 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
                 out += `read(3, "${contentSnippet}", 1024) = ${configFile.content.length}\\n`;
                 out += 'close(3)                                = 0\\n';
 
-                out += 'write(1, "FLAG: GHOST_ROOT{STR4C3_D3BUG_M4ST3R}\\n", 40) = 40\\n';
-                out += 'exit_group(0)                           = ?\\n';
-                out += '+++ exited with 0 +++';
+                if (configFile.content.includes('CONF_V1')) {
+                    out += 'write(1, "FLAG: GHOST_ROOT{STR4C3_D3BUG_M4ST3R}\\n", 40) = 40\\n';
+                    out += 'exit_group(0)                           = ?\\n';
+                    out += '+++ exited with 0 +++';
+                } else {
+                    out += 'exit_group(1)                           = ?\\n';
+                    out += '+++ exited with 1 +++';
+                }
 
                 if (!VFS['/var/run/cycle255_solved']) {
                     VFS['/var/run/cycle255_solved'] = { type: 'file', content: 'TRUE' };
@@ -6057,12 +6067,19 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
 
             const configFile = VFS['/tmp/secret_config.dat'];
             if (configFile && configFile.type === 'file') {
+                const contentSnippet = configFile.content.substring(0, 20).replace(/\n/g, '\\n').replace(/"/g, '\\"');
                 out += 'fopen("/tmp/secret_config.dat", "r")             = 0x559d70df9010\\n';
-                out += 'fgets(..., 1024, 0x559d70df9010)                 = "CONF_V1: SECRET..."\\n';
+                out += `fgets(..., 1024, 0x559d70df9010)                 = "${contentSnippet}..."\\n`;
                 out += 'fclose(0x559d70df9010)                           = 0\\n';
-                out += 'puts("FLAG: GHOST_ROOT{STR4C3_D3BUG_M4ST3R}")    = 40\\n';
-                out += 'exit(0)                                          = ?\\n';
-                out += '+++ exited (status 0) +++';
+                
+                if (configFile.content.includes('CONF_V1')) {
+                    out += 'puts("FLAG: GHOST_ROOT{STR4C3_D3BUG_M4ST3R}")    = 40\\n';
+                    out += 'exit(0)                                          = ?\\n';
+                    out += '+++ exited (status 0) +++';
+                } else {
+                    out += 'exit(1)                                          = ?\\n';
+                    out += '+++ exited (status 1) +++';
+                }
             } else {
                 out += 'fopen("/tmp/secret_config.dat", "r")             = 0\\n';
                 out += 'exit(1)                                          = ?\\n';
