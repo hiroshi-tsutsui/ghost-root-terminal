@@ -5953,6 +5953,7 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
   }
 
   // Cycle 255 (The Process Trace)
+  // Verified active for Phase 4.5
   if (cmdBase === 'mystery_process' || cmdBase === './mystery_process' || cmdBase === '/usr/bin/mystery_process') {
        const configFile = VFS['/tmp/secret_config.dat'];
        if (configFile && configFile.type === 'file') {
@@ -10385,6 +10386,16 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
              const content = (node as any).content || '';
              if (content.includes('CONF_V1')) {
                  output = '[BINARY] Loading configuration... OK.\n[SUCCESS] Integrity Verified.\nFLAG: GHOST_ROOT{STR4C3_F1L3_ACC3SS_V3R1F13D}';
+                 
+                 // Mission Update
+                 if (!VFS['/var/run/strace_solved']) {
+                     VFS['/var/run/strace_solved'] = { type: 'file', content: 'TRUE' };
+                     const runDir = getNode('/var/run');
+                     if (runDir && runDir.type === 'dir' && !runDir.children.includes('strace_solved')) {
+                         runDir.children.push('strace_solved');
+                     }
+                     output += '\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PROCESS TRACED.\x1b[0m';
+                 }
              } else {
                  // Invalid config - Silent failure
                  output = ''; 
