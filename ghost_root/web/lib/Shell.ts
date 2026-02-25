@@ -5976,7 +5976,7 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
        return { output: '', newCwd: cwd };
   }
 
-  if (cmdBase === 'strace' || cmdBase === '/usr/bin/strace') {
+  if (cmdBase === 'strace' || cmdBase === '/usr/bin/strace' || cmdBase === 'trace') {
        const args = commandLine.trim().split(/\s+/).slice(1);
        if (args.length === 0) return { output: 'strace: must have PROG [ARGS] or -p PID', newCwd: cwd };
 
@@ -6037,6 +6037,7 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
             } else {
                 out += 'stat("/tmp/secret_config.dat", 0x7ffd...) = -1 ENOENT (No such file or directory)\\n';
                 out += 'openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = -1 ENOENT (No such file or directory)\\n';
+                out += 'write(2, "", 0)                           = 0\\n';
                 out += 'exit_group(1)                           = ?\\n';
                 out += '+++ exited with 1 +++';
             }
@@ -6056,6 +6057,26 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
        out += '+++ exited with 0 +++';
        
        return { output: out, newCwd: cwd };
+  }
+
+  // Cycle 256 (The Gatekeeper)
+  if (cmdBase === 'gatekeeper' || cmdBase === './gatekeeper' || cmdBase === '/usr/bin/gatekeeper') {
+      const args = commandLine.trim().split(/\s+/).slice(1);
+      if (args.length === 0) return { output: 'Usage: gatekeeper <password>', newCwd: cwd };
+      
+      if (args[0] === 'LTRACE_MASTER_KEY_99') {
+           if (!VFS['/var/run/cycle256_solved']) {
+               VFS['/var/run/cycle256_solved'] = { type: 'file', content: 'TRUE' };
+               // Ensure directory exists
+               const runDir = getNode('/var/run');
+               if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle256_solved')) {
+                   runDir.children.push('cycle256_solved');
+               }
+               return { output: '[GATEKEEPER] Access Granted.\\nFLAG: GHOST_ROOT{LTR4C3_STRCMP_R3V3AL3D}\\n\\x1b[1;32m[MISSION UPDATE] Objective Complete: BINARY TRACED.\\x1b[0m', newCwd: cwd };
+           }
+           return { output: '[GATEKEEPER] Access Granted.\\nFLAG: GHOST_ROOT{LTR4C3_STRCMP_R3V3AL3D}', newCwd: cwd };
+      }
+      return { output: '[ERROR] Authentication Failed.', newCwd: cwd };
   }
 
   if (cmdBase === 'ltrace' || cmdBase === '/usr/bin/ltrace') {
@@ -6089,6 +6110,28 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
                 }
             } else {
                 out += 'fopen("/tmp/secret_config.dat", "r")             = 0\\n';
+                out += 'exit(1)                                          = ?\\n';
+                out += '+++ exited (status 1) +++';
+            }
+            return { output: out, newCwd: cwd };
+       }
+       
+       if (target === 'gatekeeper' || target === './gatekeeper' || target === '/usr/bin/gatekeeper') {
+            const input = args[1] || "";
+            let out = '__libc_start_main(0x559d..., 0x7ffd..., 0x559d...) = 0x7ffd...\\n';
+            if (input) {
+                out += `strcmp("${input}", "LTRACE_MASTER_KEY_99")            = ${input === 'LTRACE_MASTER_KEY_99' ? 0 : -1}\\n`;
+                if (input === 'LTRACE_MASTER_KEY_99') {
+                     out += 'puts("[GATEKEEPER] Access Granted.")             = 28\\n';
+                     out += 'exit(0)                                          = ?\\n';
+                     out += '+++ exited (status 0) +++';
+                } else {
+                     out += 'puts("[ERROR] Authentication Failed.")           = 29\\n';
+                     out += 'exit(1)                                          = ?\\n';
+                     out += '+++ exited (status 1) +++';
+                }
+            } else {
+                out += 'puts("Usage: gatekeeper <password>")                     = 28\\n';
                 out += 'exit(1)                                          = ?\\n';
                 out += '+++ exited (status 1) +++';
             }
@@ -10378,101 +10421,8 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
         }
         break;
     }
-    // Cycle 255: The Process Trace
-    case 'mystery_process': {
-        const configPath = '/tmp/secret_config.dat';
-        const node = VFS[configPath];
-        if (node && node.type === 'file') {
-             const content = (node as any).content || '';
-             if (content.includes('CONF_V1')) {
-                 output = '[BINARY] Loading configuration... OK.\n[SUCCESS] Integrity Verified.\nFLAG: GHOST_ROOT{STR4C3_F1L3_ACC3SS_V3R1F13D}';
-                 
-                 // Mission Update
-                 if (!VFS['/var/run/strace_solved']) {
-                     VFS['/var/run/strace_solved'] = { type: 'file', content: 'TRUE' };
-                     const runDir = getNode('/var/run');
-                     if (runDir && runDir.type === 'dir' && !runDir.children.includes('strace_solved')) {
-                         runDir.children.push('strace_solved');
-                     }
-                     output += '\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PROCESS TRACED.\x1b[0m';
-                 }
-             } else {
-                 // Invalid config - Silent failure
-                 output = ''; 
-             }
-        } else {
-            // Silent failure (exit code 1)
-            output = ''; 
-        }
-        break;
-    }
-    case 'strace': {
-        if (args.length === 0) {
-            output = 'strace: must have PROG [ARGS] or -p PID';
-        } else {
-            const cmd = args[0];
-            if (cmd.includes('mystery_process')) {
-                output = 'execve("/usr/bin/mystery_process", ["mystery_process"], 0x7ff...) = 0\n';
-                output += 'brk(NULL)                               = 0x560dcb21a000\n';
-                output += 'access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)\n';
-                output += 'openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3\n';
-                output += 'read(3, "\\177ELF\\2\\1\\1\\3\\0\\0\\0\\0\\0\\0\\0\\0\\3\\0>\\0\\1\\0\\0\\0\\360q\\2\\0\\0\\0\\0\\0", 832) = 832\n';
-                output += 'openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = ';
-                
-                const node = VFS['/tmp/secret_config.dat'];
-                if (node && node.type === 'file') {
-                    output += '3\n';
-                    output += 'fstat(3, {st_mode=S_IFREG|0644, st_size=16, ...}) = 0\n';
-                    const preview = (node.content || '').substring(0, 16).replace(/\n/g, '\\n');
-                    output += `read(3, "${preview}", 1024) = ${preview.length}\n`;
-                    output += 'close(3)                                = 0\n';
-                    
-                    if ((node.content || '').includes('CONF_V1')) {
-                        output += 'write(1, "[BINARY] Loading configuration..."..., 32) = 32\n';
-                        output += 'write(1, "[SUCCESS] Integrity Verified.\\n", 30) = 30\n';
-                        output += 'write(1, "FLAG: GHOST_ROOT{STR4C3_F1L3_ACC3SS_V3R1F13D}\\n", 43) = 43\n';
-                        output += 'exit_group(0)                           = ?\n+++ exited with 0 +++';
-                    } else {
-                        output += 'exit_group(1)                           = ?\n+++ exited with 1 +++';
-                    }
-                } else {
-                    output += '-1 ENOENT (No such file or directory)\n';
-                    output += 'exit_group(1)                           = ?\n+++ exited with 1 +++';
-                }
-            } else {
-                output = `strace: ${cmd}: command not found`;
-                if (ALIASES[cmd] || getNode(`/usr/bin/${cmd}`) || getNode(`/bin/${cmd}`) || (Object.keys(ALIASES).includes(cmd))) {
-                     output = `execve("/usr/bin/${cmd}", ["${cmd}"], 0x7ff...) = 0\n`;
-                     output += '... (detached) ...';
-                }
-            }
-        }
-        break;
-    }
-    case 'ltrace': {
-        if (args.length === 0) {
-            output = 'ltrace: too few arguments';
-        } else {
-             const cmd = args[0];
-             if (cmd.includes('mystery_process')) {
-                 output = '__libc_start_main(0x401146, 1, 0x7ff...) = 0\n';
-                 if (VFS['/tmp/secret_config.dat']) {
-                     output += 'fopen("/tmp/secret_config.dat", "r") = 0x559...\n';
-                     output += 'fgets(..., 0x559...) = "CONF_V1: SECRET"\n';
-                     output += 'puts("[SUCCESS] Integrity Verified.") = 30\n';
-                     output += 'printf("FLAG: %s\\n", "GHOST_ROOT{...") = 43\n';
-                     output += '+++ exited (status 0) +++';
-                 } else {
-                     output += 'fopen("/tmp/secret_config.dat", "r") = 0\n';
-                     output += 'exit(1) <no return ...>\n';
-                     output += '+++ exited (status 1) +++';
-                 }
-             } else {
-                 output = `ltrace: ${cmd}: command not found`;
-             }
-        }
-        break;
-    }
+    // Cycle 255: The Process Trace logic moved to end of file to avoid duplicates
+
     case 'dd': {
         const ifArg = args.find(a => a.startsWith('if='));
         const ofArg = args.find(a => a.startsWith('of='));
@@ -11868,7 +11818,46 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
         }
         break;
     }
-    // Cycle 255: Logic consolidated below
+    case 'mystery_process':
+    case './mystery_process':
+    case '/usr/bin/mystery_process': {
+        // Cycle 255: The Process Trace
+        if (VFS['/tmp/secret_config.dat']) {
+             output = `[mystery_process] Configuration loaded.\n[mystery_process] Verifying checksum...\n[mystery_process] Access Granted.\n\nFLAG: GHOST_ROOT{TR4C3_TH3_SYSC4LLS_255}`;
+        } else {
+             // Silent failure (simulated exit 1)
+             output = ''; 
+        }
+        break;
+    }
+
+    case 'strace': {
+        // Cycle 255: The Process Trace
+        const targetCmd = args[0];
+        if (!targetCmd) {
+            output = 'strace: must have PROG [ARGS] or -p PID';
+        } else if (targetCmd === 'mystery_process' || targetCmd === './mystery_process' || targetCmd === '/usr/bin/mystery_process') {
+            const hasConfig = !!VFS['/tmp/secret_config.dat'];
+            output = `execve("${targetCmd}", ["${targetCmd}"], [/* 20 vars */]) = 0
+brk(NULL)                               = 0x56087529f000
+access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)
+access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
+fstat(3, {st_mode=S_IFREG|0644, st_size=96888, ...}) = 0
+mmap(NULL, 96888, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7fb5e32ec000
+close(3)                                = 0
+arch_prctl(ARCH_SET_FS, 0x7fb5e32ee540) = 0
+mprotect(0x7fb5e32e8000, 16384, PROT_READ) = 0
+mprotect(0x5608738ad000, 4096, PROT_READ) = 0
+mprotect(0x7fb5e3306000, 4096, PROT_READ) = 0
+munmap(0x7fb5e32ec000, 96888)           = 0
+openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = ${hasConfig ? '3' : '-1 ENOENT (No such file or directory)'}
+${hasConfig ? 'fstat(3, {st_mode=S_IFREG|0644, st_size=15, ...}) = 0\nread(3, "CONF_V1: SECRET\\n", 1024) = 16\nclose(3)                                = 0\nwrite(1, "FLAG: GHOST_ROOT{TR4C3_TH3_SYSC4LLS_255}\\n", 40) = 40\nexit_group(0)                           = ?\n+++ exited with 0 +++' : 'exit_group(1)                           = ?\n+++ exited with 1 +++'}`;
+        } else {
+            output = `strace: ${targetCmd}: command not found or not supported in simulation mode.`;
+        }
+        break;
+    }
     case 'ls': {
       const flags = args.filter(arg => arg.startsWith('-'));
       const paths = args.filter(arg => !arg.startsWith('-'));
@@ -21048,31 +21037,7 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
         break;
     }
 
-    // Cycle 255: The Process Trace
-    case 'mystery_process':
-    case './mystery_process':
-    case '/usr/bin/mystery_process': {
-        const configPath = '/tmp/secret_config.dat';
-        const configNode = getNode(configPath);
-        
-        if (configNode && configNode.type === 'file') {
-             if (!VFS['/var/run/cycle255_solved']) {
-                 VFS['/var/run/cycle255_solved'] = { type: 'file', content: 'TRUE' };
-                 // Ensure directory exists
-                 const runDir = getNode('/var/run');
-                 if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle255_solved')) {
-                     runDir.children.push('cycle255_solved');
-                 }
-                 output = '[SYSTEM] Configuration Loaded.\n[STATUS] Verification Successful.\nFLAG: GHOST_ROOT{STR4C3_F1L3_M1SS10N_CMPLT}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SYSTEM CALL TRACED.\x1b[0m';
-             } else {
-                 output = '[STATUS] Verification Successful.\nFLAG: GHOST_ROOT{STR4C3_F1L3_M1SS10N_CMPLT}';
-             }
-        } else {
-             // Silent failure
-             output = '';
-        }
-        break;
-    }
+    // Cycle 255: Duplicate mystery_process removed. Refined implementation is at the end of file.
     case 'strace': {
         if (args.length < 1) {
             output = 'usage: strace <command>';
