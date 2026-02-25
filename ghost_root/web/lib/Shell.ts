@@ -10352,6 +10352,76 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
         }
         break;
     }
+    // Cycle 255: The Process Trace
+    case 'mystery_process': {
+        const configPath = '/tmp/secret_config.dat';
+        if (VFS[configPath]) {
+            output = '[BINARY] Loading configuration... OK.\n[SUCCESS] Integrity Verified.\nFLAG: GHOST_ROOT{STR4C3_M4ST3R_D3T3CT1V3}';
+        } else {
+            // Silent failure (exit code 1)
+            output = ''; 
+        }
+        break;
+    }
+    case 'strace': {
+        if (args.length === 0) {
+            output = 'strace: must have PROG [ARGS] or -p PID';
+        } else {
+            const cmd = args[0];
+            if (cmd.includes('mystery_process')) {
+                output = 'execve("/usr/bin/mystery_process", ["mystery_process"], 0x7ff...) = 0\n';
+                output += 'brk(NULL)                               = 0x560dcb21a000\n';
+                output += 'access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)\n';
+                output += 'openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3\n';
+                output += 'read(3, "\\177ELF\\2\\1\\1\\3\\0\\0\\0\\0\\0\\0\\0\\0\\3\\0>\\0\\1\\0\\0\\0\\360q\\2\\0\\0\\0\\0\\0", 832) = 832\n';
+                output += 'openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = ';
+                if (VFS['/tmp/secret_config.dat']) {
+                    output += '3\n';
+                    output += 'fstat(3, {st_mode=S_IFREG|0644, st_size=16, ...}) = 0\n';
+                    output += 'read(3, "CONF_V1: SECRET\\n", 1024) = 16\n';
+                    output += 'close(3)                                = 0\n';
+                    output += 'write(1, "[BINARY] Loading configuration..."..., 32) = 32\n';
+                    output += 'write(1, "[SUCCESS] Integrity Verified.\\n", 30) = 30\n';
+                    output += 'write(1, "FLAG: GHOST_ROOT{STR4C3_M4ST3R_D3T3CT1V3}\\n", 43) = 43\n';
+                    output += 'exit_group(0)                           = ?\n+++ exited with 0 +++';
+                } else {
+                    output += '-1 ENOENT (No such file or directory)\n';
+                    output += 'exit_group(1)                           = ?\n+++ exited with 1 +++';
+                }
+            } else {
+                output = `strace: ${cmd}: command not found`;
+                if (ALIASES[cmd] || getNode(`/usr/bin/${cmd}`) || getNode(`/bin/${cmd}`) || (Object.keys(ALIASES).includes(cmd))) {
+                     output = `execve("/usr/bin/${cmd}", ["${cmd}"], 0x7ff...) = 0\n`;
+                     output += '... (detached) ...';
+                }
+            }
+        }
+        break;
+    }
+    case 'ltrace': {
+        if (args.length === 0) {
+            output = 'ltrace: too few arguments';
+        } else {
+             const cmd = args[0];
+             if (cmd.includes('mystery_process')) {
+                 output = '__libc_start_main(0x401146, 1, 0x7ff...) = 0\n';
+                 if (VFS['/tmp/secret_config.dat']) {
+                     output += 'fopen("/tmp/secret_config.dat", "r") = 0x559...\n';
+                     output += 'fgets(..., 0x559...) = "CONF_V1: SECRET"\n';
+                     output += 'puts("[SUCCESS] Integrity Verified.") = 30\n';
+                     output += 'printf("FLAG: %s\\n", "GHOST_ROOT{...") = 43\n';
+                     output += '+++ exited (status 0) +++';
+                 } else {
+                     output += 'fopen("/tmp/secret_config.dat", "r") = 0\n';
+                     output += 'exit(1) <no return ...>\n';
+                     output += '+++ exited (status 1) +++';
+                 }
+             } else {
+                 output = `ltrace: ${cmd}: command not found`;
+             }
+        }
+        break;
+    }
     case 'dd': {
         const ifArg = args.find(a => a.startsWith('if='));
         const ofArg = args.find(a => a.startsWith('of='));
@@ -18340,6 +18410,25 @@ ${validUnits.length} loaded units listed.`;
         } else {
             // Silent failure (Exit Code 1 simulated by no output)
             output = '';
+            
+            // Cycle 255: Adaptive Hint System
+            const failCount = parseInt(ENV_VARS['__MYSTERY_FAIL'] || '0') + 1;
+            ENV_VARS['__MYSTERY_FAIL'] = failCount.toString();
+            
+            if (failCount >= 3) {
+                if (!VFS['/home/ghost/trace_hint.txt']) {
+                    VFS['/home/ghost/trace_hint.txt'] = {
+                        type: 'file',
+                        content: '[AUTOMATED HELP]\nIt seems you are struggling with "mystery_process".\nThis binary fails silently, which usually means it\'s missing a dependency or configuration file.\n\nTry running it with "strace" to see what system calls it makes:\n$ strace mystery_process\n\nLook for "ENOENT" (No such file or directory) errors.',
+                        permissions: '0644'
+                    };
+                    const home = getNode('/home/ghost');
+                    if (home && home.type === 'dir' && !home.children.includes('trace_hint.txt')) {
+                        home.children.push('trace_hint.txt');
+                    }
+                    // Notify user via "wall" simulation (optional, but let's keep it subtle: just the file)
+                }
+            }
         }
         break;
     }
