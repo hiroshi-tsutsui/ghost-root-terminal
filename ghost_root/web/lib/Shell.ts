@@ -10213,8 +10213,10 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
   // Old strace implementation removed - using newer one at end of file
 
   switch (command) {
-    // Process Trace logic moved below to consolidated block
-// Legacy Cycle 255 Block Removed (Duplicate)
+    // Cycle 255: The Process Trace (Strace) - Logic consolidated below in main switch
+
+
+    // (strace logic consolidated below)
 
 
     case 'firewall_reload': {
