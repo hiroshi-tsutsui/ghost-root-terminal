@@ -18394,8 +18394,8 @@ ${validUnits.length} loaded units listed.`;
       }
       break;
     }
-// Cycle 255: The Process Trace (Direct Execution) - DEPRECATED
-    case 'mystery_process_deprecated': {
+// Cycle 255: The Process Trace (Direct Execution) - ACTIVE
+    case 'mystery_process': {
         const secretNode = getNode('/tmp/secret_config.dat');
         const secretExists = secretNode && secretNode.type === 'file';
         const content = secretExists ? secretNode.content : '';
@@ -18439,7 +18439,7 @@ ${validUnits.length} loaded units listed.`;
         break;
     }
 
-    case 'strace_DISABLED_2': {
+    case 'strace': {
         if (args.length < 1) {
             output = 'usage: strace <command>';
         } else {

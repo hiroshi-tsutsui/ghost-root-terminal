@@ -119,3 +119,21 @@
 **Encryption Level:** High
 **Target:** https://ghost-root-terminal.vercel.app/
 ```
+
+## Cycle 255 (Phase 5.2): Command Activation
+- **Date:** 2026-02-26
+- **Sector:** /usr/bin/mystery_process
+- **Objective:** Activate `mystery_process` and `strace` commands.
+- **Implementation:**
+  - Renamed `mystery_process_deprecated` to `mystery_process` in `Shell.ts`.
+  - Renamed `strace_DISABLED_2` to `strace` in `Shell.ts`.
+  - This fully enables the puzzle where `mystery_process` fails silently until `/tmp/secret_config.dat` is created, revealed via `strace`.
+- **Status:** DEPLOYED (https://ghost-root-terminal.vercel.app/)
+
+```SLACK_MESSAGE
+📟 **UPLINK ESTABLISHED: CYCLE REPORT**
+**Sector:** /usr/bin/mystery_process
+**New Protocol:** Process Trace Activated
+**Encryption Level:** High
+**Target:** https://ghost-root-terminal.vercel.app/
+```
