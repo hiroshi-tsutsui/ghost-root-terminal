@@ -6038,6 +6038,7 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
                 out += 'stat("/tmp/secret_config.dat", 0x7ffd...) = -1 ENOENT (No such file or directory)\\n';
                 out += 'openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = -1 ENOENT (No such file or directory)\\n';
                 out += 'write(2, "", 0)                           = 0\\n';
+                out += 'mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f0a1b2c4000\\n';
                 out += 'exit_group(1)                           = ?\\n';
                 out += '+++ exited with 1 +++';
             }
@@ -18381,7 +18382,7 @@ ${validUnits.length} loaded units listed.`;
       break;
     }
 // Cycle 255: The Process Trace (Direct Execution)
-    case 'mystery_process_DISABLED': {
+    case 'mystery_process': {
         const secretNode = getNode('/tmp/secret_config.dat');
         const secretExists = secretNode && secretNode.type === 'file';
         const content = secretExists ? secretNode.content : '';
