@@ -1233,7 +1233,7 @@ export const loadSystemState = () => {
     }
 
     // Cycle 255 Init (The Process Trace)
-    if (!VFS['/usr/bin/mystery_process'] || (VFS['/usr/bin/mystery_process'].type === 'file' && !VFS['/usr/bin/mystery_process'].content.includes('[VERSION] 1.1'))) {
+    if (!VFS['/usr/bin/mystery_process'] || (VFS['/usr/bin/mystery_process'].type === 'file' && !VFS['/usr/bin/mystery_process'].content.includes('[VERSION] 1.3'))) {
         const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
         const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
 
@@ -1242,7 +1242,7 @@ export const loadSystemState = () => {
 
         VFS['/usr/bin/mystery_process'] = {
             type: 'file',
-            content: '[BINARY_ELF_X86_64] [UNKNOWN_PAYLOAD]\n[STATUS] Running...\n[ERROR] Silent Failure (Exit Code 1)\n[VERSION] 1.2',
+            content: '[BINARY_ELF_X86_64] [UNKNOWN_PAYLOAD]\n[STATUS] Running...\n[ERROR] Silent Failure (Exit Code 1)\nCONF_V1_REQUIRED\n[VERSION] 1.3',
             permissions: '0755'
         };
         link('/usr/bin', 'mystery_process');
@@ -12009,50 +12009,97 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
       break;
     }
     case 'strings': {
-       if (args.length < 1) {
-          output = 'usage: strings <file>';
-       } else {
-          const fileTarget = args[0];
-          const filePath = resolvePath(cwd, fileTarget);
-          const fileNode = getNode(filePath);
+        // UNIFIED strings handler (Cycle 255: Phase 5.3)
+        if (args.length < 1) {
+            output = 'strings: missing file operand';
+        } else {
+            const fileName = args[0];
+            const filePath = resolvePath(cwd, fileName);
+            const node = getNode(filePath);
 
-          if (!fileNode) {
-             output = `strings: '${fileTarget}': No such file`;
-          } else if (fileNode.type === 'dir') {
-             output = `strings: ${fileTarget}: Is a directory`;
-          } else if (fileNode.type === 'symlink') {
-             output = `strings: ${fileTarget}: Is a symbolic link`;
-          } else {
-             const content = (fileNode as any).content || '';
-             const matches = content.match(/[\x20-\x7E]{4,}/g);
-             if (matches) {
-                 output = matches.join('\n');
-                 if (content.includes('GHOST_ROOT{STR1NGS_R3V3AL_TRUTH}')) {
-                     if (!VFS['/var/run/strings_solved']) {
-                         VFS['/var/run/strings_solved'] = { type: 'file', content: 'TRUE' };
+            if (!node) {
+                output = `strings: '${fileName}': No such file`;
+            } else if (node.type === 'dir') {
+                output = `strings: ${fileName}: Is a directory`;
+            } else if (node.type === 'symlink') {
+                output = `strings: ${fileName}: Is a symbolic link`;
+            } else {
+                const content = (node as any).content || '';
+                
+                // Specific Handlers (Cycle 224, Cycle 62)
+                if (fileName.includes('core.1337')) {
+                    output = `...
+/lib/ld-linux.so.2
+auth_service
+password=supersecretkey123
+GHOST_ROOT{C0R3_DUMP_D1V3R}
+...`;
+                    if (!VFS['/var/run/gdb_solved']) {
+                        VFS['/var/run/gdb_solved'] = { type: 'file', content: 'TRUE' };
+                        const runDir = getNode('/var/run');
+                        if (runDir && runDir.type === 'dir' && !runDir.children.includes('gdb_solved')) {
+                            runDir.children.push('gdb_solved');
+                        }
+                        output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: MEMORY DUMP ANALYZED.\x1b[0m`;
+                    }
+                } else if (fileName.includes('auth.pyc')) {
+                    output = `...
+hash
+GHOST_ROOT{PYTH0N_BYT3C0D3_S3CR3T}
+...`;
+                    if (!VFS['/var/run/pyc_solved']) {
+                         VFS['/var/run/pyc_solved'] = { type: 'file', content: 'TRUE' };
                          const runDir = getNode('/var/run');
-                         if (runDir && runDir.type === 'dir' && !runDir.children.includes('strings_solved')) {
-                             runDir.children.push('strings_solved');
+                         if (runDir && runDir.type === 'dir' && !runDir.children.includes('pyc_solved')) {
+                             runDir.children.push('pyc_solved');
                          }
-                         output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: HIDDEN STRINGS REVEALED.\x1b[0m`;
-                     }
-                 }
-                 if (content.includes('GHOST_ROOT{PR0C_3NV_L34K}')) {
-                     if (!VFS['/var/run/proc_env_solved']) {
-                         VFS['/var/run/proc_env_solved'] = { type: 'file', content: 'TRUE' };
-                         const runDir = getNode('/var/run');
-                         if (runDir && runDir.type === 'dir' && !runDir.children.includes('proc_env_solved')) {
-                             runDir.children.push('proc_env_solved');
-                         }
-                         output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PROCESS ENVIRONMENT INSPECTED.\x1b[0m`;
-                     }
-                 }
-             } else {
-                 output = '';
-             }
-          }
-       }
-       break;
+                         output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PYTHON BYTECODE REVERSED.\x1b[0m`;
+                    }
+                } else {
+                    // Standard strings behavior
+                    const matches = content.match(/[\x20-\x7E]{4,}/g);
+                    if (matches) {
+                        output = matches.join('\n');
+
+                        // Check for known flags
+                        if (content.includes('GHOST_ROOT{STR1NGS_R3V3AL_TRUTH}')) {
+                            if (!VFS['/var/run/strings_solved']) {
+                                VFS['/var/run/strings_solved'] = { type: 'file', content: 'TRUE' };
+                                const runDir = getNode('/var/run');
+                                if (runDir && runDir.type === 'dir' && !runDir.children.includes('strings_solved')) {
+                                    runDir.children.push('strings_solved');
+                                }
+                                output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: HIDDEN STRINGS REVEALED.\x1b[0m`;
+                            }
+                        }
+                        if (content.includes('GHOST_ROOT{PR0C_3NV_L34K}')) {
+                            if (!VFS['/var/run/proc_env_solved']) {
+                                VFS['/var/run/proc_env_solved'] = { type: 'file', content: 'TRUE' };
+                                const runDir = getNode('/var/run');
+                                if (runDir && runDir.type === 'dir' && !runDir.children.includes('proc_env_solved')) {
+                                    runDir.children.push('proc_env_solved');
+                                }
+                                output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PROCESS ENVIRONMENT INSPECTED.\x1b[0m`;
+                            }
+                        }
+                        // From duplicate block (Cycle 224)
+                        if (fileName.includes('sys_diag') && content.includes('GHOST_ROOT{STR1NGS_4R3_P0W3RFUL}')) {
+                             if (!VFS['/var/run/strings_solved_v2']) {
+                                 VFS['/var/run/strings_solved_v2'] = { type: 'file', content: 'TRUE' };
+                                 const runDir = getNode('/var/run');
+                                 if (runDir && runDir.type === 'dir' && !runDir.children.includes('strings_solved_v2')) {
+                                     runDir.children.push('strings_solved_v2');
+                                 }
+                                 output += '\n\x1b[1;32m[MISSION UPDATE] Objective Complete: BINARY ANALYSIS (STRINGS).\x1b[0m';
+                             }
+                        }
+                    } else {
+                        output = '';
+                    }
+                }
+            }
+        }
+        break;
     }
     case 'recover_tool': {
         output = `[RECOVERY] Initializing...\n[ERROR] SEGMENTATION FAULT (core dumped)\n[SYSTEM] Memory dump saved to /var/crash/recover_tool.core`;
@@ -12877,36 +12924,7 @@ Misc:
 Type "man <command>" for more information.
 Type "status" for mission objectives.`;
       break;
-    case 'strings': {
-        // Strings implementation (Cycle 224)
-        if (args.length < 1) {
-            output = 'strings: missing file operand';
-        } else {
-            const fileName = args[0];
-            const node = getNode(resolvePath(cwd, fileName));
-            if (!node || node.type !== 'file') {
-                output = `strings: '${fileName}': No such file`;
-            } else {
-                // Extract printable strings >= 4 chars
-                const content = (node as any).content || '';
-                const matches = content.match(/[\x20-\x7E]{4,}/g);
-                output = matches ? matches.join('\n') : '';
-
-                // Cycle 224 Win Condition
-                if (fileName.includes('sys_diag') && content.includes('GHOST_ROOT{STR1NGS_4R3_P0W3RFUL}')) {
-                     if (!VFS['/var/run/strings_solved']) {
-                         VFS['/var/run/strings_solved'] = { type: 'file', content: 'TRUE' };
-                         const runDir = getNode('/var/run');
-                         if (runDir && runDir.type === 'dir' && !runDir.children.includes('strings_solved')) {
-                             runDir.children.push('strings_solved');
-                         }
-                         output += '\n\n\x1b[1;32m[MISSION UPDATE] Objective Complete: BINARY ANALYSIS (STRINGS).\x1b[0m';
-                     }
-                }
-            }
-        }
-        break;
-    }
+    // Strings handler moved to line 12011 (Unified)
     case 'sys_diag': {
         const node = getNode('/usr/bin/sys_diag');
         if (!node) {
@@ -15960,59 +15978,7 @@ tmpfs             815276    1184    814092   1% /run
         }
         break;
     }
-    case 'strings': {
-        if (args.length < 1) {
-            output = 'strings: usage: strings <file>';
-        } else {
-            const fileTarget = args[0];
-            const filePath = resolvePath(cwd, fileTarget);
-            const fileNode = getNode(filePath);
-            
-            if (!fileNode || fileNode.type !== 'file') {
-                output = `strings: ${fileTarget}: No such file`;
-            } else {
-                // Filter for readable strings (simulated)
-                const content = fileNode.content;
-                // If it's the core dump
-                if (fileTarget.includes('core.1337')) {
-                    output = `...
-/lib/ld-linux.so.2
-auth_service
-password=supersecretkey123
-GHOST_ROOT{C0R3_DUMP_D1V3R}
-...`;
-                    if (!VFS['/var/run/gdb_solved']) {
-                        VFS['/var/run/gdb_solved'] = { type: 'file', content: 'TRUE' };
-                        const runDir = getNode('/var/run');
-                        if (runDir && runDir.type === 'dir' && !runDir.children.includes('gdb_solved')) {
-                            runDir.children.push('gdb_solved');
-                        }
-                        output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: MEMORY DUMP ANALYZED.\x1b[0m`;
-                    }
-                } else if (fileTarget.includes('auth.pyc')) {
-                    output = `...
-hash
-GHOST_ROOT{PYTH0N_BYT3C0D3_S3CR3T}
-password_check
-auth.py
-<module>
-...`;
-                    if (!VFS['/var/run/pyc_solved']) {
-                        VFS['/var/run/pyc_solved'] = { type: 'file', content: 'TRUE' };
-                        const runDir = getNode('/var/run');
-                        if (runDir && runDir.type === 'dir' && !runDir.children.includes('pyc_solved')) {
-                            runDir.children.push('pyc_solved');
-                        }
-                        output += `\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PYTHON BYTECODE REVERSED.\x1b[0m`;
-                    }
-                } else {
-                    // Generic strings behavior (strip non-printable)
-                    output = content.replace(/[^\x20-\x7E]/g, '');
-                }
-            }
-        }
-        break;
-    }
+    // Strings handler moved to line 12011 (Unified)
     case 'jwt_tool': {
         if (args.length < 1) {
             output = 'jwt_tool: usage: jwt_tool <token_file> OR jwt_tool decode <token>';
@@ -18423,6 +18389,7 @@ ${validUnits.length} loaded units listed.`;
     }
 // Cycle 255: The Process Trace (Direct Execution) - ACTIVE
     case 'mystery_process': {
+        if (args.includes('--version')) { output = 'mystery_process v1.3'; break; }
         const secretNode = getNode('/tmp/secret_config.dat');
         const secretExists = secretNode && secretNode.type === 'file';
         const content = secretExists ? secretNode.content : '';
@@ -21171,6 +21138,36 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
         break;
     }
 
+    // Cycle 255: The Process Trace (Direct Execution)
+    case 'mystery_process':
+    case './mystery_process':
+    case '/usr/bin/mystery_process': {
+        const configPath = '/tmp/secret_config.dat';
+        const configNode = getNode(configPath);
+        
+        if (configNode && configNode.type === 'file') {
+             if (configNode.content.trim() === 'CONF_V1: SECRET') {
+                 output = '[SUCCESS] Configuration Loaded.\n[SYSTEM] Payload Decrypted.\nFLAG: GHOST_ROOT{STR4C3_F1L3_ACC3SS_V3R1F13D}';
+                 
+                 // Mark Solved
+                 if (!VFS['/var/run/cycle255_solved']) {
+                     VFS['/var/run/cycle255_solved'] = { type: 'file', content: 'TRUE' };
+                     const runDir = getNode('/var/run');
+                     if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle255_solved')) {
+                         runDir.children.push('cycle255_solved');
+                     }
+                     output += '\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PROCESS TRACED.\x1b[0m';
+                 }
+             } else {
+                 output = 'Error: Invalid Configuration Format';
+             }
+        } else {
+             // Silent fail as per requirements
+             output = '';
+        }
+        break;
+    }
+
     // Cycle 256: The Group Policy
     case 'deploy_weapon':
     case './deploy_weapon':
@@ -21369,42 +21366,8 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
         break;
     }
 
-    // Cycle 255: The Process Trace
-    case 'mystery_process':
-    case './mystery_process':
-    case '/usr/bin/mystery_process': {
-        if (args.includes('--help') || args.includes('-h')) {
-            output = 'Usage: mystery_process [CONFIG_PATH]\n\nStandard verification process.\n(Internal Use Only)';
-            break;
-        }
-        if (args.includes('--version') || args.includes('-v')) {
-            output = 'mystery_process v1.3.0 (Build 262)';
-            break;
-        }
-        if (args.includes('--verbose')) {
-            output = '[VERBOSE] Initializing...\n[VERBOSE] Loading configuration...\n[VERBOSE] Error: Config file not found.';
-            break;
-        }
-        const secretNode = getNode('/tmp/secret_config.dat');
-        if (secretNode && secretNode.type === 'file' && secretNode.content.trim() === 'CONF_V1: SECRET') {
-             if (!VFS['/var/run/cycle255_solved']) {
-                 VFS['/var/run/cycle255_solved'] = { type: 'file', content: 'TRUE' };
-                 // Ensure directory exists
-                 const runDir = getNode('/var/run');
-                 if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle255_solved')) {
-                     runDir.children.push('cycle255_solved');
-                 }
-                 output = '[SUCCESS] Configuration Loaded.\n[SYSTEM] Payload Decrypted.\nFLAG: GHOST_ROOT{STR4C3_F1L3_ACC3SS_V3R1F13D}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SYSTEM CALL TRACED.\x1b[0m';
-             } else {
-                 output = '[SUCCESS] Configuration Loaded.\nFLAG: GHOST_ROOT{STR4C3_F1L3_ACC3SS_V3R1F13D}';
-             }
-        } else if (secretNode && secretNode.type === 'file') {
-             output = 'Error: Invalid Configuration Format (Expected: "CONF_V1: SECRET").\n'; // Partial success feedback
-        } else {
-             output = ''; // Silent failure (Simulates ENOENT or Missing Config)
-        }
-        break;
-    }
+    // Cycle 255: Duplicate mystery_process logic removed (Consolidated in main switch)
+
 
     // Duplicate strace removed (Refined implementation at line ~18167 used instead)
 
