@@ -11818,20 +11818,10 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
         }
         break;
     }
-    case 'mystery_process':
-    case './mystery_process':
-    case '/usr/bin/mystery_process': {
-        // Cycle 255: The Process Trace
-        if (VFS['/tmp/secret_config.dat']) {
-             output = `[mystery_process] Configuration loaded.\n[mystery_process] Verifying checksum...\n[mystery_process] Access Granted.\n\nFLAG: GHOST_ROOT{TR4C3_TH3_SYSC4LLS_255}`;
-        } else {
-             // Silent failure (simulated exit 1)
-             output = ''; 
-        }
-        break;
-    }
+    // Duplicate mystery_process removed (1)
 
-    case 'strace': {
+
+    case 'strace_DISABLED_1': {
         // Cycle 255: The Process Trace
         const targetCmd = args[0];
         if (!targetCmd) {
@@ -16804,30 +16794,9 @@ auth.py
        output = 'Login: ghost...';
        break;
     }
-    case 'mystery_process':
-    case '/usr/bin/mystery_process':
-    case './mystery_process': {
-        // Cycle 255: The Process Trace
-        const configNode = VFS['/tmp/secret_config.dat'];
-        // Check for content CONF_V1
-        if (configNode && configNode.type === 'file' && configNode.content.includes('CONF_V1')) {
-            output = '[SUCCESS] Configuration Loaded.\n[SYSTEM] Integrity Verified.\nFLAG: GHOST_ROOT{STR4C3_F1L3_ACC3SS_V3R1F13D}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: SILENT FAILURE DEBUGGED.\x1b[0m';
-            
-            // Persistence
-            if (!VFS['/var/run/trace_solved']) {
-                VFS['/var/run/trace_solved'] = { type: 'file', content: 'TRUE' };
-                const runDir = getNode('/var/run');
-                if (runDir && runDir.type === 'dir' && !runDir.children.includes('trace_solved')) {
-                    runDir.children.push('trace_solved');
-                }
-            }
-        } else {
-            // Silent failure (simulated exit code 1)
-            output = ''; 
-        }
-        break;
-    }
-    case 'strace': {
+    // Duplicate mystery_process removed (2)
+
+    case 'strace_DISABLED': {
         if (args.length < 1) {
             output = 'strace: must have PROG [ARGS] or -p PID';
         } else {
@@ -18437,7 +18406,7 @@ ${validUnits.length} loaded units listed.`;
       break;
     }
 // Cycle 255: The Process Trace (Direct Execution)
-    case 'mystery_process': {
+    case 'mystery_process_DISABLED': {
         const secretNode = getNode('/tmp/secret_config.dat');
         const secretExists = secretNode && secretNode.type === 'file';
         const content = secretExists ? secretNode.content : '';
@@ -18481,7 +18450,7 @@ ${validUnits.length} loaded units listed.`;
         break;
     }
 
-    case 'strace': {
+    case 'strace_DISABLED_2': {
         if (args.length < 1) {
             output = 'usage: strace <command>';
         } else {
@@ -21068,19 +21037,64 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
                           'munmap(0x7f8a9b1c2000, 12345)           = 0\n';
                  
                  if (configNode && configNode.type === 'file') {
-                      output += 'openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = 3\n' +
-                                'read(3, "CONF_V1...", 1024)             = 8\n' +
-                                'close(3)                                = 0\n' +
-                                'write(1, "[STATUS] Verification Success..."..., 32) = 32\n' +
-                                'exit_group(0)                           = ?\n' +
-                                '+++ exited with 0 +++';
+                      if (configNode.content.trim() === 'CONF_V1: SECRET') {
+                          output += 'openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = 3\n' +
+                                    'read(3, "CONF_V1...", 1024)             = 15\n' +
+                                    'close(3)                                = 0\n' +
+                                    'write(1, "[SUCCESS] Configuration Loaded.\\n", 31) = 31\n' +
+                                    'write(1, "[SYSTEM] Payload Decrypted.\\n", 27) = 27\n' +
+                                    'write(1, "FLAG: GHOST_ROOT{STR4C3_F1L3_ACC3SS_V3R1F13D}\\n", 48) = 48\n' +
+                                    'exit_group(0)                           = ?\n' +
+                                    '+++ exited with 0 +++';
+                      } else {
+                          output += 'openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = 3\n' +
+                                    'read(3, "' + configNode.content.substring(0, 10) + '...", 1024) = 15\n' +
+                                    'close(3)                                = 0\n' +
+                                    'write(2, "Error: Invalid Configuration Format\\n", 36) = 36\n' +
+                                    'exit_group(1)                           = ?\n' +
+                                    '+++ exited with 1 +++';
+                      }
                  } else {
                       output += 'openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = -1 ENOENT (No such file or directory)\n' +
                                 'exit_group(1)                           = ?\n' +
                                 '+++ exited with 1 +++';
                  }
+            } else if (cmdToTrace === 'ls') {
+                 output = 'execve("/bin/ls", ["ls"], 0x7ffd...) = 0\n' +
+                          'brk(NULL)                               = 0x56ec3d906000\n' +
+                          'access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)\n' +
+                          'openat(AT_FDCWD, ".", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3\n' +
+                          'getdents64(3, /* 15 entries */, 32768)  = 448\n' +
+                          'write(1, "bin\\ndev\\netc\\nhome\\nlib\\n...", 1024) = 1024\n' +
+                          'close(3)                                = 0\n' +
+                          'exit_group(0)                           = ?\n' +
+                          '+++ exited with 0 +++';
+            } else if (cmdToTrace === 'whoami') {
+                 output = 'execve("/usr/bin/whoami", ["whoami"], 0x7ffd...) = 0\n' +
+                          'geteuid()                               = 1000\n' +
+                          'openat(AT_FDCWD, "/etc/passwd", O_RDONLY|O_CLOEXEC) = 3\n' +
+                          'read(3, "root:x:0:0:root:/root:/bin/bash\\n...", 4096) = 1533\n' +
+                          'close(3)                                = 0\n' +
+                          'write(1, "ghost\\n", 6)                     = 6\n' +
+                          'exit_group(0)                           = ?\n' +
+                          '+++ exited with 0 +++';
+            } else if (cmdToTrace === 'id') {
+                 output = 'execve("/usr/bin/id", ["id"], 0x7ffd...) = 0\n' +
+                          'getuid()                                = 1000\n' +
+                          'getgid()                                = 1000\n' +
+                          'getgroups(0, NULL)                      = 1\n' +
+                          'getgroups(1, [1000])                    = 1\n' +
+                          'openat(AT_FDCWD, "/etc/group", O_RDONLY|O_CLOEXEC) = 3\n' +
+                          'read(3, "root:x:0:\\nghost:x:1000:\\n...", 4096) = 890\n' +
+                          'close(3)                                = 0\n' +
+                          'write(1, "uid=1000(ghost) gid=1000(ghost) groups=1000(ghost)\\n", 51) = 51\n' +
+                          'exit_group(0)                           = ?\n' +
+                          '+++ exited with 0 +++';
             } else {
-                 output = `execve("${cmdToTrace}", ["${cmdToTrace}"], 0x7ffd...) = 0\n... (tracing ${cmdToTrace}) ...\n+++ exited with 0 +++`;
+                 output = `execve("${cmdToTrace}", ["${cmdToTrace}"], 0x7ffd...) = 0\n` +
+                          `write(1, "[STRACE] Simulation: Tracing ${cmdToTrace}... OK\\n", 40) = 40\n` +
+                          `exit_group(0)                           = ?\n` +
+                          `+++ exited with 0 +++`;
             }
         }
         break;
@@ -21293,7 +21307,7 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
             break;
         }
         if (args.includes('--version') || args.includes('-v')) {
-            output = 'mystery_process v1.1.2 (Build 259)';
+            output = 'mystery_process v1.2.0 (Build 260)';
             break;
         }
         if (args.includes('--verbose')) {
