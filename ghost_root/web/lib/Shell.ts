@@ -11821,33 +11821,8 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
     // Duplicate mystery_process removed (1)
 
 
-    case 'strace_DISABLED_1': {
-        // Cycle 255: The Process Trace
-        const targetCmd = args[0];
-        if (!targetCmd) {
-            output = 'strace: must have PROG [ARGS] or -p PID';
-        } else if (targetCmd === 'mystery_process' || targetCmd === './mystery_process' || targetCmd === '/usr/bin/mystery_process') {
-            const hasConfig = !!VFS['/tmp/secret_config.dat'];
-            output = `execve("${targetCmd}", ["${targetCmd}"], [/* 20 vars */]) = 0
-brk(NULL)                               = 0x56087529f000
-access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)
-access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
-openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
-fstat(3, {st_mode=S_IFREG|0644, st_size=96888, ...}) = 0
-mmap(NULL, 96888, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7fb5e32ec000
-close(3)                                = 0
-arch_prctl(ARCH_SET_FS, 0x7fb5e32ee540) = 0
-mprotect(0x7fb5e32e8000, 16384, PROT_READ) = 0
-mprotect(0x5608738ad000, 4096, PROT_READ) = 0
-mprotect(0x7fb5e3306000, 4096, PROT_READ) = 0
-munmap(0x7fb5e32ec000, 96888)           = 0
-openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = ${hasConfig ? '3' : '-1 ENOENT (No such file or directory)'}
-${hasConfig ? 'fstat(3, {st_mode=S_IFREG|0644, st_size=15, ...}) = 0\nread(3, "CONF_V1: SECRET\\n", 1024) = 16\nclose(3)                                = 0\nwrite(1, "FLAG: GHOST_ROOT{TR4C3_TH3_SYSC4LLS_255}\\n", 40) = 40\nexit_group(0)                           = ?\n+++ exited with 0 +++' : 'exit_group(1)                           = ?\n+++ exited with 1 +++'}`;
-        } else {
-            output = `strace: ${targetCmd}: command not found or not supported in simulation mode.`;
-        }
-        break;
-    }
+    // Cycle 255: strace_DISABLED_1 removed
+
     case 'ls': {
       const flags = args.filter(arg => arg.startsWith('-'));
       const paths = args.filter(arg => !arg.startsWith('-'));
@@ -21038,7 +21013,8 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
                  
                  if (configNode && configNode.type === 'file') {
                       if (configNode.content.trim() === 'CONF_V1: SECRET') {
-                          output += 'openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = 3\n' +
+                          output += 'stat("/tmp/secret_config.dat", {st_mode=S_IFREG|0644, st_size=15, ...}) = 0\n' +
+                                    'openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = 3\n' +
                                     'read(3, "CONF_V1...", 1024)             = 15\n' +
                                     'close(3)                                = 0\n' +
                                     'write(1, "[SUCCESS] Configuration Loaded.\\n", 31) = 31\n' +
@@ -21047,7 +21023,8 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
                                     'exit_group(0)                           = ?\n' +
                                     '+++ exited with 0 +++';
                       } else {
-                          output += 'openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = 3\n' +
+                          output += 'stat("/tmp/secret_config.dat", {st_mode=S_IFREG|0644, st_size=' + configNode.content.length + ', ...}) = 0\n' +
+                                    'openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = 3\n' +
                                     'read(3, "' + configNode.content.substring(0, 10) + '...", 1024) = 15\n' +
                                     'close(3)                                = 0\n' +
                                     'write(2, "Error: Invalid Configuration Format\\n", 36) = 36\n' +
@@ -21055,7 +21032,8 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
                                     '+++ exited with 1 +++';
                       }
                  } else {
-                      output += 'openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = -1 ENOENT (No such file or directory)\n' +
+                      output += 'stat("/tmp/secret_config.dat", 0x7ffd...) = -1 ENOENT (No such file or directory)\n' +
+                                'openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = -1 ENOENT (No such file or directory)\n' +
                                 'exit_group(1)                           = ?\n' +
                                 '+++ exited with 1 +++';
                  }

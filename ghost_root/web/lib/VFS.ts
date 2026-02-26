@@ -946,7 +946,7 @@ Click here to claim your prize!
   // Cycle 255: The Process Trace (Strace) - Verified
   '/usr/bin/mystery_process': {
       type: 'file',
-      content: '\x7fELF\x02\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x3e\x00\x01\x00\x00\x00\x30\x05\x40\x00\x00\x00\x00\x00@\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\n[BINARY_BLOB_V2]\nCONF_V1_REQUIRED\n',
+      content: '\x7fELF\x02\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x3e\x00\x01\x00\x00\x00\x30\x05\x40\x00\x00\x00\x00\x00@\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\n[BINARY_BLOB_V3]\nCONF_V1_REQUIRED\n',
       permissions: '0755'
   },
   '/usr/bin/strace': {
@@ -1599,6 +1599,23 @@ Do not attempt to fix it unless the alert level is 0.
   '/home/ghost/uplink_error.log': {
       type: 'file',
       content: '[ERROR] Failed to initialize uplink interface.\n[DIAGNOSTIC] Kernel module "uplink" is missing.\n[ACTION] Locate the module in /lib/modules and load it into the kernel (insmod/modprobe).\n[NOTE] "lsmod" can list currently loaded modules.'
+  },
+
+  // Cycle 256 Init (The Gatekeeper)
+  '/usr/bin/gatekeeper': {
+      type: 'file',
+      content: '[BINARY_ELF_X86_64] [GATEKEEPER_V1]\\nUsage: gatekeeper <password>\\n[ERROR] Authentication Failed.\\n',
+      permissions: '0755'
+  },
+  '/home/ghost/trace_log_v2.txt': {
+      type: 'file',
+      content: '[ALERT] Gatekeeper binary deployed.\\n[STATUS] Password unknown.\\n[ANALYSIS] It seems to compare the input string against a hardcoded value.\\n[ACTION] Use "ltrace" to intercept library calls (strcmp) and find the password.'
+  },
+  // Cycle 255: Documentation (Refinement)
+  '/usr/share/doc/mystery_process/README': {
+      type: 'file',
+      content: 'MYSTERY_PROCESS v1.0\\n\\nThis utility checks for a specific configuration file to verify system integrity.\\nDue to security protocols, it fails silently if the environment is not prepared correctly.\\n\\nUse tracing tools to debug.',
+      permissions: '0644'
   },
 };
 
