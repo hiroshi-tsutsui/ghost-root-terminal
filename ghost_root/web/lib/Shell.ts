@@ -1242,7 +1242,7 @@ export const loadSystemState = () => {
 
         VFS['/usr/bin/mystery_process'] = {
             type: 'file',
-            content: '[BINARY_ELF_X86_64] [UNKNOWN_PAYLOAD]\n[STATUS] Running...\n[ERROR] Silent Failure (Exit Code 1)\n[VERSION] 1.1',
+            content: '[BINARY_ELF_X86_64] [UNKNOWN_PAYLOAD]\n[STATUS] Running...\n[ERROR] Silent Failure (Exit Code 1)\n[VERSION] 1.2',
             permissions: '0755'
         };
         link('/usr/bin', 'mystery_process');
@@ -21378,7 +21378,7 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
             break;
         }
         if (args.includes('--version') || args.includes('-v')) {
-            output = 'mystery_process v1.2.0 (Build 261)';
+            output = 'mystery_process v1.3.0 (Build 262)';
             break;
         }
         if (args.includes('--verbose')) {

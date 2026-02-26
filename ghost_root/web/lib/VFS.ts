@@ -946,7 +946,7 @@ Click here to claim your prize!
   // Cycle 255: The Process Trace (Strace) - Verified
   '/usr/bin/mystery_process': {
       type: 'file',
-      content: '\x7fELF\x02\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x3e\x00\x01\x00\x00\x00\x30\x05\x40\x00\x00\x00\x00\x00@\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\n[BINARY_BLOB_V4]\nCONF_V1_REQUIRED\n[VERSION] 1.1',
+      content: '\x7fELF\x02\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x3e\x00\x01\x00\x00\x00\x30\x05\x40\x00\x00\x00\x00\x00@\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\n[BINARY_BLOB_V4]\nCONF_V1_REQUIRED\n[VERSION] 1.3',
       permissions: '0755'
   },
   '/usr/bin/strace': {
@@ -1616,6 +1616,12 @@ Do not attempt to fix it unless the alert level is 0.
       type: 'file',
       content: 'MYSTERY_PROCESS v1.0\\n\\nThis utility checks for a specific configuration file to verify system integrity.\\nDue to security protocols, it fails silently if the environment is not prepared correctly.\\n\\nUse tracing tools to debug.',
       permissions: '0644'
+  },
+  // Cycle 255: The Process Trace (Strace) - Verified v1.3
+  '/usr/bin/mystery_process': {
+      type: 'file',
+      content: '\x7fELF\x02\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x3e\x00\x01\x00\x00\x00\x30\x05\x40\x00\x00\x00\x00\x00@\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\n[BINARY_BLOB_V4]\nCONF_V1_REQUIRED\n[VERSION] 1.3',
+      permissions: '0755'
   },
 };
 
