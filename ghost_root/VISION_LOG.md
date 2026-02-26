@@ -1,3 +1,38 @@
+## Cycle 255 (Phase 4.5): The Process Trace (Activation)
+- **Date:** 2026-02-26
+- **Sector:** /usr/bin/mystery_process
+- **Objective:** Activate the "Process Trace" puzzle by resolving code duplication.
+- **Implementation:**
+  - Deprecated legacy `mystery_process` handler in `Shell.ts` to enable the refined implementation.
+  - Verified `strace` command logic at line ~21000 is active.
+  - Confirmed `mystery_process` will now fail silently (as intended) or succeed with `/tmp/secret_config.dat`.
+- **Status:** DEPLOYED (https://ghost-root-terminal.vercel.app/)
+
+```SLACK_MESSAGE
+📟 **UPLINK ESTABLISHED: CYCLE REPORT**
+**Sector:** /usr/bin/mystery_process
+**New Protocol:** Process Trace Active (Code Deduped)
+**Encryption Level:** High
+**Target:** https://ghost-root-terminal.vercel.app/
+```
+
+## Cycle 255 (Phase 4.13): Strace Logging
+- **Date:** 2026-02-26
+- **Sector:** /var/log/strace.log
+- **Objective:** Added persistent logging for silent failures.
+- **Implementation:**
+  - Created `/var/log/strace.log` with debug output matching `mystery_process` behavior.
+  - Provides hints for users who miss the `strace` command initially.
+- **Status:** DEPLOYED (https://ghost-root-terminal.vercel.app/)
+
+```SLACK_MESSAGE
+📟 **UPLINK ESTABLISHED: CYCLE REPORT**
+**Sector:** /var/log
+**New Protocol:** Persistent Crash Logs (strace.log)
+**Encryption Level:** Low (Hint File)
+**Target:** https://ghost-root-terminal.vercel.app/
+```
+
 ## Cycle 255 (Phase 4.12): Finalization
 - **Date:** 2026-02-26
 - **Sector:** /usr/bin/mystery_process
@@ -63,6 +98,24 @@
 📟 **UPLINK ESTABLISHED: CYCLE REPORT**
 **Sector:** /usr/bin/mystery_process
 **New Protocol:** Process Trace Logic Verified
+**Encryption Level:** High
+**Target:** https://ghost-root-terminal.vercel.app/
+```
+
+## Cycle 255 (Phase 5.1): Strace Refinement (Syscall Realism)
+- **Date:** 2026-02-26
+- **Sector:** /usr/bin/mystery_process
+- **Objective:** Enhance 'strace' realism by adding `getrandom` and memory allocation calls.
+- **Implementation:**
+  - Updated `Shell.ts` to include `getrandom` and `brk` calls in `strace` output.
+  - Bumped `mystery_process` build version to 261.
+  - Verified silent failure and success paths remain intact.
+- **Status:** DEPLOYED (https://ghost-root-terminal.vercel.app/)
+
+```SLACK_MESSAGE
+📟 **UPLINK ESTABLISHED: CYCLE REPORT**
+**Sector:** /usr/bin/mystery_process
+**New Protocol:** Advanced Syscall Trace (Build 261)
 **Encryption Level:** High
 **Target:** https://ghost-root-terminal.vercel.app/
 ```
