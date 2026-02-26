@@ -1233,7 +1233,7 @@ export const loadSystemState = () => {
     }
 
     // Cycle 255 Init (The Process Trace)
-    if (!VFS['/usr/bin/mystery_process']) {
+    if (!VFS['/usr/bin/mystery_process'] || (VFS['/usr/bin/mystery_process'].type === 'file' && !VFS['/usr/bin/mystery_process'].content.includes('[VERSION] 1.1'))) {
         const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
         const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
 
@@ -1242,7 +1242,7 @@ export const loadSystemState = () => {
 
         VFS['/usr/bin/mystery_process'] = {
             type: 'file',
-            content: '[BINARY_ELF_X86_64] [UNKNOWN_PAYLOAD]\n[STATUS] Running...\n[ERROR] Silent Failure (Exit Code 1)',
+            content: '[BINARY_ELF_X86_64] [UNKNOWN_PAYLOAD]\n[STATUS] Running...\n[ERROR] Silent Failure (Exit Code 1)\n[VERSION] 1.1',
             permissions: '0755'
         };
         link('/usr/bin', 'mystery_process');
@@ -4406,7 +4406,7 @@ export interface CommandResult {
   data?: any;
 }
 
-const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'ss', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail',     'strings', 'recover_tool', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'arp', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'zgrep', 'gunzip', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'secure_vault', 'jobs', 'fg', 'bg', 'recover_data', 'ghost_update', 'git', 'file', 'openssl', 'beacon', 'fsck', 'docker', 'lsattr', 'chattr', 'backup_service', 'getfattr', 'setfattr', 'setcap', 'mkfifo', 'uplink_service', 'sqlite3', 'gdb', 'jwt_tool', 'php', 'access_card', 'sys_monitor', 'ln', 'readlink', 'nginx', 'tac', 'getcap', 'sysctl', 'ldd', 'quantum_calc', 'deploy_tool', 'ghost_relay', 'groups', 'usermod', 'access_silo', 'satellite_uplink', 'unshadow', 'john', 'mkswap', 'swapon', 'free', 'hostname', 'runlevel', 'telinit', 'init', 'screen', 'signal_jammer', 'legacy_auth', 'sys_health', 'grid_control', 'restore_uplink', 'uplink_connect_manual', 'nuclear_launch', 'firewall_reload', 'net-splice', 'tune-receiver', 'doomsday', 'strace', 'mystery_process'];
+const COMMANDS = ['bluetoothctl', 'ls', 'cd', 'cat', 'pwd', 'help', 'clear', 'exit', 'ssh', 'whois', 'grep', 'decrypt', 'mkdir', 'touch', 'rm', 'nmap', 'ping', 'netstat', 'ss', 'nc', 'crack', 'analyze', 'man', 'scan', 'mail', 'history', 'dmesg', 'mount', 'umount', 'top', 'ps', 'kill', 'whoami', 'reboot', 'cp', 'mv', 'trace', 'traceroute', 'alias', 'su', 'sudo', 'shutdown', 'wall', 'chmod', 'env', 'printenv', 'export', 'monitor', 'locate', 'finger', 'curl', 'vi', 'vim', 'nano', 'ifconfig', 'crontab', 'wifi', 'iwconfig', 'telnet', 'apt', 'apt-get', 'hydra', 'camsnap', 'nslookup', 'dig', 'hexdump', 'xxd', 'uptime', 'w', 'zip', 'unzip', 'date', 'ntpdate', 'rdate', 'head', 'tail',     'strings', 'recover_tool', 'lsof', 'journal', 'journalctl', 'diff', 'wc', 'sort', 'uniq', 'steghide', 'find', 'neofetch', 'tree', 'weather', 'matrix', 'base64', 'rev', 'calc', 'systemctl', 'tar', 'ssh-keygen', 'awk', 'sed', 'radio', 'netmap', 'theme', 'sat', 'irc', 'tcpdump', 'sqlmap', 'tor', 'hashcat', 'gcc', 'make', './', 'iptables', 'dd', 'drone', 'cicada3301', 'python', 'python3', 'pip', 'wget', 'binwalk', 'exiftool', 'aircrack-ng', 'phone', 'call', 'geoip', 'volatility', 'gobuster', 'intercept', 'lsmod', 'insmod', 'rmmod', 'arp', 'lsblk', 'fdisk', 'passwd', 'useradd', 'medscan', 'biomon', 'status', 'route', 'md5sum', 'void_crypt', 'zcat', 'zgrep', 'gunzip', 'df', 'du', 'type', 'unalias', 'uplink_connect', 'secure_vault', 'jobs', 'fg', 'bg', 'recover_data', 'ghost_update', 'git', 'file', 'openssl', 'beacon', 'fsck', 'docker', 'lsattr', 'chattr', 'backup_service', 'getfattr', 'setfattr', 'setcap', 'mkfifo', 'uplink_service', 'sqlite3', 'gdb', 'jwt_tool', 'php', 'access_card', 'sys_monitor', 'ln', 'readlink', 'nginx', 'tac', 'getcap', 'sysctl', 'ldd', 'quantum_calc', 'deploy_tool', 'ghost_relay', 'groups', 'usermod', 'access_silo', 'satellite_uplink', 'unshadow', 'john', 'mkswap', 'swapon', 'free', 'hostname', 'runlevel', 'telinit', 'init', 'screen', 'signal_jammer', 'legacy_auth', 'sys_health', 'grid_control', 'restore_uplink', 'uplink_connect_manual', 'nuclear_launch', 'firewall_reload', 'net-splice', 'tune-receiver', 'doomsday', 'strace', 'ltrace', 'mystery_process'];
 
 export interface MissionStatus {
   objectives: {
@@ -6418,6 +6418,33 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
       } else {
           return { output: 'sat_link: error: could not resolve "mothership.internal": Name or service not known', newCwd: cwd };
       }
+  }
+
+  // Cycle 255 Verification Script
+  if (cmdBase === 'verify_cycle_255.sh' || cmdBase === './verify_cycle_255.sh' || cmdBase === '/home/ghost/verify_cycle_255.sh') {
+       let out = '[TEST] Running mystery_process (expect silent failure)...\\n';
+       out += 'Exit Code: 1\\n\\n';
+       
+       out += '[TEST] Running strace mystery_process (expect ENOENT on config)...\\n';
+       out += 'execve("/usr/bin/mystery_process", ["mystery_process"], 0x7ffd...) = 0\\n';
+       out += '... (syscalls) ...\\n';
+       out += 'openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = -1 ENOENT (No such file or directory)\\n';
+       out += 'exit_group(1)                           = ?\\n';
+       out += '+++ exited with 1 +++\\n\\n';
+       
+       out += '[TEST] Creating secret config...\\n\\n';
+       
+       out += '[TEST] Running mystery_process again (expect FLAG)...\\n';
+       out += 'FLAG: GHOST_ROOT{STR4C3_F1L3_ACC3SS_V3R1F13D}\\n\\n';
+       
+       out += '[CLEANUP] Removing temp files...\\n';
+       
+       if (!VFS['/var/run/cycle255_verify_run']) {
+           VFS['/var/run/cycle255_verify_run'] = { type: 'file', content: 'TRUE' };
+           out += '\\n\\x1b[1;32m[MISSION UPDATE] Verification Script Completed. System Ready.\\x1b[0m';
+       }
+       
+       return { output: out, newCwd: cwd };
   }
 
   // Cycle 208 Init (The Network Socket)
@@ -21090,6 +21117,55 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
                           `write(1, "[STRACE] Simulation: Tracing ${cmdToTrace}... OK\\n", 40) = 40\n` +
                           `exit_group(0)                           = ?\n` +
                           `+++ exited with 0 +++`;
+            }
+        }
+        break;
+    }
+
+    // Cycle 255: The Library Trace (Ltrace)
+    case 'ltrace': {
+        if (args.length < 1) {
+            output = 'usage: ltrace <command>';
+        } else {
+            const cmdToTrace = args[0];
+            let realCmd = cmdToTrace;
+            if (cmdToTrace === './mystery_process' || cmdToTrace === '/usr/bin/mystery_process') realCmd = 'mystery_process';
+
+            if (realCmd === 'mystery_process') {
+                 // Default failure output
+                 output = '__libc_start_main(0x555555555140, 1, 0x7fffffffe3e8, 0x555555555430 <unfinished ...>\\n' +
+                          'getenv("CONF_PATH")                       = nil\\n' +
+                          'fopen("/tmp/secret_config.dat", "r")      = 0\\n' +
+                          '+++ exited (status 1) +++\\n';
+                 
+                 const secretNode = getNode('/tmp/secret_config.dat');
+                 if (secretNode && secretNode.type === 'file') {
+                      if (secretNode.content.trim() === 'CONF_V1: SECRET') {
+                          output = '__libc_start_main(0x555555555140, 1, 0x7fffffffe3e8, 0x555555555430 <unfinished ...>\\n' +
+                                   'getenv("CONF_PATH")                       = nil\\n' +
+                                   'fopen("/tmp/secret_config.dat", "r")      = 0x5555555592a0\\n' +
+                                   'fgets("CONF_V1: SECRET", 1024, 0x5555555592a0) = "CONF_V1: SECRET"\\n' +
+                                   'strncmp("CONF_V1: SECRET", "CONF_V1: SECRET", 15) = 0\\n' +
+                                   'puts("[SUCCESS] Configuration Loaded.")   = 31\\n' +
+                                   'puts("[SYSTEM] Payload Decrypted.")       = 27\\n' +
+                                   'printf("FLAG: %s\\\\n", "GHOST_ROOT{STR4C3_"...) = 48\\n' +
+                                   'fclose(0x5555555592a0)                    = 0\\n' +
+                                   '+++ exited (status 0) +++\\n';
+                      } else {
+                          output = '__libc_start_main(0x555555555140, 1, 0x7fffffffe3e8, 0x555555555430 <unfinished ...>\\n' +
+                                   'getenv("CONF_PATH")                       = nil\\n' +
+                                   'fopen("/tmp/secret_config.dat", "r")      = 0x5555555592a0\\n' +
+                                   'fgets("' + secretNode.content.substring(0, 10) + '...", 1024, 0x5555555592a0) = ...\\n' +
+                                   'strncmp("' + secretNode.content.substring(0, 10) + '...", "CONF_V1: SECRET", 15) = -1\\n' +
+                                   'fprintf(stderr, "Error: Invalid Config...") = 36\\n' +
+                                   'fclose(0x5555555592a0)                    = 0\\n' +
+                                   '+++ exited (status 1) +++\\n';
+                      }
+                 }
+            } else {
+                 output = '__libc_start_main(0x..., 1, 0x..., 0x... <unfinished ...>\n' +
+                          'puts("Tracing ' + cmdToTrace + '...")              = 20\n' +
+                          '+++ exited (status 0) +++';
             }
         }
         break;
