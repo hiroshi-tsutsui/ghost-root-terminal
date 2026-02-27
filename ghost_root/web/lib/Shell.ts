@@ -1233,7 +1233,7 @@ export const loadSystemState = () => {
     }
 
     // Cycle 255 Init (The Process Trace)
-    if (!VFS['/usr/bin/mystery_process'] || (VFS['/usr/bin/mystery_process'].type === 'file' && !VFS['/usr/bin/mystery_process'].content.includes('[VERSION] 2.3'))) {
+    if (!VFS['/usr/bin/mystery_process'] || (VFS['/usr/bin/mystery_process'].type === 'file' && !VFS['/usr/bin/mystery_process'].content.includes('[VERSION] 2.4'))) {
         const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
         const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
 
@@ -1242,7 +1242,7 @@ export const loadSystemState = () => {
 
         VFS['/usr/bin/mystery_process'] = {
             type: 'file',
-            content: '[BINARY_ELF_X86_64] [UNKNOWN_PAYLOAD]\n[STATUS] Running...\n[ERROR] Silent Failure (Exit Code 1)\nCONF_V1: SECRET\n[VERSION] 2.3',
+            content: '[BINARY_ELF_X86_64] [UNKNOWN_PAYLOAD]\n[STATUS] Running...\n[ERROR] Silent Failure (Exit Code 1)\nCONF_V1: SECRET\n[VERSION] 2.4',
             permissions: '0755'
         };
         link('/usr/bin', 'mystery_process');
@@ -1252,7 +1252,7 @@ export const loadSystemState = () => {
     if (!VFS['/home/ghost/dev_notes.txt']) {
         VFS['/home/ghost/dev_notes.txt'] = {
             type: 'file',
-            content: '[DEV LOG]\nBinary: mystery_process\nStatus: DEPLOYED (v2.3)\n\nNote: We enabled the "Silent Failure" protocol to prevent reverse engineering.\nIf the configuration file is missing, it just quits.\nUse the standard tracing tools if you need to debug the file access paths.\n\n- Ops',
+            content: '[DEV LOG]\nBinary: mystery_process\nStatus: DEPLOYED (v2.4)\n\nNote: We enabled the "Silent Failure" protocol to prevent reverse engineering.\nIf the configuration file is missing, it just quits.\nUse the standard tracing tools if you need to debug the file access paths.\n\n- Ops',
             permissions: '0644'
         };
         const home = getNode('/home/ghost');
@@ -15871,9 +15871,9 @@ tmpfs             815276    1184    814092   1% /run
       }
       break;
     }
-    case 'mystery_process_DISABLED_15874':
-    case './mystery_process_DISABLED_15874':
-    case '/usr/bin/mystery_process_DISABLED_15874': {
+    case 'mystery_process':
+    case './mystery_process':
+    case '/usr/bin/mystery_process': {
         const configPath = '/tmp/secret_config.dat';
         const configNode = getNode(configPath);
         
@@ -15899,7 +15899,7 @@ tmpfs             815276    1184    814092   1% /run
         }
         break;
     }
-    case 'strace_DISABLED_15940': {
+    case 'strace': {
         if (args.length < 1) {
             output = 'strace: must have PROG [ARGS]';
         } else {
