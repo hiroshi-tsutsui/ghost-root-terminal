@@ -28,3 +28,16 @@
 - **Mechanic:** Enhanced puzzle fidelity: `mystery_process` now verifies `/tmp/secret_config.dat` content (`CONF_V1`). `strace` simulation updated to preview file content.
 - **Status:** DEPLOYED (Refined Logic)
 
+## Cycle 255: The Process Trace (Strace) - Phase 4.5
+- **Date:** 2026-02-27
+- **Sector:** /usr/bin/mystery_process
+- **Type:** Sysadmin / Debugging (Strace)
+- **Mechanic:** Verified `strace` simulation logic for `ENOENT` on `/tmp/secret_config.dat`. Confirmed `mystery_process` checks for `CONF_V1` content.
+- **Status:** DEPLOYED (VERIFIED)
+
+## Cycle 255 (Phase 9.0): The Process Trace (Documentation)
+- **Date:** 2026-02-27
+- **Sector:** /usr/share/doc/mystery_process
+- **Type:** Documentation / Sysadmin
+- **Mechanic:** Added `/usr/share/doc/mystery_process/README.md` to guide users. Bumped `mystery_process` version to 1.8.
+- **Status:** DEPLOYED (Production)

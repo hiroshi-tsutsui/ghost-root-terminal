@@ -634,7 +634,31 @@ COMMIT
   },
   '/usr/share': {
     type: 'dir',
-    children: ['ca-certificates']
+    children: ['ca-certificates', 'man', 'doc']
+  },
+  '/usr/share/doc': {
+      type: 'dir',
+      children: ['mystery_process']
+  },
+  '/usr/share/doc/mystery_process': {
+      type: 'dir',
+      children: ['README.md']
+  },
+  '/usr/share/man': {
+    type: 'dir',
+    children: ['man1']
+  },
+  '/usr/share/man/man1': {
+    type: 'dir',
+    children: ['strace.1', 'mystery_process.1']
+  },
+  '/usr/share/man/man1/strace.1': {
+    type: 'file',
+    content: '.TH STRACE 1 "February 2026" "Ghost Root" "User Commands"\\n.SH NAME\\nstrace - trace system calls and signals\\n.SH SYNOPSIS\\n.B strace\\n[\\n.I command\\n]\\n.SH DESCRIPTION\\nIn the simplest case, strace runs the specified command until it exits.\\nIt intercepts and records the system calls which are called by a process and the signals which are received by a process.\\n.SH EXAMPLES\\n.B strace ./mystery_process'
+  },
+  '/usr/share/man/man1/mystery_process.1': {
+    type: 'file',
+    content: '.TH MYSTERY_PROCESS 1 "February 2026" "Ghost Root" "User Commands"\\n.SH NAME\\nmystery_process - system integrity verifier\\n.SH SYNOPSIS\\n.B mystery_process\\n.SH DESCRIPTION\\nRuns a verification routine on the system configuration.\\nIf the configuration is valid, it prints the integrity flag.\\nIf the configuration is missing or invalid, it exits silently.\\n.SH FILES\\nConfiguration is loaded from a temporary location.\\nUse standard debugging tools (e.g., strace) to identify the required path.'
   },
   '/usr/share/ca-certificates': {
     type: 'dir',
@@ -946,8 +970,13 @@ Click here to claim your prize!
   // Cycle 255: The Process Trace (Strace) - Verified
   '/usr/bin/mystery_process': {
       type: 'file',
-      content: '\x7fELF\x02\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x3e\x00\x01\x00\x00\x00\x30\x05\x40\x00\x00\x00\x00\x00@\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\n[BINARY_BLOB_V4]\nCONF_V1_REQUIRED\n[VERSION] 1.3',
+      content: '\x7fELF\x02\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x3e\x00\x01\x00\x00\x00\x30\x05\x40\x00\x00\x00\x00\x00@\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\n[BINARY_BLOB_V4]\nCONF_V1_REQUIRED\n[VERSION] 1.8',
       permissions: '0755'
+  },
+  '/usr/share/doc/mystery_process/README.md': {
+      type: 'file',
+      content: '# mystery_process v1.8\n\nThis utility verifies system integrity.\nIt requires a valid configuration file to run.\nIf the configuration is missing, it exits silently to avoid leaking path information.\n\nDebug with: strace mystery_process',
+      permissions: '0644'
   },
   '/usr/bin/strace': {
       type: 'file',
@@ -1043,6 +1072,7 @@ Oct 23 15:30:01 ghost-root openclaw[1337]: Agent "Vision" reporting status: ONLI
 Oct 23 15:45:00 ghost-root kernel: [ 4000.000000] RADIO: Strong FM interference detected on 89.9 MHz.
 Oct 23 16:00:00 ghost-root network[500]: BRIDGE_TARGET initiated at 10.10.10.10
 Oct 23 16:20:00 ghost-root kernel: [ 4200.000000] VAULT_NODE: Connection refused from 192.168.1.200 (vault-node.local).
+Oct 27 05:00:00 ghost-root CRON[777]: (root) CMD (/usr/bin/mystery_process) (exit status 1)
 `
     },
     '/var/log/syslog.2.gz': {

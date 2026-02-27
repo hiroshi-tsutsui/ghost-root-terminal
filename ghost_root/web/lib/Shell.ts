@@ -1233,7 +1233,7 @@ export const loadSystemState = () => {
     }
 
     // Cycle 255 Init (The Process Trace)
-    if (!VFS['/usr/bin/mystery_process'] || (VFS['/usr/bin/mystery_process'].type === 'file' && !VFS['/usr/bin/mystery_process'].content.includes('[VERSION] 1.3'))) {
+    if (!VFS['/usr/bin/mystery_process'] || (VFS['/usr/bin/mystery_process'].type === 'file' && !VFS['/usr/bin/mystery_process'].content.includes('[VERSION] 1.6'))) {
         const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
         const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
 
@@ -1242,7 +1242,7 @@ export const loadSystemState = () => {
 
         VFS['/usr/bin/mystery_process'] = {
             type: 'file',
-            content: '[BINARY_ELF_X86_64] [UNKNOWN_PAYLOAD]\n[STATUS] Running...\n[ERROR] Silent Failure (Exit Code 1)\nCONF_V1: SECRET\n[VERSION] 1.3',
+            content: '[BINARY_ELF_X86_64] [UNKNOWN_PAYLOAD]\n[STATUS] Running...\n[ERROR] Silent Failure (Exit Code 1)\nCONF_V1: SECRET\n[VERSION] 1.6',
             permissions: '0755'
         };
         link('/usr/bin', 'mystery_process');
@@ -15287,7 +15287,7 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
         }
         break;
     }
-    case 'mystery_process': {
+    case 'mystery_process_OLD_1': {
         // Cycle 255: The Process Trace
         const configPath = '/tmp/secret_config.dat';
         const configNode = getNode(configPath);
@@ -15312,7 +15312,7 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
         }
         break;
     }
-    case 'strace': {
+    case 'strace_OLD_1': {
         if (args.length < 1) {
             output = 'strace: must have PROG [ARGS]';
         } else {
@@ -18503,7 +18503,7 @@ ${validUnits.length} loaded units listed.`;
     }
 // Cycle 255: The Process Trace (Direct Execution) - ACTIVE
     case 'mystery_process': {
-        if (args.includes('--version')) { output = 'mystery_process v1.3'; break; }
+        if (args.includes('--version')) { output = 'mystery_process v1.8'; break; }
         const secretNode = getNode('/tmp/secret_config.dat');
         const secretExists = secretNode && secretNode.type === 'file';
         const content = secretExists ? secretNode.content : '';
@@ -18540,7 +18540,6 @@ ${validUnits.length} loaded units listed.`;
                     if (home && home.type === 'dir' && !home.children.includes('trace_hint.txt')) {
                         home.children.push('trace_hint.txt');
                     }
-                    // Notify user via "wall" simulation (optional, but let's keep it subtle: just the file)
                 }
             }
         }
