@@ -11892,10 +11892,76 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
         }
         break;
     }
-    // Duplicate mystery_process removed (1)
+    case 'mystery_process': {
+        const configPath = '/tmp/secret_config.dat';
+        const configNode = getNode(configPath);
+        
+        // Check existence AND content
+        if (configNode && (configNode as any).content && (configNode as any).content.trim() === 'CONF_V1: SECRET') {
+             const runDir = getNode('/var/run');
+             
+             if (!VFS['/var/run/strace_solved']) {
+                 VFS['/var/run/strace_solved'] = { type: 'file', content: 'TRUE' };
+                 if (runDir && runDir.type === 'dir' && !runDir.children.includes('strace_solved')) {
+                     runDir.children.push('strace_solved');
+                 }
+                 output = `[INTEGRITY_CHECK] Configuration found: /tmp/secret_config.dat\n[STATUS] Verified.\nFLAG: GHOST_ROOT{STR4C3_TR4C3_M4ST3R}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PROCESS TRACED.\x1b[0m`;
+             } else {
+                 output = `[INTEGRITY_CHECK] Configuration found.\n[STATUS] Verified.\nFLAG: GHOST_ROOT{STR4C3_TR4C3_M4ST3R}`;
+             }
+        } else {
+             // Silent failure (or minimal error if file exists but wrong content?)
+             // Realistically silent is better for the "mystery".
+             output = '';
+        }
+        break;
+    }
+    case 'strace': {
+        if (args.length < 1) {
+            output = 'usage: strace <command>';
+        } else {
+            const cmdToTrace = args[0];
+            
+            if (cmdToTrace.includes('mystery_process')) {
+                const configPath = '/tmp/secret_config.dat';
+                const hasConfig = !!getNode(configPath);
+                
+                output = `execve("/usr/bin/mystery_process", ["mystery_process"], 0x7ffd12345678) = 0
+brk(NULL)                               = 0x555555558000
+access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
+fstat(3, {st_mode=S_IFREG|0644, st_size=9876, ...}) = 0
+mmap(NULL, 9876, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7ffff7fc0000
+close(3)                                = 0`;
 
-
-    // Cycle 255: strace_DISABLED_1 removed
+                if (hasConfig) {
+                     output += `\nopenat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = 3
+fstat(3, {st_mode=S_IFREG|0644, st_size=15, ...}) = 0
+read(3, "CONF_V1: SECRET", 15)          = 15
+close(3)                                = 0
+write(1, "[INTEGRITY_CHECK] Configuration "..., 40) = 40
+exit_group(0)                           = ?
++++ exited with 0 +++`;
+                     // Also actually run the logic to print the flag in the output if strace passes it through?
+                     // Standard strace writes to stderr, and stdout is passed through.
+                     // In this simulation, we just return the trace as output. 
+                     // The user will see the trace and realize they need the file.
+                     // If the file exists, they should run mystery_process directly to get the flag (as per the mission description).
+                     // But strace output showing success confirms the fix.
+                } else {
+                     output += `\nopenat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = -1 ENOENT (No such file or directory)
+exit_group(1)                           = ?
++++ exited with 1 +++`;
+                }
+            } else {
+                output = `execve("/usr/bin/${cmdToTrace}", ["${cmdToTrace}"], 0x...) = 0
+...
+[STRACE] Attaching to process...
+[STRACE] Process exited.`;
+            }
+        }
+        break;
+    }
 
     case 'ls': {
       const flags = args.filter(arg => arg.startsWith('-'));
@@ -15804,9 +15870,79 @@ tmpfs             815276    1184    814092   1% /run
       }
       break;
     }
-// Duplicate mystery_process removed
-
-// Duplicate strace removed
+    case 'mystery_process':
+    case './mystery_process':
+    case '/usr/bin/mystery_process': {
+        const configPath = '/tmp/secret_config.dat';
+        const configNode = getNode(configPath);
+        
+        if (!configNode) {
+            output = ''; // Silent failure
+        } else {
+             // Check content
+             const content = (configNode as any).content || '';
+             if (content.trim() === 'CONF_V1: SECRET') {
+                 if (!VFS['/var/run/cycle255_solved']) {
+                     VFS['/var/run/cycle255_solved'] = { type: 'file', content: 'TRUE' };
+                     const runDir = getNode('/var/run');
+                     if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle255_solved')) {
+                         runDir.children.push('cycle255_solved');
+                     }
+                     output = '[STATUS] Running...\nConfiguration Loaded.\nVerifying Integrity...\n[SUCCESS] System Validated.\nFLAG: GHOST_ROOT{STR4C3_M4ST3R_V1}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PROCESS TRACED.\x1b[0m';
+                 } else {
+                     output = '[STATUS] Running...\nConfiguration Loaded.\nVerifying Integrity...\n[SUCCESS] System Validated.\nFLAG: GHOST_ROOT{STR4C3_M4ST3R_V1}';
+                 }
+             } else {
+                 output = '[STATUS] Running...\nConfiguration Error: Invalid Format.';
+             }
+        }
+        break;
+    }
+    case 'strace': {
+        if (args.length < 1) {
+            output = 'strace: must have PROG [ARGS]';
+        } else {
+            const targetCmd = args[0];
+            if (targetCmd === './mystery_process' || targetCmd === 'mystery_process' || targetCmd === '/usr/bin/mystery_process') {
+                 let trace = `execve("${targetCmd}", ["${targetCmd}"], 0x7ff...) = 0\n`;
+                 trace += `brk(NULL) = 0x560822615000\n`;
+                 trace += `access("/etc/ld.so.nohwcap", F_OK) = -1 ENOENT (No such file or directory)\n`;
+                 trace += `access("/etc/ld.so.preload", R_OK) = -1 ENOENT (No such file or directory)\n`;
+                 trace += `openat(AT_FDCWD, "/usr/lib/libc.so.6", O_RDONLY|O_CLOEXEC) = 3\n`;
+                 trace += `read(3, "\\177ELF...", 832) = 832\n`;
+                 
+                 const configPath = '/tmp/secret_config.dat';
+                 const configNode = getNode(configPath);
+                 
+                 if (!configNode) {
+                     trace += `openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = -1 ENOENT (No such file or directory)\n`;
+                     trace += `exit_group(1) = ?\n`;
+                     trace += `+++ exited with 1 +++`;
+                 } else {
+                     trace += `openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = 3\n`;
+                     trace += `fstat(3, {st_mode=S_IFREG|0644, st_size=15, ...}) = 0\n`;
+                     trace += `read(3, "CONF_V1: SECRET", 4096) = 15\n`;
+                     trace += `close(3) = 0\n`;
+                     trace += `write(1, "[STATUS] Running...\\n", 20[STATUS] Running...\n) = 20\n`;
+                     trace += `write(1, "Configuration Loaded.\\n", 22Configuration Loaded.\n) = 22\n`;
+                     trace += `write(1, "Verifying Integrity...\\n", 23Verifying Integrity...\n) = 23\n`;
+                     trace += `write(1, "[SUCCESS] System Validated.\\n", 27[SUCCESS] System Validated.\n) = 27\n`;
+                     trace += `write(1, "FLAG: GHOST_ROOT{STR4C3_M4ST3R_V1}\\n", 35FLAG: GHOST_ROOT{STR4C3_M4ST3R_V1}\n) = 35\n`;
+                     trace += `exit_group(0) = ?\n`;
+                     trace += `+++ exited with 0 +++`;
+                 }
+                 output = trace;
+            } else {
+                 output = `strace: ${targetCmd}: command not found`;
+                 if (['ls', 'cat', 'pwd', 'whoami', 'id', 'date', 'uptime'].includes(targetCmd) || ALIASES[targetCmd]) {
+                     output = `execve("/usr/bin/${targetCmd}", ["${targetCmd}"], 0x7ff...) = 0\n`;
+                     output += `write(1, "...", ...)\n`;
+                     output += `exit_group(0) = ?\n+++ exited with 0 +++`;
+                 }
+            }
+        }
+        break;
+    }
 
     // Removed duplicate df case
     // Duplicate mystery_process removed
