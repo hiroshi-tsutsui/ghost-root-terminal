@@ -1233,7 +1233,7 @@ export const loadSystemState = () => {
     }
 
     // Cycle 255 Init (The Process Trace)
-    if (!VFS['/usr/bin/mystery_process'] || (VFS['/usr/bin/mystery_process'].type === 'file' && !VFS['/usr/bin/mystery_process'].content.includes('[VERSION] 1.8'))) {
+    if (!VFS['/usr/bin/mystery_process'] || (VFS['/usr/bin/mystery_process'].type === 'file' && !VFS['/usr/bin/mystery_process'].content.includes('[VERSION] 2.0'))) {
         const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
         const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
 
@@ -1242,7 +1242,7 @@ export const loadSystemState = () => {
 
         VFS['/usr/bin/mystery_process'] = {
             type: 'file',
-            content: '[BINARY_ELF_X86_64] [UNKNOWN_PAYLOAD]\n[STATUS] Running...\n[ERROR] Silent Failure (Exit Code 1)\nCONF_V1: SECRET\n[VERSION] 1.8',
+            content: '[BINARY_ELF_X86_64] [UNKNOWN_PAYLOAD]\n[STATUS] Running...\n[ERROR] Silent Failure (Exit Code 1)\nCONF_V1: SECRET\n[VERSION] 2.0',
             permissions: '0755'
         };
         link('/usr/bin', 'mystery_process');
@@ -1252,7 +1252,7 @@ export const loadSystemState = () => {
     if (!VFS['/home/ghost/dev_notes.txt']) {
         VFS['/home/ghost/dev_notes.txt'] = {
             type: 'file',
-            content: '[DEV LOG]\nBinary: mystery_process\nStatus: DEPLOYED\n\nNote: We enabled the "Silent Failure" protocol to prevent reverse engineering.\nIf the configuration file is missing, it just quits.\nUse the standard tracing tools if you need to debug the file access paths.\n\n- Ops',
+            content: '[DEV LOG]\nBinary: mystery_process\nStatus: DEPLOYED (v2.0)\n\nNote: We enabled the "Silent Failure" protocol to prevent reverse engineering.\nIf the configuration file is missing, it just quits.\nUse the standard tracing tools if you need to debug the file access paths.\n\n- Ops',
             permissions: '0644'
         };
         const home = getNode('/home/ghost');
@@ -10199,6 +10199,34 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
   }
 
 
+  // Cycle 255 Init (The Process Trace)
+  if (!VFS['/usr/bin/mystery_process']) {
+       // Ensure /usr/bin exists
+       const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
+       const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
+       
+       ensureDir('/usr'); ensureDir('/usr/bin'); link('/usr', 'bin');
+       
+       VFS['/usr/bin/mystery_process'] = {
+           type: 'file',
+           content: '[BINARY_ELF_X86_64] [MYSTERY_PROC_V1]\n',
+           permissions: '0755'
+       };
+       link('/usr/bin', 'mystery_process');
+
+       // Hint/Mission Start
+       if (!VFS['/home/ghost/trace_mission.txt']) {
+           VFS['/home/ghost/trace_mission.txt'] = {
+               type: 'file',
+               content: '[MISSION] Analyze the binary /usr/bin/mystery_process.\n[PROBLEM] It crashes silently.\n[GOAL] Find out why and fix it.\n[TOOL] Use system call tracing (strace).'
+           };
+           const home = getNode('/home/ghost');
+           if (home && home.type === 'dir' && !home.children.includes('trace_mission.txt')) {
+               home.children.push('trace_mission.txt');
+           }
+       }
+  }
+
   // Cycle 277 Init (The Kernel Module)
   if (!VFS['/lib/modules/5.4.0-ghost/kernel/crypto/crypto_sec.ko']) {
        // Create module file
@@ -10921,6 +10949,10 @@ FLAG: GHOST_ROOT{SU1D_B1T_M4ST3R}
       }
       break;
     }
+
+    // Cycle 255: The Process Trace
+    // Removed legacy mystery_process implementation (duplicate)
+    // Removed legacy strace implementation (duplicate)
     case 'zcat': {
         if (args.length < 1) {
             output = 'usage: zcat <file...>';
@@ -15287,86 +15319,8 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
         }
         break;
     }
-    case 'mystery_process_OLD_1': {
-        // Cycle 255: The Process Trace
-        const configPath = '/tmp/secret_config.dat';
-        const configNode = getNode(configPath);
-
-        if (!configNode) {
-            // Silent failure
-            output = ''; 
-        } else if (configNode.type === 'file' && configNode.content.trim() === 'CONF_V1: SECRET') {
-             output = 'Configuration Loaded.\nVerifying Integrity...\n[SUCCESS] System Validated.\nFLAG: GHOST_ROOT{STR4C3_M4ST3R_V1}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PROCESS TRACED.\x1b[0m';
-             
-             // Mark as solved
-             if (!VFS['/var/run/cycle255_solved']) {
-                 VFS['/var/run/cycle255_solved'] = { type: 'file', content: 'TRUE' };
-                 const runDir = getNode('/var/run');
-                 if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle255_solved')) {
-                     runDir.children.push('cycle255_solved');
-                 }
-             }
-        } else {
-             // Wrong content
-             output = '[ERROR] Configuration Invalid.';
-        }
-        break;
-    }
-    case 'strace_OLD_1': {
-        if (args.length < 1) {
-            output = 'strace: must have PROG [ARGS]';
-        } else {
-            const targetCmd = args[0];
-            
-            if (targetCmd === './mystery_process' || targetCmd === 'mystery_process' || targetCmd === '/usr/bin/mystery_process') {
-                 // Mock Trace
-                 let trace = `execve("/usr/bin/mystery_process", ["mystery_process"], 0x7ff...) = 0\n`;
-                 trace += `brk(NULL) = 0x560822616000\n`;
-                 trace += `access("/etc/ld.so.preload", R_OK) = -1 ENOENT (No such file or directory)\n`;
-                 trace += `openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3\n`;
-                 trace += `fstat(3, {st_mode=S_IFREG|0644, st_size=42421, ...}) = 0\n`;
-                 trace += `mmap(NULL, 42421, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7f8e32156000\n`;
-                 trace += `close(3) = 0\n`;
-                 trace += `openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3\n`;
-                 trace += `read(3, "\\177ELF\\2\\1\\1\\3\\0\\0\\0\\0\\0\\0\\0\\0\\3\\0>\\0\\1\\0\\0\\0\\360q\\2\\0\\0\\0\\0\\0"..., 832) = 832\n`;
-                 trace += `close(3) = 0\n`;
-                 trace += `arch_prctl(ARCH_SET_FS, 0x7f8e32155c00) = 0\n`;
-                 trace += `mprotect(0x7f8e3213c000, 16384, PROT_READ) = 0\n`;
-                 trace += `mprotect(0x560821422000, 4096, PROT_READ) = 0\n`;
-                 trace += `mprotect(0x7f8e32185000, 4096, PROT_READ) = 0\n`;
-                 trace += `munmap(0x7f8e32156000, 42421) = 0\n`;
-                 trace += `getpid() = 4242\n`;
-                 
-                 const configPath = '/tmp/secret_config.dat';
-                 const configNode = getNode(configPath);
-                 
-                 if (!configNode) {
-                     // Silent failure - no write to stdout
-                     trace += `openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = -1 ENOENT (No such file or directory)\n`;
-                     trace += `exit_group(1) = ?\n`;
-                     trace += `+++ exited with 1 +++`;
-                 } else {
-                     trace += `write(1, "[STATUS] Running...\\n", 20[STATUS] Running...\n) = 20\n`;
-                     trace += `openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = 3\n`;
-                     trace += `fstat(3, {st_mode=S_IFREG|0644, st_size=15, ...}) = 0\n`;
-                     trace += `read(3, "CONF_V1: SECRET", 15) = 15\n`;
-                     trace += `close(3) = 0\n`;
-                     trace += `write(1, "Configuration Loaded.\\n", 22Configuration Loaded.\n) = 22\n`;
-                     trace += `write(1, "Verifying Integrity...\\n", 23Verifying Integrity...\n) = 23\n`;
-                     trace += `write(1, "[SUCCESS] System Validated.\\n", 27[SUCCESS] System Validated.\n) = 27\n`;
-                     trace += `write(1, "FLAG: GHOST_ROOT{STR4C3_M4ST3R_V1}\\n", 35FLAG: GHOST_ROOT{STR4C3_M4ST3R_V1}\n) = 35\n`;
-                     trace += `exit_group(0) = ?\n`;
-                     trace += `+++ exited with 0 +++`;
-                 }
-                 output = trace;
-            } else if (targetCmd === 'ls') {
-                 output = `execve("/bin/ls", ["ls"], 0x7ff...) = 0\nopenat(AT_FDCWD, ".", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3\ngetdents(3, /* 12 entries */, 32768) = 352\nclose(3) = 0\nwrite(1, "file1  file2\\n", 12file1  file2\n) = 12\nexit_group(0) = ?\n+++ exited with 0 +++`;
-            } else {
-                 output = `strace: exec: ${targetCmd}: No such file or directory`;
-            }
-        }
-        break;
-    }
+    // Removed legacy mystery_process_OLD_1 implementation (duplicate)
+    // Removed legacy strace_OLD_1 implementation (duplicate)
     case 'ltrace': {
         if (args.length < 1) {
             output = 'ltrace: must have PROG [ARGS]';
@@ -18503,7 +18457,7 @@ ${validUnits.length} loaded units listed.`;
     }
 // Cycle 255: The Process Trace (Direct Execution) - ACTIVE
     case 'mystery_process': {
-        if (args.includes('--version')) { output = 'mystery_process v1.8'; break; }
+        if (args.includes('--version')) { output = 'mystery_process v1.9'; break; }
         const secretNode = getNode('/tmp/secret_config.dat');
         const secretExists = secretNode && secretNode.type === 'file';
         const content = secretExists ? secretNode.content : '';
@@ -21494,5 +21448,4 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
 
 export const execute = processCommand;
 // Verified Cycle 276 on 2026-02-19
-// Verified Cycle 255 (Phase 4.9 - Post-Deployment Verification) on 2026-02-25 09:05 JST
-// Verified Cycle 255 (Phase 5.1 - Refined Strace Output) on 2026-02-26 18:14 JST
+// Verified Cycle 255 (Phase 5.2 - Strace Verification) on 2026-02-27 18:35 JST
