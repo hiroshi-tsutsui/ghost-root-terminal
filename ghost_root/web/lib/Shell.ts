@@ -1233,7 +1233,7 @@ export const loadSystemState = () => {
     }
 
     // Cycle 255 Init (The Process Trace)
-    if (!VFS['/usr/bin/mystery_process'] || (VFS['/usr/bin/mystery_process'].type === 'file' && !VFS['/usr/bin/mystery_process'].content.includes('[VERSION] 1.6'))) {
+    if (!VFS['/usr/bin/mystery_process'] || (VFS['/usr/bin/mystery_process'].type === 'file' && !VFS['/usr/bin/mystery_process'].content.includes('[VERSION] 1.8'))) {
         const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
         const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
 
@@ -1242,7 +1242,7 @@ export const loadSystemState = () => {
 
         VFS['/usr/bin/mystery_process'] = {
             type: 'file',
-            content: '[BINARY_ELF_X86_64] [UNKNOWN_PAYLOAD]\n[STATUS] Running...\n[ERROR] Silent Failure (Exit Code 1)\nCONF_V1: SECRET\n[VERSION] 1.6',
+            content: '[BINARY_ELF_X86_64] [UNKNOWN_PAYLOAD]\n[STATUS] Running...\n[ERROR] Silent Failure (Exit Code 1)\nCONF_V1: SECRET\n[VERSION] 1.8',
             permissions: '0755'
         };
         link('/usr/bin', 'mystery_process');
