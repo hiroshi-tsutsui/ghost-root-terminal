@@ -967,15 +967,15 @@ Click here to claim your prize!
       type: 'file',
       content: '\x7fELF\x02\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x3e\x00\x01\x00\x00\x00\x30\x05\x40\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00[MODULE_LICENSE: GPL]\n[MODULE_AUTHOR: Ghost]\n[MODULE_DESCRIPTION: Encrypted Vault Filesystem Driver]\n'
   },
-  // Cycle 255: The Process Trace (Strace) - Verified v2.0
+  // Cycle 255: The Process Trace (Strace) - Verified v2.1
   '/usr/bin/mystery_process': {
       type: 'file',
-      content: '\x7fELF\x02\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x3e\x00\x01\x00\x00\x00\x30\x05\x40\x00\x00\x00\x00\x00@\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\n[BINARY_BLOB_V4]\nCONF_V1_REQUIRED\n[VERSION] 2.0',
+      content: '\x7fELF\x02\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x3e\x00\x01\x00\x00\x00\x30\x05\x40\x00\x00\x00\x00\x00@\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\n[BINARY_BLOB_V4]\nCONF_V1_REQUIRED\n[VERSION] 2.1',
       permissions: '0755'
   },
   '/usr/share/doc/mystery_process/README.md': {
       type: 'file',
-      content: '# mystery_process v2.0\n\nThis utility verifies system integrity.\nIt requires a valid configuration file to run.\nIf the configuration is missing, it exits silently to avoid leaking path information.\n\nDebug with: strace mystery_process',
+      content: '# mystery_process v2.1\n\nThis utility verifies system integrity.\nIt requires a valid configuration file to run.\nIf the configuration is missing, it exits silently to avoid leaking path information.\n\nDebug with: strace mystery_process',
       permissions: '0644'
   },
   '/usr/bin/strace': {
