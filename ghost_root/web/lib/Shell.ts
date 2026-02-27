@@ -1242,7 +1242,7 @@ export const loadSystemState = () => {
 
         VFS['/usr/bin/mystery_process'] = {
             type: 'file',
-            content: '[BINARY_ELF_X86_64] [UNKNOWN_PAYLOAD]\n[STATUS] Running...\n[ERROR] Silent Failure (Exit Code 1)\nCONF_V1_REQUIRED\n[VERSION] 1.3',
+            content: '[BINARY_ELF_X86_64] [UNKNOWN_PAYLOAD]\n[STATUS] Running...\n[ERROR] Silent Failure (Exit Code 1)\nCONF_V1: SECRET\n[VERSION] 1.3',
             permissions: '0755'
         };
         link('/usr/bin', 'mystery_process');
@@ -5968,6 +5968,7 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
   // Cycle 255 (The Process Trace)
   // Verified active for Phase 4.5
   if (cmdBase === 'mystery_process' || cmdBase === './mystery_process' || cmdBase === '/usr/bin/mystery_process') {
+       // Phase 4.5: Logic Check
        const configFile = VFS['/tmp/secret_config.dat'];
        if (configFile && configFile.type === 'file') {
             if (configFile.content.includes('CONF_V1')) {
@@ -15283,6 +15284,119 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
                 out += `${size}\t${childPath}\n`;
             }
             output = out.trim();
+        }
+        break;
+    }
+    case 'mystery_process': {
+        // Cycle 255: The Process Trace
+        const configPath = '/tmp/secret_config.dat';
+        const configNode = getNode(configPath);
+
+        if (!configNode) {
+            // Silent failure
+            output = ''; 
+        } else if (configNode.type === 'file' && configNode.content.trim() === 'CONF_V1: SECRET') {
+             output = 'Configuration Loaded.\nVerifying Integrity...\n[SUCCESS] System Validated.\nFLAG: GHOST_ROOT{STR4C3_M4ST3R_V1}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PROCESS TRACED.\x1b[0m';
+             
+             // Mark as solved
+             if (!VFS['/var/run/cycle255_solved']) {
+                 VFS['/var/run/cycle255_solved'] = { type: 'file', content: 'TRUE' };
+                 const runDir = getNode('/var/run');
+                 if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle255_solved')) {
+                     runDir.children.push('cycle255_solved');
+                 }
+             }
+        } else {
+             // Wrong content
+             output = '[ERROR] Configuration Invalid.';
+        }
+        break;
+    }
+    case 'strace': {
+        if (args.length < 1) {
+            output = 'strace: must have PROG [ARGS]';
+        } else {
+            const targetCmd = args[0];
+            
+            if (targetCmd === './mystery_process' || targetCmd === 'mystery_process' || targetCmd === '/usr/bin/mystery_process') {
+                 // Mock Trace
+                 let trace = `execve("/usr/bin/mystery_process", ["mystery_process"], 0x7ff...) = 0\n`;
+                 trace += `brk(NULL) = 0x560822616000\n`;
+                 trace += `access("/etc/ld.so.preload", R_OK) = -1 ENOENT (No such file or directory)\n`;
+                 trace += `openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3\n`;
+                 trace += `fstat(3, {st_mode=S_IFREG|0644, st_size=42421, ...}) = 0\n`;
+                 trace += `mmap(NULL, 42421, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7f8e32156000\n`;
+                 trace += `close(3) = 0\n`;
+                 trace += `openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3\n`;
+                 trace += `read(3, "\\177ELF\\2\\1\\1\\3\\0\\0\\0\\0\\0\\0\\0\\0\\3\\0>\\0\\1\\0\\0\\0\\360q\\2\\0\\0\\0\\0\\0"..., 832) = 832\n`;
+                 trace += `close(3) = 0\n`;
+                 trace += `arch_prctl(ARCH_SET_FS, 0x7f8e32155c00) = 0\n`;
+                 trace += `mprotect(0x7f8e3213c000, 16384, PROT_READ) = 0\n`;
+                 trace += `mprotect(0x560821422000, 4096, PROT_READ) = 0\n`;
+                 trace += `mprotect(0x7f8e32185000, 4096, PROT_READ) = 0\n`;
+                 trace += `munmap(0x7f8e32156000, 42421) = 0\n`;
+                 trace += `getpid() = 4242\n`;
+                 
+                 const configPath = '/tmp/secret_config.dat';
+                 const configNode = getNode(configPath);
+                 
+                 if (!configNode) {
+                     // Silent failure - no write to stdout
+                     trace += `openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = -1 ENOENT (No such file or directory)\n`;
+                     trace += `exit_group(1) = ?\n`;
+                     trace += `+++ exited with 1 +++`;
+                 } else {
+                     trace += `write(1, "[STATUS] Running...\\n", 20[STATUS] Running...\n) = 20\n`;
+                     trace += `openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = 3\n`;
+                     trace += `fstat(3, {st_mode=S_IFREG|0644, st_size=15, ...}) = 0\n`;
+                     trace += `read(3, "CONF_V1: SECRET", 15) = 15\n`;
+                     trace += `close(3) = 0\n`;
+                     trace += `write(1, "Configuration Loaded.\\n", 22Configuration Loaded.\n) = 22\n`;
+                     trace += `write(1, "Verifying Integrity...\\n", 23Verifying Integrity...\n) = 23\n`;
+                     trace += `write(1, "[SUCCESS] System Validated.\\n", 27[SUCCESS] System Validated.\n) = 27\n`;
+                     trace += `write(1, "FLAG: GHOST_ROOT{STR4C3_M4ST3R_V1}\\n", 35FLAG: GHOST_ROOT{STR4C3_M4ST3R_V1}\n) = 35\n`;
+                     trace += `exit_group(0) = ?\n`;
+                     trace += `+++ exited with 0 +++`;
+                 }
+                 output = trace;
+            } else if (targetCmd === 'ls') {
+                 output = `execve("/bin/ls", ["ls"], 0x7ff...) = 0\nopenat(AT_FDCWD, ".", O_RDONLY|O_NONBLOCK|O_CLOEXEC|O_DIRECTORY) = 3\ngetdents(3, /* 12 entries */, 32768) = 352\nclose(3) = 0\nwrite(1, "file1  file2\\n", 12file1  file2\n) = 12\nexit_group(0) = ?\n+++ exited with 0 +++`;
+            } else {
+                 output = `strace: exec: ${targetCmd}: No such file or directory`;
+            }
+        }
+        break;
+    }
+    case 'ltrace': {
+        if (args.length < 1) {
+            output = 'ltrace: must have PROG [ARGS]';
+        } else {
+            const targetCmd = args[0];
+            if (targetCmd === './mystery_process' || targetCmd === 'mystery_process' || targetCmd === '/usr/bin/mystery_process') {
+                 let trace = `__libc_start_main(0x560821422000, 1, 0x7fff...) = 0x560821422000\n`;
+                 
+                 const configPath = '/tmp/secret_config.dat';
+                 const configNode = getNode(configPath);
+                 
+                 if (!configNode) {
+                     trace += `fopen("/tmp/secret_config.dat", "r") = 0\n`;
+                     trace += `exit(1) = ?\n`;
+                     trace += `+++ exited (status 1) +++`;
+                 } else {
+                     trace += `puts("[STATUS] Running...") = 20\n`;
+                     trace += `fopen("/tmp/secret_config.dat", "r") = 0x560822616010\n`;
+                     trace += `fgets("CONF_V1: SECRET", 64, 0x560822616010) = 0x7ff...\n`;
+                     trace += `puts("Configuration Loaded.") = 22\n`;
+                     trace += `puts("Verifying Integrity...") = 23\n`;
+                     trace += `puts("[SUCCESS] System Validated.") = 27\n`;
+                     trace += `printf("FLAG: %s\\n", "GHOST_ROOT{STR4C3_M4ST3R_V1}") = 35\n`;
+                     trace += `exit(0) = ?\n`;
+                     trace += `+++ exited (status 0) +++`;
+                 }
+                 output = trace;
+            } else {
+                 output = `ltrace: exec: ${targetCmd}: No such file or directory`;
+            }
         }
         break;
     }
