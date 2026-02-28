@@ -1232,8 +1232,8 @@ export const loadSystemState = () => {
         }
     }
 
-    // Cycle 255 Init (The Process Trace) - Updated to v4.8.0
-    if (!VFS['/usr/bin/mystery_process'] || (VFS['/usr/bin/mystery_process'].type === 'file' && !VFS['/usr/bin/mystery_process'].content.includes('[VERSION] 4.8.0'))) {
+    // Cycle 255 Init (The Process Trace) - Updated to v4.9.0
+    if (!VFS['/usr/bin/mystery_process'] || (VFS['/usr/bin/mystery_process'].type === 'file' && !VFS['/usr/bin/mystery_process'].content.includes('[VERSION] 4.9.0'))) {
         const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
         const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
 
@@ -1242,17 +1242,17 @@ export const loadSystemState = () => {
 
         VFS['/usr/bin/mystery_process'] = {
             type: 'file',
-            content: '[BINARY_ELF_X86_64] [UNKNOWN_PAYLOAD]\n[STATUS] Running...\n[ERROR] Silent Failure (Exit Code 1)\nCONF_V1: SECRET\n[VERSION] 4.8.0',
+            content: '[BINARY_ELF_X86_64] [UNKNOWN_PAYLOAD]\n[STATUS] Running...\n[ERROR] Silent Failure (Exit Code 1)\nDEFAULT_CONF: "CONF_V1: SECRET"\n[VERSION] 4.9.0',
             permissions: '0755'
         };
         link('/usr/bin', 'mystery_process');
     }
 
     // Developer Note for Cycle 255
-    if (!VFS['/home/ghost/dev_notes.txt'] || (VFS['/home/ghost/dev_notes.txt'].type === 'file' && !VFS['/home/ghost/dev_notes.txt'].content.includes('(v4.8.0)'))) {
+    if (!VFS['/home/ghost/dev_notes.txt'] || (VFS['/home/ghost/dev_notes.txt'].type === 'file' && !VFS['/home/ghost/dev_notes.txt'].content.includes('(v4.9.0)'))) {
         VFS['/home/ghost/dev_notes.txt'] = {
             type: 'file',
-            content: '[DEV LOG]\nBinary: mystery_process\nStatus: DEPLOYED (v4.8.0)\n\nNote: We enabled the "Silent Failure" protocol to prevent reverse engineering.\nIf the configuration file is missing, it just quits.\nUse the standard tracing tools if you need to debug the file access paths.\n\n- Ops',
+            content: '[DEV LOG]\nBinary: mystery_process\nStatus: DEPLOYED (v4.9.0)\n\nNote: We enabled the "Silent Failure" protocol to prevent reverse engineering.\nIf the configuration file is missing, it just quits.\nUse the standard tracing tools if you need to debug the file access paths.\n\n- Ops',
             permissions: '0644'
         };
         const home = getNode('/home/ghost');
