@@ -967,15 +967,20 @@ Click here to claim your prize!
       type: 'file',
       content: '\x7fELF\x02\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x3e\x00\x01\x00\x00\x00\x30\x05\x40\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00[MODULE_LICENSE: GPL]\n[MODULE_AUTHOR: Ghost]\n[MODULE_DESCRIPTION: Encrypted Vault Filesystem Driver]\n'
   },
-  // Cycle 255: The Process Trace (Strace) - Verified v5.0.1
+  // Cycle 255: The Process Trace (Strace) - Verified v5.0.2
   '/usr/bin/mystery_process': {
       type: 'file',
-      content: '\x7fELF\x02\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x3e\x00\x01\x00\x00\x00\x30\x05\x40\x00\x00\x00\x00\x00@\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\n[BINARY_BLOB_V5]\nDEFAULT_CONF: "CONF_V1: SECRET"\n[VERSION] 5.0.1',
+      content: '\x7fELF\x02\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x3e\x00\x01\x00\x00\x00\x30\x05\x40\x00\x00\x00\x00\x00@\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\n[BINARY_BLOB_V5]\nDEFAULT_CONF: "CONF_V1: SECRET"\n[VERSION] 5.0.2',
       permissions: '0755'
+  },
+  '/etc/mystery_process.conf': {
+      type: 'file',
+      content: '# MYSTERY_PROCESS CONFIGURATION\n# This file is ignored by v5.0+ binaries.\n# Please use the compiled-in path.\n# (Hint: It is not here.)',
+      permissions: '0644'
   },
   '/usr/share/doc/mystery_process/README.md': {
       type: 'file',
-      content: '# mystery_process v5.0.1\n\nThis utility verifies system integrity.\nIt requires a valid configuration file to run.\nIf the configuration is missing, it exits silently to avoid leaking path information.\n\nDebug with: strace mystery_process',
+      content: '# mystery_process v5.0.2\n\nThis utility verifies system integrity.\nIt requires a valid configuration file to run.\nIf the configuration is missing, it exits silently to avoid leaking path information.\n\nDebug with: strace mystery_process',
       permissions: '0644'
   },
   '/usr/bin/strace': {
