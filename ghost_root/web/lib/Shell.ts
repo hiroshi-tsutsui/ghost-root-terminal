@@ -1232,8 +1232,8 @@ export const loadSystemState = () => {
         }
     }
 
-    // Cycle 255 Init (The Process Trace) - Updated to v4.0.0
-    if (!VFS['/usr/bin/mystery_process'] || (VFS['/usr/bin/mystery_process'].type === 'file' && !VFS['/usr/bin/mystery_process'].content.includes('[VERSION] 4.0.0'))) {
+    // Cycle 255 Init (The Process Trace) - Updated to v4.8.0
+    if (!VFS['/usr/bin/mystery_process'] || (VFS['/usr/bin/mystery_process'].type === 'file' && !VFS['/usr/bin/mystery_process'].content.includes('[VERSION] 4.8.0'))) {
         const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
         const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
 
@@ -1242,17 +1242,17 @@ export const loadSystemState = () => {
 
         VFS['/usr/bin/mystery_process'] = {
             type: 'file',
-            content: '[BINARY_ELF_X86_64] [UNKNOWN_PAYLOAD]\n[STATUS] Running...\n[ERROR] Silent Failure (Exit Code 1)\nCONF_V1: SECRET\n[VERSION] 4.0.0',
+            content: '[BINARY_ELF_X86_64] [UNKNOWN_PAYLOAD]\n[STATUS] Running...\n[ERROR] Silent Failure (Exit Code 1)\nCONF_V1: SECRET\n[VERSION] 4.8.0',
             permissions: '0755'
         };
         link('/usr/bin', 'mystery_process');
     }
 
     // Developer Note for Cycle 255
-    if (!VFS['/home/ghost/dev_notes.txt'] || (VFS['/home/ghost/dev_notes.txt'].type === 'file' && !VFS['/home/ghost/dev_notes.txt'].content.includes('(v4.0.0)'))) {
+    if (!VFS['/home/ghost/dev_notes.txt'] || (VFS['/home/ghost/dev_notes.txt'].type === 'file' && !VFS['/home/ghost/dev_notes.txt'].content.includes('(v4.8.0)'))) {
         VFS['/home/ghost/dev_notes.txt'] = {
             type: 'file',
-            content: '[DEV LOG]\nBinary: mystery_process\nStatus: DEPLOYED (v4.0.0)\n\nNote: We enabled the "Silent Failure" protocol to prevent reverse engineering.\nIf the configuration file is missing, it just quits.\nUse the standard tracing tools if you need to debug the file access paths.\n\n- Ops',
+            content: '[DEV LOG]\nBinary: mystery_process\nStatus: DEPLOYED (v4.8.0)\n\nNote: We enabled the "Silent Failure" protocol to prevent reverse engineering.\nIf the configuration file is missing, it just quits.\nUse the standard tracing tools if you need to debug the file access paths.\n\n- Ops',
             permissions: '0644'
         };
         const home = getNode('/home/ghost');
@@ -15925,15 +15925,28 @@ tmpfs             815276    1184    814092   1% /run
                  } else {
                      trace += `openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = 3\n`;
                      trace += `fstat(3, {st_mode=S_IFREG|0644, st_size=15, ...}) = 0\n`;
-                     trace += `read(3, "CONF_V1: SECRET", 4096) = 15\n`;
-                     trace += `close(3) = 0\n`;
-                     trace += `write(1, "[STATUS] Running...\\n", 20[STATUS] Running...\n) = 20\n`;
-                     trace += `write(1, "Configuration Loaded.\\n", 22Configuration Loaded.\n) = 22\n`;
-                     trace += `write(1, "Verifying Integrity...\\n", 23Verifying Integrity...\n) = 23\n`;
-                     trace += `write(1, "[SUCCESS] System Validated.\\n", 27[SUCCESS] System Validated.\n) = 27\n`;
-                     trace += `write(1, "FLAG: GHOST_ROOT{STR4C3_M4ST3R_V1}\\n", 35FLAG: GHOST_ROOT{STR4C3_M4ST3R_V1}\n) = 35\n`;
-                     trace += `exit_group(0) = ?\n`;
-                     trace += `+++ exited with 0 +++`;
+                     
+                     const content = (configNode as any).content || '';
+                     if (content.trim() === 'CONF_V1: SECRET') {
+                         trace += `read(3, "CONF_V1: SECRET", 4096) = 15\n`;
+                         trace += `close(3) = 0\n`;
+                         trace += `write(1, "[STATUS] Running...\\n", 20[STATUS] Running...\n) = 20\n`;
+                         trace += `write(1, "Configuration Loaded.\\n", 22Configuration Loaded.\n) = 22\n`;
+                         trace += `write(1, "Verifying Integrity...\\n", 23Verifying Integrity...\n) = 23\n`;
+                         trace += `write(1, "[SUCCESS] System Validated.\\n", 27[SUCCESS] System Validated.\n) = 27\n`;
+                         trace += `write(1, "FLAG: GHOST_ROOT{STR4C3_M4ST3R_V1}\\n", 35FLAG: GHOST_ROOT{STR4C3_M4ST3R_V1}\n) = 35\n`;
+                         trace += `exit_group(0) = ?\n`;
+                         trace += `+++ exited with 0 +++`;
+                     } else {
+                         // Truncate content for display if too long
+                         const displayContent = content.length > 20 ? content.substring(0, 20) + '...' : content;
+                         trace += `read(3, "${displayContent.replace(/\n/g, '\\n')}", 4096) = ${content.length}\n`;
+                         trace += `close(3) = 0\n`;
+                         trace += `write(1, "[STATUS] Running...\\n", 20[STATUS] Running...\n) = 20\n`;
+                         trace += `write(1, "Configuration Error: Invalid Format.\\n", 37Configuration Error: Invalid Format.\n) = 37\n`;
+                         trace += `exit_group(1) = ?\n`;
+                         trace += `+++ exited with 1 +++`;
+                     }
                  }
                  output = trace;
             } else {
