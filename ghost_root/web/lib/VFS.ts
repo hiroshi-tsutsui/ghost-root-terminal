@@ -311,7 +311,7 @@ KEY_ID: GHOST_PROTOCOL_INIT_V2
   },
   '/home/ghost': {
     type: 'dir',
-    children: ['project_alpha', 'secrets', '.bash_history', '.ssh', 'wifi_note.txt', 'journal', 'evidence.jpg', 'surveillance.jpg', 'tools', 'tools.zip', 'capture.cap', 'drone_manual.txt', 'beacon_protocol.txt', 'hashes.txt', 'wordlist.txt', 'operations', 'security_alert.txt', 'suid_notice.txt', 'backup_log.txt', 'security_notice.txt', 'security_audit.log', 'trace_alert.log']
+    children: ['project_alpha', 'secrets', '.bash_history', '.ssh', 'wifi_note.txt', 'journal', 'evidence.jpg', 'surveillance.jpg', 'tools', 'tools.zip', 'capture.cap', 'drone_manual.txt', 'beacon_protocol.txt', 'hashes.txt', 'wordlist.txt', 'operations', 'security_alert.txt', 'suid_notice.txt', 'backup_log.txt', 'security_notice.txt', 'security_audit.log', 'trace_alert.log', 'trace_challenge.md']
   },
   '/home/ghost/suid_notice.txt': {
       type: 'file',
@@ -967,10 +967,10 @@ Click here to claim your prize!
       type: 'file',
       content: '\x7fELF\x02\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x3e\x00\x01\x00\x00\x00\x30\x05\x40\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00[MODULE_LICENSE: GPL]\n[MODULE_AUTHOR: Ghost]\n[MODULE_DESCRIPTION: Encrypted Vault Filesystem Driver]\n'
   },
-  // Cycle 255: The Process Trace (Strace) - Verified v5.1.2
+  // Cycle 255: The Process Trace (Strace) - Verified v5.1.4
   '/usr/bin/mystery_process': {
       type: 'file',
-      content: '[BINARY_ELF_X86_64] [UNKNOWN_PAYLOAD]\n[STATUS] Running...\n[ERROR] Silent Failure (Exit Code 1)\nDEFAULT_CONF: "CONF_V1: SECRET"\n[VERSION] 5.1.2',
+      content: '[BINARY_ELF_X86_64] [UNKNOWN_PAYLOAD]\n[STATUS] Running...\n[ERROR] Silent Failure (Exit Code 1)\nDEFAULT_CONF: "CONF_V1: SECRET"\n[VERSION] 5.1.4',
       permissions: '0755'
   },
   '/etc/mystery_process.conf': {
@@ -991,6 +991,11 @@ Click here to claim your prize!
   '/home/ghost/trace_alert.log': {
       type: 'file',
       content: '[ALERT] Mystery process failing silently.\n[ANALYSIS] Binary /usr/bin/mystery_process exits immediately.\n[ACTION] Use "strace" to trace system calls (execve, openat) and identify the missing configuration file.',
+      permissions: '0644'
+  },
+  '/home/ghost/trace_challenge.md': {
+      type: 'file',
+      content: '# CHALLENGE: THE INVISIBLE PROCESS\n\nTarget: /usr/bin/mystery_process\nGoal: Unlock the binary.\n\nIntel:\nThe binary exits immediately without output.\nThis is a defense mechanism.\nUse "strace" to see what resources it is trying to access.\n\n> strace /usr/bin/mystery_process',
       permissions: '0644'
   },
   '/var/secure/vault.lock': {
@@ -1649,7 +1654,7 @@ Do not attempt to fix it unless the alert level is 0.
   // Cycle 255: Documentation (Refinement)
   '/usr/share/doc/mystery_process/README': {
       type: 'file',
-      content: 'MYSTERY_PROCESS v1.0\\n\\nThis utility checks for a specific configuration file to verify system integrity.\\nDue to security protocols, it fails silently if the environment is not prepared correctly.\\n\\nUse tracing tools to debug.',
+      content: 'MYSTERY_PROCESS v5.1.4\\n\\nThis utility checks for a specific configuration file to verify system integrity.\\nDue to security protocols, it fails silently if the environment is not prepared correctly.\\n\\nUse tracing tools to debug.',
       permissions: '0644'
   },
   // Duplicate mystery_process definition removed

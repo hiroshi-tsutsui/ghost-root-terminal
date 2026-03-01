@@ -1232,8 +1232,8 @@ export const loadSystemState = () => {
         }
     }
 
-    // Cycle 255 Init (The Process Trace) - Updated to v5.1.2
-    if (!VFS['/usr/bin/mystery_process'] || (VFS['/usr/bin/mystery_process'].type === 'file' && !VFS['/usr/bin/mystery_process'].content.includes('[VERSION] 5.1.2'))) {
+    // Cycle 255 Init (The Process Trace) - Updated to v5.1.3
+    if (!VFS['/usr/bin/mystery_process'] || (VFS['/usr/bin/mystery_process'].type === 'file' && !VFS['/usr/bin/mystery_process'].content.includes('[VERSION] 5.1.3'))) {
         const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
         const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
 
@@ -1242,7 +1242,7 @@ export const loadSystemState = () => {
 
         VFS['/usr/bin/mystery_process'] = {
             type: 'file',
-            content: '[BINARY_ELF_X86_64] [UNKNOWN_PAYLOAD]\n[STATUS] Running...\n[ERROR] Silent Failure (Exit Code 1)\nDEFAULT_CONF: "CONF_V1: SECRET"\n[VERSION] 5.1.2',
+            content: '[BINARY_ELF_X86_64] [UNKNOWN_PAYLOAD]\n[STATUS] Running...\n[ERROR] Silent Failure (Exit Code 1)\nDEFAULT_CONF: "CONF_V1: SECRET"\n[VERSION] 5.1.3',
             permissions: '0755'
         };
         link('/usr/bin', 'mystery_process');
@@ -1260,10 +1260,10 @@ export const loadSystemState = () => {
     }
 
     // Developer Note for Cycle 255
-    if (!VFS['/home/ghost/dev_notes.txt'] || (VFS['/home/ghost/dev_notes.txt'].type === 'file' && !VFS['/home/ghost/dev_notes.txt'].content.includes('(v5.1.2)'))) {
+    if (!VFS['/home/ghost/dev_notes.txt'] || (VFS['/home/ghost/dev_notes.txt'].type === 'file' && !VFS['/home/ghost/dev_notes.txt'].content.includes('(v5.1.3)'))) {
         VFS['/home/ghost/dev_notes.txt'] = {
             type: 'file',
-            content: '[DEV LOG]\nBinary: mystery_process\nStatus: DEPLOYED (v5.1.2)\n\nNote: We enabled the "Silent Failure" protocol to prevent reverse engineering.\nIf the configuration file is missing, it just quits.\nUse the standard tracing tools if you need to debug the file access paths.\n\n- Ops',
+            content: '[DEV LOG]\nBinary: mystery_process\nStatus: DEPLOYED (v5.1.3)\n\nNote: We enabled the "Silent Failure" protocol to prevent reverse engineering.\nIf the configuration file is missing, it just quits.\nUse the standard tracing tools if you need to debug the file access paths.\n\n- Ops',
             permissions: '0644'
         };
         const home = getNode('/home/ghost');
@@ -1353,10 +1353,10 @@ export const loadSystemState = () => {
     }
 
     // Verification Script for Cycle 255
-    if (!VFS['/home/ghost/verify_cycle_255.sh'] || (VFS['/home/ghost/verify_cycle_255.sh'].type === 'file' && !VFS['/home/ghost/verify_cycle_255.sh'].content.includes('v5.1.2'))) {
+    if (!VFS['/home/ghost/verify_cycle_255.sh'] || (VFS['/home/ghost/verify_cycle_255.sh'].type === 'file' && !VFS['/home/ghost/verify_cycle_255.sh'].content.includes('v5.1.3'))) {
         VFS['/home/ghost/verify_cycle_255.sh'] = {
             type: 'file',
-            content: '#!/bin/bash\\n# VERIFICATION SCRIPT v5.1.2 (Strace Check)\\n\\necho "[TEST] Running mystery_process (expect silent failure)..."\\nmystery_process\\necho "Exit Code: $?"\\n\\necho "[TEST] Running strace mystery_process (expect ENOENT on config)..."\\nstrace mystery_process\\n\\necho "[TEST] Creating secret config..."\\necho "CONF_V1: SECRET" > /tmp/secret_config.dat\\n\\necho "[TEST] Running mystery_process again (expect FLAG)..."\\nmystery_process\\n\\necho "[CLEANUP] Removing temp files..."\\nrm /tmp/secret_config.dat\\n',
+            content: '#!/bin/bash\\n# VERIFICATION SCRIPT v5.1.3 (Strace Check)\\n\\necho "[TEST] Running mystery_process (expect silent failure)..."\\nmystery_process\\necho "Exit Code: $?"\\n\\necho "[TEST] Running strace mystery_process (expect ENOENT on config)..."\\nstrace mystery_process\\n\\necho "[TEST] Creating secret config..."\\necho "CONF_V1: SECRET" > /tmp/secret_config.dat\\n\\necho "[TEST] Running mystery_process again (expect FLAG)..."\\nmystery_process\\n\\necho "[CLEANUP] Removing temp files..."\\nrm /tmp/secret_config.dat\\n',
             permissions: '0755'
         };
         const home = getNode('/home/ghost');
@@ -18672,7 +18672,7 @@ ${validUnits.length} loaded units listed.`;
     }
 // Cycle 255: The Process Trace (Direct Execution) - ACTIVE
     case 'mystery_process': {
-        if (args.includes('--version')) { output = 'mystery_process v2.3'; break; }
+        if (args.includes('--version')) { output = 'mystery_process v5.1.4'; break; }
         if (args.includes('--help')) { output = 'Usage: mystery_process\n\nRuns system integrity check.\nReturns nothing on failure (security feature).'; break; }
         const secretNode = getNode('/tmp/secret_config.dat');
         const secretExists = secretNode && secretNode.type === 'file';
@@ -18735,7 +18735,7 @@ ${validUnits.length} loaded units listed.`;
                  }
             }
 
-            // Cycle 255: The Process Trace (Verified Phase 10.0 - Full Identity Trace)
+            // Cycle 255: The Process Trace (Verified Phase 4.5 - Full Identity Trace)
             if (cmd.includes('mystery_process')) {
                  const secretNode = getNode('/tmp/secret_config.dat');
                  const secretExists = secretNode && secretNode.type === 'file';
