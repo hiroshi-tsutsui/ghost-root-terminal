@@ -1653,6 +1653,22 @@ Do not attempt to fix it unless the alert level is 0.
       permissions: '0644'
   },
   // Duplicate mystery_process definition removed
+  
+  // Cycle 257: The Memory Dump
+  '/var/log/memory.dmp': {
+      type: 'file',
+      content: '[BINARY_DATA_CORRUPTED_V1]\\nGHOST_ROOT{H3XDUMP_F0R3NS1CS}\\n[END_OF_DUMP]',
+      permissions: '0644'
+  },
+  '/usr/bin/hexdump': {
+      type: 'file',
+      content: '[BINARY_ELF_X86_64] [HEXDUMP_V1]\\nUsage: hexdump <file>\\n',
+      permissions: '0755'
+  },
+  '/home/ghost/dump_alert.txt': {
+      type: 'file',
+      content: '[ALERT] Suspicious memory dump found in /var/log/memory.dmp.\\n[ANALYSIS] File appears to contain binary data.\\n[ACTION] Use "hexdump" to inspect the content and find hidden strings.'
+  }
 };
 
 export const initialVFS = JSON.parse(JSON.stringify(VFS)); // Deep copy for reset

@@ -5982,21 +5982,17 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
          // Phase 4.5: Logic Check
          const configFile = VFS['/tmp/secret_config.dat'];
          if (configFile && configFile.type === 'file') {
-              if (configFile.content.includes('CONF_V1')) {
-                  let out = 'FLAG: GHOST_ROOT{STR4C3_F1L3_ACC3SS_V3R1F13D}';
-                  if (!VFS['/var/run/cycle255_solved']) {
-                      VFS['/var/run/cycle255_solved'] = { type: 'file', content: 'TRUE' };
-                      const runDir = getNode('/var/run');
-                      if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle255_solved')) {
-                          runDir.children.push('cycle255_solved');
-                      }
-                      out += '\\n\\x1b[1;32m[MISSION UPDATE] Objective Complete: SYSTEM CALL TRACED.\\x1b[0m';
+              // lenient check: existence is enough for the "trace" puzzle
+              let out = 'FLAG: GHOST_ROOT{STR4C3_F1L3_ACC3SS_V3R1F13D}';
+              if (!VFS['/var/run/cycle255_solved']) {
+                  VFS['/var/run/cycle255_solved'] = { type: 'file', content: 'TRUE' };
+                  const runDir = getNode('/var/run');
+                  if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle255_solved')) {
+                      runDir.children.push('cycle255_solved');
                   }
-                  return { output: out, newCwd: cwd };
-              } else {
-                  // Silent exit or minimal error if config is wrong but exists
-                  return { output: '', newCwd: cwd };
+                  out += '\\n\\x1b[1;32m[MISSION UPDATE] Objective Complete: SYSTEM CALL TRACED.\\x1b[0m';
               }
+              return { output: out, newCwd: cwd };
          }
          return { output: '', newCwd: cwd };
     }
@@ -6046,14 +6042,10 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
                 out += `read(3, "${contentSnippet}", 1024) = ${configFile.content.length}\\n`;
                 out += 'close(3)                                = 0\\n';
 
-                if (configFile.content.includes('CONF_V1')) {
-                    out += 'write(1, "FLAG: GHOST_ROOT{STR4C3_F1L3_ACC3SS_V3R1F13D}\\n", 40) = 40\\n';
-                    out += 'exit_group(0)                           = ?\\n';
-                    out += '+++ exited with 0 +++';
-                } else {
-                    out += 'exit_group(1)                           = ?\\n';
-                    out += '+++ exited with 1 +++';
-                }
+                // Success on existence
+                out += 'write(1, "FLAG: GHOST_ROOT{STR4C3_F1L3_ACC3SS_V3R1F13D}\\n", 40) = 40\\n';
+                out += 'exit_group(0)                           = ?\\n';
+                out += '+++ exited with 0 +++';
 
                 if (!VFS['/var/run/cycle255_solved']) {
                     VFS['/var/run/cycle255_solved'] = { type: 'file', content: 'TRUE' };
@@ -6170,6 +6162,49 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
        
        // Generic Ltrace
        return { output: 'printf("Simulated execution...\\n")             = 23\\n+++ exited (status 0) +++', newCwd: cwd };
+  }
+
+  // Cycle 257 (Hexdump Forensics)
+  if (cmdBase === 'hexdump' || cmdBase === '/usr/bin/hexdump') {
+      const args = commandLine.trim().split(/\s+/).slice(1);
+      if (args.length === 0) return { output: 'hexdump: usage: hexdump [-C] <file>', newCwd: cwd };
+      
+      const fileArg = args.find(a => !a.startsWith('-')) || '';
+      if (!fileArg) return { output: 'hexdump: no input file', newCwd: cwd };
+      
+      const fullPath = resolvePath(cwd, fileArg);
+      const node = getNode(fullPath);
+      
+      if (!node || node.type !== 'file') return { output: `hexdump: ${fileArg}: No such file or directory`, newCwd: cwd };
+      
+      // If it's the target file
+      if (fullPath === '/var/log/memory.dmp') {
+           if (!VFS['/var/run/cycle257_solved']) {
+               VFS['/var/run/cycle257_solved'] = { type: 'file', content: 'TRUE' };
+               // Ensure directory exists
+               const runDir = getNode('/var/run');
+               if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle257_solved')) {
+                   runDir.children.push('cycle257_solved');
+               }
+               
+               let out = '00000000  53 59 53 54 45 4d 5f 44  55 4d 50 5f 56 31 00 00  |SYSTEM_DUMP_V1..|\\n';
+               out += '00000010  de ad be ef 00 00 00 00  00 00 00 00 00 00 00 00  |................|\\n';
+               out += '00000020  47 48 4f 53 54 5f 52 4f  4f 54 7b 48 33 58 44 55  |GHOST_ROOT{H3XDU|\\n';
+               out += '00000030  4d 50 5f 46 30 52 33 4e  53 31 43 53 7d 00 00 00  |MP_F0R3NS1CS}...|\\n';
+               out += '00000040  ff ff ff ff 00 00 00 00                           |........|\\n';
+               out += '\\x1b[1;32m[MISSION UPDATE] Objective Complete: MEMORY DUMP ANALYZED.\\x1b[0m';
+               return { output: out, newCwd: cwd };
+           }
+           let out = '00000000  53 59 53 54 45 4d 5f 44  55 4d 50 5f 56 31 00 00  |SYSTEM_DUMP_V1..|\\n';
+           out += '00000010  de ad be ef 00 00 00 00  00 00 00 00 00 00 00 00  |................|\\n';
+           out += '00000020  47 48 4f 53 54 5f 52 4f  4f 54 7b 48 33 58 44 55  |GHOST_ROOT{H3XDU|\\n';
+           out += '00000030  4d 50 5f 46 30 52 33 4e  53 31 43 53 7d 00 00 00  |MP_F0R3NS1CS}...|\\n';
+           out += '00000040  ff ff ff ff 00 00 00 00                           |........|';
+           return { output: out, newCwd: cwd };
+      }
+      
+      // Generic output for other files
+      return { output: '00000000  53 69 6d 75 6c 61 74 65  64 20 4f 75 74 70 75 74  |Simulated Output|\\n00000010  2e 2e 2e 00 00 00 00 00                           |........|', newCwd: cwd };
   }
 
   // Cycle 249 Init (The Disk Hog)
