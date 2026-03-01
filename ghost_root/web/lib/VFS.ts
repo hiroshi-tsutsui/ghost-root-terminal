@@ -800,7 +800,8 @@ Oct 23 04:00:05 ghost-root sshd[404]: Failed password for invalid user kirov_rep
       type: 'file',
       content: `[WARN] Trace attempt to uplink-router (10.0.0.1) detected.
 [INFO] Route optimization enabled.
-[ERROR] Hop 2 failed: timeout. Possible firewall rule.`
+[ERROR] Hop 2 failed: timeout. Possible firewall rule.
+[KERN] syscall trace attached to PID 1337 (mystery_process) by user ghost.`
   },
   '/var/mail': {
       type: 'dir',
@@ -967,10 +968,10 @@ Click here to claim your prize!
       type: 'file',
       content: '\x7fELF\x02\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x3e\x00\x01\x00\x00\x00\x30\x05\x40\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00[MODULE_LICENSE: GPL]\n[MODULE_AUTHOR: Ghost]\n[MODULE_DESCRIPTION: Encrypted Vault Filesystem Driver]\n'
   },
-  // Cycle 255: The Process Trace (Strace) - Verified v5.1.4
+  // Cycle 255: The Process Trace (Strace) - Verified v5.3.0
   '/usr/bin/mystery_process': {
       type: 'file',
-      content: '[BINARY_ELF_X86_64] [UNKNOWN_PAYLOAD]\n[STATUS] Running...\n[ERROR] Silent Failure (Exit Code 1)\nDEFAULT_CONF: "CONF_V1: SECRET"\n[VERSION] 5.1.4',
+      content: '[BINARY_ELF_X86_64] [UNKNOWN_PAYLOAD]\n[STATUS] Running...\n[ERROR] Silent Failure (Exit Code 1)\nDEFAULT_CONF: "CONF_V1: SECRET"\n[VERSION] 5.2.0',
       permissions: '0755'
   },
   '/etc/mystery_process.conf': {
@@ -980,7 +981,7 @@ Click here to claim your prize!
   },
   '/usr/share/doc/mystery_process/README.md': {
       type: 'file',
-      content: '# mystery_process v5.0.3\n\nThis utility verifies system integrity.\nIt requires a valid configuration file to run.\nIf the configuration is missing, it exits silently to avoid leaking path information.\n\nDebug with: strace mystery_process',
+      content: '# mystery_process v5.3.0\\n\\nThis utility verifies system integrity.\nIt requires a valid configuration file to run.\nIf the configuration is missing, it exits silently to avoid leaking path information.\n\nDebug with: strace mystery_process',
       permissions: '0644'
   },
   '/usr/bin/strace': {
@@ -1654,7 +1655,7 @@ Do not attempt to fix it unless the alert level is 0.
   // Cycle 255: Documentation (Refinement)
   '/usr/share/doc/mystery_process/README': {
       type: 'file',
-      content: 'MYSTERY_PROCESS v5.1.4\\n\\nThis utility checks for a specific configuration file to verify system integrity.\\nDue to security protocols, it fails silently if the environment is not prepared correctly.\\n\\nUse tracing tools to debug.',
+      content: 'MYSTERY_PROCESS v5.1.6\\n\\nThis utility checks for a specific configuration file to verify system integrity.\\nDue to security protocols, it fails silently if the environment is not prepared correctly.\\n\\nUse tracing tools to debug.',
       permissions: '0644'
   },
   // Duplicate mystery_process definition removed

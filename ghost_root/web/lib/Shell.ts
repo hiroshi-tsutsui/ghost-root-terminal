@@ -1232,8 +1232,8 @@ export const loadSystemState = () => {
         }
     }
 
-    // Cycle 255 Init (The Process Trace) - Updated to v5.1.3
-    if (!VFS['/usr/bin/mystery_process'] || (VFS['/usr/bin/mystery_process'].type === 'file' && !VFS['/usr/bin/mystery_process'].content.includes('[VERSION] 5.1.3'))) {
+    // Cycle 255 Init (The Process Trace) - Updated to v5.3.0
+    if (!VFS['/usr/bin/mystery_process'] || (VFS['/usr/bin/mystery_process'].type === 'file' && !VFS['/usr/bin/mystery_process'].content.includes('[VERSION] 5.2.0'))) {
         const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
         const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
 
@@ -1242,7 +1242,7 @@ export const loadSystemState = () => {
 
         VFS['/usr/bin/mystery_process'] = {
             type: 'file',
-            content: '[BINARY_ELF_X86_64] [UNKNOWN_PAYLOAD]\n[STATUS] Running...\n[ERROR] Silent Failure (Exit Code 1)\nDEFAULT_CONF: "CONF_V1: SECRET"\n[VERSION] 5.1.3',
+            content: '[BINARY_ELF_X86_64] [UNKNOWN_PAYLOAD]\n[STATUS] Running...\n[ERROR] Silent Failure (Exit Code 1)\nDEFAULT_CONF: "CONF_V1: SECRET"\n[VERSION] 5.2.0',
             permissions: '0755'
         };
         link('/usr/bin', 'mystery_process');
@@ -1260,10 +1260,10 @@ export const loadSystemState = () => {
     }
 
     // Developer Note for Cycle 255
-    if (!VFS['/home/ghost/dev_notes.txt'] || (VFS['/home/ghost/dev_notes.txt'].type === 'file' && !VFS['/home/ghost/dev_notes.txt'].content.includes('(v5.1.3)'))) {
+    if (!VFS['/home/ghost/dev_notes.txt'] || (VFS['/home/ghost/dev_notes.txt'].type === 'file' && !VFS['/home/ghost/dev_notes.txt'].content.includes('(v5.3.0)'))) {
         VFS['/home/ghost/dev_notes.txt'] = {
             type: 'file',
-            content: '[DEV LOG]\nBinary: mystery_process\nStatus: DEPLOYED (v5.1.3)\n\nNote: We enabled the "Silent Failure" protocol to prevent reverse engineering.\nIf the configuration file is missing, it just quits.\nUse the standard tracing tools if you need to debug the file access paths.\n\n- Ops',
+            content: '[DEV LOG]\nBinary: mystery_process\nStatus: DEPLOYED (v5.3.0)\n\nNote: We enabled the "Silent Failure" protocol to prevent reverse engineering.\nIf the configuration file is missing, it just quits.\nUse the standard tracing tools if you need to debug the file access paths.\n\n- Ops',
             permissions: '0644'
         };
         const home = getNode('/home/ghost');
@@ -1353,10 +1353,10 @@ export const loadSystemState = () => {
     }
 
     // Verification Script for Cycle 255
-    if (!VFS['/home/ghost/verify_cycle_255.sh'] || (VFS['/home/ghost/verify_cycle_255.sh'].type === 'file' && !VFS['/home/ghost/verify_cycle_255.sh'].content.includes('v5.1.3'))) {
+    if (!VFS['/home/ghost/verify_cycle_255.sh'] || (VFS['/home/ghost/verify_cycle_255.sh'].type === 'file' && !VFS['/home/ghost/verify_cycle_255.sh'].content.includes('v5.3.0'))) {
         VFS['/home/ghost/verify_cycle_255.sh'] = {
             type: 'file',
-            content: '#!/bin/bash\\n# VERIFICATION SCRIPT v5.1.3 (Strace Check)\\n\\necho "[TEST] Running mystery_process (expect silent failure)..."\\nmystery_process\\necho "Exit Code: $?"\\n\\necho "[TEST] Running strace mystery_process (expect ENOENT on config)..."\\nstrace mystery_process\\n\\necho "[TEST] Creating secret config..."\\necho "CONF_V1: SECRET" > /tmp/secret_config.dat\\n\\necho "[TEST] Running mystery_process again (expect FLAG)..."\\nmystery_process\\n\\necho "[CLEANUP] Removing temp files..."\\nrm /tmp/secret_config.dat\\n',
+            content: '#!/bin/bash\\n# VERIFICATION SCRIPT v5.3.0 (Strace Check)\\n\\necho "[TEST] Running mystery_process (expect silent failure)..."\\nmystery_process\\necho "Exit Code: $?"\\n\\necho "[TEST] Running strace mystery_process (expect ENOENT on config)..."\\nstrace mystery_process\\n\\necho "[TEST] Creating secret config..."\\necho "CONF_V1: SECRET" > /tmp/secret_config.dat\\n\\necho "[TEST] Running mystery_process again (expect FLAG)..."\\nmystery_process\\n\\necho "[CLEANUP] Removing temp files..."\\nrm /tmp/secret_config.dat\\n',
             permissions: '0755'
         };
         const home = getNode('/home/ghost');
@@ -5983,7 +5983,7 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
          const configFile = VFS['/tmp/secret_config.dat'];
          if (configFile && configFile.type === 'file') {
               // lenient check: existence is enough for the "trace" puzzle
-              let out = 'FLAG: GHOST_ROOT{STR4C3_F1L3_ACC3SS_V3R1F13D}';
+              let out = 'FLAG: GHOST_ROOT{STR4C3_TR4C3_M4ST3R}';
               if (!VFS['/var/run/cycle255_solved']) {
                   VFS['/var/run/cycle255_solved'] = { type: 'file', content: 'TRUE' };
                   const runDir = getNode('/var/run');
@@ -6043,7 +6043,7 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
                 out += 'close(3)                                = 0\\n';
 
                 // Success on existence
-                out += 'write(1, "FLAG: GHOST_ROOT{STR4C3_F1L3_ACC3SS_V3R1F13D}\\n", 40) = 40\\n';
+                out += 'write(1, "FLAG: GHOST_ROOT{STR4C3_TR4C3_M4ST3R}\\n", 40) = 40\\n';
                 out += 'exit_group(0)                           = ?\\n';
                 out += '+++ exited with 0 +++';
 
@@ -6123,7 +6123,7 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
                 out += 'fclose(0x559d70df9010)                           = 0\\n';
                 
                 if (configFile.content.includes('CONF_V1')) {
-                    out += 'puts("FLAG: GHOST_ROOT{STR4C3_F1L3_ACC3SS_V3R1F13D}")    = 40\\n';
+                    out += 'puts("FLAG: GHOST_ROOT{STR4C3_TR4C3_M4ST3R}")    = 40\\n';
                     out += 'exit(0)                                          = ?\\n';
                     out += '+++ exited (status 0) +++';
                 } else {
@@ -6486,7 +6486,7 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
        out += '[TEST] Creating secret config...\\n\\n';
        
        out += '[TEST] Running mystery_process again (expect FLAG)...\\n';
-       out += 'FLAG: GHOST_ROOT{STR4C3_F1L3_ACC3SS_V3R1F13D}\\n\\n';
+       out += 'FLAG: GHOST_ROOT{STR4C3_TR4C3_M4ST3R}\\n\\n';
        
        out += '[CLEANUP] Removing temp files...\\n';
        
@@ -15467,7 +15467,7 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
                      trace += `puts("Configuration Loaded.") = 22\n`;
                      trace += `puts("Verifying Integrity...") = 23\n`;
                      trace += `puts("[SUCCESS] System Validated.") = 27\n`;
-                     trace += `printf("FLAG: %s\\n", "GHOST_ROOT{STR4C3_M4ST3R_V1}") = 35\n`;
+                     trace += `printf("FLAG: %s\\n", "GHOST_ROOT{STR4C3_TR4C3_M4ST3R}") = 35\n`;
                      trace += `exit(0) = ?\n`;
                      trace += `+++ exited (status 0) +++`;
                  }
@@ -15946,9 +15946,9 @@ tmpfs             815276    1184    814092   1% /run
                      if (runDir && runDir.type === 'dir' && !runDir.children.includes('cycle255_solved')) {
                          runDir.children.push('cycle255_solved');
                      }
-                     output = '[STATUS] Running...\nConfiguration Loaded.\nVerifying Integrity...\n[SUCCESS] System Validated.\nFLAG: GHOST_ROOT{STR4C3_M4ST3R_V1}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PROCESS TRACED.\x1b[0m';
+                     output = '[STATUS] Running...\nConfiguration Loaded.\nVerifying Integrity...\n[SUCCESS] System Validated.\nFLAG: GHOST_ROOT{STR4C3_TR4C3_M4ST3R}\n\x1b[1;32m[MISSION UPDATE] Objective Complete: PROCESS TRACED.\x1b[0m';
                  } else {
-                     output = '[STATUS] Running...\nConfiguration Loaded.\nVerifying Integrity...\n[SUCCESS] System Validated.\nFLAG: GHOST_ROOT{STR4C3_M4ST3R_V1}';
+                     output = '[STATUS] Running...\nConfiguration Loaded.\nVerifying Integrity...\n[SUCCESS] System Validated.\nFLAG: GHOST_ROOT{STR4C3_TR4C3_M4ST3R}';
                  }
              } else {
                  output = '[STATUS] Running...\nConfiguration Error: Invalid Format.';
@@ -15996,7 +15996,7 @@ tmpfs             815276    1184    814092   1% /run
                          trace += `write(1, "Configuration Loaded.\\n", 22) = 22\n`;
                          trace += `write(1, "Verifying Integrity...\\n", 23) = 23\n`;
                          trace += `write(1, "[SUCCESS] System Validated.\\n", 27[SUCCESS] System Validated.\n) = 27\n`;
-                         trace += `write(1, "FLAG: GHOST_ROOT{STR4C3_M4ST3R_V1}\\n", 35FLAG: GHOST_ROOT{STR4C3_M4ST3R_V1}\n) = 35\n`;
+                         trace += `write(1, "FLAG: GHOST_ROOT{STR4C3_TR4C3_M4ST3R}\\n", 35FLAG: GHOST_ROOT{STR4C3_TR4C3_M4ST3R}\n) = 35\n`;
                          trace += `exit_group(0) = ?\n`;
                          trace += `+++ exited with 0 +++`;
                      } else {
@@ -17094,7 +17094,7 @@ openat(AT_FDCWD, "/usr/local/etc/mystery.conf", O_RDONLY) = -1 ENOENT (No such f
 openat(AT_FDCWD, "/etc/mystery.conf", O_RDONLY) = -1 ENOENT (No such file or directory)
 openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = ${exists ? '3' : '-1 ENOENT (No such file or directory)'}
 ${exists ? `read(3, "${content.substring(0, 32).replace(/\n/g, '\\n')}${content.length > 32 ? '...' : ''}", 1024) = ${content.length}\nclose(3) = 0` : ''}
-${valid ? 'write(1, "[SUCCESS] Configuration Loaded.\\n", 32) = 32\nwrite(1, "FLAG: GHOST_ROOT{STR4C3_F1L3_ACC3SS_V3R1F13D}\\n", 47) = 47\nexit_group(0) = ?' : 'exit_group(1) = ?\n+++ exited with 1 +++'}`;
+${valid ? 'write(1, "[SUCCESS] Configuration Loaded.\\n", 32) = 32\nwrite(1, "FLAG: GHOST_ROOT{STR4C3_TR4C3_M4ST3R}\\n", 47) = 47\nexit_group(0) = ?' : 'exit_group(1) = ?\n+++ exited with 1 +++'}`;
             } else {
                  // Generic trace for other commands
                  output = `execve("/usr/bin/${cmd}", ["${cmd}", "${cmdArgs.join('", "')}"], 0x7ffd...) = 0
@@ -18672,7 +18672,7 @@ ${validUnits.length} loaded units listed.`;
     }
 // Cycle 255: The Process Trace (Direct Execution) - ACTIVE
     case 'mystery_process': {
-        if (args.includes('--version')) { output = 'mystery_process v5.1.4'; break; }
+        if (args.includes('--version')) { output = 'mystery_process v5.3.0'; break; }
         if (args.includes('--help')) { output = 'Usage: mystery_process\n\nRuns system integrity check.\nReturns nothing on failure (security feature).'; break; }
         const secretNode = getNode('/tmp/secret_config.dat');
         const secretExists = secretNode && secretNode.type === 'file';
@@ -18680,7 +18680,7 @@ ${validUnits.length} loaded units listed.`;
         const isValid = content.trim() === 'CONF_V1: SECRET';
 
         if (secretExists && isValid) {
-            output = 'Access Granted.\nFLAG: GHOST_ROOT{STR4C3_F1L3_ACC3SS_V3R1F13D}';
+            output = 'Access Granted.\nFLAG: GHOST_ROOT{STR4C3_TR4C3_M4ST3R}';
             
             // Mark solved if not already
             if (!VFS['/var/run/strace_solved']) {
@@ -18789,7 +18789,7 @@ stat("/tmp/secret_config.dat", 0x7ffd5d596580) = ${secretExists ? '0' : '-1 ENOE
                      
                      if (isValid) {
                          output += `write(1, "Access Granted.\\n", 16) = 16\n`;
-                         output += `write(1, "FLAG: GHOST_ROOT{STR4C3_F1L3_ACC3SS_V3R1F13D}\\n", 38) = 38\n`;
+                         output += `write(1, "FLAG: GHOST_ROOT{STR4C3_TR4C3_M4ST3R}\\n", 38) = 38\n`;
                          output += `exit_group(0)                           = ?\n+++ exited with 0 +++`;
                      } else {
                          output += `write(2, "Invalid Configuration Format (Expected: \\"CONF_V1: SECRET\\")\\n", 56) = 56\n`;
@@ -18861,7 +18861,7 @@ stat("/tmp/secret_config.dat", 0x7ffd5d596580) = ${secretExists ? '0' : '-1 ENOE
                      if (contentValid) {
                          trace += `fgets("CONF_V1:...", 1024, 0x559e2269a2a0) = "CONF_V1:..."\n`;
                          trace += `puts("Access Granted.")                          = 16\n`;
-                         trace += `puts("FLAG: GHOST_ROOT{STR4C3_F1L3_ACC3SS_V3R1F13D}") = 38\n`;
+                         trace += `puts("FLAG: GHOST_ROOT{STR4C3_TR4C3_M4ST3R}") = 38\n`;
                          trace += `exit(0)                                          = <void>\n+++ exited (status 0) +++`;
                      } else {
                          // Truncate content for realism
@@ -21321,7 +21321,7 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
                                     'close(3)                                = 0\n' +
                                     'write(1, "[SUCCESS] Configuration Loaded.\\n", 31) = 31\n' +
                                     'write(1, "[SYSTEM] Payload Decrypted.\\n", 27) = 27\n' +
-                                    'write(1, "FLAG: GHOST_ROOT{STR4C3_F1L3_ACC3SS_V3R1F13D}\\n", 48) = 48\n' +
+                                    'write(1, "FLAG: GHOST_ROOT{STR4C3_TR4C3_M4ST3R}\\n", 48) = 48\n' +
                                     'exit_group(0)                           = ?\n' +
                                     '+++ exited with 0 +++';
                       } else {
@@ -21438,7 +21438,7 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
         
         if (configNode && configNode.type === 'file') {
              if (configNode.content.trim() === 'CONF_V1: SECRET') {
-                 output = '[SUCCESS] Configuration Loaded.\n[SYSTEM] Payload Decrypted.\nFLAG: GHOST_ROOT{STR4C3_F1L3_ACC3SS_V3R1F13D}';
+                 output = '[SUCCESS] Configuration Loaded.\n[SYSTEM] Payload Decrypted.\nFLAG: GHOST_ROOT{STR4C3_TR4C3_M4ST3R}';
                  
                  // Mark Solved
                  if (!VFS['/var/run/cycle255_solved']) {
