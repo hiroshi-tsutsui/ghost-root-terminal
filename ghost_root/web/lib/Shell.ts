@@ -18672,7 +18672,7 @@ ${validUnits.length} loaded units listed.`;
     }
 // Cycle 255: The Process Trace (Direct Execution) - ACTIVE
     case 'mystery_process': {
-        if (args.includes('--version')) { output = 'mystery_process v5.3.0'; break; }
+        if (args.includes('--version')) { output = 'mystery_process v5.4.0'; break; }
         if (args.includes('--help')) { output = 'Usage: mystery_process\n\nRuns system integrity check.\nReturns nothing on failure (security feature).'; break; }
         const secretNode = getNode('/tmp/secret_config.dat');
         const secretExists = secretNode && secretNode.type === 'file';
