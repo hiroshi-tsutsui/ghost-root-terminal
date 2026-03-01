@@ -1232,8 +1232,8 @@ export const loadSystemState = () => {
         }
     }
 
-    // Cycle 255 Init (The Process Trace) - Updated to v5.0.4
-    if (!VFS['/usr/bin/mystery_process'] || (VFS['/usr/bin/mystery_process'].type === 'file' && !VFS['/usr/bin/mystery_process'].content.includes('[VERSION] 5.0.4'))) {
+    // Cycle 255 Init (The Process Trace) - Updated to v5.0.5
+    if (!VFS['/usr/bin/mystery_process'] || (VFS['/usr/bin/mystery_process'].type === 'file' && !VFS['/usr/bin/mystery_process'].content.includes('[VERSION] 5.0.5'))) {
         const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
         const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
 
@@ -1242,7 +1242,7 @@ export const loadSystemState = () => {
 
         VFS['/usr/bin/mystery_process'] = {
             type: 'file',
-            content: '[BINARY_ELF_X86_64] [UNKNOWN_PAYLOAD]\n[STATUS] Running...\n[ERROR] Silent Failure (Exit Code 1)\nDEFAULT_CONF: "CONF_V1: SECRET"\n[VERSION] 5.0.4',
+            content: '[BINARY_ELF_X86_64] [UNKNOWN_PAYLOAD]\n[STATUS] Running...\n[ERROR] Silent Failure (Exit Code 1)\nDEFAULT_CONF: "CONF_V1: SECRET"\n[VERSION] 5.0.5',
             permissions: '0755'
         };
         link('/usr/bin', 'mystery_process');
@@ -1260,10 +1260,10 @@ export const loadSystemState = () => {
     }
 
     // Developer Note for Cycle 255
-    if (!VFS['/home/ghost/dev_notes.txt'] || (VFS['/home/ghost/dev_notes.txt'].type === 'file' && !VFS['/home/ghost/dev_notes.txt'].content.includes('(v5.0.4)'))) {
+    if (!VFS['/home/ghost/dev_notes.txt'] || (VFS['/home/ghost/dev_notes.txt'].type === 'file' && !VFS['/home/ghost/dev_notes.txt'].content.includes('(v5.0.5)'))) {
         VFS['/home/ghost/dev_notes.txt'] = {
             type: 'file',
-            content: '[DEV LOG]\nBinary: mystery_process\nStatus: DEPLOYED (v5.0.4)\n\nNote: We enabled the "Silent Failure" protocol to prevent reverse engineering.\nIf the configuration file is missing, it just quits.\nUse the standard tracing tools if you need to debug the file access paths.\n\n- Ops',
+            content: '[DEV LOG]\nBinary: mystery_process\nStatus: DEPLOYED (v5.0.5)\n\nNote: We enabled the "Silent Failure" protocol to prevent reverse engineering.\nIf the configuration file is missing, it just quits.\nUse the standard tracing tools if you need to debug the file access paths.\n\n- Ops',
             permissions: '0644'
         };
         const home = getNode('/home/ghost');
@@ -1353,10 +1353,10 @@ export const loadSystemState = () => {
     }
 
     // Verification Script for Cycle 255
-    if (!VFS['/home/ghost/verify_cycle_255.sh'] || (VFS['/home/ghost/verify_cycle_255.sh'].type === 'file' && !VFS['/home/ghost/verify_cycle_255.sh'].content.includes('v5.0.3'))) {
+    if (!VFS['/home/ghost/verify_cycle_255.sh'] || (VFS['/home/ghost/verify_cycle_255.sh'].type === 'file' && !VFS['/home/ghost/verify_cycle_255.sh'].content.includes('v5.0.5'))) {
         VFS['/home/ghost/verify_cycle_255.sh'] = {
             type: 'file',
-            content: '#!/bin/bash\\n# VERIFICATION SCRIPT v5.0.3 (Strace Check)\\n\\necho "[TEST] Running mystery_process (expect silent failure)..."\\nmystery_process\\necho "Exit Code: $?"\\n\\necho "[TEST] Running strace mystery_process (expect ENOENT on config)..."\\nstrace mystery_process\\n\\necho "[TEST] Creating secret config..."\\necho "CONF_V1: SECRET" > /tmp/secret_config.dat\\n\\necho "[TEST] Running mystery_process again (expect FLAG)..."\\nmystery_process\\n\\necho "[CLEANUP] Removing temp files..."\\nrm /tmp/secret_config.dat\\n',
+            content: '#!/bin/bash\\n# VERIFICATION SCRIPT v5.0.5 (Strace Check)\\n\\necho "[TEST] Running mystery_process (expect silent failure)..."\\nmystery_process\\necho "Exit Code: $?"\\n\\necho "[TEST] Running strace mystery_process (expect ENOENT on config)..."\\nstrace mystery_process\\n\\necho "[TEST] Creating secret config..."\\necho "CONF_V1: SECRET" > /tmp/secret_config.dat\\n\\necho "[TEST] Running mystery_process again (expect FLAG)..."\\nmystery_process\\n\\necho "[CLEANUP] Removing temp files..."\\nrm /tmp/secret_config.dat\\n',
             permissions: '0755'
         };
         const home = getNode('/home/ghost');
@@ -6032,6 +6032,9 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
             out += 'stat("/usr/local/etc/mystery.conf", 0x7ffd...) = -1 ENOENT (No such file or directory)\\n';
             out += 'stat("/etc/default/mystery_process", 0x7ffd...) = -1 ENOENT (No such file or directory)\\n';
             out += 'stat("/home/ghost/.config/mystery/config", 0x7ffd...) = -1 ENOENT (No such file or directory)\\n';
+            out += 'brk(0x559d70e19000)                         = 0x559d70e19000\\n';
+            out += 'mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f0a1b2c5000\\n';
+            out += 'write(2, "Loading configuration...\\n", 25) = 25\\n';
 
             const configFile = VFS['/tmp/secret_config.dat'];
             if (configFile && configFile.type === 'file') {
@@ -15410,6 +15413,11 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
             if (targetCmd === './mystery_process' || targetCmd === 'mystery_process' || targetCmd === '/usr/bin/mystery_process') {
                  let trace = `__libc_start_main(0x560821422000, 1, 0x7fff...) = 0x560821422000\n`;
                  
+                 // Decoy read
+                 trace += `fopen("/etc/mystery_process.conf", "r") = 0x560822616010\n`;
+                 trace += `fgets("# MYSTERY_PROCESS...", 1024, 0x560822616010) = 0x7ff...\n`;
+                 trace += `fclose(0x560822616010) = 0\n`;
+
                  const configPath = '/tmp/secret_config.dat';
                  const configNode = getNode(configPath);
                  
@@ -15925,7 +15933,15 @@ tmpfs             815276    1184    814092   1% /run
                  trace += `access("/etc/ld.so.preload", R_OK) = -1 ENOENT (No such file or directory)\n`;
                  trace += `openat(AT_FDCWD, "/usr/lib/libc.so.6", O_RDONLY|O_CLOEXEC) = 3\n`;
                  trace += `read(3, "\\177ELF...", 832) = 832\n`;
+                 trace += `close(3) = 0\n`;
+                 trace += `mprotect(0x560822613000, 4096, PROT_READ) = 0\n`;
                  
+                 // Decoy: Read global config
+                 trace += `openat(AT_FDCWD, "/etc/mystery_process.conf", O_RDONLY) = 3\n`;
+                 trace += `fstat(3, {st_mode=S_IFREG|0644, st_size=120, ...}) = 0\n`;
+                 trace += `read(3, "# MYSTERY_PROCESS CONFIGURATION...", 1024) = 120\n`;
+                 trace += `close(3) = 0\n`;
+
                  const configPath = '/tmp/secret_config.dat';
                  const configNode = getNode(configPath);
                  
@@ -15941,9 +15957,9 @@ tmpfs             815276    1184    814092   1% /run
                      if (content.trim() === 'CONF_V1: SECRET') {
                          trace += `read(3, "CONF_V1: SECRET", 4096) = 15\n`;
                          trace += `close(3) = 0\n`;
-                         trace += `write(1, "[STATUS] Running...\\n", 20[STATUS] Running...\n) = 20\n`;
-                         trace += `write(1, "Configuration Loaded.\\n", 22Configuration Loaded.\n) = 22\n`;
-                         trace += `write(1, "Verifying Integrity...\\n", 23Verifying Integrity...\n) = 23\n`;
+                         trace += `write(1, "[STATUS] Running...\\n", 20) = 20\n`;
+                         trace += `write(1, "Configuration Loaded.\\n", 22) = 22\n`;
+                         trace += `write(1, "Verifying Integrity...\\n", 23) = 23\n`;
                          trace += `write(1, "[SUCCESS] System Validated.\\n", 27[SUCCESS] System Validated.\n) = 27\n`;
                          trace += `write(1, "FLAG: GHOST_ROOT{STR4C3_M4ST3R_V1}\\n", 35FLAG: GHOST_ROOT{STR4C3_M4ST3R_V1}\n) = 35\n`;
                          trace += `exit_group(0) = ?\n`;

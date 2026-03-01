@@ -19,10 +19,22 @@
 - Confirmed "Silent Failure" mechanic is active.
 - Status: **MISSION ACCOMPLISHED**.
 
-```text
-📟 **UPLINK ESTABLISHED: CYCLE REPORT**
+## Cycle 255: The Process Trace (Phase 5.0 - Final v5.0.5)
+**Timestamp:** 2026-03-01 11:45:00 JST
 **Sector:** /usr/bin/mystery_process
-**New Protocol:** v5.0.4 (Enhanced Strace Trap)
-**Encryption Level:** High (Syscall Analysis Required)
-**Target:** https://ghost-root-terminal.vercel.app/
-```
+**Status:** DEPLOYED (v5.0.5)
+**Objective:**
+- Finalized `strace` output with `brk`, `mmap`, and `write` calls to maximize realism.
+- Added decoy config search paths (`/etc/mystery.conf`, `/usr/local/etc/mystery.conf`, etc.).
+- Bumped version to v5.0.5.
+- Status: **MISSION ACCOMPLISHED**.
+
+## Cycle 255: The Process Trace (Phase 5.5 - Hyper-Realism Patch)
+**Timestamp:** 2026-03-01 12:15:00 JST
+**Sector:** /usr/bin/mystery_process
+**Status:** DEPLOYED (v5.0.6)
+**Objective:**
+- Added specific `mprotect` and `close` syscalls to `strace` output for accuracy.
+- Implemented **decoy config read** (`/etc/mystery_process.conf`) to mislead casual observers.
+- Finalized "silent failure" logic to ensure ENOENT is the only clue.
+- Status: **MISSION ACCOMPLISHED**.
