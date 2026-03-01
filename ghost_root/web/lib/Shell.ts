@@ -21242,6 +21242,7 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
                  output = 'execve("/usr/bin/mystery_process", ["mystery_process"], 0x7ffd5a6b2c40 /* 21 vars */) = 0\n' +
                           'brk(NULL)                               = 0x559d8c365000\n' +
                           'access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)\n' +
+                          'openat(AT_FDCWD, "./config.dat", O_RDONLY) = -1 ENOENT (No such file or directory)\n' +
                           'openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3\n' +
                           'fstat(3, {st_mode=S_IFREG|0644, st_size=12345, ...}) = 0\n' +
                           'mmap(NULL, 12345, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7f8a9b1c2000\n' +
