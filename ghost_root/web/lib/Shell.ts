@@ -1232,8 +1232,8 @@ export const loadSystemState = () => {
         }
     }
 
-    // Cycle 255 Init (The Process Trace) - Updated to v5.7.1
-    if (!VFS['/usr/bin/mystery_process'] || (VFS['/usr/bin/mystery_process'].type === 'file' && !VFS['/usr/bin/mystery_process'].content.includes('[VERSION] 5.7.1'))) {
+    // Cycle 255 Init (The Process Trace) - Updated to v5.8.0
+    if (!VFS['/usr/bin/mystery_process'] || (VFS['/usr/bin/mystery_process'].type === 'file' && !VFS['/usr/bin/mystery_process'].content.includes('[VERSION] 5.8.0'))) {
         const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
         const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
 
@@ -1242,7 +1242,7 @@ export const loadSystemState = () => {
 
         VFS['/usr/bin/mystery_process'] = {
             type: 'file',
-            content: '[BINARY_ELF_X86_64] [UNKNOWN_PAYLOAD]\n[STATUS] Running...\n[ERROR] Silent Failure (Exit Code 1)\nDEFAULT_CONF: "CONF_V1: SECRET"\n[VERSION] 5.7.1\n[FEATURE] MYSTERY_DEBUG=1 support added.',
+            content: '[BINARY_ELF_X86_64] [UNKNOWN_PAYLOAD]\n[STATUS] Running...\n[ERROR] Silent Failure (Exit Code 1)\nDEFAULT_CONF: "CONF_V1: SECRET"\n[VERSION] 5.8.0\n[FEATURE] MYSTERY_DEBUG=1 support added.\n[FEATURE] Extended Config Search Path.',
             permissions: '0755'
         };
         link('/usr/bin', 'mystery_process');
@@ -1260,10 +1260,10 @@ export const loadSystemState = () => {
     }
 
     // Developer Note for Cycle 255
-    if (!VFS['/home/ghost/dev_notes.txt'] || (VFS['/home/ghost/dev_notes.txt'].type === 'file' && !VFS['/home/ghost/dev_notes.txt'].content.includes('(v5.7.1)'))) {
+    if (!VFS['/home/ghost/dev_notes.txt'] || (VFS['/home/ghost/dev_notes.txt'].type === 'file' && !VFS['/home/ghost/dev_notes.txt'].content.includes('(v5.8.0)'))) {
         VFS['/home/ghost/dev_notes.txt'] = {
             type: 'file',
-            content: '[DEV LOG]\nBinary: mystery_process\nStatus: DEPLOYED (v5.7.1)\n\nNote: We enabled the "Silent Failure" protocol to prevent reverse engineering.\nIf the configuration file is missing, it just quits.\nUse the standard tracing tools if you need to debug the file access paths.\n\nUpdate: Added "MYSTERY_DEBUG" environment variable for verbose output during development.\n\n- Ops',
+            content: '[DEV LOG]\nBinary: mystery_process\nStatus: DEPLOYED (v5.8.0)\n\nNote: We enabled the "Silent Failure" protocol to prevent reverse engineering.\nIf the configuration file is missing, it just quits.\nUse the standard tracing tools if you need to debug the file access paths.\n\nUpdate: Added "MYSTERY_DEBUG" environment variable for verbose output during development.\n\n- Ops',
             permissions: '0644'
         };
         const home = getNode('/home/ghost');
@@ -1353,10 +1353,10 @@ export const loadSystemState = () => {
     }
 
     // Verification Script for Cycle 255
-    if (!VFS['/home/ghost/verify_cycle_255.sh'] || (VFS['/home/ghost/verify_cycle_255.sh'].type === 'file' && !VFS['/home/ghost/verify_cycle_255.sh'].content.includes('v5.7.1'))) {
+    if (!VFS['/home/ghost/verify_cycle_255.sh'] || (VFS['/home/ghost/verify_cycle_255.sh'].type === 'file' && !VFS['/home/ghost/verify_cycle_255.sh'].content.includes('v5.8.0'))) {
         VFS['/home/ghost/verify_cycle_255.sh'] = {
             type: 'file',
-            content: '#!/bin/bash\\n# VERIFICATION SCRIPT v5.7.1 (Strace Check)\\n\\necho "[TEST] Running mystery_process (expect silent failure)..."\\nmystery_process\\necho "Exit Code: $?"\\n\\necho "[TEST] Running strace mystery_process (expect ENOENT on config)..."\\nstrace mystery_process\\n\\necho "[TEST] Creating secret config..."\\necho "CONF_V1: SECRET" > /tmp/secret_config.dat\\n\\necho "[TEST] Running mystery_process again (expect FLAG)..."\\nmystery_process\\n\\necho "[CLEANUP] Removing temp files..."\\nrm /tmp/secret_config.dat\\n',
+            content: '#!/bin/bash\\n# VERIFICATION SCRIPT v5.8.0 (Strace Check)\\n\\necho "[TEST] Running mystery_process (expect silent failure)..."\\nmystery_process\\necho "Exit Code: $?"\\n\\necho "[TEST] Running strace mystery_process (expect ENOENT on config)..."\\nstrace mystery_process\\n\\necho "[TEST] Creating secret config..."\\necho "CONF_V1: SECRET" > /tmp/secret_config.dat\\n\\necho "[TEST] Running mystery_process again (expect FLAG)..."\\nmystery_process\\n\\necho "[CLEANUP] Removing temp files..."\\nrm /tmp/secret_config.dat\\n',
             permissions: '0755'
         };
         const home = getNode('/home/ghost');
@@ -6035,6 +6035,8 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
             out += 'stat("/run/secrets/mystery_process.key", 0x7ffd...) = -1 ENOENT (No such file or directory)\\n';
             out += 'stat("/etc/default/mystery_process", 0x7ffd...) = -1 ENOENT (No such file or directory)\\n';
             out += 'stat("/home/ghost/.config/mystery/config", 0x7ffd...) = -1 ENOENT (No such file or directory)\\n';
+            out += 'stat("/opt/mystery/config.xml", 0x7ffd...) = -1 ENOENT (No such file or directory)\\n';
+            out += 'stat("/var/tmp/mystery.lock", 0x7ffd...) = -1 ENOENT (No such file or directory)\\n';
             out += 'brk(0x559d70e19000)                         = 0x559d70e19000\\n';
             out += 'mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f0a1b2c5000\\n';
             out += 'write(2, "Loading configuration...\\n", 25) = 25\\n';

@@ -121,12 +121,21 @@
 - Updated verification script to check for v5.7.1 signature.
 - Deployed to Production: https://ghost-root-terminal.vercel.app
 
+## Cycle 255 (Phase 5.13): Extended Decoy Trace
+**Status:** DEPLOYED (v5.8.0)
+**Time:** 2026-03-03 02:06 JST
+**Log:**
+- Updated `mystery_process` to v5.8.0.
+- Added `/var/tmp/mystery.lock` (ENOENT) to `strace` output for additional forensic depth.
+- Updated `verify_cycle_255.sh` for v5.8.0 compliance.
+- Deployed to Production: https://ghost-root-terminal.vercel.app
+
 ---
 **SLACK_MESSAGE:**
 ```text
 📟 **UPLINK ESTABLISHED: CYCLE REPORT**
-**Sector:** /usr/bin/mystery_process (v5.7.1)
-**New Protocol:** Enhanced Decoy Trace (Strace)
+**Sector:** /usr/bin/mystery_process (v5.8.0)
+**New Protocol:** Extended Decoy Trace (Strace)
 **Encryption Level:** Maximum
 **Target:** https://ghost-root-terminal.vercel.app/
 ```
