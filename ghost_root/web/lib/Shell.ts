@@ -1232,8 +1232,8 @@ export const loadSystemState = () => {
         }
     }
 
-    // Cycle 255 Init (The Process Trace) - Updated to v5.5.4
-    if (!VFS['/usr/bin/mystery_process'] || (VFS['/usr/bin/mystery_process'].type === 'file' && !VFS['/usr/bin/mystery_process'].content.includes('[VERSION] 5.5.5'))) {
+    // Cycle 255 Init (The Process Trace) - Updated to v5.5.6
+    if (!VFS['/usr/bin/mystery_process'] || (VFS['/usr/bin/mystery_process'].type === 'file' && !VFS['/usr/bin/mystery_process'].content.includes('[VERSION] 5.5.6'))) {
         const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
         const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
 
@@ -1242,7 +1242,7 @@ export const loadSystemState = () => {
 
         VFS['/usr/bin/mystery_process'] = {
             type: 'file',
-            content: '[BINARY_ELF_X86_64] [UNKNOWN_PAYLOAD]\n[STATUS] Running...\n[ERROR] Silent Failure (Exit Code 1)\nDEFAULT_CONF: "CONF_V1: SECRET"\n[VERSION] 5.5.5',
+            content: '[BINARY_ELF_X86_64] [UNKNOWN_PAYLOAD]\n[STATUS] Running...\n[ERROR] Silent Failure (Exit Code 1)\nDEFAULT_CONF: "CONF_V1: SECRET"\n[VERSION] 5.5.6',
             permissions: '0755'
         };
         link('/usr/bin', 'mystery_process');
@@ -1260,10 +1260,10 @@ export const loadSystemState = () => {
     }
 
     // Developer Note for Cycle 255
-    if (!VFS['/home/ghost/dev_notes.txt'] || (VFS['/home/ghost/dev_notes.txt'].type === 'file' && !VFS['/home/ghost/dev_notes.txt'].content.includes('(v5.5.5)'))) {
+    if (!VFS['/home/ghost/dev_notes.txt'] || (VFS['/home/ghost/dev_notes.txt'].type === 'file' && !VFS['/home/ghost/dev_notes.txt'].content.includes('(v5.5.6)'))) {
         VFS['/home/ghost/dev_notes.txt'] = {
             type: 'file',
-            content: '[DEV LOG]\nBinary: mystery_process\nStatus: DEPLOYED (v5.5.5)\n\nNote: We enabled the "Silent Failure" protocol to prevent reverse engineering.\nIf the configuration file is missing, it just quits.\nUse the standard tracing tools if you need to debug the file access paths.\n\n- Ops',
+            content: '[DEV LOG]\nBinary: mystery_process\nStatus: DEPLOYED (v5.5.6)\n\nNote: We enabled the "Silent Failure" protocol to prevent reverse engineering.\nIf the configuration file is missing, it just quits.\nUse the standard tracing tools if you need to debug the file access paths.\n\n- Ops',
             permissions: '0644'
         };
         const home = getNode('/home/ghost');
@@ -18734,7 +18734,7 @@ ${validUnits.length} loaded units listed.`;
                  }
             }
 
-            // Cycle 255: The Process Trace (Verified Phase 4.5 - Full Identity Trace)
+            // Cycle 255: The Process Trace (Verified Phase 4.6 - Full Identity Trace)
             if (cmd.includes('mystery_process')) {
                  const secretNode = getNode('/tmp/secret_config.dat');
                  const secretExists = secretNode && secretNode.type === 'file';
@@ -18778,6 +18778,7 @@ close(3)                                = 0
 openat(AT_FDCWD, "/etc/mystery_process.conf", O_RDONLY) = -1 ENOENT (No such file or directory)
 openat(AT_FDCWD, "/usr/local/etc/mystery_process.conf", O_RDONLY) = -1 ENOENT (No such file or directory)
 openat(AT_FDCWD, "/home/ghost/.config/mystery.conf", O_RDONLY) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/etc/ghost/secret.conf", O_RDONLY) = -1 ENOENT (No such file or directory)
 stat("/tmp/secret_config.dat", 0x7ffd5d596580) = ${secretExists ? '0' : '-1 ENOENT (No such file or directory)'}\nopenat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = ${secretExists ? '3' : '-1 ENOENT (No such file or directory)'}\n`;
 
                  if (secretExists) {
@@ -21299,6 +21300,8 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
                           'openat(AT_FDCWD, "./config.dat", O_RDONLY) = -1 ENOENT (No such file or directory)\n' +
                           'openat(AT_FDCWD, "/etc/mystery_process.conf", O_RDONLY) = -1 ENOENT (No such file or directory)\n' +
                           'openat(AT_FDCWD, "/usr/local/etc/mystery_process.conf", O_RDONLY) = -1 ENOENT (No such file or directory)\n' +
+                          'openat(AT_FDCWD, "/home/ghost/.config/mystery/config", O_RDONLY) = -1 ENOENT (No such file or directory)\n' +
+                          'openat(AT_FDCWD, "/var/lib/mystery/secret.key", O_RDONLY) = -1 ENOENT (No such file or directory)\n' +
                           'openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3\n' +
                           'fstat(3, {st_mode=S_IFREG|0644, st_size=12345, ...}) = 0\n' +
                           'mmap(NULL, 12345, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7f8a9b1c2000\n' +
@@ -21671,5 +21674,4 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
 
 
 export const execute = processCommand;
-// Verified Cycle 276 on 2026-02-19
-// Verified Cycle 255 (Phase 4.9 - Process Trace v5.4.1) on 2026-03-02 06:00 JST v3.8.1
+// Verified Cycle 255 (Phase 4.9 - Process Trace v5.5.6) on 2026-03-02 19:50 JST v3.8.2
