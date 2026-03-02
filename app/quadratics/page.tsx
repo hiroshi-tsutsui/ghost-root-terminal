@@ -92,8 +92,8 @@ export default function MathTactixEvolutionV1() {
 
       // Default Quadratic Params
       let curA = level === 0 ? a_coeff : 1;
-      let curP = (level === 1 || level === 5) ? p_vertex : 2; // Allow P control in L1 & L5
-      let curQ = (level === 1 || level === 5) ? q_vertex : 1; // Allow Q control in L1 & L5
+      let curP = (level === 1 || level === 5 || level === 6) ? p_vertex : 2; // Allow P control in L1, L5, L6
+      let curQ = (level === 1 || level === 5 || level === 6) ? q_vertex : 1; // Allow Q control in L1, L5, L6
 
 
       // Level 5 Override: Inequality Demo (Use fixed params with real roots)
@@ -273,6 +273,7 @@ export default function MathTactixEvolutionV1() {
                {level < 4 && <MathComponent tex="y = (x - 2)^2 + 1" />}
                {level === 4 && <MathComponent tex="a \le x \le a + 2" />}
                {level === 5 && <MathComponent tex={`y = (x - 2)^2 ${q_vertex >= 0 ? '+' : ''}${Math.abs(q_vertex) < 0.05 ? '0' : q_vertex.toFixed(1)}`} />}
+               {level === 6 && <MathComponent tex={`y = (x - ${p_vertex.toFixed(1)})^2 ${q_vertex >= 0 ? '+' : ''}${Math.abs(q_vertex) < 0.05 ? '0' : q_vertex.toFixed(1)}`} />}
             </motion.div>
           </div>
         </div>
@@ -348,12 +349,13 @@ export default function MathTactixEvolutionV1() {
                        </button>
                     </div>
 
-                    <div className="bg-slate-50 p-6 rounded-3xl border border-slate-100 space-y-4">
-                       <div className="flex justify-between items-center"><span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">グラフの高さ (q)</span><span className="font-mono font-bold text-blue-600">q = {q_vertex.toFixed(1)}</span></div>
-                       <input type="range" min="-4" max="2" step="0.1" value={q_vertex} onChange={e => setQVertex(Number(e.target.value))} className="w-full h-1.5 bg-slate-200 rounded-full appearance-none accent-blue-600 cursor-pointer" />
-                    </div>
+                        <div className="bg-slate-50 p-6 rounded-3xl border border-slate-100 space-y-4">
+                           <div className="flex justify-between items-center"><span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">グラフの高さ (q)</span><span className="font-mono font-bold text-blue-600">q = {q_vertex.toFixed(1)}</span></div>
+                           <input type="range" min="-4" max="2" step="0.1" value={q_vertex} onChange={e => setQVertex(Number(e.target.value))} className="w-full h-1.5 bg-slate-200 rounded-full appearance-none accent-blue-600 cursor-pointer" />
+                           <div className="text-[10px] text-slate-400 text-center">上下に動かして解の個数と領域の変化を確認せよ</div>
+                        </div>
 
-                    <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100 text-sm space-y-3">
+                        <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100 text-sm space-y-3">
                        <div className="flex gap-3 items-start">
                           <div className="bg-blue-100 p-1.5 rounded-md"><Lightbulb className="w-4 h-4 text-blue-600" /></div>
                           <div>
@@ -363,7 +365,7 @@ export default function MathTactixEvolutionV1() {
                        </div>
                     </div>
 
-                    <button onClick={() => dispatch({type: 'NEXT_LEVEL'})} className="w-full bg-black text-white py-4 rounded-2xl font-bold shadow-xl active:scale-95 transition-all">全カリキュラム修了</button>
+                    <button onClick={() => dispatch({type: 'NEXT_LEVEL'})} className="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold shadow-xl active:scale-95 transition-all">次のミッションへ</button>
                  </div>
               </motion.div>
             )}
@@ -376,8 +378,43 @@ export default function MathTactixEvolutionV1() {
               </motion.div>
             )}
 
-            {/* FINISH */}
+            {/* LEVEL 6: GRAPH TRANSFORMATION */}
             {level === 6 && (
+              <motion.div key="lvl6" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
+                 <div className="space-y-2 text-center">
+                    <h2 className="text-2xl font-extrabold tracking-tight">平行移動の極意</h2>
+                    <p className="text-slate-500 text-sm">グラフの形 (a) はそのままで、<br/>頂点 (p, q) だけが移動します。</p>
+                 </div>
+
+                 <div className="space-y-6">
+                    <div className="bg-slate-50 p-6 rounded-3xl border border-slate-100 space-y-6">
+                       <div className="space-y-4">
+                          <div className="flex justify-between items-center"><span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">横移動 (p)</span><span className="font-mono font-bold text-blue-600">p = {p_vertex.toFixed(1)}</span></div>
+                          <input type="range" min="-3" max="7" step="0.5" value={p_vertex} onChange={e => setPVertex(Number(e.target.value))} className="w-full h-1.5 bg-slate-200 rounded-full appearance-none accent-blue-600 cursor-pointer" />
+                       </div>
+                       <div className="space-y-4">
+                          <div className="flex justify-between items-center"><span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">縦移動 (q)</span><span className="font-mono font-bold text-red-600">q = {q_vertex.toFixed(1)}</span></div>
+                          <input type="range" min="-3" max="3" step="0.5" value={q_vertex} onChange={e => setQVertex(Number(e.target.value))} className="w-full h-1.5 bg-slate-200 rounded-full appearance-none accent-red-600 cursor-pointer" />
+                       </div>
+                    </div>
+
+                    <div className="p-5 bg-blue-50 rounded-2xl border border-blue-100 flex gap-4 items-start">
+                       <Zap className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+                       <div>
+                          <h4 className="font-bold text-sm text-blue-800">試験のツボ</h4>
+                          <p className="text-[11px] text-blue-600 mt-1">
+                             「x軸方向に +3, y軸方向に -2」と言われたら、<br/>頂点の座標 <MathComponent tex="(p, q)" /> にそのまま足し引きするだけです。
+                          </p>
+                       </div>
+                    </div>
+
+                    <button onClick={() => dispatch({type: 'NEXT_LEVEL'})} className="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold shadow-xl active:scale-95 transition-all">全カリキュラム修了</button>
+                 </div>
+              </motion.div>
+            )}
+
+            {/* FINISH */}
+            {level === 7 && (
                <motion.div key="finish" className="text-center space-y-8 py-10">
                   <Trophy className="w-20 h-20 text-blue-600 mx-auto" />
                   <h1 className="text-3xl font-black">2次関数：完全制覇</h1>

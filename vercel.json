@@ -1,6 +1,6 @@
 {
   "framework": "nextjs",
-  "buildCommand": "cd project_omega && npm install && npm run build",
-  "outputDirectory": "project_omega/.next",
-  "ignoreCommand": "git diff --quiet HEAD^ HEAD ./project_omega/"
+  "buildCommand": "cd . && npm install && npm run build",
+  "outputDirectory": ".next",
+  "ignoreCommand": "git diff --quiet HEAD^ HEAD ./"
 }

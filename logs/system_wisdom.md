@@ -18,6 +18,9 @@
 - **Cycle 05 (Inequalities Refinement)**: 
   - **Interval Lines**: Drawing thick colored lines on the x-axis bridges the gap between the 2D region and the 1D solution set.
   - **Endpoint Rigor**: Visualizing the difference between `>` (Hollow Circle) and `>=` (Filled Circle) is critical for exam precision. Students often lose points here.
+- **Cycle 06 (Graph Transformation)**: 
+  - **Vertex Control**: Allowing free movement of $p$ (horizontal) and $q$ (vertical) simultaneously reinforces the concept of parallel translation. 
+  - **Equation Updates**: The equation $y = (x - p)^2 + q$ must update dynamically in the sticky header to reinforce the link between visual position and algebraic form.
 
 ## 🚫 Avoid List
 - **Path Ambiguity**: When working in a multi-directory repo, always use absolute paths for file writes to ensure the correct Next.js project is updated.
@@ -33,5 +36,5 @@
 - [x] Quadratic Inequalities (Static Prototype).
 - [x] Quadratic Inequalities (Dynamic - Move Parabola).
 - [x] Quadratic Inequalities (Strict vs Inclusive Logic).
+- [x] Level 6: Graph Transformation (Parallel translation).
 - [ ] Sine/Cosine Theorem Tactical Engine.
-- [ ] Level 6: Graph Transformation (Parallel translation).
