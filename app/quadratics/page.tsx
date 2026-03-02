@@ -120,7 +120,6 @@ export default function MathTactixEvolutionV1() {
 
       // Level 5: Inequality Shading
       if (level === 5) {
-         // Roots for y = (x-2)^2 + q => (x-2)^2 = -q
          const q = curQ;
          const ch = h; 
          ctx.globalAlpha = 0.2;
@@ -129,41 +128,92 @@ export default function MathTactixEvolutionV1() {
             const delta = Math.sqrt(-q);
             const r1 = 2 - delta;
             const r2 = 2 + delta;
+            const isOutside = ineqType === 'gt' || ineqType === 'ge';
+            const isStrict = ineqType === 'gt' || ineqType === 'lt';
 
-            if (ineqType === 'gt') { // x < r1, x > r2
+            if (isOutside) { // x < r1, x > r2
                ctx.fillStyle = '#10b981'; // Green for Safe/Outside
+               // Draw "Wings"
                ctx.fillRect(0, 0, ox + r1*scale, ch);
                ctx.fillRect(ox + r2*scale, 0, w - (ox + r2*scale), ch);
-            } else if (ineqType === 'lt') { // r1 < x < r2
+               
+               // Draw x-axis interval lines
+               ctx.globalAlpha = 1.0;
+               ctx.lineWidth = 4;
+               ctx.strokeStyle = '#10b981';
+               ctx.beginPath();
+               ctx.moveTo(0, oy); ctx.lineTo(ox + r1*scale, oy);
+               ctx.moveTo(ox + r2*scale, oy); ctx.lineTo(w, oy);
+               ctx.stroke();
+
+            } else { // Inside: r1 < x < r2
                ctx.fillStyle = '#f59e0b'; // Amber for Inside/Danger
+               // Draw "Between"
                ctx.fillRect(ox + r1*scale, 0, (r2-r1)*scale, ch);
+               
+               // Draw x-axis interval line
+               ctx.globalAlpha = 1.0;
+               ctx.lineWidth = 4;
+               ctx.strokeStyle = '#f59e0b';
+               ctx.beginPath();
+               ctx.moveTo(ox + r1*scale, oy); ctx.lineTo(ox + r2*scale, oy);
+               ctx.stroke();
             }
             
             // Draw Roots
             ctx.globalAlpha = 1.0;
-            ctx.fillStyle = '#1D1D1F';
-            ctx.beginPath(); ctx.arc(ox + r1*scale, oy, 4, 0, Math.PI*2); ctx.fill();
-            ctx.beginPath(); ctx.arc(ox + r2*scale, oy, 4, 0, Math.PI*2); ctx.fill();
+            ctx.lineWidth = 2;
+            
+            // Root 1
+            ctx.beginPath(); ctx.arc(ox + r1*scale, oy, 5, 0, Math.PI*2);
+            ctx.fillStyle = isStrict ? 'white' : '#1D1D1F';
+            ctx.strokeStyle = '#1D1D1F'; 
+            ctx.fill(); ctx.stroke();
+
+            // Root 2
+            ctx.beginPath(); ctx.arc(ox + r2*scale, oy, 5, 0, Math.PI*2);
+            ctx.fillStyle = isStrict ? 'white' : '#1D1D1F';
+            ctx.strokeStyle = '#1D1D1F';
+            ctx.fill(); ctx.stroke();
 
          } else if (q === 0) {
             const r = 2;
-            if (ineqType === 'gt') { // x != 2
+            const isOutside = ineqType === 'gt' || ineqType === 'ge';
+            const isStrict = ineqType === 'gt' || ineqType === 'lt';
+
+            if (isOutside) { 
                ctx.fillStyle = '#10b981';
-               ctx.fillRect(0, 0, ox + r*scale, ch); // Left
-               ctx.fillRect(ox + r*scale, 0, w - (ox + r*scale), ch); // Right
-            } 
-            // For lt (y < 0), no solution, draw nothing.
+               ctx.fillRect(0, 0, w, ch); // Fill All
+               // If strict (gt), need to punch hole at r? Visual hack: fill two rectangles
+               if (isStrict) {
+                   ctx.clearRect(ox + r*scale - 2, 0, 4, ch); // Hacky slice? No, just redraw
+                   ctx.fillStyle = '#10b981';
+                   ctx.fillRect(0, 0, ox + r*scale, ch);
+                   ctx.fillRect(ox + r*scale, 0, w - (ox + r*scale), ch);
+               }
+            } else {
+               // Inside (lt/le)
+               if (!isStrict) { // le (<= 0) -> Just the point x=2
+                  ctx.globalAlpha = 1.0;
+                  ctx.lineWidth = 4;
+                  ctx.strokeStyle = '#f59e0b';
+                  // Just a dot?
+               }
+            }
             
             ctx.globalAlpha = 1.0;
-            ctx.fillStyle = '#1D1D1F';
-            ctx.beginPath(); ctx.arc(ox + r*scale, oy, 4, 0, Math.PI*2); ctx.fill();
+            ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.arc(ox + r*scale, oy, 5, 0, Math.PI*2);
+            ctx.fillStyle = isStrict ? 'white' : '#1D1D1F'; 
+            ctx.strokeStyle = '#1D1D1F';
+            ctx.fill(); ctx.stroke();
 
-         } else { // q > 0 (No real roots, always positive)
-            if (ineqType === 'gt') { // All real numbers
+         } else { // q > 0 (No real roots)
+            if (ineqType === 'gt' || ineqType === 'ge') { 
                ctx.fillStyle = '#10b981';
                ctx.fillRect(0, 0, w, ch);
             }
-            // For lt (y < 0), no solution.
+            // For lt/le, no solution.
          }
          ctx.globalAlpha = 1.0;
       }
@@ -284,9 +334,17 @@ export default function MathTactixEvolutionV1() {
                           <MathComponent tex="y > 0" />
                           <div className="text-[10px] mt-1 opacity-70">軸より上 (外側)</div>
                        </button>
+                       <button onClick={() => setIneqType('ge')} className={`p-4 rounded-2xl border font-bold transition-all ${ineqType === 'ge' ? 'bg-emerald-50 border-emerald-200 text-emerald-700 ring-2 ring-emerald-100' : 'bg-white border-slate-100 text-slate-400'}`}>
+                          <MathComponent tex="y \ge 0" />
+                          <div className="text-[10px] mt-1 opacity-70">軸以上 (外側+端点)</div>
+                       </button>
                        <button onClick={() => setIneqType('lt')} className={`p-4 rounded-2xl border font-bold transition-all ${ineqType === 'lt' ? 'bg-amber-50 border-amber-200 text-amber-700 ring-2 ring-amber-100' : 'bg-white border-slate-100 text-slate-400'}`}>
                           <MathComponent tex="y < 0" />
                           <div className="text-[10px] mt-1 opacity-70">軸より下 (内側)</div>
+                       </button>
+                       <button onClick={() => setIneqType('le')} className={`p-4 rounded-2xl border font-bold transition-all ${ineqType === 'le' ? 'bg-amber-50 border-amber-200 text-amber-700 ring-2 ring-amber-100' : 'bg-white border-slate-100 text-slate-400'}`}>
+                          <MathComponent tex="y \le 0" />
+                          <div className="text-[10px] mt-1 opacity-70">軸以下 (内側+端点)</div>
                        </button>
                     </div>
 

@@ -15,6 +15,9 @@
 - **Cycle 02 (Trigonometry)**: The unit circle should clearly map $\cos$ to width (blue) and $\sin$ to height (red). Visual bars on axes help bridge the gap between circle coordinates and numerical values.
 - **Cycle 03 (Trigonometry)**: "Famous Angles" (30, 45, 60...) are the tactical foundation of Trig. Implementing a "magnetic snap" on the slider and showing exact fractional values ($\frac{\sqrt{3}}{2}$) converts visual rote-learning into intuitive spatial memory.
 - **Cycle 04 (Inequalities)**: Shading regions ($y>0$ vs $y<0$) visually connects the algebraic inequality to the graph's position relative to the x-axis. Using amber for "danger/inside" ($<0$) and green for "safe/outside" ($>0$) creates an intuitive emotional mapping.
+- **Cycle 05 (Inequalities Refinement)**: 
+  - **Interval Lines**: Drawing thick colored lines on the x-axis bridges the gap between the 2D region and the 1D solution set.
+  - **Endpoint Rigor**: Visualizing the difference between `>` (Hollow Circle) and `>=` (Filled Circle) is critical for exam precision. Students often lose points here.
 
 ## 🚫 Avoid List
 - **Path Ambiguity**: When working in a multi-directory repo, always use absolute paths for file writes to ensure the correct Next.js project is updated.
@@ -29,5 +32,6 @@
 - [x] Fractional values for Trig ($\frac{1}{2}$, $\frac{\sqrt{3}}{2}$).
 - [x] Quadratic Inequalities (Static Prototype).
 - [x] Quadratic Inequalities (Dynamic - Move Parabola).
+- [x] Quadratic Inequalities (Strict vs Inclusive Logic).
 - [ ] Sine/Cosine Theorem Tactical Engine.
 - [ ] Level 6: Graph Transformation (Parallel translation).
