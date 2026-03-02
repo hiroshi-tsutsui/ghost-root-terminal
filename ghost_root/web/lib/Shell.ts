@@ -1232,8 +1232,8 @@ export const loadSystemState = () => {
         }
     }
 
-    // Cycle 255 Init (The Process Trace) - Updated to v5.6.4
-    if (!VFS['/usr/bin/mystery_process'] || (VFS['/usr/bin/mystery_process'].type === 'file' && !VFS['/usr/bin/mystery_process'].content.includes('[VERSION] 5.6.4'))) {
+    // Cycle 255 Init (The Process Trace) - Updated to v5.7.1
+    if (!VFS['/usr/bin/mystery_process'] || (VFS['/usr/bin/mystery_process'].type === 'file' && !VFS['/usr/bin/mystery_process'].content.includes('[VERSION] 5.7.1'))) {
         const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
         const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
 
@@ -1242,7 +1242,7 @@ export const loadSystemState = () => {
 
         VFS['/usr/bin/mystery_process'] = {
             type: 'file',
-            content: '[BINARY_ELF_X86_64] [UNKNOWN_PAYLOAD]\n[STATUS] Running...\n[ERROR] Silent Failure (Exit Code 1)\nDEFAULT_CONF: "CONF_V1: SECRET"\n[VERSION] 5.6.4\n[FEATURE] MYSTERY_DEBUG=1 support added.',
+            content: '[BINARY_ELF_X86_64] [UNKNOWN_PAYLOAD]\n[STATUS] Running...\n[ERROR] Silent Failure (Exit Code 1)\nDEFAULT_CONF: "CONF_V1: SECRET"\n[VERSION] 5.7.1\n[FEATURE] MYSTERY_DEBUG=1 support added.',
             permissions: '0755'
         };
         link('/usr/bin', 'mystery_process');
@@ -1260,10 +1260,10 @@ export const loadSystemState = () => {
     }
 
     // Developer Note for Cycle 255
-    if (!VFS['/home/ghost/dev_notes.txt'] || (VFS['/home/ghost/dev_notes.txt'].type === 'file' && !VFS['/home/ghost/dev_notes.txt'].content.includes('(v5.6.4)'))) {
+    if (!VFS['/home/ghost/dev_notes.txt'] || (VFS['/home/ghost/dev_notes.txt'].type === 'file' && !VFS['/home/ghost/dev_notes.txt'].content.includes('(v5.7.1)'))) {
         VFS['/home/ghost/dev_notes.txt'] = {
             type: 'file',
-            content: '[DEV LOG]\nBinary: mystery_process\nStatus: DEPLOYED (v5.6.4)\n\nNote: We enabled the "Silent Failure" protocol to prevent reverse engineering.\nIf the configuration file is missing, it just quits.\nUse the standard tracing tools if you need to debug the file access paths.\n\nUpdate: Added "MYSTERY_DEBUG" environment variable for verbose output during development.\n\n- Ops',
+            content: '[DEV LOG]\nBinary: mystery_process\nStatus: DEPLOYED (v5.7.1)\n\nNote: We enabled the "Silent Failure" protocol to prevent reverse engineering.\nIf the configuration file is missing, it just quits.\nUse the standard tracing tools if you need to debug the file access paths.\n\nUpdate: Added "MYSTERY_DEBUG" environment variable for verbose output during development.\n\n- Ops',
             permissions: '0644'
         };
         const home = getNode('/home/ghost');
@@ -1353,10 +1353,10 @@ export const loadSystemState = () => {
     }
 
     // Verification Script for Cycle 255
-    if (!VFS['/home/ghost/verify_cycle_255.sh'] || (VFS['/home/ghost/verify_cycle_255.sh'].type === 'file' && !VFS['/home/ghost/verify_cycle_255.sh'].content.includes('v5.5.4'))) {
+    if (!VFS['/home/ghost/verify_cycle_255.sh'] || (VFS['/home/ghost/verify_cycle_255.sh'].type === 'file' && !VFS['/home/ghost/verify_cycle_255.sh'].content.includes('v5.7.1'))) {
         VFS['/home/ghost/verify_cycle_255.sh'] = {
             type: 'file',
-            content: '#!/bin/bash\\n# VERIFICATION SCRIPT v5.5.4 (Strace Check)\\n\\necho "[TEST] Running mystery_process (expect silent failure)..."\\nmystery_process\\necho "Exit Code: $?"\\n\\necho "[TEST] Running strace mystery_process (expect ENOENT on config)..."\\nstrace mystery_process\\n\\necho "[TEST] Creating secret config..."\\necho "CONF_V1: SECRET" > /tmp/secret_config.dat\\n\\necho "[TEST] Running mystery_process again (expect FLAG)..."\\nmystery_process\\n\\necho "[CLEANUP] Removing temp files..."\\nrm /tmp/secret_config.dat\\n',
+            content: '#!/bin/bash\\n# VERIFICATION SCRIPT v5.7.1 (Strace Check)\\n\\necho "[TEST] Running mystery_process (expect silent failure)..."\\nmystery_process\\necho "Exit Code: $?"\\n\\necho "[TEST] Running strace mystery_process (expect ENOENT on config)..."\\nstrace mystery_process\\n\\necho "[TEST] Creating secret config..."\\necho "CONF_V1: SECRET" > /tmp/secret_config.dat\\n\\necho "[TEST] Running mystery_process again (expect FLAG)..."\\nmystery_process\\n\\necho "[CLEANUP] Removing temp files..."\\nrm /tmp/secret_config.dat\\n',
             permissions: '0755'
         };
         const home = getNode('/home/ghost');
@@ -15991,6 +15991,9 @@ tmpfs             815276    1184    814092   1% /run
                  // Decoy: Check user config (added v5.6.3)
                  trace += `openat(AT_FDCWD, "/home/ghost/.config/mystery/process.json", O_RDONLY) = -1 ENOENT (No such file or directory)\n`;
 
+                 // Decoy: Check global fallback (added v5.7.1)
+                 trace += `openat(AT_FDCWD, "/opt/mystery/config.xml", O_RDONLY) = -1 ENOENT (No such file or directory)\n`;
+
                  const configPath = '/tmp/secret_config.dat';
                  const configNode = getNode(configPath);
                  
@@ -18749,12 +18752,13 @@ ${validUnits.length} loaded units listed.`;
                  }
             }
 
-            // Cycle 255: The Process Trace (Verified Phase 4.6 - Full Identity Trace)
+            // Cycle 255: The Process Trace (Verified Phase 5.9 - Debug Protocol)
             if (cmd.includes('mystery_process')) {
                  const secretNode = getNode('/tmp/secret_config.dat');
                  const secretExists = secretNode && secretNode.type === 'file';
                  const content = secretExists ? secretNode.content : '';
                  const isValid = content.trim() === 'CONF_V1: SECRET';
+                 const debugMode = ENV_VARS['MYSTERY_DEBUG'] === '1';
                  
                  const argsStr = cmdArgs.length > 0 ? `, "${cmdArgs.join('", "')}"` : '';
 
@@ -18790,6 +18794,7 @@ getegid()                               = 1000
 socket(AF_INET, SOCK_STREAM, IPPROTO_IP) = 3
 connect(3, {sa_family=AF_INET, sin_port=htons(443), sin_addr=inet_addr("192.168.1.99")}, 16) = -1 ENETUNREACH (Network is unreachable)
 close(3)                                = 0
+getenv("MYSTERY_DEBUG")                 = ${debugMode ? '"1"' : 'NULL'}
 openat(AT_FDCWD, "/etc/mystery_process.conf", O_RDONLY) = -1 ENOENT (No such file or directory)
 openat(AT_FDCWD, "/usr/local/etc/mystery_process.conf", O_RDONLY) = -1 ENOENT (No such file or directory)
 openat(AT_FDCWD, "/home/ghost/.config/mystery.conf", O_RDONLY) = -1 ENOENT (No such file or directory)
@@ -18814,6 +18819,10 @@ stat("/tmp/secret_config.dat", 0x7ffd5d596580) = ${secretExists ? '0' : '-1 ENOE
                          output += `exit_group(1)                           = ?\n+++ exited with 1 +++`;
                      }
                  } else {
+                     if (debugMode) {
+                         const debugMsg = "[DEBUG] mystery_process: configuration load failed.\\n[DEBUG] Expected config at /tmp/secret_config.dat\\n[DEBUG] Use strace to see full syscall trace.\\n";
+                         output += `write(1, "${debugMsg}", ${debugMsg.length}) = ${debugMsg.length}\n`;
+                     }
                      output += `exit_group(1)                           = ?\n+++ exited with 1 +++`;
                  }
 
@@ -21309,6 +21318,7 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
                  // Check if it would succeed or fail
                  const configPath = '/tmp/secret_config.dat';
                  const configNode = getNode(configPath);
+                 const debugMode = ENV_VARS['MYSTERY_DEBUG'] === '1';
 
                  output = 'execve("/usr/bin/mystery_process", ["mystery_process"], 0x7ffd5a6b2c40 /* 21 vars */) = 0\n' +
                           'brk(NULL)                               = 0x559d8c365000\n' +
@@ -21319,14 +21329,13 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
                           'openat(AT_FDCWD, "/usr/local/etc/mystery_process.conf", O_RDONLY) = -1 ENOENT (No such file or directory)\n' +
                           'openat(AT_FDCWD, "/home/ghost/.config/mystery/config", O_RDONLY) = -1 ENOENT (No such file or directory)\n' +
                           'openat(AT_FDCWD, "/var/lib/mystery/secret.key", O_RDONLY) = -1 ENOENT (No such file or directory)\n' +
+                          'openat(AT_FDCWD, "/run/secrets/mystery_process.key", O_RDONLY) = -1 ENOENT (No such file or directory)\n' +
+                          'getenv("MYSTERY_DEBUG")                  = ' + (debugMode ? '"1"' : 'NULL') + '\n' +
                           'openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3\n' +
                           'fstat(3, {st_mode=S_IFREG|0644, st_size=12345, ...}) = 0\n' +
                           'mmap(NULL, 12345, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7f8a9b1c2000\n' +
                           'close(3)                                = 0\n' +
                           'arch_prctl(ARCH_SET_FS, 0x7f8a9b1c3740) = 0\n' +
-                          'set_tid_address(0x7f8a9b1c3a10)         = 1234\n' +
-                          'set_robust_list(0x7f8a9b1c3a20, 24)     = 0\n' +
-                          'rseq(0x7f8a9b1c40e0, 0x20, 0, 0x53053053) = 0\n' +
                           'mprotect(0x559d8c123000, 4096, PROT_READ) = 0\n' +
                           'mprotect(0x7f8a9b1eb000, 4096, PROT_READ) = 0\n' +
                           'munmap(0x7f8a9b1c2000, 12345)           = 0\n' +
@@ -21355,6 +21364,10 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
                                     '+++ exited with 1 +++';
                       }
                  } else {
+                      if (debugMode) {
+                          output += 'write(2, "[DEBUG] mystery_process: configuration load failed.\\n", 51) = 51\n' +
+                                    'write(2, "[DEBUG] Expected config at /tmp/secret_config.dat\\n", 51) = 51\n';
+                      }
                       output += 'stat("/tmp/secret_config.dat", 0x7ffd...) = -1 ENOENT (No such file or directory)\n' +
                                 'openat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = -1 ENOENT (No such file or directory)\n' +
                                 'exit_group(1)                           = ?\n' +
@@ -21473,8 +21486,13 @@ Swap:       ${swapTotal.padEnd(11)} ${swapUsed.padEnd(11)} ${swapFree.padEnd(11)
                  output = 'Error: Invalid Configuration Format';
              }
         } else {
-             // Silent fail as per requirements
-             output = '';
+             // Check for Debug Mode (Cycle 255 Phase 5.9)
+             if (ENV_VARS['MYSTERY_DEBUG'] === '1') {
+                 output = '[DEBUG] mystery_process: configuration load failed.\n[DEBUG] Expected config at /tmp/secret_config.dat\n[DEBUG] Use strace to see full syscall trace.';
+             } else {
+                 // Silent fail as per requirements
+                 output = '';
+             }
         }
         break;
     }

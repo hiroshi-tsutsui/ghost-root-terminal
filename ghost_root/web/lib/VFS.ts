@@ -968,10 +968,10 @@ Click here to claim your prize!
       type: 'file',
       content: '\x7fELF\x02\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x3e\x00\x01\x00\x00\x00\x30\x05\x40\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00[MODULE_LICENSE: GPL]\n[MODULE_AUTHOR: Ghost]\n[MODULE_DESCRIPTION: Encrypted Vault Filesystem Driver]\n'
   },
-  // Cycle 255: The Process Trace (Strace) - Verified v5.6.1
+  // Cycle 255: The Process Trace (Strace) - Verified v5.7.0
   '/usr/bin/mystery_process': {
       type: 'file',
-      content: '[BINARY_ELF_X86_64] [UNKNOWN_PAYLOAD]\\n[STATUS] Running...\\n[ERROR] Silent Failure (Exit Code 1)\\nDEFAULT_CONF: "CONF_V1: SECRET"\\n[VERSION] 5.6.1',
+      content: '[BINARY_ELF_X86_64] [UNKNOWN_PAYLOAD]\\n[STATUS] Running...\\n[ERROR] Silent Failure (Exit Code 1)\\nDEFAULT_CONF: "CONF_V1: SECRET"\\n[VERSION] 5.7.0',
       permissions: '0755'
   },
   '/etc/mystery_process.conf': {
