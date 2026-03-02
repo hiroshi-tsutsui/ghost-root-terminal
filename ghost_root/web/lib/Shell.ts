@@ -1232,8 +1232,8 @@ export const loadSystemState = () => {
         }
     }
 
-    // Cycle 255 Init (The Process Trace) - Updated to v5.5.6
-    if (!VFS['/usr/bin/mystery_process'] || (VFS['/usr/bin/mystery_process'].type === 'file' && !VFS['/usr/bin/mystery_process'].content.includes('[VERSION] 5.5.6'))) {
+    // Cycle 255 Init (The Process Trace) - Updated to v5.6.1
+    if (!VFS['/usr/bin/mystery_process'] || (VFS['/usr/bin/mystery_process'].type === 'file' && !VFS['/usr/bin/mystery_process'].content.includes('[VERSION] 5.6.1'))) {
         const ensureDir = (p: string) => { if (!VFS[p]) VFS[p] = { type: 'dir', children: [] }; };
         const link = (p: string, c: string) => { const n = getNode(p); if (n && n.type === 'dir' && !n.children.includes(c)) n.children.push(c); };
 
@@ -1242,7 +1242,7 @@ export const loadSystemState = () => {
 
         VFS['/usr/bin/mystery_process'] = {
             type: 'file',
-            content: '[BINARY_ELF_X86_64] [UNKNOWN_PAYLOAD]\n[STATUS] Running...\n[ERROR] Silent Failure (Exit Code 1)\nDEFAULT_CONF: "CONF_V1: SECRET"\n[VERSION] 5.5.6',
+            content: '[BINARY_ELF_X86_64] [UNKNOWN_PAYLOAD]\n[STATUS] Running...\n[ERROR] Silent Failure (Exit Code 1)\nDEFAULT_CONF: "CONF_V1: SECRET"\n[VERSION] 5.6.1',
             permissions: '0755'
         };
         link('/usr/bin', 'mystery_process');
@@ -5975,7 +5975,7 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
   }
 
     // Cycle 255 (The Process Trace)
-    // Verified active for Phase 4.6 - Cycle 255 (v5.0.4)
+    // Verified active for Phase 5.6 - Cycle 255 (v5.6.1)
     if (cmdBase === 'mystery_process' || cmdBase === './mystery_process' || cmdBase === '/usr/bin/mystery_process') {
          // Phase 4.5: Logic Check
          const configFile = VFS['/tmp/secret_config.dat'];
@@ -6024,6 +6024,7 @@ export const processCommand = (cwd: string, commandLine: string, stdin?: string)
             // Realistic config search path
             out += 'stat("/etc/mystery.conf", 0x7ffd...) = -1 ENOENT (No such file or directory)\\n';
             out += 'stat("/usr/local/etc/mystery.conf", 0x7ffd...) = -1 ENOENT (No such file or directory)\\n';
+            out += 'stat("/run/secrets/mystery_process.key", 0x7ffd...) = -1 ENOENT (No such file or directory)\\n';
             out += 'stat("/etc/default/mystery_process", 0x7ffd...) = -1 ENOENT (No such file or directory)\\n';
             out += 'stat("/home/ghost/.config/mystery/config", 0x7ffd...) = -1 ENOENT (No such file or directory)\\n';
             out += 'brk(0x559d70e19000)                         = 0x559d70e19000\\n';
@@ -18671,7 +18672,7 @@ ${validUnits.length} loaded units listed.`;
     }
 // Cycle 255: The Process Trace (Direct Execution) - ACTIVE
     case 'mystery_process': {
-        if (args.includes('--version')) { output = 'mystery_process v5.4.0'; break; }
+        if (args.includes('--version')) { output = 'mystery_process v5.6.0'; break; }
         if (args.includes('--help')) { output = 'Usage: mystery_process\n\nRuns system integrity check.\nReturns nothing on failure (security feature).'; break; }
         const secretNode = getNode('/tmp/secret_config.dat');
         const secretExists = secretNode && secretNode.type === 'file';
@@ -18779,6 +18780,7 @@ openat(AT_FDCWD, "/etc/mystery_process.conf", O_RDONLY) = -1 ENOENT (No such fil
 openat(AT_FDCWD, "/usr/local/etc/mystery_process.conf", O_RDONLY) = -1 ENOENT (No such file or directory)
 openat(AT_FDCWD, "/home/ghost/.config/mystery.conf", O_RDONLY) = -1 ENOENT (No such file or directory)
 openat(AT_FDCWD, "/etc/ghost/secret.conf", O_RDONLY) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/var/lib/mystery/secret.key", O_RDONLY) = -1 ENOENT (No such file or directory)
 stat("/tmp/secret_config.dat", 0x7ffd5d596580) = ${secretExists ? '0' : '-1 ENOENT (No such file or directory)'}\nopenat(AT_FDCWD, "/tmp/secret_config.dat", O_RDONLY) = ${secretExists ? '3' : '-1 ENOENT (No such file or directory)'}\n`;
 
                  if (secretExists) {
