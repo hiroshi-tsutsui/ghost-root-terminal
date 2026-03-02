@@ -1,0 +1,21 @@
+# Note Strategy Report: 2026-02-25 (Cycle 9)
+
+## Status: COMPLETE
+**File:** `james/notes/20260225_1845_Tool_ROI_Mindset.txt`
+**Title:** 【年収1000万の思考法】「無料ツール」を使っている時点で、君はPM失格かもしれない。
+
+## Strategy Execution
+- **Pillar:** 4 (Product Essence / ROI)
+- **Target:** PMs/Engineers trapped in the "Free Plan Mindset".
+- **Core Message:** "Free tools cost you $100k/year in lost productivity." US PMs buy speed/flow state.
+- **Key Tools Featured:**
+  1.  **Linear:** Speed over features. "Cycle" concept.
+  2.  **CleanShot X:** Visual communication (Async/English hack).
+  3.  **Raycast:** Keyboard-first workflow.
+  4.  **Arc:** Context switching reduction.
+  5.  **Hardware (Bonus):** 4K Monitor & Mechanical Keyboard (Information density).
+
+## Next Steps
+- Monitor reaction to "Paid Tool" advocacy. Usually polarizing in Japan.
+- If successful -> Deep dive into specific tools (e.g., "Linear Setup Guide for 10M Earners").
+- If backlash -> Pivot back to "Career Survival" (Pillar 1).

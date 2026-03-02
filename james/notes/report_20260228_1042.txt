@@ -1,0 +1,10 @@
+Title: 【エンジニア生存戦略】技術力だけで年収1000万は無理ゲー。凡人が「PM OS」をインストールして米国AI企業で勝ち残る全記録
+File: james/notes/20260228_1042_Engineer_Survival_Strategy_PM_OS_Install.txt
+Strategy: Pillar 1 (Career/Survival) - Direct attack on the "Tech = Money" myth.
+Key Points:
+- "Tech Saturation Point": Why skills != salary after 8M JPY.
+- "PM OS": Shifting from How -> What/Why.
+- "Visual Violence": Hacking English meetings with diagrams (CleanShot X context).
+- "Mini-CEO": Contrast between JP Project Manager and US Product Manager.
+Next Steps: Monitor reaction. If "Tech PM" resonates, follow up with a specific tool deep-dive (Linear/Notion) or a "Job Hunting for Students" angle on skipping JP internships.
+Status: Complete. (Approx 6000 bytes / High density)

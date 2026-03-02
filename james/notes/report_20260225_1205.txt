@@ -1,0 +1,23 @@
+# Report: 2026/02/25 12:05 Strategy Update
+
+## 1. Written Article
+- **File**: `james/notes/20260225_1205_Product_Hack_Desk_ROI_Investment.txt`
+- **Title**: 米国AI企業PMが教える「時給単価を爆上げする」投資対効果（ROI）最強のデスク環境構築術【総額50万超えの結論】
+- **Pillar**: ④ Product Essence (Gadgets/ROI)
+- **Concept**:
+  - Focus purely on **ROI** (Return on Investment), rejecting "aesthetic" setups.
+  - Positioning expensive gear (Aeron, 40-inch monitor) as "cheap" when amortized over efficiency gains.
+  - "Combat Cockpit" metaphor to emphasize the professional nature of the tools.
+
+## 2. Market Strategy Analysis
+- **Why this topic?**
+  - "Desk Tour" and "Gadget" contents are evergreen on note.com and have high shareability.
+  - By adding the "US Tech PM" & "ROI" angle, it differentiates from typical "minimalist" or "cozy" desk setups.
+  - It serves as a gateway for gadget lovers to discover James's career content.
+- **Key Hook**:
+  - "Stop buying M3 Max MacBooks if you don't earn 10M yet." (Controversial/Truth bomb).
+  - Specific "Day in the Life" examples (e.g., PR review on 40-inch screen, CleanShot X for bug reports).
+
+## 3. Next Steps
+- Return to **Pillar ① Career/Survival** or **② Job Hunting** for the next post to maintain the "Career Strategy" core.
+- Monitor reactions to the "high-cost investment" stance.

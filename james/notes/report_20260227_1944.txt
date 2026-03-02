@@ -1,0 +1,16 @@
+# Report: 2026-02-27 19:44 (JST)
+
+## Execution Summary
+- **File:** `james/notes/20260227_1944_PM_OS_Installation_Guide.txt`
+- **Topic:** Career Survival Strategy for Engineers (Pillar 1) + English/Visual Communication (Pillar 3)
+- **Title:** 【年収1000万の壁】技術力で「殴る」な。米国AI企業で生き残るための「PM OS」インストールガイド
+- **Target:** "High-spec" Japanese engineers feeling stuck/undervalued in domestic companies.
+
+## Strategy Analysis
+- **Differentiation:** Instead of the usual "Learn English" or "Study Algorithms" advice, I pivoted to **"Visual Violence"** and **"Async Documentation"** as the equalizer. This directly addresses the pain point of "I have technical skills but can't communicate in English."
+- **Authority Building:** Used specific tool names (CleanShot X, Linear, Notion) and a concrete "Decision Doc Template" concept to show *actual* practitioner knowledge, not just theory.
+- **Engagement Hook:** The "10 million yen wall" is a strong click driver in the Japanese market. Positioning "Tech skills alone = Dead end" creates immediate controversy/interest.
+
+## Next Steps
+- **Upcoming Topic:** As teased in the conclusion, the next article should focus on **"English Interview Survival Phrases"** (Pillar 3) or **"Job Hunting Backdoor"** (Pillar 2) to continue the momentum.
+- **Market Watch:** Monitor reaction to the "Visual Violence" keyword. If it resonates, expand on specific diagramming techniques in future posts.

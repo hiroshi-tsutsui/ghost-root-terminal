@@ -1,0 +1,23 @@
+# Report: 20260226_1018_Job_Hunt_Is_For_Losers_Backdoor_Strategy.txt
+
+## Strategy
+- **Pillar:** 2. Job Hunting Survival / Backdoor (Must-win for Students)
+- **Target:** Frustrated job hunters & students stuck in the "Rikunabi" loop.
+- **Concept:** "Stop applying. Start contributing."
+- **Key Message:** Traditional job hunting (ES, interviews) is a game for "others." The James way is "Permissionless Contribution" (fixing bugs before hiring, sending PRs, aggressive documentation).
+- **Hooks:**
+  - "Rikunabi is for the weak/uninformed."
+  - "Don't send a resume, send a PR."
+  - "Visual Violence" (CleanShot X) > English Fluency.
+  - "Interns are Spies, not Guests."
+
+## Content Summary
+1.  **Provocation:** Deny the value of standard job hunting (ES, SPI).
+2.  **Backdoor Method:** How I got a US job without a resume (Finding bugs -> Github PR/DM).
+3.  **Weapon:** CleanShot X & Notion (Visual communication beats broken English).
+4.  **Mindset:** "Take over the meeting minutes" ( PM work is 80% organization).
+5.  **Call to Action:** Tear up the ES, open Github, become a "Rare Character."
+
+## Next Steps
+- **Rotate to Pillar 3 (English Hacks):** Focus on "How to survive a US meeting with TOEIC 300 level listening" or "The Art of the 'Let me confirm' interruption."
+- **Alternative:** Deep dive into specific tools mentioned here (CleanShot X / Linear) for Pillar 4 (Product Essence).

@@ -1,0 +1,9 @@
+Title: 【年収1000万の壁】技術力で突破しようとするな。「PM OS」という裏口入学のススメ。
+File: james/notes/20260228_1505_Career_Hack_Engineer_to_PM.txt
+Strategy: Pillar 1 (Career/Survival).
+Focus: Shattering the "Technical Skill = High Salary" myth common among Japanese engineers. Positioning PM transition not as quitting engineering, but as "installing a new OS" to leverage existing skills for higher ROI (10M+ salary).
+Key Elements:
+- Contrast between "How" (Engineer) and "What/Why" (Business/PM).
+- "Engineer-turned-PM" as a high-scarcity, high-value position.
+- Concrete actions: PRD writing, English logic adoption, Tool investment (CleanShot X).
+Next Steps: Monitor reaction. If successful, follow up with the promised "Interview Hack" (English Pillar).

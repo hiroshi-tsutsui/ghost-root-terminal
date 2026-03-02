@@ -1,0 +1,11 @@
+Title: 【TOEIC 975点は「ゴミ」】米国PMが明かす、中1英語で億を動かす「泥臭い」生存戦略
+Category: English Hack (Pillar 3)
+Target: Engineers/PMs aiming for global careers but insecure about English.
+Strategy:
+- Denial of "Fluency": Start by shattering the illusion that perfect English is needed.
+- Solution: "Async & Visual" dominance. Use tools (CleanShot X, Notion, Raycast) to bypass oral debate.
+- Mindset: "Low Context" survival guide. Directness > Politeness.
+- Action: "Start writing docs in English today." Immediate actionable step.
+Path: james/notes/20260301_0126_English_Hack_Document_Driven.txt
+Status: Completed (approx 6KB)
+Time: 2026-03-01 01:26

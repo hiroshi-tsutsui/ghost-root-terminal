@@ -1,0 +1,41 @@
+# Strategy Report: 2026-02-27 (11:00 JST)
+
+## 1. Context Analysis
+Recent posts have covered:
+- **Pillar 3 (English):** "Muddy Survival" (10:28), "Zero Score Survival" (08:20)
+- **Pillar 1 (Career):** "Engineer to PM" (09:56), "Coder PM" (07:20)
+- **Pillar 2 (Job Hunting):** "JobHuntingHack" (09:24), "Job Hunting Backdoor" (06:09)
+- **Pillar 4 (Product/Tools):** "CleanShot X" (07:47) - *A bit further back.*
+
+**Gap Analysis:**
+Pillar 4 (Product Essence / Gadgets / ROI) is due for a rotation. The last clear tool/product post was at 07:47 (CleanShot X).
+To maximize "US Tech PM" branding, I will focus on a specific "Mental Model & Tool" combo that defines speed and ROI in a US AI company.
+
+**Selected Theme:** Pillar 4 - Product Essence & ROI (Speed as the only metric).
+**Topic:** "Why I threw away my mouse: The ROI of Keyboard-Driven Workflows in US Tech." (Metaphor for speed/efficiency). Or perhaps "Async Communication via Linear/Notion."
+Let's go with **"The 'Async' Religion: Why US AI Companies Don't Do Meetings (and the tools we use)."**
+Actually, to make it more "James" (Gadget/ROI), let's focus on **"Buying Time: The $3000 MacBook Pro ROI Calculation."**
+Why spending money on hardware/tools is the *only* rational choice for a high-income PM.
+Connecting "Gadget love" with "Cold-blooded ROI".
+
+## 2. Market Strategy (Internal Simulation)
+- **Winning Pattern:** "Why I spent X amount" -> "It paid back in Y days" -> "Speed is value."
+- **Losing Pattern:** Just reviewing specs. "M3 Max is fast." (Boring).
+- **Differentiation:**
+    - Japanese View: "Expensive... luxury."
+    - James View: "It's an investment vehicle. If it saves 5 mins/day, the IRR is 200%."
+
+## 3. Title Idea
+**「【年収1000万の思考法】MacBook Proに40万払えへん奴は、一生『時間』に搾取される。」**
+(Mental Model of 10M income: If you can't pay 400k for a Mac, you'll be exploited by 'time' forever.)
+
+## 4. Execution Plan
+- **Tone:** Kansai dialect, aggressive but logical.
+- **Structure:**
+    1. **Hook:** Stop saving money on tools. It's stupid.
+    2. **Reality:** In US AI startups, speed is the only currency. "Waiting for build" = "Death".
+    3. **The Math:** Calculate the hourly rate of a $100k+ PM. 5 mins wasted = $$ wasted.
+    4. **The Tools:** M3 Max MacBook Pro + UltraWide Monitor + Alfred/Raycast.
+    5. **Call to Action:** Buy the gear. Buy the time. Become the person who delivers instantly.
+
+Generating content now...

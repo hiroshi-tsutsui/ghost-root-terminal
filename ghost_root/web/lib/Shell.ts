@@ -1353,10 +1353,10 @@ export const loadSystemState = () => {
     }
 
     // Verification Script for Cycle 255
-    if (!VFS['/home/ghost/verify_cycle_255.sh'] || (VFS['/home/ghost/verify_cycle_255.sh'].type === 'file' && !VFS['/home/ghost/verify_cycle_255.sh'].content.includes('v5.5.1'))) {
+    if (!VFS['/home/ghost/verify_cycle_255.sh'] || (VFS['/home/ghost/verify_cycle_255.sh'].type === 'file' && !VFS['/home/ghost/verify_cycle_255.sh'].content.includes('v5.5.2'))) {
         VFS['/home/ghost/verify_cycle_255.sh'] = {
             type: 'file',
-            content: '#!/bin/bash\\n# VERIFICATION SCRIPT v5.5.1 (Strace Check)\\n\\necho "[TEST] Running mystery_process (expect silent failure)..."\\nmystery_process\\necho "Exit Code: $?"\\n\\necho "[TEST] Running strace mystery_process (expect ENOENT on config)..."\\nstrace mystery_process\\n\\necho "[TEST] Creating secret config..."\\necho "CONF_V1: SECRET" > /tmp/secret_config.dat\\n\\necho "[TEST] Running mystery_process again (expect FLAG)..."\\nmystery_process\\n\\necho "[CLEANUP] Removing temp files..."\\nrm /tmp/secret_config.dat\\n',
+            content: '#!/bin/bash\\n# VERIFICATION SCRIPT v5.5.2 (Strace Check)\\n\\necho "[TEST] Running mystery_process (expect silent failure)..."\\nmystery_process\\necho "Exit Code: $?"\\n\\necho "[TEST] Running strace mystery_process (expect ENOENT on config)..."\\nstrace mystery_process\\n\\necho "[TEST] Creating secret config..."\\necho "CONF_V1: SECRET" > /tmp/secret_config.dat\\n\\necho "[TEST] Running mystery_process again (expect FLAG)..."\\nmystery_process\\n\\necho "[CLEANUP] Removing temp files..."\\nrm /tmp/secret_config.dat\\n',
             permissions: '0755'
         };
         const home = getNode('/home/ghost');
@@ -15462,6 +15462,7 @@ Nmap done: 1 IP address (0 hosts up) scanned in 0.52 seconds`;
                      trace += `puts("[STATUS] Running...") = 20\n`;
                      trace += `fopen("/tmp/secret_config.dat", "r") = 0x560822616010\n`;
                      trace += `fgets("CONF_V1: SECRET", 64, 0x560822616010) = 0x7ff...\n`;
+                     trace += `strncmp("CONF_V1: SECRET", "CONF_V1: SECRET", 15) = 0\n`;
                      trace += `puts("Configuration Loaded.") = 22\n`;
                      trace += `puts("Verifying Integrity...") = 23\n`;
                      trace += `puts("[SUCCESS] System Validated.") = 27\n`;

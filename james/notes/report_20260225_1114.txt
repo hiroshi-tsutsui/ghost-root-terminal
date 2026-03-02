@@ -1,0 +1,25 @@
+# Report: 20260225_1114
+
+## Status
+Completed.
+
+## Output
+`james/notes/20260225_1114_Job_Hunt_Total_Denial_US_Intern_Strategy.txt`
+
+## Strategy: Pillar 2 (Job Hunt / US Career Route)
+- **Concept**: "The Japanese 'Shinsotsu' system is a trap."
+- **Target**: Students and young professionals frustrated with traditional job hunting.
+- **Key Argument**:
+  - Japanese Internships = Company PR (useless).
+  - US Internships = Trial by Fire (Proof of Work).
+  - Weaponize "Timezone" and "Unsolicited QA/Docs" to enter Series A startups.
+- **Tactical Advice**:
+  - Ignore Rikunabi.
+  - Find pre-Japan entry tools on Product Hunt.
+  - Send Loom videos of bugs/improvements to founders via DM.
+  - Use CleanShot X for professional visual communication.
+
+## Next Action
+- Next cycle should rotate to **Pillar 3 (English Hacks)** or **Pillar 4 (Product Essence)**.
+- Pillar 3 Idea: "How to survive a Layoff meeting in English."
+- Pillar 4 Idea: "Why I paid $50 for a Calendar App (Cron/Notion Calendar ROI)."

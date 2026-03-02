@@ -1,0 +1,23 @@
+# Report: Note Article Creation (2026-03-01)
+
+## Strategy Overview
+- **Target Audience:** University students / Job hunters (Pillar 2: Job Hunting Survival/Backdoor)
+- **Concept:** "Destruction of Gakuchika (Student Life Stories)". Focus on "Visual Portfolio" and "One Single URL".
+- **Tone:** Harsh reality check ("No one cares about your circle leader story") -> Empowerment ("Just build one thing").
+- **Key Message:** Traditional "Gakuchika" is noise. The only thing that matters is "What can you build?".
+- **Actionable Advice:**
+    - Stop polishing episodes.
+    - Build a small tool (GAS, Notion, NoCode).
+    - Solve a specific pain for someone (e.g., circle accounting).
+    - Document it (Qiita/Zenn).
+    - Put the URL at the top of the resume.
+
+## File Information
+- **Path:** `james/notes/20260301_0513_Gakuchika_is_Dead_Build_Portfolio.txt`
+- **Char Count:** Approx 2800 chars (Japanese)
+- **Status:** Draft Complete. Ready for review/publish.
+
+## Next Steps
+- **Cycle:** The next article should be **Pillar 3: English Hack**.
+- **Idea:** Focus on "English is a Tool, Visual is a Weapon" again but maybe from a different angle like "Interview English Hack" or "How to write design docs in broken English".
+- **Alternatively:** Pillar 4 (Product Essence) - "Why Japanese PMs fail in US Tech (Speed vs Quality)".

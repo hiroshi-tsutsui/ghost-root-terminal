@@ -1,0 +1,23 @@
+# Report: 2026-03-01 09:40
+
+## Strategy Execution
+- **Pillar Selected:** ④ Product Essence (PM / Gadget Lovers)
+- **Rationale:** Previous recent posts focused on Career, English, and Job Hunting. To maintain variety and appeal to the "Gadget/Efficiency" demographic (a core PM trait), I selected the "Physical Input" topic.
+- **Target Audience:** PMs who want to improve speed/efficiency, gadget lovers, people suffering from wrist pain.
+- **Key Message:** "Input speed is not just personal productivity, it's team ROI." Breaking the "keyboard-only" myth with a hybrid "HHKB + Trackball" approach.
+
+## Content Details
+- **Title:** 【PMの生産性＝命】「マウスを使うな」は間違い。米国AI企業PMがたどり着いた「左手キーボード・右手トラックボール」の境地
+- **Tone:** Aggressive, confident, "Kansai dialect" efficiency geek.
+- **Items Promoted:**
+  1. HHKB Professional HYBRID Type-S
+  2. Logicool MX ERGO (Trackball)
+  3. CleanShot X (Software synergy)
+- **Call to Action:** "Invest in your tools to gain team trust and speed."
+
+## File Path
+`james/notes/20260301_0940_Productivity_Input_Device_HHKB_MX_ERGO.txt`
+
+## Next Steps
+- Consider a "Software" version of this (e.g., Arc Browser, Raycast) for the next Pillar 4 rotation.
+- Rotate back to Pillar 1 or 2 for the next post.

@@ -1,0 +1,24 @@
+File: james/notes/20260225_0005_English_Hack_Text_is_Battlefield.txt
+
+Strategy:
+1.  **Theme (Pillar 3): English Hack**
+    - Focused on the reality of "Imperfect English" in US tech environments.
+    - Shifts the value proposition from "Fluency" to "clarity via tools".
+
+2.  **Approach:**
+    - **Denial of Common Sense:** "English skills don't matter." (Provocative start).
+    - **Pain Point:** The impossibility of winning debate battles against natives with "Junior High level English".
+    - **Solution:** "Strategic Retreat" from oral real-time battles to "Asynchronous Visual/Text" battles.
+    - **Tools:** Heavily featured **CleanShot X** and **Notion** as weapons to bypass language barriers.
+
+3.  **Key Message:**
+    - "Don't fight on their turf (rapid-fire English). Drag them to yours (Visuals & Documentation)."
+    - English is just a communication protocol; PM skills (Logic/Structure) are the OS.
+
+4.  **Target Audience:**
+    - Engineers/PMs who feel blocked by English requirements for global careers.
+    - People suffering from "Imposter Syndrome" regarding language skills.
+
+5.  **Branding:**
+    - Reinforces James's pragmatic, tool-oriented, "survivalist" persona.
+    - Differentiates from standard "English learning" influencers by saying "Don't learn, hack it."

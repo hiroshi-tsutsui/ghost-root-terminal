@@ -1,0 +1,9 @@
+Title: 【生存戦略】日本の"SES地獄"から抜け出し、年収1500万の米国PMへワープする"裏"ルート全公開
+File: james/notes/20260301_0440_Escape_SES_Hell_to_US_PM.txt
+Strategy:
+1.  **Pillar:** Career / Survival Strategy (Target: Young Engineers in SES/SIer).
+2.  **Concept:** "The Bridge" (Technical x Business). Highlighting that coding skills alone hit a ceiling in Japan, but combined with PM skills, they open the door to US Tech & High Income.
+3.  **Tone:** Harsh reality check ("Cruel story") -> Empowerment ("You can do it").
+4.  **Key Actions:** Stop being a "Code Monkey", Start asking "Why", Use Documentation as a weapon, Hack English with tools.
+5.  **Cross-Sell:** Mentions "CleanShot X" and "English Hack" articles to drive internal circulation.
+6.  **differentiation:** Positions "James" not as a genius engineer, but as a survivor who hacked the system.

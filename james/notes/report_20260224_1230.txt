@@ -1,0 +1,10 @@
+Title: 【悲報】お前の生産性が低いのは『道具』をケチるからや。米国PMが教える『秒速の仕事術』と神ツール5選
+File: james/notes/20260224_1230_Productivity_Tool_Hack_ROI_or_Die.txt
+Strategy: Pillar 4 (Product Essence / Productivity Tools)
+Key Points:
+- "Productivity = Speed": Redefining PM value not by effort but by decision speed.
+- "ROI Mindset": Confronting the "free tool" mentality as a career blocker.
+- "The CleanShot X Factor": Using specific tools to demonstrate professional communication speed.
+- "Tool Stack": CleanShot X, Raycast, Linear, Notion, ChatGPT Plus.
+- "Call to Action": Identify bottlenecks and invest immediately.
+Next Action: Monitor comments for tool suggestions (community engagement). Consider a follow-up on "How to configure Raycast specifically for PM workflows".

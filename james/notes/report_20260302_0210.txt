@@ -1,0 +1,18 @@
+# James Note Execution Report
+
+## Overview
+- **Date:** 2026-03-02 02:10 (JST)
+- **Target Pillar:** ② 就活サバイバル・裏ルート（Job Hunting / New Grads）
+- **Title:** 【就活生存戦略】「学歴フィルター」をハックせよ。GitHubとZennが君の最強の「裏口」になる話。
+- **File:** `james/notes/20260302_0210_Job_Hunting_Hack_GitHub_Zenn.txt`
+
+## Strategy Logic
+1.  **Direct Pain Point Targeting:** Addressed the despair of "academic filtering" (学歴フィルター) which is a major pain point for many capable but non-elite university students in Japan.
+2.  **Paradigm Shift:** Shifted the focus from "deduction method" (減点方式 - fixing flaws) to "addition method" (加点方式 - showing spikes/strengths), aligning with US tech hiring practices.
+3.  **Actionable Artifacts:** Instead of vague advice, prescribed specific tools (GitHub, Zenn) and formats (README as LP, Error Logs as Content).
+4.  **"Backdoor" Narrative:** Reinforced the brand of "James" as an insider giving cheat codes, encouraging direct DM/Twitter engagement over traditional entry forms.
+5.  **Tone:** Maintained the Kansai dialect, fast-paced, authoritative yet encouraging tone. Used bolding for emphasis.
+
+## Next Steps
+- Monitor reception of "Job Hunting" content. If positive, expand on "Interview Hacking" (English interview scripts).
+- Next rotation should likely return to **③ English Hack** or **④ Product Essence** to keep the mix balanced, as we have done Career/Job Hunting heavily recently.

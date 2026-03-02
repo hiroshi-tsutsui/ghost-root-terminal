@@ -1,0 +1,26 @@
+Strategy Report: 20260223_2115_English_Hack_Visual_Survival_CleanShot.txt
+
+1. **Pillar Selection:**
+   - Selected Pillar 3 (English Hack) combined with Pillar 4 (Product Essence).
+   - Reason: Previous notes covered Career and Job Hunt. It was time to rotate back to practical "survival skills" for existing workers/aspirants.
+   - Focus: "Visual Communication" as a substitute for "English Proficiency".
+
+2. **Title Strategy:**
+   - 【年収1000万への最短距離】「英語力」を捨てて「図解力」で勝つ、米国PMの生存戦略
+   - Keywords: "10 million yen", "Throw away English", "Visual Power", "US PM Survival".
+   - Hook: Contradicting the common belief that "You need perfect English for US jobs".
+
+3. **Content Flow:**
+   - **Problem:** Japanese people try too hard to explain things in text/speech.
+   - **Solution:** "Don't speak if you can show it." (Visuals > Text).
+   - **Tool:** CleanShot X (Annotation, GIF) as the primary weapon.
+   - **Tactic:** Asynchronous comms (Loom) to bypass real-time language barriers.
+   - **Conclusion:** Technology (Tools) bridges the language gap.
+
+4. **Tone:**
+   - Aggressive but encouraging Kansai dialect.
+   - Authoritative "James" persona.
+
+5. **Next Steps:**
+   - Monitor engagement (hypothetically).
+   - Next cycle should probably address **Pillar 2 (Job Hunt / Students)** or **Pillar 1 (Career / Engineer to PM)** to keep the rotation balanced, perhaps focusing on "How to ace the interview without speaking perfect English" or "The specific resume hack".

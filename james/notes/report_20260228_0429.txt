@@ -1,0 +1,13 @@
+# Report: 20260228_0429
+
+## Strategy
+**Pillar 3: English Hack (Practical/Muddy)**
+Focused on "Visual Violence" and "Async Warfare" to overcome the lack of fluency. The core message is shifting from "learning English" to "using English as a protocol/weapon."
+
+## Key Points
+1.  **Visual Violence:** using CleanShot X and Mermaid.js to dominate the "screen share" and "structure" of the meeting instead of relying on verbal explanation.
+2.  **Async Warfare:** "Pre-Meeting" document attacks and "Post-Meeting" immediate follow-ups to show competence outside of synchronous verbal exchanges.
+3.  **Tool ROI:** Positioning paid tools (CleanShot X, Grammarly Premium) not as "apps" but as "survival costs" for non-native speakers.
+
+## File
+`james/notes/20260228_0429_English_Hack_Visual_Violence.txt`

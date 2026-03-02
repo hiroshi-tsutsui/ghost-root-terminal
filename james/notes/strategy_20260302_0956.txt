@@ -1,0 +1,51 @@
+# James Note Strategy Analysis: 2026-03-02 09:56
+
+## 1. Context & Topic Selection
+Looking at the recent history in `james/notes/`:
+- 09:22: Job Hunting (Backdoor)
+- 08:49: Career (Tech Faith Discard)
+- 07:41: Product Essence (Speed/ROI)
+- 07:05: English Hack (Visual Punch)
+
+The rotation (Job -> Career -> Product -> English) is somewhat active, but "English Hack" was 3 slots ago. However, checking further back:
+- 05:05: English Zero Visual Survival.
+
+We have:
+- Job Hunting: 09:22, 06:33, 05:27
+- Career: 08:49, 08:17, 06:00, 04:30
+- Product: 07:41, 03:50
+- English: 07:05, 05:05
+
+"Product Essence" or "English Hack" are due.
+However, looking at the "Product Essence" pillar, the prompt mentions "US AI corporate reality, 1-second profit/loss, speed identity". The last one (07:41) was about Speed/ROI.
+Let's go with a **Product Essence / SaaS & Gadget** angle but twist it towards **"The Tool Stack that buys me time (ROI)"**. Or better, **English Hack** focused on **"Async Communication"** which is a huge part of US tech culture vs Japanese synchronous culture.
+
+Actually, let's look at the "English Hack" pillar again.
+"Imperfect English (Junior High level) to run a US team."
+"Async communication, diagrams, interview scripts."
+
+Let's combine **Pillar 3 (English Hack)** and **Pillar 4 (Product Essence)**.
+**Theme:** "Why I refuse Zoom calls: The Asynchronous English Strategy for Survival."
+This hits the "US Tech Reality" and "English Hack" simultaneously. It creates a strong "Common Sense Denial" (Japanese love meetings -> US PMs kill meetings).
+
+**Title Idea:**
+"【年収1000万の裏側】TOEIC 975でも『Zoomは逃げろ』。中1英語で米国AI企業を動かす『非同期（Async）の暴力』とは"
+(Behind the 10M Income: Even with TOEIC 975, "Run from Zoom". Moving a US AI Company with Jr High English via "Async Violence".)
+
+## 2. Structure (Winning Formula)
+1. **Title:** High impact, counter-intuitive (Don't speak English, Write it).
+2. **Intro:** "Do you think you need fluent speaking to work in US Tech? Wrong. Speaking is the weakest interface."
+3. **Primary Source:** My experience. Trying to speak fast in meetings -> getting ignored. Switching to Loom/Linear/Notion -> dominating the decision process.
+4. **Solution:**
+    - Tool 1: **CleanShot X** (Annotate > Explain).
+    - Tool 2: **Linear** (Context > Meeting).
+    - Tool 3: **Notion** (PRD is the boss, not the loud guy).
+5. **Conclusion:** English is just a protocol. Async is the OS. Install the OS, not just the language.
+
+## 3. Tone
+- Kansai dialect ("せやから", "ちゃうねん").
+- Fast-paced ("結論から言うで").
+- Arrogant but helpful ("残酷な真実教えたるわ").
+
+## 4. Execution
+Writing the file now.

@@ -1,0 +1,21 @@
+# Report: Note Production
+Date: 2026-02-25 09:40
+Author: James (US Tech PM Persona)
+
+## Produced Content
+- **File:** `james/notes/20260225_0940_Reverse_Job_Hunt_Assault_GitHub_Issue.txt`
+- **Title:** 【就活全否定】日本の「リクナビ」捨てて、GitHubと英語ドキュメントだけで米国AI企業に殴り込みかけた話（実録）
+- **Length:** ~4500 bytes (High Volume)
+
+## Strategic Intent
+1. **Pillar Fusion:** Combined **Pillar 2 (Job Hunting/Survival)** with **Pillar 3 (English/Documentation)**.
+2. **Concept:** "Reverse Job Hunting" (Assault Strategy). Instead of applying via HR portals (Passive), directly solving problems via GitHub Issues and contacting Engineers/PMs (Active).
+3. **Differentiation:**
+   - Denies the traditional "Self-Promotion" or "ES (Entry Sheet)" culture.
+   - Emphasizes "Business Value" over "Coding Skills".
+   - Introduces specific tools (Linear, CleanShot X) to signal "I belong to the modern stack".
+4. **Call to Action:** "Don't study English, just write an Issue on GitHub now."
+
+## Next Steps
+- Monitor reaction (simulate via self-review in next cycle).
+- Next topic should shift to **Pillar 4 (Product Essence)** or **Pillar 1 (Career Strategy)** to maintain variety.

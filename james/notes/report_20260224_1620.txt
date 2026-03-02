@@ -1,0 +1,16 @@
+# Report: 20260224_1620
+
+## Strategy: Pillar 4 - Product Essence / Tools (ROI Focus)
+- **Concept:** "The ROI of Speed" - Challenging the Japanese "free tool" poverty mindset vs. US Tech "pay for speed" culture.
+- **Target Audience:** Aspiring Global PMs, Engineers who want to be faster, Productivity Geeks.
+- **Key Message:** "Don't sell your time; buy time." Speed is credibility in US Tech.
+- **Tools Covered:**
+  1. **CleanShot X:** Positioning it not as a screenshot tool, but as a "Zero-English Communication Device" (Annotate > Text). Added specific use cases (Counter, Scrolling, OCR).
+  2. **Raycast:** "Mouse usage is a sin." Matching engineer speed. Added Clipboard History, Snippets, Window Management.
+  3. **Arc Browser:** Context switching management. Added Spaces, Favorites, Little Arc, Boosts.
+  4. **HHKB (Bonus):** Hardware investment for motivation and fatigue reduction.
+- **Tone:** Aggressive Kansai dialect, highly confident, mathematical justification for spending money.
+
+## Output
+- File: `james/notes/20260224_1620_Tool_Hack_ROI_CleanShot_Raycast.txt`
+- Character Count: ~5000 bytes (approx 2300 Japanese characters) - Exceeds the target density for impact.

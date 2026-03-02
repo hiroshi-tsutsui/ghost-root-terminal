@@ -1,0 +1,30 @@
+# Report: 2026/03/01 22:55 - Note Generation
+
+## 1. Context & Strategy
+- **Previous Context:**
+    - `2210`: Career/Survival (Tech Skill Trap)
+    - `2138`: English Hack (Zero to Hero)
+    - `2103`: Job Hunting (Backdoor Output)
+- **Selected Pillar:** **Category 4: Product Essence / Productivity ROI**
+- **Rationale:**
+    - To balance the mix (Career -> English -> Job Hunting -> **Product/Gadget**).
+    - Promoting specific tools (CleanShot X / Raycast) ties into the "Product Essence" pillar.
+    - The angle "Don't write text, use visuals" reinforces the "English Hack" theme without being purely about English study.
+    - Highlighting "Speed" and "ROI" appeals to the target audience (aspiring high-income PMs).
+
+## 2. Article Details
+- **File:** `james/notes/20260301_2255_Visual_Communication_CleanShot_Strategy.txt`
+- **Title:** 【年収1000万の思考法】PMの仕事は『文字』を書くな。『図』で殺せ。——シリコンバレー流・秒速合意形成術
+- **Target Audience:**
+    - PMs drowning in documentation.
+    - People struggling with English communication in tech.
+    - Gadget/Tool lovers (Mac users).
+- **Key Takeaways:**
+    - "Text is defeat." (Contrarian view).
+    - Visuals > Text for speed and clarity (ROI focus).
+    - Tool recommendation: CleanShot X (for visuals) + Raycast (for snippets).
+    - Immediate action: Stop using default screenshots.
+
+## 3. Next Steps
+- Monitor performance (skis/views) if possible.
+- Next cycle should probably return to **Category 2: Job Hunting** or **Category 1: Career Survival** depending on the time of day (morning/mid-day might be better for Job Hunting).

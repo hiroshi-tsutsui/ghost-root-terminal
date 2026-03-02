@@ -1,0 +1,21 @@
+# Report: 20260224_1054_Tech_Only_Is_Dead_Survival_Strategy
+
+## Strategy
+- **Pillar**: 1. Career/Survival Strategy (Technologist -> PM Bridge)
+- **Target**: Engineers feeling the limit of "pure tech" or fearing AI commoditization.
+- **Concept**: "Don't discard tech, install 'PM OS'". Framing PM as a "Multiplier" for Engineering skills.
+- **Hook**: "Tech value is crashing daily" (Provocative start).
+- **Solution**: The "Third Path" (TPM) distinct from Tech Lead or EM.
+
+## Content Summary
+1. **Introduction**: Blunt reality check on the devaluation of "just coding" due to AI.
+2. **Problem**: "How" is becoming a commodity. "What" and "Why" are the new value drivers.
+3. **Trap**: The binary choice of Tech Lead vs EM in Japan. Introduce TPM as the high-leverage alternative.
+4. **Actionable Steps**:
+    - Look at primary data (logs/CS) before code.
+    - Argue with "Why/ROI" instead of "Tech constraints".
+    - Treat documentation as code refactoring.
+5. **Conclusion**: Urgency to claim the empty "Tech x PM" seat in the market.
+
+## File Path
+`james/notes/20260224_1054_Tech_Only_Is_Dead_Survival_Strategy.txt`

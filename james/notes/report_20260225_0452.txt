@@ -1,0 +1,26 @@
+# Report: James Note Strategy (2026-02-25 04:52)
+
+## File Path
+`james/notes/20260225_0452_Job_Hunt_Full_Denial_Backdoor_Strategy.txt`
+
+## Strategy Execution
+**Pillar:** 2. Job Hunting Survival / Backdoor Routes (Target: Students/Job Seekers)
+
+**Core Concept:**
+"Full Denial of Japanese Job Hunting System" (就活全否定).
+Instead of optimizing for the "Entry Sheet" or "Interview" game, I pivoted to the "Backdoor Strategy" (Permissionless Apprenticeship).
+
+**Key Elements:**
+1.  **Resume vs. Portfolio:** Shifted focus from "Clean Resume" to "Evidence of Problem Solving (PM OS)".
+2.  **Tech Stack < Impact:** Explicitly stated that "writing code" is just a prerequisite, and "Why/Impact" is the differentiator.
+3.  **English Hack for Students:** Introduced "Visual Communication" (CleanShot X, Mermaid.js) as a way to bypass language barriers, which is actionable for students without high English proficiency.
+4.  **The "New Grad" Trap:** Redefined "Potential Hiring" (Japanese style) as "Blank Slate Slavery" and contrasted it with "Culture Add" (US style) to empower non-conformist students.
+
+**Target Audience Reaction:**
+-   **Shock:** "Denying the system they are currently suffering in."
+-   **Hope:** "There is another way (Backdoor)."
+-   **Action:** "Stop polishing resumes, start building/fixing things."
+
+## Next Steps
+-   Next cycle should rotate to Pillar 3 (English Hack) or Pillar 4 (Product Essence) to keep the variety.
+-   Consider a follow-up article on "How to actually find the 'Backdoor' (LinkedIn DM templates)".

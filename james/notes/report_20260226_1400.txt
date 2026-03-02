@@ -1,0 +1,17 @@
+# Report: 2026/02/26 14:00 (JST)
+
+## Output
+File: `james/notes/20260226_1400_Visual_Violence_English_Is_Tool.txt`
+
+## Strategy Execution
+- **Selected Pillar**: ③ English Hacks (Survival for Non-Native Speakers)
+- **Core Concept**: "Visual Violence" (視覚的暴力)
+  - Instead of improving English fluency (Audio), improve visual communication (Visual).
+  - Positioning "CleanShot X" and "Notion" as weapons to bypass the language barrier.
+- **Target Audience**: Engineers/PMs with high technical skills but "English Complex" (TOEIC scores irrelevant to actual work).
+- **Key Hook**: "Stop studying English. Start using screenshots." (Contrarian advice).
+- **Branding**: Reinforcing James as a "Pragmatic Survivor" who values ROI over academic skills.
+
+## Next Steps
+- Monitor engagement (hypothetically).
+- Next pillar rotation: ④ Product Essence (Gadgets/ROI) or ① Career Strategy (Update on 10M path).

@@ -1,0 +1,10 @@
+Target: Pillar 3 (English Hack / Survival)
+Title: 【閲覧注意】「英語力」なんか磨くな。「視覚暴力」で殴り倒せ。
+File: james/notes/20260226_0354_No_English_Visual_Violence_Survival.txt
+Strategy:
+- Problem: Japanese people obsess over "fluent English" and feel inferior.
+- Solution: Shift the battlefield from "Verbal" to "Visual" (Documents, Screenshots).
+- Tool: CleanShot X as a "weapon" (Visual Violence).
+- Concept: English is just a protocol; content/data (JSON/SQL) is the universal language.
+- Tone: Aggressive Kansai dialect, dismissing traditional learning, focusing on "Survival" and "ROI".
+Next Action: Rotate to Pillar 4 (Product/Gadget) or Pillar 1 (Career) depending on mood.

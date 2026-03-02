@@ -1,0 +1,29 @@
+# Report: 20260301_0758
+
+## 1. Context Check
+- Latest Strategy Log: `strategy_log_20260227_0851.md` (Pillar 2: Job Hunting Survival)
+- Executed Pillar: **Pillar 2 (Job Hunting Survival)**
+  - Reason: The prompt emphasized this pillar with "★NEW★" and the previous log indicated it was the planned topic.
+
+## 2. Market Research
+- Target: Frustrated Japanese university students (Science/Engineering majors).
+- Insight: Most "US Career" articles are by fluent speakers or top-tier grads. There is a blue ocean for "Low English / High Technical Skill" survival guides.
+- Differentiation: "Ignore Recruit Sites (Rikunabi)" and "Use Tools (DeepL/Grammarly) to fake fluency" provides a unique, actionable "cheat code" feeling.
+
+## 3. Execution
+- **File**: `james/notes/20260301_0755_NewGrads_Survival.txt`
+- **Title**: 【リクナビ完全無視】偏差値50・英語力ゼロの理系学生が、新卒で米国AI企業に潜り込むための「裏ルート」全公開
+- **Key Points**:
+  - Hook: "If you're registered on Rikunabi, you're already losing."
+  - Problem: Japanese "Potential Hiring" vs US "Skill Hiring".
+  - Solution:
+    1.  **GitHub is your Resume**: Stop making commits green. Build *one* thing people use.
+    2.  **English Hack**: Don't study for TOEIC. Use DeepL/Grammarly. Fake it 'til you make it.
+    3.  **Cold DM Strategy**: LinkedIn is the battlefield. Template provided.
+  - Tone: Kansai dialect, fast-paced, authoritative.
+  - Length: ~3800 chars (including formatting).
+
+## 4. Next Steps
+- **Next Pillar**: Pillar 3 (English Hacks) or Pillar 4 (Product Essence).
+  - Suggestion: "How I manage US meetings with middle-school English" (Pillar 3).
+- **Promotion**: Share on Twitter with the hook "偏差値50でも年収1000万は狙える".

@@ -1,0 +1,38 @@
+# Report: James Note Strategy Execution
+
+**Target:** "The Bridge between Tech & Business" - Establishing the $100k+ US AI PM Brand.
+**Date:** 2026-02-24 08:15 JST
+**Output File:** `james/notes/20260224_0815_Career_Hack_10M_Shortest_Route.txt`
+
+## 1. Context & Pillar Rotation
+- **Recent Coverage:**
+    - Pillar 1 (Career): Covered in `20260224_0748`
+    - Pillar 4 (Product): Covered in `20260224_0712`
+    - Pillar 3 (English): Covered in `20260224_0645`, `0610`
+    - Pillar 2 (Job Hunt): Last touched `20260224_0432`
+- **Selection:**
+    - This article integrates **All 4 Pillars** into a single "Master Strategy" narrative to serve as a strong entry point or "pinned post" candidate.
+    - It heavily emphasizes **Pillar 1 (Career/Survival)** and **Pillar 3 (English Hack)**, while introducing **Pillar 2 (Permissionless Apprenticeship)** and **Pillar 4 (Tools/Investment)** as supporting evidence.
+
+## 2. Market Analysis (Simulated & Strategy Application)
+*Due to API limitations, live market data was not fetched. The following analysis is based on the "James_Txt_Factory_Deep" knowledge base of high-performing tech notes.*
+
+**Success Factors (Incorporated):**
+- **Contrarian Title:** "Why you don't need English or Tech skills to reach $100k" - Stops the scroll by negating common beliefs.
+- **"Unfair Advantage" Reveal:** Positioning "Visuals" and "Async" not as weaknesses but as *superior* strategies.
+- **Actionable Micro-Wins:** Immediate tool recommendations (CleanShot X, Notion) give readers a quick dopamine hit of "I learned something practical."
+
+**Failure Factors (Avoided):**
+- **The "Hero's Journey" Trap:** Avoided generic "I worked hard and succeeded" stories. Instead, focused on "I hacked the system using X, Y, Z."
+- **Abstract Advice:** Replaced "communicate better" with specific tactics like "send a diagram before the meeting."
+
+## 3. Content Structure
+- **Hook:** "Your effort is vectoring in the wrong direction."
+- **Core Hack:** "Visuals over English" & "Async over Sync."
+- **Career Pivot:** "Engineer -> TPM" (The $100k equation).
+- **Job Hunt (Youth):** "Permissionless Apprenticeship" (The backdoor).
+- **Closing:** "Investment in Speed" (Call to Action).
+
+## 4. Next Steps
+- **Review:** Check if the "Permissionless Apprenticeship" section needs a dedicated deep-dive article next (expanding Pillar 2).
+- **Format:** Ensure image placeholders or links are added when publishing to note.

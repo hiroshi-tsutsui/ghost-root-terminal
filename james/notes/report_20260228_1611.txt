@@ -1,0 +1,25 @@
+# Report: 20260228_1611
+
+## Created File
+`james/notes/20260228_1611_Job_Hunting_Backdoor_Strategy.txt`
+
+## Strategy
+**Pillar:** 2. 就活サバイバル・裏ルート（大学生・就活生向け）★NEW★
+
+**Target Audience:**
+Japanese university students/new grads disillusioned with the traditional "Shukatsu" system.
+
+**Key Themes:**
+- **Anti-Establishment:** Rejecting "Rikunabi" and "Mass Hiring" norms.
+- **US Tech Reality:** Shifting focus from "obedience/zero mistakes" (Japanese style) to "output/proof of capability" (US style).
+- **Actionable Advice:**
+    1.  Create a "Portfolio of Proof" (GitHub, Notion templates, etc.) instead of ES.
+    2.  Blog the process in broken English (attitude > perfection).
+    3.  Master async communication (CleanShot X, visual documentation).
+
+**Tone:**
+Aggressive Kansai dialect, urgent, empowering. "Stop playing soldier, become a builder."
+
+**Next Steps:**
+- Rotate to **Pillar 4 (Product Essence/Gadgets)** next.
+- Monitor engagement on "CleanShot X" and "English documentation" topics.

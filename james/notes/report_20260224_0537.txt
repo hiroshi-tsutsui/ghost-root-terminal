@@ -1,0 +1,12 @@
+[REPORT]
+Title: 【完全版】凡人が「米国テック企業」で生き残るための「ドキュメント駆動」生存戦略（英語力ゼロでも勝てる唯一の武器）
+File: james/notes/20260224_0537_Document_Driven_Survival_Strategy.txt
+Strategy:
+1. **Pillar**: English Hack (Practical survival without fluency).
+2. **Concept**: "Document-Driven" over "Conversation". Positioning the weakness (bad English) as a strength (better documentation).
+3. **Hook**: "Don't compete in meetings. Meetings are the graveyard for Japanese."
+4. **Solution**: 
+    - Pre-reads (force Async).
+    - Visuals (CleanShot X).
+    - Live scribe (Control the narrative).
+5. **Tone**: Strong Kansai dialect, authoritative but helpful. Highlighting the "unfair advantage" of written culture in remote work.

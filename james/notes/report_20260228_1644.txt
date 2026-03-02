@@ -1,0 +1,22 @@
+# Report: 20260228_1644_English_Hack_Visual_Violence_Strategy.txt
+
+## Strategy Analysis
+- **Pillar:** ③ English Hacks (Practitioner/Overseas Oriented)
+- **Concept:** "Don't wait until you're fluent. Use tools to bypass language barriers."
+- **Differentiation:** 
+  - Rejects standard "English learning" advice (online conversation, pronunciation).
+  - Positions "Visual Violence" (screenshots/diagrams) as a superior protocol to broken English.
+  - specific tool mentions (CleanShot X, Notion) to ground the advice in actionable PM reality.
+
+## Content Structure
+1.  **Hook:** "Stop studying English. It's a waste of time for engineers." (Controversial/Strong stance)
+2.  **Reality Check:** Native speakers don't care about your grammar; they care about results.
+3.  **Solution:** "Visual Violence" — replacing verbal explanation with high-resolution screenshots/prototypes.
+4.  **Actionable Tool:** CleanShot X workflow (Cmd+Shift+4 -> Annotate -> Slack). Speed is the value.
+5.  **Meeting Hack:** Pre-read Notion docs + Google Meet Captions. 
+6.  **Failure Story:** The "I have no idea what you're talking about" moment. Vulnerability to build trust.
+7.  **CTA:** Stop learning English, start visualizing. Follow for more survival skills.
+
+## Next Step
+- The next article should pivot to **④ Product Essence** or **① Career Strategy** to keep the mix fresh. 
+- "Job Hunting" has been covered recently (16:11), so avoid that for the next slot.

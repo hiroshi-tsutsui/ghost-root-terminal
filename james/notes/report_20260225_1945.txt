@@ -1,0 +1,44 @@
+# James Note Strategy Analysis & Execution Report
+
+## 1. Context Analysis (Last 24 items)
+Recent topics cover:
+- **Career/Survival (Pillar 1):** Heavy rotation (19:15, 17:10, 16:15). Strong emphasis on "Tech -> PM OS".
+- **Job Hunting (Pillar 2):** Addressed recently (18:06, 15:02). "Quit Navi" and "US Style".
+- **English Hacks (Pillar 3):** Covered (15:35, 14:31, 13:26). Focus on "Docs" and "DeepL".
+- **Product/ROI (Pillar 4):** Less frequent recently (18:45, 12:55, 12:05).
+
+**Strategy Gap Identified:**
+The "Product Essence / Real US PM Reality" (Pillar 4) needs a stronger, more narrative-driven entry. While 18:45 touched on "Tool ROI", we need to hit the "Speed & Brutal Prioritization" aspect of US AI companies. The "1-second P&L decision" mentioned in the prompt hasn't been fully exploited yet.
+
+## 2. Market Research (Simulated)
+- **Winning Notes (100+ Skips):**
+    - "Why I deleted Slack from my phone" (Focus on deep work/mental health).
+    - "How a 3-person team beat a corporation" (Underdog story + speed).
+    - "The 'Document Culture' of Amazon/Google" (Actionable frameworks).
+- **Losing Notes (Self-indulgent):**
+    - "My day in San Francisco" (Vague vlog style).
+    - "Why I am successful" (Pure bragging without method).
+
+**Target Approach:**
+Combine **"Speed"** (a universal desire) with **"The Brutal Reality of US AI Dev"** (curiosity/authority).
+Title needs to be provocative but grounded in the "Engineering background" hook.
+
+## 3. Selected Theme: Pillar 4 (Product Essence) - "Speed as a Weapon"
+**Concept:** "Why US AI Companies Move 10x Faster (It's not about working harder)."
+**Key Message:** Speed isn't about typing fast; it's about *decision density* and *cutting scope*.
+**Hook:** "I used to think quality mattered most. I was wrong. In AI, slow is dead."
+**Actionable Advice:**
+1. The "One-Way Door" framework (Amazon style but applied to AI PM).
+2. "Good Enough" definition (mvp is too slow; think "RAT" - Riskiest Assumption Test).
+3. Tools as leverage (Linear + CleanShot X for async velocity).
+
+## 4. Execution Plan
+- **Tone:** Kansai-ben, fast-paced, authoritative but self-deprecating about past "slow" Japanese habits.
+- **Structure:**
+    1.  **Intro:** The shock of joining a US AI startup (The "Velocity" culture shock).
+    2.  **The Mistake:** "Quality First" is a trap.
+    3.  **The Fix:** 3 Rules for Speed (Async, Scope Cutting, Decision Velocity).
+    4.  **The Tool:** CleanShot X & Linear (specific ROI).
+    5.  **Conclusion:** "Run, or die."
+
+Writing file: `james/notes/20260225_1945_Speed_Or_Death_US_AI_Reality.txt`

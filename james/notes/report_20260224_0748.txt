@@ -1,0 +1,23 @@
+# James Note Execution Report
+
+**Date:** 2026-02-24 07:48
+**File:** `james/notes/20260224_0748_Career_Strategy_Decider_vs_Facilitator.txt`
+
+## Strategy Alignment
+- **Pillar:** 1. Career & Survival Strategy (Focus on Mindset Shift)
+- **Target Audience:** Mid-level Japanese PMs & Aspirants who conflate "Facilitation" (Chosei) with "Management".
+- **Core Message:** "Facilitation is a tool, not a value. Your job is to DECIDE."
+- **Why this topic?:** Addressing a common pain point where Japanese PMs feel undervalued or stuck because they focus on being "nice adjusters" rather than "decision makers" (Mini-CEOs). This contrasts sharply with the US/AI startup culture where speed and accountability are everything.
+
+## Key Elements
+1. **Hook:** "Adjustment (Facilitation) is not a skill, it's a chore." (Provocative start)
+2. **Reality Check:** US AI startups run on autonomy; they don't need a "messenger." They need a "Decider."
+3. **Actionable Advice:**
+   - Stop offering 3 options without a recommendation.
+   - Learn to say "No" to feature creep.
+   - Use Data/Logic (clean documentation) to back decisions, not feelings.
+4. **Conclusion:** Being a "Decider" might make you temporarily unpopular, but it builds long-term respect and product success (and income).
+
+## Next Steps
+- Next cycle should rotate to **Pillar 2 (Job Hunt / University Students)** or **Pillar 3 (English Hack)** to maintain variety.
+- Consider a "Student to US Tech Intern" roadmap or specific "English for Jira/Linear" templates.

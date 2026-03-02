@@ -1,0 +1,27 @@
+# Strategy Report: 2026/02/27 06:42
+
+## 1. Article Info
+- **File:** `james/notes/20260227_0642_PM_Survival_Strategy_Visual_Logic.txt`
+- **Title:** 【実話】「英語力」と「技術力」で殴り合うな。凡人が米国テック企業でPMとして生き残るための「生存戦略」全公開
+- **Pillar:** ① Career/Survival Strategy (Engineers -> PM pivot)
+
+## 2. Context Analysis (Last 24 items)
+- **Recent Trend:** Heavy focus on Pillar ② (Job Hunting Backdoor) and ③ (English Hacks) in the last few hours.
+- **Gap Identified:** Pillar ① (Career Strategy/Mindset) hasn't been touched since `04:32`. To maintain authority as a "PM Leader" rather than just a "Job Hunting Consultant," a strong mindset/strategy piece was needed.
+- **Differentiation:** Unlike previous "How-to" hacks, this piece focuses on "OS/Mindset" change. It validates the reader's fear (inadequacy in English/Tech) and offers a *new* playing field (Visual & Logic).
+
+## 3. Market Research (Internal Simulation)
+- **Winner Pattern Analysis:**
+  - *Successful notes* often frame a "weakness" (poor English/coding) as a "strategic tradeoff" for a "strength" (Visual/Logic).
+  - *Losing notes* tend to preach "You must study English perfectly" or "Learn React first."
+- **Execution:** Adopted the "Winner" approach. "I have middle-school English" -> "But I win with Visuals." This creates immediate relief and trust.
+
+## 4. Key Elements
+- **Strong Hook:** "If you fight with English/Tech, you lose."
+- **Keywords:** "Visual Violence," "Logic Construction," "PM OS."
+- **Tone:** Aggressive yet encouraging Kansai dialect.
+- **Next Step:** Teased "CleanShot X" (Pillar ④ Product/Gadget) for the next article to seamlessly transition pillars.
+
+## 5. Next Actions
+- **Rotate to Pillar ④ (Product/Gadget):** Fulfill the teaser about CleanShot X.
+- **Rotate to Pillar ② (Job Hunting):** Continue the "Backdoor" series with a specific tactic (e.g., LinkedIn hacks).

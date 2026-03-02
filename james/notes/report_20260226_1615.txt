@@ -1,0 +1,17 @@
+# Report: 2026-02-26 16:15
+
+## Created Content
+- **File:** `james/notes/20260226_1615_Tech_Only_Is_Dead_PM_OS_Survival.txt`
+- **Title:** 米国AI企業PMが教える「"技術力"だけで食っていく」という甘い幻想と、年収1000万への生存戦略
+- **Pillar:** 1. Career/Survival (Engineer -> PM)
+
+## Strategy & Analysis
+- **Target:** Mid-level engineers stuck in the "craftsman" mindset (believing good code = high salary).
+- **Hook:** "Perfect code is garbage in business." This is a controversial but necessary truth in the fast-paced AI sector.
+- **Key Concept:** "Install PM OS." Positioning PM skills not as a job change but as an *operating system upgrade* for engineers.
+- **Differentiation:** Unlike generic career advice, this specifically targets the *technical debt vs. business impact* conflict that resonates with engineers.
+- **Tone:** Aggressive but constructive. "Don't just code, solve problems."
+
+## Next Steps
+- **Pillar Rotation:** Next should probably be **Pillar 2 (Job Hunting Survival)** or **Pillar 4 (Product Essence/Gadgets)** to keep the mix fresh. The "Job Hunt" angle is currently hot in the file list, so maybe rotate to Gadgets or English next.
+- **Market Check:** Need to verify if the "Visual Violence" term is resonating or if it needs more concrete examples (screenshots in future articles).

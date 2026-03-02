@@ -1,0 +1,18 @@
+Mission Report: James Note 2026-02-27
+
+# Strategy Execution
+- **Selected Pillar:** 1. Career/Survival (Engineer -> PM Focus)
+- **Rationale:** The recent rotation (Job Hunting, Product) left a gap for the core "Engineer Survival" narrative. To maintain the "US AI PM" authority, we needed a strong, contrarian piece that validates the technical background while rejecting the "craftsman" mindset.
+- **Key Hook:** "Being a good engineer makes you a bad PM in the US." This addresses the "Competence Trap" many mid-level Japanese engineers feel.
+- **Formatting:** Used standard Markdown with **bold** emphasis for key takeaways.
+
+# Output Details
+- **File:** `james/notes/20260227_0009_Engineer_Trap_Tech_First_Fail_US.txt`
+- **Title:** 【残酷な現実】「きれいなコード」を書くエンジニアほど、米国AI企業では"無能"扱いされる理由（年収1000万の分水嶺）
+- **Target:** Engineers aged 25-35 feeling stuck in "implementation details" while wanting more business impact/salary.
+
+# Next Steps
+- **Next Rotation:** Pillar 2 (Job Hunting/New Grad) or Pillar 3 (English Hack).
+- **Market Research:** Need to fix `web_search` (API Key missing) to get real-time trends for the "New Grad" piece next, as April recruitment season is approaching.
+
+Mission Complete.

@@ -1,0 +1,16 @@
+# Report: 2026-02-24 06:10 Note Generation
+
+## Output
+- File: `james/notes/20260224_0610_English_Hack_Visual_Dominance_Strategy.txt`
+- Theme: **English Hack (Visual Dominance Strategy)**
+- Target: Engineers/PMs who feel inferior about their English skills.
+- Key Message: "Discard the pride of perfect English. Use tools (CleanShot/Notion/DeepL) to dominate visually."
+
+## Strategy Alignment
+- **Pillar 3 (English Hack)**: Directly addresses the "Non-native survival" aspect.
+- **Differentiation**: Unlike typical "English learning" articles, this one *denies* the need for English study and focuses on *tool mastery* as a substitute.
+- **Tone**: Aggressive but encouraging ("TOEIC 900 is a fantasy"). James's signature "Kansai dialect + Tech efficiency" style.
+
+## Next Actions
+- **Next Topic**: "Job Hunt Survival" (Internship via permissionless work) as teased in the P.S.
+- **Research Needed**: Identify specific platforms/methods for "Permissionless Apprenticeship" (e.g., contributing to OSS, redesigning UI unsolicited) to include in the next article.

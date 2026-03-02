@@ -1,0 +1,50 @@
+# James Note Strategy Report: 2026-03-01 23:55 JST
+
+## 1. Context Analysis
+Looking at the recent output in `james/notes/`:
+- 23:20: Job Hunting (Backdoor)
+- 22:55: Visual Communication (English/Tech)
+- 22:10: Career Survival (Tech Skill Trap)
+- 21:38: English Hack (Zero to Hero)
+- 21:03: Job Hunting (Output Driven)
+- 20:30: Gadget ROI (Product)
+
+**Gap Analysis:**
+- We recently hit Job Hunting and English hard.
+- "Product Essence" (Pillar 4) was touched at 20:30 (Gadgets), but we haven't done a deep dive into **"Work Style / Product Philosophy"** (the *mindset* part of Pillar 4) or a pure **"Career Pivoting"** story (Pillar 1) that focuses on the *financial/strategic* aspect of the PM role specifically for non-engineers or struggling engineers.
+
+**Selected Theme:**
+**Pillar 1: Career & Survival Strategy (Career/Financial focus)**
+Specifically targeting the **"Engineer vs. PM Salary/Value Gap"** and the **"Myth of the Perfect Spec."**
+Many engineers think "If I just code better, I'll be rich." I need to shatter that illusion. The money in US Tech (and even Japan) is moving towards those who can *bridge* the tech and business, not just write the code.
+
+## 2. Market Strategy (Simulation)
+*Since external search is currently unavailable, leveraging internal successful patterns.*
+
+**Winning Pattern (High Note Skips):**
+- **Title:** Numbers + Contrarian View. "Why I stopped coding to make 10M."
+- **Intro:** "You're studying the wrong thing." High anxiety induction followed by immediate relief.
+- **Body:**
+    - The "Junior PM" trap.
+    - The "Tech Lead" ceiling.
+    - The "Business Value" multiplier.
+- **Actionable:** How to "talk money" to stakeholders. How to use tools (Notion/Linear) to visualize *value*, not just *tasks*.
+
+**Losing Pattern (Avoid):**
+- "My day as a PM" (Boring diary).
+- "PMBOK guide" (Textbook theory).
+- "Just be nice to people" (Generic soft skill fluff).
+
+## 3. Title Concept
+**Title:** 「コード書くの辞めたら年収1000万超えた」エンジニアが陥る”技術信仰”の罠と、米国PMの生存戦略
+
+## 4. Execution Plan
+- **Tone:** Kansai-ben, fast, slightly aggressive but loving.
+- **Structure:**
+    1. **Hook:** Stop polishing your code; polish your business logic.
+    2. **Reality Check:** US Tech companies don't pay for code; they pay for *outcomes*.
+    3. **The Pivot:** How I shifted from "How to build" to "What to build."
+    4. **Tooling:** Using Linear/Notion to track *ROI*, not just tickets.
+    5. **Close:** The "Bridge" role is the most scarce resource.
+
+Writing now...

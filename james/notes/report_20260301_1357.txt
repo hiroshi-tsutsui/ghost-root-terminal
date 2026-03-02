@@ -1,0 +1,8 @@
+File: james/notes/20260301_1357_Job_Hunting_Survival_Backdoor.txt
+Strategy: Pillar 2 (Job Hunting Survival/Backdoor Routes)
+Target: University students / Job seekers frustrated with Japanese traditional recruitment
+Key Message: Bypass "Rikunabi" and "ES". Use GitHub and OSS contributions as your resume.
+Tone: Aggressive, practical, "Wake up" call.
+Status: Completed.
+Note: Focused on actionable steps (OSS, Discord communities, Visual communication) rather than abstract advice.
+Next steps: Consider a deep dive into specific OSS contribution workflows or a "Visual English" tutorial for the next cycle (Pillar 3 or 4).

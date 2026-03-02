@@ -1,0 +1,20 @@
+# Report: 2026-02-26 09:46
+
+## Status
+- **Article Created:** `james/notes/20260226_0946_ROI_Gadgets_Best_Buy_US_PM.txt`
+- **Theme:** Product Essence / ROI Gadgets (Pillar 4)
+- **Target Audience:** Engineers/PMs who love gadgets but need "justification" to buy them. Also targets "Apple fanboys" with a provocative title.
+
+## Strategy Analysis
+- **Differentiation:**
+    - "Apple信者 (Apple Believer) = Thoughtless" is a strong hook.
+    - Focus on **"Time = Money (ROI)"** rather than "Specs".
+    - Specific product recommendations (MX Master 3S, Dell U2723QE, Shokz) allow for high-conversion affiliate links later.
+- **Tone Check:**
+    - "Don't choose by hobby, choose by ROI."
+    - Aggressive but logical.
+    - "Buy it now" call to action.
+
+## Next Steps
+- **Next Pillar:** Back to **Career/Survival** or **Job Hunting (Backdoor)**.
+- **Observation:** The "Gadget" articles are good for monetization/affiliates, but the "Career" articles build the *authority* needed to sell the gadgets. Alternate between "How to think" (Career) and "What to buy" (Gadgets).

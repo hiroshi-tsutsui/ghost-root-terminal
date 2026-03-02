@@ -1,0 +1,22 @@
+# Note Strategy Report: 2026-03-01 21:03
+
+## Executed Strategy
+- **Pillar:** 2. 就活サバイバル・裏ルート (Job Hunting Survival/Backdoor Routes)
+- **Title:** 【就活全無視】「面接」で戦うな。「成果物」で殴れ。米国テック企業に“裏口入学”する唯一の生存戦略
+- **Target Audience:** Job-hunting students & Young Engineers frustrated with traditional Japanese hiring (ES/Interviews).
+- **Core Message:** "Output is King." Skip the entry sheets. Build artifacts (Micro-SaaS, Chrome Extensions) and approach engineers directly ("Permissionless Apprentice").
+- **Key Elements:**
+    - **Anti-Pattern Analysis:** The "Mass-Produced Job Seeker A" (ES -> Interview -> Rejection Loop).
+    - **Output Strategy:** Not just code, but "Thought Process" (README = Proposal). Use Vercel/Render for deployment.
+    - **Direct DM Strategy:** Permissionless Apprentice (Audit/Fix before asking).
+    - **3-Month Roadmap:** Detailed weekly plan from Idea -> Build -> Refine -> Attack.
+    - **English:** Visuals > Grammar.
+
+## File Information
+- **Path:** `james/notes/20260301_2103_Job_Hunting_Backdoor_Output_Driven.txt`
+- **Size:** ~5,400 bytes (Expanded with roadmap & examples)
+- **Status:** Complete.
+
+## Next Steps
+- Pivot to **Pillar 3 (English Hacks)** or **Pillar 1 (Career Strategy)** next.
+- Consider a specific "How-to" on GitHub README writing or a "Cold DM Template" for the next technical piece.

@@ -1,0 +1,28 @@
+# Report: 20260224_1647
+
+## Article Information
+- **Title:** 【閲覧注意】英語力ゼロで米国PMに潜り込む「ハッタリと図解」の生存戦略 〜TOEIC900点なんてゴミ箱に捨てろ〜
+- **File:** `james/notes/20260224_1647_English_Hack_Illusion_of_Fluency_Diagrams.txt`
+- **Pillar:** 3. English Hack (Practical survival for non-fluent speakers)
+
+## Strategy Analysis
+1.  **Target Audience:**
+    - Engineers/PMs who feel "my English isn't good enough for global roles."
+    - People stuck in "TOEIC study hell" instead of taking action.
+2.  **Core Message (The "Hook"):**
+    - "Fluency is overrated. Clarity (Diagrams) is king."
+    - Stop studying grammar; start drawing diagrams (Miro) and recording videos (Loom).
+    - Shift the battlefield from "Sync" (where natives win) to "Async" (where prepared non-natives can win).
+3.  **James's Persona:**
+    - Aggressive opening ("Sleeping while talking?").
+    - Vulnerability ("My English is 3-word sentences").
+    - Pragmatic solutions (CleanShot X, Loom, DeepL).
+    - Closing with encouragement ("Passion/Logic > Grammar").
+4.  **Formatting:**
+    - Used bolding for key takeaways.
+    - Short paragraphs for readability.
+    - Clear "Action Items" (Tools to use).
+
+## Next Steps
+- Rotate to **Pillar 1: Career/Survival** or **Pillar 2: Job Hunting** next.
+- The "Code to PM" angle mentioned in the postscript sets up the next article perfectly.

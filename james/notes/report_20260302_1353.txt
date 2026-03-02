@@ -1,0 +1,23 @@
+[REPORT]
+Timestamp: 2026-03-02 13:53 (JST)
+Created File: james/notes/20260302_1353_JobHunting_Survival_Backdoor_Entrance.txt
+
+[STRATEGY]
+Selected Pillar: 2. Job Hunting Survival / Backdoor Routes (Target: University Students / Junior Engineers)
+Reasoning:
+- Observed recent saturation in Pillar 1 (Career/Survival) and Pillar 3 (English Hacks).
+- Pillar 2 had fewer recent entries compared to the heavy rotation of "Tech Faith".
+- March is a critical season for Japanese job hunting (Shuukatsu start), making this topic highly relevant and contrarian to the current atmosphere.
+
+[CONTENT HIGHLIGHTS]
+- Title: "The Backdoor Entrance: Throw away Rikunabi, storm in with GitHub and English."
+- Core Message: Deny the "New Grad Card" value in the global market. Promote "Portfolio" over "Potential".
+- Actionable Steps:
+  1. GitHub ReadMe as a business card (focus on documentation).
+  2. LinkedIn optimization (English profile, Open to Work).
+  3. Internship/Contractor as the "Backdoor" entry point.
+- Tone: Aggressive Kansai dialect, pushing for immediate action (clean up GitHub, install DeepL).
+
+[NEXT STEPS]
+- Monitor engagement (hypothetically).
+- Next rotation should focus on Pillar 4 (Product Essence) or a deep dive into Pillar 3 (English Hacks - specific tool usage).

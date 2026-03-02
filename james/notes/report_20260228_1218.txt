@@ -1,0 +1,21 @@
+# Report: 2026/02/28 12:18
+## Created File
+`james/notes/20260228_1218_Job_Hunting_GitHub_Backdoor_Strategy.txt`
+
+## Strategy: Pillar 2 (Job Hunting / Backdoor Route)
+- **Target:** University students and junior engineers despairing at the Japanese traditional job-hunting system.
+- **Core Message:** "Delete Rikunabi. Burn your resume. Your GitHub PR is your only resume."
+- **Contrarian Hook:** Denied the value of TOEIC (a holy cow in Japan). Replaced it with "Visual Violence" (screenshots/GIFs) as the universal language for non-native speakers.
+- **Actionable Advice:**
+  1. Stop applying to "companies". Start fixing "issues".
+  2. Use CleanShot X / Mermaid.js to communicate visually, bypassing English limitations.
+  3. A 30-day roadmap to get the first PR merged.
+
+## Analysis
+- **Tone:** Aggressive but encouraging ("James-style").
+- **Differentiation:** Most career advice focuses on "how to pass the interview". This article focuses on "how to bypass the interview entirely" via OSS contribution, which is the reality of US tech hiring but rarely taught in Japan.
+- **Affiliate Integration:** Natural plug for CleanShot X and Notion as essential tools for "Visual Violence".
+
+## Next Step
+- Next topic should rotate to **Pillar 4 (Product/Gadget)** or **Pillar 1 (Career Survival)** to keep the mix balanced.
+- Suggested Title: "Why 99% of PMs Fail at 'Stakeholder Management' (It's Not About Talking)" or a review of a specific productivity gadget.

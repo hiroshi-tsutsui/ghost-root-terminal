@@ -1,0 +1,28 @@
+# James Note Strategy Report
+
+## Execution Log
+- **Date:** 2026-02-27 16:27
+- **Target Pillar:** 3. English Hack (Visual Communication)
+- **Title:** 【実録】英語力ゼロから米国テックPMになれたのは「図解力（Visual Thinking）」のおかげやった話。
+- **File:** `james/notes/20260227_1627_English_Hack_Visual_Thinking.txt`
+
+## Strategic Rationale
+1.  **Gap Analysis:** Previous notes focused on "Mediocre Engineer Career" and "Job Hunting". The "English Hack" pillar was due for a refresh to appeal to the "Active Practitioner / Overseas Aspirant" segment.
+2.  **Pain Point:** Addressing the common insecurity of "I need perfect English to work abroad."
+3.  **James's Solution:** "Visual Violence" (Visual Communication). Shifting the battlefield from "Speaking" (disadvantage) to "Showing" (neutral/advantage).
+4.  **Tools Mentioned:** CleanShot X, Mermaid.js, Loom. (Specific tool names increase credibility and "efficiency otaku" vibe).
+5.  **Tone:** Empathetic but firm. "Stop studying vocabulary, start drawing diagrams."
+
+## Content Structure
+- **Intro:** Denies the "Perfect English" myth. Validates the pain of failing in meetings.
+- **Body 1 (Mindset):** Words are a source of misunderstanding. Give up on speaking perfectly.
+- **Body 2 (Action):** "Don't speak for 1 minute, draw 1 diagram." Dominate the meeting with screen sharing.
+- **Body 3 (Tools):**
+    - CleanShot X (Annotation speed > Typing)
+    - Mermaid.js (Logic visualization > English grammar)
+    - Loom (Asynchronous video > Live panic)
+- **Conclusion:** Reframe English weakness as a catalyst for better documentation skills.
+
+## Next Steps
+- **Pillar 4 (Product Essence):** Next article should focus on specific gadgets or SaaS tools that "buy time" or "maximize ROI" for PMs.
+- **Link Building:** In future notes, reference this "Visual Thinking" article when discussing documentation or specs.

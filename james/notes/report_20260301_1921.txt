@@ -1,0 +1,19 @@
+# James Note Strategy Report
+
+## Executed Strategy
+- **Pillar**: 3. English Hack (Visual Strategy)
+- **Title**: 米国PMが断言。「英語力」で勝負するな。「図解力」で殴れ。TOEIC900点よりもCleanShot Xを使い倒せという話。
+- **Concept**:
+    - **Target**: People with "English Complex" (Engineers, PMs aiming for global).
+    - **Message**: Fluency is overrated. Speed and Resolution (Visuals) matter more.
+    - **Tool**: CleanShot X (as a weapon, not just a tool).
+    - **Differentiation**: Most English advice focuses on "Study". James focuses on "Bypass".
+
+## File Info
+- **Path**: `james/notes/20260301_1921_English_Hack_Visual_Over_TOEIC.txt`
+- **Character Count**: ~4000 chars (estimated from logic, actual file size 4KB)
+- **Tone**: Aggressive, Confident, Kansai-dialect nuances (e.g., "言うておきます"), "Survival" focus.
+
+## Next Steps
+- Rotate to Pillar 4 (Product Essence) or Pillar 2 (Job Hunting - New Angle).
+- Monitor reaction (imaginary) to the "CleanShot X" recommendation.

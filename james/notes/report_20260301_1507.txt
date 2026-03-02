@@ -1,0 +1,16 @@
+# Report: 2026-03-01 15:07
+
+## Created Content
+- **File:** `james/notes/20260301_1507_English_Hack_Visual_Survival.txt`
+- **Title:** 米国AI企業PMが教える「英語力0」の生存戦略：DeepLとCleanShot Xで殴り勝て
+- **Pillar:** 3. 英語ハック（実践者・海外志向向け）
+
+## Strategy Execution
+- **Concept:** "Survival of the Non-Native"
+- **Target:** Engineers/PMs who feel blocked by English proficiency.
+- **Key Message:** Stop trying to "speak" perfect English. Shift the battlefield to text and visuals (Async/Logs). Use tools (DeepL, CleanShot X) aggressively to bridge the gap.
+- **Tone:** Kansai dialect, direct, challenging the status quo ("Stop thinking like that," "It's a waste of opportunity").
+
+## Next Steps
+- Rotate to **Pillar 4 (Product/Essence)** or **Pillar 1 (Career/Survival)** for the next iteration to maintain variety.
+- Monitor reaction to "Tool-heavy" advice vs "Mindset" advice.

@@ -1,0 +1,20 @@
+# James Note Execution Report
+
+## Strategy
+- **Pillar:** 4 (Product Essence / Tools) x 1 (Career Strategy)
+- **Target:** PMs/Engineers aiming for US/Global roles but failing at the resume/portfolio stage.
+- **Concept:** "The 5-Second Scan." Shift from "Polished UI Portfolio" (Japanese style) to "War Logs / Documentation Portfolio" (US style).
+- **Tools:** Notion (Speed/Structure) + CleanShot X (Visual Communication).
+
+## Execution
+- **File:** `james/notes/20260224_2007_Portfolio_Hack_Notion_CleanShot_Strategy.txt`
+- **Title:** 【実録】米国PM採用担当はあなたのポートフォリオを「5秒」で捨てる。NotionとCleanShot Xで作る"勝ち確"の履歴書戦略【年収1000万への最短切符】
+- **Key Points:**
+    1.  **"Trash Can" Theory:** Hiring managers want to see the "hell" behind the product, not just the pretty UI.
+    2.  **Notion:** Speed, Documentation capability proof, Shareability.
+    3.  **CleanShot X:** Annotation (Visual Comm), GIF (Micro-interactions), Scrolling Capture (Resolution/Depth).
+    4.  **Actionable:** Immediate steps to build a "War Log" portfolio this weekend.
+
+## Next Steps
+- Monitor reaction to "Tool-specific" career advice.
+- Next cycle: Return to **Pillar 2 (Job Hunt Backdoor)** or **Pillar 1 (Career Survival)** with a non-tool focus.

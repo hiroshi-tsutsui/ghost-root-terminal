@@ -1,0 +1,8 @@
+Title: 【神ツール】「CleanShot X」で英語の壁を破壊しろ。米国テックPMが教える「スクショ駆動開発」の真髄
+File: james/notes/20260227_0747_CleanShotX_Visual_Violence_Weapon.txt
+Strategy:
+- **Pillar:** 4 (Product Essence) & 3 (English Hack)
+- **Concept:** "Visual Violence" implementation using CleanShot X.
+- **Why:** Fulfilled the promise made in the previous article (`0642`) to discuss CleanShot X. This connects the "Strategy" (Visuals) with the "Tactic/Tool" (CleanShot X), increasing practical value.
+- **Target:** PMs/Engineers who struggle with English or inefficient communication.
+- **Next:** Rotate back to Pillar 1 (Career) or Pillar 2 (Job Hunting) to keep the variety.

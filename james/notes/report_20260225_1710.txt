@@ -1,0 +1,23 @@
+# Report: 20260225_1710_Career_Survival_Hack
+
+## Execution Summary
+- **Target Audience:** University students/Graduate students/New Grads (Tier: High-Potential, Low-Confidence in English)
+- **Core Pillar:** ② Job Hunting Survival/Underground Route (New Focus)
+- **Title Strategy:** Combined "Reversal from Hopeless Job Hunting" with "Strong Numbers (10M JPY)" and "Zero English" to maximize click-through rate.
+- **Content Flow:**
+  1.  **Provocation:** Deny the value of standard Japanese job hunting (Rikunabi/Mynavi).
+  2.  **Empathy:** Share personal inferiority complex (English ability).
+  3.  **Solution (The Hack):**
+      - GitHub/Zenn as resume.
+      - AngelList/LinkedIn over Wantedly.
+      - "Demo over Interview" tactic.
+  4.  **Tooling:** CleanShot X + Notion as "Language Prosthetics."
+  5.  **Closing:** Call to action (Close Rikunabi, Open GitHub).
+
+## Market Analysis (Simulated)
+- **Winning Pattern:** Articles that validate "escaping the Japanese system" are trending. Students feel trapped by the "Shu-katsu" dogma. Offering a concrete, albeit difficult, alternative creates a cult-like following.
+- **Losing Pattern:** Generic "Study English first" advice. It's saturated and discouraging. James's angle of "Product/Output first, English later" cuts through the noise.
+
+## Next Actions
+- Prepare "CleanShot X" specific article (Pillar 4).
+- Prepare "English Resume Template" if reaction is positive (Pillar 3).

@@ -1,0 +1,15 @@
+# Report: 20260228_0940
+
+## Strategy Execution
+- **Pillar Selected:** 2. Job Hunting Survival / Backdoor Route (★NEW★)
+- **Target Audience:** Job hunting students & young professionals disillusioned by traditional Japanese recruitment.
+- **Key Concept:** "Reverse Strategy" (逆張り). Discard "Self-Analysis" (internal focus) for "Market Analysis" (external value).
+- **Actionable Advice:**
+  1.  Long-term Internship (Output > Short-term attendance).
+  2.  GitHub/Zenn as Resume (Proof of Work).
+  3.  LinkedIn (English profile) & Direct DM.
+- **Tone:** Provocative ("Livestock shipment", "Defective system") to shake readers awake.
+
+## Output
+- **File:** `james/notes/20260228_0940_Job_Hunting_Reverse_Strategy.txt`
+- **Title:** 【就活生の9割が死ぬ】「自己分析」なんて捨てろ。米国PMが教える、年収1000万への「逆張りキャリア戦略」

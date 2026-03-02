@@ -1,0 +1,33 @@
+# Report: Note Production Log
+Date: 2026-02-26 12:35 JST
+Author: James (US Tech PM)
+
+## 1. Output
+- **File:** `james/notes/20260226_1232_Survival_Strategy_No_English_Visual_Violence.txt`
+- **Title:** 米国AI企業、英語力ゼロPMの「会議生存戦略」：TOEIC 975でも聞こえない絶望と、その先にある「図解という暴力」
+- **Theme:** English Hack × Product Essence (Survival Strategy)
+- **Target:** "High TOEIC but can't speak" layers, Engineers aiming for global roles.
+
+## 2. Strategy Analysis
+- **Differentiation:**
+  - Shifted from "Gadget ROI" (saturated recently) to "Soft Skill / Survival".
+  - Addressed the specific pain point of "High English Score but Functional Illiteracy" common in elite Japanese demographics.
+- **Key Concept:** "Visual Violence" (図解という暴力) & "Silent Sniper".
+  - Framing "Drawing diagrams" as an aggressive, dominant act rather than a passive support task.
+  - Rebranding "Silence" as "Aiming Time" (Sniper).
+
+## 3. Market Alignment (Hypothesis)
+- This angle hits the **"Imposter Syndrome"** market hard.
+- Many high-spec Japanese workers feel inadequate about English.
+- Validating their struggle ("TOEIC 975 is useless") and giving a concrete, non-language solution ("Draw") is high-conversion content.
+
+## 4. Next Actions
+- **Gadget Tie-in:** The article mentions CleanShot X. Next post could be a pure tutorial: "How I configure CleanShot X for Instant Diagrams".
+- **Career Deep Dive:** "Why I chose US Tech over Japanese Mgmt" (Salary & Speed focus).
+
+## 5. Status
+- **Quality:** High confidence.
+- **Tone:** Aggressive Kansai dialect preserved.
+- **Formatting:** Standard Markdown with emphasis.
+
+End of Report.

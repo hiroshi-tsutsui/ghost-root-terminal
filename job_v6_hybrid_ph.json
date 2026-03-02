@@ -1,0 +1,75 @@
+{
+  "taskGroups": [
+    {
+      "taskSpec": {
+        "runnables": [
+          {
+            "container": {
+              "imageUri": "us-central1-docker.pkg.dev/dev-dotsfty/yolo/yolo:latest",
+              "entrypoint": "bash",
+              "commands": [
+                "-c",
+                "cp /mnt/disks/patch/inward_day_detector_v3.py /app/dot-sfty-core-analytics/services/detectors/inward/falcon/ && cp /mnt/disks/patch/local_test_event_screening.py /app/dot-sfty-core-analytics/ && cd /app/dot-sfty-core-analytics && export PYTHONPATH=/app:/app/dot-sfty-core-analytics && python3.11 local_test_event_screening.py --input_dir /mnt/disks/input --output_dir /mnt/disks/output --min_confidences 0.4 0.5"
+              ],
+              "volumes": [
+                "/mnt/disks/input:/mnt/disks/input:rw",
+                "/mnt/disks/output:/mnt/disks/output:rw",
+                "/mnt/disks/patch:/mnt/disks/patch:ro"
+              ]
+            }
+          }
+        ],
+        "computeResource": {
+          "cpuMilli": "2000",
+          "memoryMib": "2000"
+        },
+        "maxRunDuration": "7200s",
+        "volumes": [
+          {
+            "gcs": {
+              "remotePath": "yolo-gcp/falcon/infer/input/precision_test/reviewed/phone/"
+            },
+            "mountPath": "/mnt/disks/input"
+          },
+          {
+            "gcs": {
+              "remotePath": "yolo-gcp/falcon/infer/output/classification/v6/model_s_v6_hybrid/phone/"
+            },
+            "mountPath": "/mnt/disks/output"
+          },
+          {
+            "gcs": {
+              "remotePath": "dotsfty-ml-experiments-src/james_temp/"
+            },
+            "mountPath": "/mnt/disks/patch"
+          }
+        ]
+      },
+      "taskCount": 1,
+      "parallelism": 1
+    }
+  ],
+  "allocationPolicy": {
+    "instances": [
+      {
+        "policy": {
+          "machineType": "n1-standard-4",
+          "accelerators": [
+            {
+              "type": "nvidia-tesla-t4",
+              "count": 1
+            }
+          ],
+          "bootDisk": {
+            "type": "pd-balanced",
+            "sizeGb": 100
+          }
+        },
+        "installGpuDrivers": true
+      }
+    ]
+  },
+  "logsPolicy": {
+    "destination": "CLOUD_LOGGING"
+  }
+}

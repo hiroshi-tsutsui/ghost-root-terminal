@@ -1,0 +1,8 @@
+Title: 【実録】「技術力はあるのに落ちる」エンジニアと、「コードは書けないが年収1000万」のPM。決定的な差は「これ」や。
+File: james/notes/20260227_2355_Tech_Trap_and_Outcome.txt
+Strategy: 
+1.  **Pillar 1 (Career Strategy)**: Focus on the "Outcome vs Output" mindset shift.
+2.  **Target**: Engineers who feel stuck despite having technical skills.
+3.  **Tone**: Harsh but helpful reality check (Kansai dialect, confident).
+4.  **Actionable Advice**: Rewrite README to focus on "Why/What" (Business Value), use visual tools (CleanShot X) to overcome language barriers.
+5.  **Differentiation**: Unlike generic career advice, this specifically targets the "Technical Trap" that many Japanese engineers fall into when aiming for global roles.

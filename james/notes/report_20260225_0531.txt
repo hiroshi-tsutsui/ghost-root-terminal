@@ -1,0 +1,19 @@
+# James Note Execution Report
+
+**Date:** 2026-02-25 05:31 (JST)
+**Target:** Career/Survival Strategy (Pillar 1)
+**Title:** 【残酷な真実】「いいコードを書けば年収が上がる」は美しい嘘。エンジニアが年収1500万を狙う唯一の「生存戦略」
+**File:** `james/notes/20260225_0531_Career_Hack_Tech_PM_Golden_Ticket.txt`
+
+## Strategy
+- **Context:** The last 3 articles covered Job Hunting (Students), Product Gadgets, and English Hacks. It was time to return to the core "Career Survival" for mid-level engineers.
+- **Hook:** Directly attacking the common engineer belief that "Good Code = Good Money". This is a high-engagement, controversial take.
+- **Value Proposition:** Introducing "Technical Product Manager (TPM)" as a specific role. This is a blue ocean in the Japanese market where "PM" is often confused with "Project Manager (schedule keeper)".
+- **Actionable Advice:**
+  1.  Rewrite GitHub Issues from "Bug fix" to "Business Value/Loss".
+  2.  Review Pull Requests for "Architecture/Scalability" not just syntax.
+  3.  Read English RFCs (using DeepL) to gain authority.
+
+## Next Steps
+- Monitor engagement (hypothetical).
+- Next rotation should likely be **Pillar 2 (Job Hunt/Students)** or **Pillar 3 (English)** depending on the "New Grad" season trend (March is approaching, so Job Hunt is high value).

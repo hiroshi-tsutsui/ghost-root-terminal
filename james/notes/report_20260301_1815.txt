@@ -1,0 +1,31 @@
+# Report: 20260301_1815_Perfectionism_Kills_PM_Career
+
+## File Path
+`james/notes/20260301_1815_Perfectionism_Kills_PM_Career.txt`
+
+## Strategy Execution
+### 1. Pillar Selection
+**Pillar 4: Product Essence (PM Productivity & ROI)**
+- **Rationale**: Recent posts focused heavily on Job Hunting (Pillar 2) and English Hacks (Pillar 3). Need to reinforce the "Professional PM" authority aspect.
+- **Angle**: "Speed" and "Decision Making" as the primary value metrics for a US PM, contrasting with Japanese "Perfectionism".
+
+### 2. Market Positioning
+- **Target**: Japanese PMs and Engineers who feel stuck or slow in their current roles.
+- **Differentiation**: Most Japanese career advice emphasizes "politeness" and "coordination". James destroys this, advocating for "rough speed" and "decisiveness".
+- **Pain Point**: "Why am I working so hard on documents but not getting evaluated?" -> Answer: "Because you're too slow/polite."
+
+### 3. Content Structure
+- **Hook**: "Perfect specs = Career Death". A strong, controversial statement to filter for serious readers.
+- **Conflict**: Japanese "Omotenashi/Politeness" vs. US "Done is better than perfect".
+- **Personal Story**: A failure story about writing a perfect PRD that no one read. Relatable vulnerability.
+- **Solution**: "Visual Communication" (CleanShot X) as the specific tool to enable speed and bypass English issues.
+- **Call to Action**: "Stop being a coordinator, start being a decision maker."
+
+### 4. Tone & Branding
+- **Dialect**: Strong Kansai dialect ("〜やで", "〜やろ").
+- **Persona**: Arrogant but helpful ("James"). High standards, low tolerance for inefficiency.
+- **Keyword**: "PM OS" (Mindset shift).
+
+## Next Steps
+- Monitor reaction to the "Visual Communication" angle. If high engagement, expand on specific "CleanShot X" workflows (GIFs, Annotations) in future "English Hack" posts.
+- Next cycle should likely return to Pillar 1 (Career Strategy) or introduce a new "Gadget" review under Pillar 4.

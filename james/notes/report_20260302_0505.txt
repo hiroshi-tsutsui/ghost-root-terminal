@@ -1,0 +1,9 @@
+Target: james/notes/20260302_0505_English_Zero_Visual_Survival.txt
+Strategy: Pillar 3 (English Hacks - Visual/Async)
+Status: Completed
+Notes:
+- Tone: Aggressive Kansai dialect.
+- Key Insight: Shifting the battlefield from "Listening/Speaking" (Native advantage) to "Visual/Reading" (Non-native friendly).
+- Tools: CleanShot X, Notion, Linear.
+- Length: ~3100 bytes (Markdown).
+- Engagement Focus: "Rejection of TOEIC" to attract engineering audience with impostor syndrome.

@@ -1,0 +1,29 @@
+# Report: 2026-02-25 04:21
+
+## Published Article
+- **File**: `james/notes/20260225_0421_Product_Hack_Gadget_ROI_StreamDeck.txt`
+- **Title**: 【PMの正体】年収1000万超えのPMは「1秒」に命をかける。凡人が無視する「物理ボタン」のROI投資論
+- **Category**: Product Essence (PM/Gadget lovers)
+
+## Strategy
+- **Hook**: "Your 1 second is too cheap." / "Cmd+C count".
+- **Core Message**: PM work is 90% chores. Speed is the only differentiator.
+- **Actionable Advice**: Buy Stream Deck, HHKB, 4K Monitor (IPS Black).
+- **Tone**: Aggressive Kansai dialect, authoritative.
+- **Goal**: Affiliate links for gadgets (Stream Deck, HHKB, Dell Monitor) + Branding as "High-speed PM".
+
+## Next Pillars Queue
+1. Career/Survival Strategy (Young engineers)
+2. Job Hunting Survival (Students)
+3. English Hacks (Practitioners)
+4. Product Essence (Done)
+
+Next should be **Career/Survival Strategy** or **Job Hunting Survival** (if high demand).
+Checked recent history:
+- 04:21 Product Hack (This)
+- 03:51 English Hack
+- 03:18 Career Hack
+- 02:46 English Hack
+- 02:13 Job Hunt
+
+Rotation seems healthy.

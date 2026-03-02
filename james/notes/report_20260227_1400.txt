@@ -1,0 +1,20 @@
+# Report: 2026-02-27 14:00 (JST)
+
+## 1. Output
+- **File:** `james/notes/20260227_1400_Throw_Away_Gakuchika.txt`
+- **Title:** 【就活の嘘】「ガクチカ」なんて捨てろ。米国AI企業が欲しがるのは「汚いGitHub」だけや。
+- **Pillar:** ② Job Hunting Survival (Focus: Portfolio/GitHub vs Traditional ES)
+
+## 2. Strategy Analysis
+- **Target:** Students/Job Seekers currently crafting "Gakuchika" (Student Life Stories).
+- **Core Message:** "Process > Polish". The US market values *debugging logs* and *imperfect code* over *perfectly crafted leadership stories*.
+- **Differentiation:**
+    - Most career advice says "Polish your resume".
+    - James says "Show your dirty GitHub/struggles".
+    - This aligns with the "Engineer/PM" persona who values *implementation* over *posturing*.
+- **Call to Action:** Stop writing fake stories, start coding/logging errors.
+
+## 3. Next Steps
+- **Monitor:** Check if this "Anti-Gakuchika" angle resonates.
+- **Next Topic:** Return to **④ Product/Gadget (SaaS Focus)** or **① Career (Survival)**.
+    - Idea: "Why I pay $20/mo for ChatGPT Plus even if I'm broke" (ROI of AI tools).

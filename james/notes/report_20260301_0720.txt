@@ -1,0 +1,15 @@
+# Report: 20260301_0720
+
+## Created File
+james/notes/20260301_0720_Engineer_Survival_PM_Hack.txt
+
+## Strategy Analysis
+- **Selected Pillar:** ① Career/Survival Strategy (Engineer -> PM Bridge)
+- **Rationale:** The last article on this pillar was `Escape_SES_Hell_to_US_PM` (5 files ago). It was time to reinforce the core branding of "Engineer who understands Business" to target the high-volume segment of frustrated engineers in Japan.
+- **Key Message:** "Technical skills alone are a red ocean. Shift to PM/Business to hit 10M JPY." This directly addresses the anxiety of mid-level engineers stuck in the 4-6M JPY range.
+- **Tone:** Aggressive ("Discard the illusion", "Stop thinking"). Uses the "James" persona's authoritative yet helpful style.
+- **Differentiation:** Unlike generic career advice, this specific "Stop coding, start writing docs" angle leverages the "US PM" authority.
+
+## Next Actions
+- **Next Pillar:** ② Job Hunting Survival (University Students) or ③ English Hacks.
+- **Focus:** The "Job Hunting" pillar is currently a high-priority "NEW" focus. The next article should target students with a "Don't do normal job hunting" theme, perhaps focusing on "Internships as the only path."

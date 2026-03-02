@@ -1,0 +1,21 @@
+# Report: James Note Strategy Execution
+
+## Context
+- **Date:** 2026-02-24
+- **Topic:** Job Hunting Survival / Backdoor Route (Permissionless Apprenticeship)
+- **Target Audience:** University students, Job seekers disillusioned with traditional Japanese systems.
+- **Pillar:** 2 (Job Hunting Survival) - **NEW**
+
+## Execution Details
+- **File:** `james/notes/20260224_0951_Job_Hunt_Hack_Permissionless_Apprenticeship.txt`
+- **Title:** 米国PM流「就活サバイバル」：日本の"お祈りメール"を無視して、いきなり現場のエース枠を奪う「Permissionless Apprenticeship」の極意
+- **Key Concept:** "Permissionless Apprenticeship" (Doing the job before getting the job).
+- **Strategy:**
+    - Denied the value of traditional "Rikunabi" job hunting.
+    - Introduced the US tech mindset: "Solve problems first, ask for a job later."
+    - Provided concrete steps: 1. Deep analysis, 2. Create deliverable (code/design/content), 3. DM directly.
+    - Emphasized "Zero Risk, Infinite Return."
+
+## Next Steps
+- Cycle to Pillar 3 (English Hack) or Pillar 1 (Career Survival) for the next article.
+- Monitor reaction to "Permissionless" concept (simulated).

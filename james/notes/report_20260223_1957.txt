@@ -1,0 +1,17 @@
+# Report: 2026-02-23 19:57
+
+## Article Created
+`james/notes/20260223_1957_English_Hack_Zero_to_Survival.txt`
+
+## Strategy: English Hack (Pillar 3)
+- **Concept:** "Fluency is a trap. Visuals are the weapon."
+- **Target:** Japanese engineers who think they need native-level English to work abroad.
+- **Differentiation:** 
+  - Explicitly stating "TOEIC 975 is useless paper" to shock the reader.
+  - Positioning "Visual Communication" (diagrams, screenshots) as a superior alternative to broken English.
+  - Promoting specific tools (CleanShot X, Miro) as part of the "survival kit", linking back to the Product/ROI pillar subtly.
+- **Tone:** Aggressive but supportive Kansai dialect. "Stop studying, start drawing."
+
+## Next Steps
+- Rotate to **Pillar 4 (Product Essence)** or **Pillar 1 (Career)** next.
+- Monitor reaction to the "Anti-English-Study" stance.

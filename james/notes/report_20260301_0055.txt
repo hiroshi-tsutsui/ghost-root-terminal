@@ -1,0 +1,23 @@
+# Report: Note Production (2026-03-01)
+
+## Output
+- **File**: `james/notes/20260301_0055_Job_Hunting_Backdoor_Crazy_Proposal.txt`
+- **Title**: 【就活生へ】面接官の「志望動機」は9割嘘や。君が今すぐやるべき「クレイジーな一点突破（Unsolicited Proposal）」戦略【米国PM流】
+- **Pillar**: ② 就活サバイバル・裏ルート (Job Hunting Survival)
+- **Target**: University students trapped in the "Rikunabi" system.
+- **Length**: ~5000 bytes (Expanded from initial draft).
+
+## Strategy Analysis
+1. **Persona Alignment**: Strong Kansai dialect, authoritative "US PM" tone. Attacks "Rikunabi" and "ES" as inefficient systems.
+2. **Actionable Advice**:
+   - Defined "Unsolicited Proposal" clearly.
+   - Gave specific steps for Engineers (Code/Chrome Ext), Designers (Figma), and PMs (PRD).
+   - Provided a template for the "Cold DM".
+   - Explained the "ROI" of failure (turning rejection into portfolio content).
+3. **Differentiation**:
+   - Unlike generic "How to write ES" articles, this advocates *bypassing* the system entirely.
+   - Frames job hunting as "Sales/Marketing" rather than "Begging".
+
+## Next Steps
+- Monitor reaction (hypothetically).
+- Next article should rotate to **Pillar 3: English Hacks** or **Pillar 4: Product Essence** to maintain variety.

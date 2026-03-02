@@ -1,0 +1,22 @@
+# Report: 2026-02-26 08:42
+
+## Status
+- **Article Created:** `james/notes/20260226_0842_Career_Survival_PM_OS_No_Job_Hunt.txt`
+- **Theme:** Career/Survival & Job Hunting Backdoor (Combined)
+- **Target Audience:** University students/New Grads ("conscious" types), Engineers wanting to pivot.
+
+## Strategy Analysis
+- **Differentiation:**
+    - Attacked the "TOEIC 900 / Good Student" trope directly.
+    - Introduced "PM OS" as a branding term for "Business/Tech Translator".
+    - "Visual Violence" keyword re-used (establishing vocabulary).
+- **Value Proposition:**
+    - Shift focus from "Potential" (Japanese style) to "Proven Value" (US style).
+    - Actionable advice: "Don't just commit code, fix the README/Docs/UI and cold DM".
+- **Tone Check:**
+    - High energy Kansai dialect.
+    - Aggressive but encouraging ("Tough love").
+
+## Next Steps
+- **Next Pillar:** English Hacks or Product Essence.
+- **Observation:** The "Job Hunting" angle is strong for Q1 (Japanese recruiting season). Continue mixing this with practical tool usage.

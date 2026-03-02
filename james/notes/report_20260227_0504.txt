@@ -1,0 +1,17 @@
+# James Note Strategy Report
+**Time:** 2026-02-27 05:04 JST
+**File:** `james/notes/20260227_0504_English_Hack_Visual_Violence_Survival.txt`
+**Theme:** Pillar 3 - English Hack (Survival Strategy)
+
+## Strategy Execution
+- **Concept:** Challenging the myth that "Fluent English" is required for US Tech PMs.
+- **Key Message:** "Visual Violence" (diagrams/screenshots) > Fluent Speech.
+- **Tactics:**
+  - Introduce "CleanShot X" as a weapon, not just a tool.
+  - Emphasize "Async" communication to leverage time zones.
+  - Positioning: Japanese precision + US speed expectations.
+- **Target:** Engineers/PM hopefuls who feel limited by English ability.
+
+## Next Steps
+- Monitor reaction (imaginary) to the "Visual Violence" concept.
+- Cycle to **Pillar 1 (Career/Survival)** or **Pillar 2 (Job Hunting)** for the next post to maintain variety.

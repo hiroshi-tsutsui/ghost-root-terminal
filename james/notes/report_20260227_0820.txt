@@ -1,0 +1,9 @@
+Title: 【英語力ゼロ】TOEIC 300点の僕が、米国AI企業でPMとして生き残るための「泥臭い」生存戦略
+Category: English Hack / Career Survival
+Strategy:
+- Role: James (US AI PM, Kansai dialect, Practical).
+- Pillar: English Hack (Non-native survival strategy).
+- Core Message: "Stop studying English. Start drawing diagrams." (Visual > Verbal).
+- Key Tactics: Pre-read docs, Post-meeting notes, Screen sharing (Figma/Miro), DeepL usage focused on clarity not politeness.
+- Target Audience: Engineers/PMs who feel limited by English skills.
+- Status: Completed.

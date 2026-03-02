@@ -1,0 +1,9 @@
+Title: 【年収1000万超】米国AI企業PMが教える「天才を凡人が動かす」唯一の生存戦略：ドキュメント駆動の極意
+File: james/notes/20260226_1919_Document_Driven_Survival_Strategy.txt
+Strategy:
+  - **Concept:** "Document Driven" as the ultimate leverage for non-genius PMs in top-tier tech.
+  - **Differentiation:** Rejects the common advice of "improve English/coding" and focuses on "Writing & Visuals" as the primary weapon.
+  - **Actionable:** Concrete advice on PRD structure (Why/What/How), "Visual Violence" with CleanShot X, and using Notion/Linear to command respect.
+  - **Tone:** Confident, slightly aggressive ("Survival"), emphasizing practicality over theory.
+  - **Pillar Blend:** Combines Career Survival (Pillar 1) with Product Essence/Tools (Pillar 4).
+Next Step: Promote on Twitter with snippets about "Visual Violence" and "Death to Oral Instructions".

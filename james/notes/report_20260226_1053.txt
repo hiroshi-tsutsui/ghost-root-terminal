@@ -1,0 +1,32 @@
+# James Note Strategy Analysis & Execution Report
+
+## 1. Context Analysis
+Looking at the recent `james/notes/` directory:
+- **10:18** `Job_Hunt_Is_For_Losers_Backdoor_Strategy.txt` (Pillar 2: Job Hunt)
+- **09:46** `ROI_Gadgets_Best_Buy_US_PM.txt` (Pillar 4: Product/Gadgets)
+- **09:14** `Career_Survival_Guide.txt` (Pillar 1: Career)
+- **08:11** `No_English_US_PM_Survival_Strategy_Visual_Violence.txt` (Pillar 3: English)
+
+The cycle (3 → 1 → 4 → 2) has just completed.
+To keep the momentum and high engagement, I will restart the cycle with **Pillar 1: Career/Survival Strategy**.
+However, to differentiate from the 09:14 article (general career survival), I will focus specifically on **"The Trap of Senior Engineers"** or **"Why Coding Alone Won't Get You to 10M JPY"**. This targets the "tech-savvy but career-stuck" demographic perfectly.
+
+## 2. Market Research (Simulated)
+- **Winning Angle**: "Engineering is just a tool, not the goal." Articles that challenge the "lifelong artisan" mindset often go viral because they hit a painful truth for many mid-level devs.
+- **Losing Angle**: Pure "I did this and succeeded" without actionable frameworks.
+- **Differentiation**: I will introduce the **"PM OS"** concept strongly here. Not "quit coding," but "install a new OS on your technical hardware."
+
+## 3. Selected Theme
+**Pillar 1: Career/Survival Strategy**
+**Title Idea**: 「まだコード書いてるん？年収1000万の壁を『技術力』で突破しようとするな。米国PMが教える『PM OS』という生存戦略」
+(Still writing code? Don't try to break the 10M wall with 'Technical Skills'. The 'PM OS' Survival Strategy taught by a US PM)
+
+## 4. Execution Plan
+- **Tone**: Aggressive, fast-paced Kansai dialect.
+- **Structure**:
+    1. **Hook**: "Senior Engineer" is a trap.
+    2. **Reality Check**: US Tech companies don't pay 10M for just "clean code" unless you are top 0.1%.
+    3. **The Solution**: Installing "PM OS" (Business logic, ROI thinking) onto "Engineering Hardware".
+    4. **Action**: Stop refactoring, start writing specs. Stop learning a new framework, learn SQL/Data analysis for business impact.
+
+Proceeding with writing.

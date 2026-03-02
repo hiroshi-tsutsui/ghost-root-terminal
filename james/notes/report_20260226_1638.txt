@@ -1,0 +1,24 @@
+# Report: 20260226_1638_Job_Hunting_Backdoor_US_PM
+
+## Executive Summary
+- **Target Audience:** University students and job seekers frustrated with the traditional Japanese recruitment system (Rikunabi/Suits).
+- **Core Theme:** "The Backdoor Route" to US Tech Companies. Prioritizing Output over Status/GPA.
+- **Strategic Pillar:** 2. Job Hunting Survival/Backdoor (New).
+
+## Content Strategy
+1.  **Hook:** Explicitly reject the "Recruit Suit" and "New Grad Card" culture. Validate the reader's frustration.
+2.  **Authority:** Reiterate James's position (US PM, >10M JPY, Non-native English, Non-Elite background).
+3.  **The "Backdoor":**
+    -   Ignore HR portals.
+    -   Create value (find bugs, improve UX).
+    -   Direct Message (DM) decision-makers with a prototype.
+    -   Offer "risk-free" internship trials.
+4.  **Tooling:** Emphasize tools (DeepL, CleanShot X, Notion) as the bridge for language gaps.
+
+## Next Steps
+-   Monitor engagement (Likes/Shares) particularly from the student demographic.
+-   Consider a follow-up article detailing the *exact* template for the "DM" mentioned in section 4.
+-   Next rotation should focus on **Pillar 3: English Hacks** to deepen the practical "how-to" aspect.
+
+## File Location
+`james/notes/20260226_1638_Job_Hunting_Backdoor_US_PM.txt`

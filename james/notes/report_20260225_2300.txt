@@ -1,0 +1,24 @@
+# Report: 20260225_2300 Note Creation
+
+## Execution Details
+- **Date:** 2026-02-25 23:00
+- **File:** `james/notes/20260225_2300_US_Tech_Job_Hunt_Total_War.txt`
+- **Pillar:** 2 (Job Hunting / University Students)
+- **Title:** 【就活生へ】ESも面接練習も全部捨てろ。Fラン大学生が「米国AI企業のPM」に内定するための "裏口入学" 戦略の全て
+
+## Strategy
+1. **Target:** University students (especially those feeling inferior about academic pedigree "F-rank") who are disillusioned with the Japanese job hunting system (Rikunabi, suit-wearing, bowing).
+2. **Hook:** "Throw away ES and Interview Prep." A radical denial of the standard process.
+3. **Differentiation:** 
+   - Not "Study English" or "Get high GPA".
+   - Instead: "Build a Portfolio of *Translation* and *Documentation*."
+   - The concept of "Permissionless Apprenticeship" (borrowed from Jack Butcher/crypto culture but applied to PM work).
+4. **Actionable Advice:**
+   - **Step 1:** Don't apply. Find a rising AI startup (US based).
+   - **Step 2:** Don't ask for a job. Find their broken docs or untranslated app.
+   - **Step 3:** Fix it, translate it, make a "Better Manual" using Notion + CleanShot X.
+   - **Step 4:** Send it to the CEO via DM/Email. "I fixed this for you. No charge."
+   - **Tools:** DeepL (for perfect English), CleanShot X (for visual proof), Notion (for structure).
+
+## Next Step
+- Next pillar in rotation: **Pillar 3 (English Hack)**.

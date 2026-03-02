@@ -1,0 +1,31 @@
+# Report: 2026/03/01 08:24 - "The Bridge between Tech & Business"
+
+## Executive Summary
+Executed the content creation for the **"English Hack" (Pillar 3)**.
+Targeted professionals and aspiring global workers who feel limited by their English proficiency.
+
+## Generated Content
+- **File**: `james/notes/20260301_0824_English_Survival_Guide_Visual_Strategy.txt`
+- **Title**: 【実話】TOEIC 300点台の僕が、米国AI企業で「英語ペラペラ」のフリをして生き残った全技術
+- **Strategy**:
+    - **Hook**: Confessed to having a low TOEIC score (300s) despite being a US Tech PM.
+    - **Paradigm Shift**: Shifted focus from "Learning English" to "Visual Communication" & "Logic".
+    - **Actionable Advice**:
+        - Use DeepL + Otter.ai for "Augmented Hearing".
+        - "Whiteboard Jacking" to control meetings visually (Miro/FigJam).
+        - "Closed Questions" to limit open-ended listening requirements.
+        - "CleanShot X" as a primary communication tool (Screen recording > Text).
+    - **Tone**: Kansai dialect, fast-paced, confident, slightly provocative ("Don't learn English, use tools").
+
+## Next Steps
+- **Next Pillar**: **Pillar 4 (Product Essence / PM Gadgets)** or **Pillar 1 (Career Strategy)**.
+    - Since `04:07` was the last clear Gadget/Product post, Pillar 4 is due.
+    - Alternatively, cycle back to Pillar 1 (last was `07:20` but focused on Engineers).
+- **Recommendation**: Next article should focus on **"Product Essence" (Pillar 4)**, specifically diving into the *ruthless prioritization* of a US PM or a specific tool that embodies "Buying Time with Money" (ROI).
+
+## Note on Market Research
+- Due to missing API key, performed internal simulation of "winning" vs "losing" note structures based on persona knowledge.
+- **Winning pattern identified**: Vulnerability (Low TOEIC) -> Counter-intuitive Solution (Don't study, visualize) -> Tool specific actionable advice.
+- **Losing pattern avoided**: Just listing "Study harder" or generic "Communication tips" without the "US Tech" context.
+
+James (Natasha acting as James)

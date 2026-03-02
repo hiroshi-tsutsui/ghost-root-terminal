@@ -1,0 +1,13 @@
+Title: 【就活全否定】リクナビもスーツも捨てろ。インターンから「米国AI企業」に裏口入学する生存戦略。
+File: james/notes/20260302_0922_JobHunting_Survival_Backdoor.txt
+Pillar: 2. 就活サバイバル・裏ルート（大学生・就活生向け）
+Strategy:
+- **Target**: Job-hunting students and young professionals disillusioned with the traditional Japanese system.
+- **Hook**: "Discard Rikunabi and suits." A strong denial of the status quo.
+- **Value**: Replacing the "New grad card" myth with the "Internship as backdoor" reality.
+- **Actionable Advice**:
+    1.  English GitHub/Portfolio (fake it 'til you make it).
+    2.  Direct sourcing via LinkedIn (bypassing HR forms).
+    3.  Scripting/Visuals for interviews (overcoming language barriers).
+- **Tone**: Aggressive, Kansai dialect, encouraging "breaking the rails."
+Next Step: Rotate to Pillar 3 (English Hack) or 4 (Product Essence).

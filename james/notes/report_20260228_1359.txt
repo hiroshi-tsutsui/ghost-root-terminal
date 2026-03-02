@@ -1,0 +1,21 @@
+# Report: 20260228_1359
+
+## New Article
+- **File:** `james/notes/20260228_1359_Job_Hunting_GitHub_Backdoor_Strategy_v2.txt`
+- **Title:** 米国AI企業PMが教える「就活のウラ技」：なぜお前のGitHubはスカウトされないのか？【完全保存版】
+- **Pillar:** ② 就活サバイバル・裏ルート (Job Hunting Survival / Backdoor Route)
+
+## Strategy & Content
+- **Focus:** Unlike the previous "Visual Violence" approach (which focused on *communication* despite poor English), this article focuses on **"Portfolio Quality" and "Reverse Recruiting"**.
+- **Key Points:**
+  1.  **Shift from Potential to Achievement:** AI era demands immediate value.
+  2.  **GitHub Anti-Patterns:** criticizing "Hello World" repos and lack of "Team Dev" traces.
+  3.  **The "Readme" Importance:** Why, How, What (Problem Solving context).
+  4.  **Reverse Recruiting:** Using LinkedIn and Twitter (X) as active logs/portfolios, not just passive profiles.
+  5.  **Internship Mindset:** Treat it as a "trial period" to become indispensable, not a part-time job.
+- **Tone:** Aggressive, efficient, Kansai dialect. Targeting students/engineers who are stuck in the traditional Japanese job hunting "game".
+
+## Next Steps
+- **Rotation:** Job Hunting (Done) -> **Product Essence / Gadget** or **Career Strategy**.
+- **Observation:** We have two strong "Job Hunting" articles today. Next, we should pivot back to **Product/Gadget** (ROI focus) or **Career Strategy** (for existing employees, not students) to balance the feed.
+- **Idea:** A "Desk Setup" or "Productivity Tool" article linked to PM performance (ROI) would fit well next.

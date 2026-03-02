@@ -1,0 +1,19 @@
+**[REPORT: 20260228_1716]**
+
+**Created:** `james/notes/20260228_1716_JobHunting_Survival_Strategy.txt`
+**Topic:** 米国テックPM就活：履歴書よりGitHub、面接よりPull Requestな理由
+
+**Strategy Execution (Pillar 2: Job Hunting/Backdoor):**
+- **Concept:** Rejects the "conformingクローン" style of Japanese job hunting. Introduces the US "Proof-of-Work" and "Show me what you built" mindset.
+- **Key Hooks:**
+  1. **GitHub README as a Business Proposal:** Not just code, but explaining "Why, What, How, So What".
+  2. **OSS Contribution = Immediate Work Experience:** Bypassing traditional internships by fixing bugs in libraries the target company actually uses.
+  3. **Product Research as Interview Prep:** Turning interviews into "Product Strategy Discussions" with pre-made Figma mocks and improvement plans.
+  4. **Visual Aid Strategy:** Using diagrams to compensate for broken English.
+- **Tone:** Practical, aggressive Kansai dialect. Positions James as a mentor providing "weapons" to elite talent.
+
+**Next Rotation:** Pillar 3 (English Hack) or Pillar 1 (Career Strategy).
+
+---
+**James (米国AI企業PM)**
+*リクナビのID消す準備はできたか？ 現場で待ってるで。*

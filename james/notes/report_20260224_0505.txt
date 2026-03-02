@@ -1,0 +1,12 @@
+Target File: james/notes/20260224_0505_English_Hack_Visual_Survival_Trash_English.txt
+Strategy:
+1. **Pillar**: English Hack (Visual Survival / Anti-Perfectionism).
+2. **Concept**: "Trash English is a Weapon." Dispel the myth that perfect English is required for US Tech roles.
+3. **Target Audience**: Talented Japanese engineers/PMs paralyzed by "English Complex."
+4. **Key Tactics**:
+   - **Vulnerability**: Admitting to 400 TOEIC and low listening comprehension to build immediate rapport.
+   - **Reframing**: Shifting the battlefield from "Language" (where we lose) to "Logic/Visuals" (where we win).
+   - **Tooling**: Promoting CleanShot X, Miro, and Loom not just as tools, but as "survival gear."
+   - **Actionable Advice**: "Don't speak, draw." "Use DeepL for correction, not creation."
+5. **Tone**: Kansai dialect, confident but humble about language skills, high energy ("Survival Strategy").
+6. **Goal**: Empower readers to realize their technical skills are transferable globally *now*, without waiting for English mastery.

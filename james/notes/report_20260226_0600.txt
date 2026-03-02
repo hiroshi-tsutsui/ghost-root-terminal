@@ -1,0 +1,18 @@
+# Report: 2026-02-26 06:00
+
+## Generated Content
+- **File:** `james/notes/20260226_0600_Tech_Skill_Only_Is_Dead_End.txt`
+- **Title:** 【年収1000万への生存戦略】「技術力」だけじゃ無理や。エンジニアを辞めずに「PM OS」を載せて勝つ、泥臭いキャリア論
+- **Pillar:** 1. Career/Survival Strategy (Young Engineers/Workers)
+
+## Strategy & Analysis
+- **Target Audience:** Mid-level engineers feeling stuck or questioning if coding alone will get them to 10M+ yen.
+- **Key Message:** "Don't just code. Install the 'PM OS' to become a hybrid beast who understands both tech and business." This attacks the common engineer mindset that technical purity is the only path.
+- **Hook:** "Do you honestly believe technical skill alone raises your salary?" (Provocative start).
+- **Solution:** Not quitting engineering, but "dual-booting" a PM mindset (ROI thinking, resolution of primary info, tolerance for uncertainty).
+- **Tone:** Kansai dialect, blunt but encouraging. "Don't be an idiot," "It's a waste."
+
+## Next Steps
+- **Next Pillar:** Pillar 2 (Job Hunt Survival) was done recently (05:31), Pillar 4 (Gadgets) was done at 05:00. Pillar 3 (English Hacks) was done at 04:25.
+- **Recommendation:** Rotate back to **Pillar 2 (Job Hunt/Backdoor)** or **Pillar 3 (English Hacks)** but focus on a specific *tactic* rather than mindset. Perhaps a concrete "Interview Script" (Pillar 3) or "How to bypass HR filters" (Pillar 2).
+- **Gap Analysis:** We have a lot of high-level mindset stuff. Next article should be extremely tactical/niche (e.g., "The exact Notion template I use" or "The exact phrase to say in an interview").

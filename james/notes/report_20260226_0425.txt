@@ -1,0 +1,28 @@
+# Report: 2026-02-26 04:25 Article Strategy
+
+## Summary
+- **Title**: 【実録】米国AI企業PMが教える「英語力ゼロ」の生存戦略：DeepLとスクショで殴り勝つ泥臭い技術
+- **Target Audience**: "English Hack" (Practical Implementers/Overseas Oriented) & "Career Strategy" (Engineers aiming for US/Global roles).
+- **Core Message**: "English fluency is not a prerequisite for success. Shift the battlefield to text/visuals where you can win."
+- **Tone**: Contrarian, gritty, encouraging, Kansai dialect.
+
+## Strategy Analysis
+1.  **Pillar Selected**: ③ English Hack (Combined with ① Career Survival).
+    -   *Reason*: Recent articles covered "Visual Violence" and "Career/PM OS", but a direct "How to survive *without* English" angle using specific tools (DeepL/CleanShot) is a strong, recurring winning theme for this persona. It directly addresses the biggest insecurity of the target audience.
+2.  **Structure**:
+    -   **Hook**: Denying the "Must be fluent" myth.
+    -   **Reality**: "Correct information > Fluency".
+    -   **Tactics**:
+        -   Dominate Async (Text > Voice).
+        -   Visual Violence (CleanShot X).
+        -   Scripting Meetings (Preparation).
+    -   **Mindset**: Abandon perfectionism; focus on delivery.
+    -   **Call to Action**: Don't let language stop you. Join the "winning side".
+
+## Key Elements
+-   **DeepL Pro & CleanShot X**: Mentioned as specific weapons (ROI tools).
+-   **"Visual Violence"**: Reinforced as a branded concept.
+-   **"Bamboo spear vs B-29"**: Cultural metaphor for futile frontal assaults vs. smart asymmetric warfare.
+
+## Next Steps
+-   Monitor overlap with previous "CleanShot" articles. Future articles should pivot to "Product Essence" (Gadgets/ROI) or "Job Hunt" (University students) to maintain variety.

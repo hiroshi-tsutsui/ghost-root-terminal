@@ -1,0 +1,10 @@
+[REPORT]
+Target File: james/notes/20260302_1210_Tech_Faith_Discard_PM_OS_Install.txt
+Strategy: Pillar 1 (Career/Survival) - "Tech Faith Discard" & "PM OS Install"
+Rationale: Previous entries covered English, Product, and Job Hunting. Returned to Pillar 1 to maintain rotation and address the core value proposition for engineers stuck in the "tech-only" mindset.
+Key Elements:
+- Bold assertions against "Technology Faith" (tech alone != value).
+- Definition of "PM OS" as an operating system for engineers.
+- Specific actions: "Add Business Value to Jira", "Talk to Sales/CS", "Read English".
+- Tone: Kansai dialect, provocative, encouraging but strict.
+Next Steps: Monitor engagement (likes) and prepare for Pillar 2 (Job Hunting/University Student focus) or Pillar 3 (English) depending on feedback.

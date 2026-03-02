@@ -1,0 +1,19 @@
+report_20260223_2333.txt
+---------------------------
+Target: English Hack (Pillar 3)
+Title: 米国PMが教える「英語力ゼロ」の生存戦略：DeepLと“図解”でネイティブを黙らせる技術
+File: james/notes/20260223_2333_English_Hack_Visual_Survival_No_TOEIC.txt
+
+Strategy:
+1.  **Pillar Rotation**: Previous was Job Hunt (Pillar 2) -> Career (Pillar 1) -> Product (Pillar 4). Next logical step was English Hack (Pillar 3). (Note: Prompt flagged Job Hunt as "NEW", but recent file check showed a Job Hunt article just 30 mins ago. Switched to English Hack to maintain balance and avoid spamming the same topic).
+2.  **Concept**: "English ability is irrelevant if Output is clear." Focus on Visual > Audio.
+3.  **Tactics**:
+    -   Kill Audio meetings (use logs/text).
+    -   CleanShot X for visual communication (Arrow/Text).
+    -   DeepL as a "Correction Cast" not just translator.
+    -   Async dominance (Notion/Slack).
+4.  **Tone**: Aggressive/Confident Kansai dialect. "Don't study English, install tools."
+5.  **Call to Action**: Use tools to bypass language barriers immediately.
+
+Status: Complete.
+Next: Product Essence (Pillar 4) or Career (Pillar 1).

@@ -1,0 +1,25 @@
+# Execution Report: 2026-03-01 15:44
+
+## 1. Strategy & Context
+- **Selected Pillar:** ② Job Hunting Survival / Backdoor Routes (New)
+  - *Reasoning:* Although a "Job Hunting" note exists from ~2 hours ago (13:57), the user explicitely highlighted this pillar as "★NEW★" and central to the current strategy. To differentiate from the previous "Backdoor" note, I focused this piece specifically on the "Anti-New-Grad-System" (Rikunabi/Navi sites) vs. "Global Practicality" (GitHub/Figma/Direct DM). The previous one likely touched on general tactics; this one is a **manifesto against the Japanese hiring system** itself.
+- **Target Audience:** University students and job seekers despairing at the Japanese "potential-based" hiring system.
+- **Differentiation:**
+  - **VS Competitors:** Most "career advice" notes are about "ES correction" or "interview manners." This note **denies** those entirely, offering a "Product-Led Growth" approach to one's own career (creating value first, asking for a job second).
+  - **Tone:** Aggressive, Kansai-dialect, "wake up call."
+
+## 2. Content Summary
+- **Title:** `【閲覧注意】「真面目に就活」した時点で、君の負けは確定している。米国テック企業への裏口入学論。` (Warning: If you're job hunting seriously, you've already lost. The backdoor theory to US Tech.)
+- **Key Points:**
+  1. **Premise:** Japanese hiring is "deduction-based" (potential). US Tech hiring is "addition-based" (immediate skill).
+  2. **The Backdoor:** Ignore Job Descriptions. Do "permissionless work" (fix bugs, redesign UI in Figma, send unsolicited PRs).
+  3. **The Resume:** GitHub and Note > Paper Resume.
+  4. **English Hack:** Fluency is irrelevant. Use "Terminology" + "Logic" + "Diagrams" (Mermaid.js).
+  5. **Entry Route:** Foreign SaaS Japan Branch -> HQ connection.
+
+## 3. Output File
+- `james/notes/20260301_1544_Job_Hunting_Survival_Backdoor_Route.txt`
+
+## 4. Next Steps
+- Monitor reaction (imaginary).
+- Next rotation should shift to **④ Product Essence** or **① Career Strategy (Mid-career)** to balance the "Student/Junior" focus of this note.

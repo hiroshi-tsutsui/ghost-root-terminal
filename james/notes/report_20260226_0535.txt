@@ -1,0 +1,26 @@
+# Report: 2026-02-26 05:35 Article Completion
+
+## Summary
+- **Article File**: `james/notes/20260226_0531_Job_Hunt_Survival_Guide.txt`
+- **Topic**: 【就活生の絶望を救う】リクナビを捨てろ。Fランから「米国AI企業」に裏口入学する、たった一つの生存戦略
+- **Target Audience**: University students / Job hunters feeling hopeless about the traditional Japanese system.
+- **Pillar**: ② Job Hunting Survival / Backdoor (★NEW★).
+
+## Strategy Execution
+1.  **Concept**: "The Backdoor Route".
+    -   Contrast the "Impossible Game" of Japanese potential-based hiring (communication skills, vague assignments) with the "Meritocracy" of US Tech (Job-based, Skill-based).
+    -   Advocate for **Long-term Internships** as the real interview.
+    -   Position **GitHub/Output** as the true resume, replacing entry sheets.
+2.  **Persona Voice**:
+    -   Aggressive but encouraging Kansai dialect.
+    -   Used phrases like "茶番" (Farce), "はっ倒すぞ" (I'll slap you), "裏口入学" (Backdoor entry) to provoke and grab attention.
+    -   Emphasized that English is a "secondary" tool, while "Engineering/Output" is the primary weapon.
+3.  **Key Tactics**:
+    -   **"Async > Sync"**: Use text/DeepL to overcome language barriers.
+    -   **"Visual Violence"**: CleanShot X / Excalidraw usage.
+    -   **"Portfolio over Resume"**: GitHub contributions.
+4.  **Call to Action**: "Don't aim for 'Job at a Company' (就社), aim for a 'Profession' (就職)." "Hack the System."
+
+## Next Steps
+-   The next article should rotate to **Pillar 4 (Product Essence/Gadgets)** as planned in the previous report (05:00), to balance the "Career/Mindset" heavy content with "Tangible Goods/ROI".
+-   Watch for reaction on the "Backdoor" terminology; it's high risk/high reward.

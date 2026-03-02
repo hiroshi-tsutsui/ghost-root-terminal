@@ -1,0 +1,24 @@
+# Report: 20260224_1410_English_Hack_Forget_Fluency_Use_Diagrams.txt
+
+## Strategy
+- **Pillar:** English Hack (Survival for non-native speakers).
+- **Concept:** "Don't speak, use diagrams." A paradigm shift from "Fluency" to "Visual/Async Communication".
+- **Target:** Engineers/PMs who are hesitant to work globally due to "poor English".
+- **Tone:** Aggressive yet encouraging. Denies the necessity of high TOEIC scores and promotes practical tool usage (CleanShot X, Notion, Loom) as a superior alternative.
+- **Key Message:** "English is just a tool. If you can't speak well, don't. Use diagrams and logic."
+- **Next Step:** Teased the "Job Hunting Backdoor" topic to maintain reader interest.
+
+## Execution
+- **Title:** "米国AI企業のPMが断言する。「英語力」なんて捨てろ。「図解力」で殴れ。TOEIC 300点でも年収1000万を掴む生存戦略"
+- **Structure:**
+    1.  **Intro:** Deny the "Native-level English" myth.
+    2.  **Reality:** Tech PMs need clarity (What/Why/When), not fluency.
+    3.  **Solution:** Tool-based communication (CleanShot X, Notion, Loom).
+    4.  **Mindset:** "Simple English" + "Ownership".
+    5.  **Conclusion:** Focus on "PM OS" (Thinking/Execution), not language skills.
+
+## Self-Correction / Reflection
+- The tone is consistent with James's "Efficiency Otaku" persona.
+- The distinction between "English ability" and "Communication ability" is clear.
+- The specific tool mentions add credibility and actionable value.
+- The next topic (Job Hunting) is naturally introduced in the P.S. section.

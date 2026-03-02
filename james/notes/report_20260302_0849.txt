@@ -1,0 +1,21 @@
+# James Note Strategy Report
+**Time:** 2026-03-02 08:49
+**File:** `james/notes/20260302_0849_Tech_Faith_Discard_PM_OS_Install.txt`
+**Pillar:** 1. Career/Survival Strategy (Engineer -> PM Pivot)
+
+## Strategy Overview
+- **Core Message:** "Technical skills alone won't get you to 10M yen. Install the 'PM OS' on top of your tech stack."
+- **Target:** Engineers who feel undervalued despite high technical skills (The "Tech Faith" trap).
+- **Differentiation:** unlike generic career advice, this leverages the "US Tech PM" authority to validate the shift from "How" (Tech) to "Why" (Business).
+- **Key Tactics:**
+    - **Contrarian Opening:** "Discard your faith in technology."
+    - **US Reality Check:** "In the US, engineers talk business first."
+    - **Actionable Steps:** 
+        1. Shift language from "How" to "Why".
+        2. Document-driven communication (using specific tools like Notion/CleanShot/Mermaid).
+        3. Reframe "Technical Debt" as "Investment".
+
+## Status
+- **Word Count:** ~3600 chars (High volume/High trust).
+- **Tone:** Kansai dialect, fast-paced, authoritative yet empathetic to the engineer's plight.
+- **Next Step:** Rotate to Pillar 2 (Job Hunting/New Grads) or Pillar 3 (English Hacks) depending on market reaction (fictional).

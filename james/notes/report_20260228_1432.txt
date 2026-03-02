@@ -1,0 +1,21 @@
+# James Note Strategy Report
+Date: 2026-02-28 14:32 (JST)
+
+## Created Content
+- **File:** `james/notes/20260228_1432_Desk_Tour_Gadget_ROI_Strategy.txt`
+- **Title:** 【デスクツアー】年収1000万超え米国AI PMが「秒を削る」ために投資したガジェット・ツール全部晒す（ROI思考）
+- **Pillar:** 4 (Product Essence / Gadgets / ROI)
+
+## Strategy Analysis
+- **Target:** PMs, Engineers, and "Tool Geeks" who want to justify expensive purchases with "ROI logic".
+- **Hook:** "Stop buying stylish plants. Buy speed." -> Differentiates from generic "Desk Tour" content (usually aesthetic-focused).
+- **Key Message:** "Tools are extensions of your body/brain." "Lag = Income Loss."
+- **Items Covered:**
+  1. LG 40" 5K2K Monitor (Screen Real Estate)
+  2. HHKB + MX Master 3S (Input Speed)
+  3. Shure MV7 (Audio Quality = Trust)
+  4. CleanShot X & Raycast (Software efficiency)
+
+## Next Action
+- Rotate back to **Pillar 1 (Career/Survival)** or **Pillar 2 (Job Hunting)**.
+- Potential Topic: "Why 'Generalist' PMs die in the AI era" or "How to hack the Resume Screening AI".

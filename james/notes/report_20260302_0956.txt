@@ -1,0 +1,9 @@
+Title: 【年収1000万の裏側】TOEIC 975でも「Zoomは逃げろ」。中1英語で米国AI企業を動かす『非同期（Async）の暴力』とは
+File: james/notes/20260302_0956_English_Hack_Async_Violence.txt
+Strategy:
+1.  **Context**: Combined "English Hack" (Pillar 3) and "Product Essence" (Pillar 4). Focused on "Async Communication" as the bridge between limited English speaking skills and high-output US PM work.
+2.  **Target**: Japanese tech workers with "English Complex" who believe fluency is the only way to succeed in global tech.
+3.  **Core Message**: "Speaking is the weakest interface." Promote "Async Violence" (Screenshots, Text, Video) over Synchronous Meetings.
+4.  **Tools Introduced**: CleanShot X (Visual), Linear (Context), Loom (Re-recordable presenation).
+5.  **Tone**: Aggressive Kansai dialect, dismissing the "English conversation school" approach in favor of "Engineering the communication flow."
+Status: Completed.

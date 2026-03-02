@@ -1,0 +1,11 @@
+Title: 【残酷な真実】技術力だけで年収1000万は無理ゲー。凡人エンジニアが「米国PM」に転生して勝つための生存戦略
+File: james/notes/20260302_0600_Tech_Faith_Trap_PM_Survival.txt
+Strategy:
+- Pillar 1 (Career/Survival) focusing on the "Tech Only Trap".
+- Targeted young engineers who feel stuck or overwhelmed by the "genius" gap.
+- Introduced "PM OS" concept (Tech x Business x Communication) as the solution.
+- Emphasized "Speed/ROI" over "Code Quality" to shift the reader's value perception.
+- Included specific tool mentions (CleanShot X, Notion, Linear) to ground the advice.
+Next Steps:
+- Rotate to Pillar 4 (Product Essence / Gadget ROI) or Pillar 2 (Job Hunting - Student focus) to maintain variety.
+- Monitor engagement on the "PM OS" concept.

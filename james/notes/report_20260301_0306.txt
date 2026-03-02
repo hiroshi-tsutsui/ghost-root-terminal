@@ -1,0 +1,21 @@
+# Report: Note Article Creation (2026-03-01)
+
+## Strategy Overview
+- **Target Audience:** University students / Job hunters (Pillar 2: Job Hunting Survival/Backdoor)
+- **Concept:** "Don't just do 'Shukatsu'. Build a career portfolio via internships and direct value proposition."
+- **Tone:** Aggressive yet encouraging Kansai dialect. "Pro PM" authority.
+- **Key Message:** Traditional Japanese job hunting is a "Compliance Test". Real market value comes from "Skills" & "Output".
+- **Actionable Advice:**
+    - Ignore mass hiring events.
+    - Proposal-based internship application (Fixing UI/Docs).
+    - Use DeepL/clean screenshots/diagrams to bypass language barriers.
+    - Multiply niche skills (Tech x Docs x Communication).
+
+## File Information
+- **Path:** `james/notes/20260301_0305_就活無視・米国AI企業裏口入社ルート.txt`
+- **Char Count:** Approx 3000 chars (Japanese)
+- **Status:** Draft Complete. Ready for review/publish.
+
+## Next Steps
+- Review engagement metrics after publishing.
+- Next topic candidate: Pillar 3 (English Hacks) or Pillar 4 (Product Essence/Gadgets).

@@ -1,0 +1,11 @@
+Title: 【就活生へ】リクナビ・マイナビは今すぐ捨てろ。「新卒カード」という幻想と、米国AI企業への「裏口入学」ルート
+File: james/notes/20260228_2245_Job_Hunting_Backdoor_Anti_Rikunabi_Strategy.txt
+Strategy:
+1.  **Anti-Establishment Hook:** "Delete Rikunabi/Mynavi immediately." Directly attacks the Japanese "New Grad" system to resonate with frustrated students.
+2.  **US Context:** Contrasts "Potential Hiring" (Japan) with "Results/Internship Hiring" (US/Global), positioning the latter as the "Cheat Code" for skipping the hierarchy.
+3.  **Actionable Hacks:**
+    *   **GitHub PRs:** "Permissionless Apprenticeship" (fixing bugs without asking) as the ultimate entry ticket.
+    *   **Tech Blog (Zenn/Qiita):** Converting "ES waste" into "Asset accumulation."
+    *   **Visual Communication (CleanShot X):** Overcoming the "English Barrier" with high-quality visual bug reports/specs (Do implies Done).
+4.  **Tone:** Aggressive, confident, "Big Brother" vibe. Encourages dropping out of the "Game" to play a different, more profitable one.
+5.  **Target:** Students/Engineers feeling suffocated by traditional job hunting, looking for a logical, meritocratic alternative.

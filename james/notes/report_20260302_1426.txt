@@ -1,0 +1,24 @@
+[REPORT]
+Timestamp: 2026-03-02 14:26 (JST)
+Created File: james/notes/20260302_1426_CleanShotX_EnglishHack.txt
+
+[STRATEGY]
+Selected Pillar: 4. Product Essence (PM/Gadget Lovers) + 3. English Hack (Practitioners)
+Reasoning:
+- The previous post (13:53) was heavy on mindset/career strategy (Pillar 2).
+- Need to balance with actionable "Tooling" content that demonstrates tangible ROI.
+- Connecting "Visual Communication" (CleanShot X / Diagrams) directly to "Surviving in US Tech without perfect English".
+- This aligns with the "James Brand" of efficiency and "Show, Don't Tell".
+
+[CONTENT HIGHLIGHTS]
+- Title: "English is Overrated: Why My $29 Screenshot Tool Beats Your TOFEL Score."
+- Core Message: In US Tech, clarity speed > grammar perfection. A perfect screenshot annotation saves 30 minutes of Zoom yapping.
+- Specific Tool: CleanShot X (Mac).
+- Actionable Steps:
+  1. Annotate everything (arrows, boxes, steps).
+  2. Record GIFs for bug reports (no repro steps text).
+  3. OCR text from images instantly.
+- Tone: Dismissive of "English study" as a primary focus; emphasizes "Communication efficiency" through tools.
+
+[NEXT STEPS]
+- Rotate back to Pillar 1 (Career Strategy) or a deep dive into "SaaS Selection Criteria".

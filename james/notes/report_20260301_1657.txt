@@ -1,0 +1,19 @@
+# Report: 20260301_1657
+
+## Output
+- File: `james/notes/20260301_1657_Career_Survival_Strategy_Engineer_To_TPM.txt`
+- Title: 米国テック企業PMが教える「年収1000万超え」のキャリア生存戦略：エンジニアの「技術信仰」を捨てろ
+
+## Strategy (Pillar 1: Career/Survival)
+- **Target:** Mid-level engineers feeling stuck or questioning if "just coding" is enough.
+- **Hook:** "Technology is a cost, not an asset." (Controversial/Strong opening)
+- **Value Prop:**
+  - Defining the "Technical Product Manager (TPM)" as a blue ocean career path.
+  - Explaining the "PM OS" shift: From "How" (implementation) to "Why/What" (business value).
+  - Practical steps to "leak" into PM roles within current engineering jobs.
+- **Tone:** Authoritative but empathetic to the engineer's plight. Uses "James" persona (Kansai dialect, efficient, direct).
+- **Cross-Sell:** Mentions "CleanShot X" and visualization (Pillar 3/4) as essential PM skills.
+
+## Next Action
+- Cycle to **Pillar 2 (Job Hunting/Students)** or **Pillar 3 (English Hack)** next.
+- Monitor reaction to "Technology as Debt" angle.

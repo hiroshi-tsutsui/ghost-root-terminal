@@ -1,0 +1,25 @@
+# Report: 2026-02-27 09:24 Strategy Execution
+
+## 1. File Created
+`james/notes/20260227_0924_JobHuntingHack.txt`
+
+## 2. Strategy Analysis
+*   **Selected Pillar:** ② 就活サバイバル・裏ルート (Job Hunting Survival / Backdoor)
+*   **Target Audience:** Japanese University Students / Job Hunters frustrated with the traditional system (Rikunabi/Mynavi).
+*   **Core Message:** "Stop playing the 'Death Game' of traditional Japanese job hunting. Become a mercenary using GitHub, Notion, and direct LinkedIn attacks to enter US AI companies."
+
+## 3. Content Structure (The "Winning Formula")
+1.  **Title:** High impact, denying the status quo ("Destroy Job Hunting", "Ignore Rikunabi"), promising high reward ("10M JPY", "US AI Company").
+2.  **Intro:** Empathizing with the pain of the current system ("Death Game", "Gacha"), establishing authority (James's current position despite not being a genius).
+3.  **Mindset Shift:** From "Obedient Soldier" (Cooperation, Potential) to "Mercenary" (Ownership, Output).
+4.  **Actionable Tactics:**
+    *   **GitHub:** Deploy apps, write English READMEs.
+    *   **Notion:** "James's OS" portfolio (Tech Stack, Projects, Philosophy).
+    *   **LinkedIn:** Direct DMs with improvement proposals (Permissionless Internship).
+5.  **English Hack:** "Tool" not "Study". 3 phrases to survive + DeepL/Grammarly/ChatGPT.
+6.  **The "Backdoor":** Long-term internships as the real entry point.
+7.  **Conclusion:** Strong call to action ("Close Rikunabi, Open VS Code").
+
+## 4. Next Steps
+*   Monitor reaction (simulated) to "Job Hunting Destruction" theme.
+*   Next rotation should likely be Pillar ③ (English Hack) or ④ (Product Essence/Gadget) to maintain variety.

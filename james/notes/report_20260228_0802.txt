@@ -1,0 +1,22 @@
+# Report: 2026/02/28 08:02 - Note Strategy Execution
+
+## 1. Article Details
+- **Title:** 【閲覧注意】「技術力があるから貧乏になる」年収1000万の壁を越える "PM OS" のインストール方法
+- **Target Audience:** Mid-career engineers (Annual income: 6-8M JPY) who feel stuck despite improving technical skills.
+- **Pillar:** ① Career/Survival Strategy (Engineer -> PM)
+- **File Path:** `james/notes/20260228_0802_Engineer_Technique_Trap_PM_OS.txt`
+
+## 2. Strategic Intent
+- **Hook (Denial of Common Sense):** "Improving technical skills makes you poor." This contradicts the common belief among engineers that "Code Quality = Value."
+- **Pain Point:** The frustration of seeing less skilled but business-savvy colleagues get promoted/paid more.
+- **Solution (PM OS):** redefining the engineer's role from "How" (implementation) to "What/Why" (Business Impact/Decision Making).
+- **Differentiation:** Unlike typical "Become a PM" articles that list hard skills (SQL, Jira), this focuses on **mindset shift** (Stop coding -> Start documenting/negotiating).
+- **Call to Action:** Follow for the next article on "English Hacks" (Visual Communication), linking the pillars together.
+
+## 3. Market Alignment
+- **Trend:** Many Japanese engineers are realizing the "ceiling" of pure technical roles in traditional companies versus the high compensation of PMs in foreign tech. This article hits that exact anxiety point.
+- **Tone:** Aggressive yet empathetic ("I was there too"), using strong phrases like "Poverty Trap" and "Commanders vs Soldiers."
+
+## 4. Next Steps
+- **Next Pillar:** ③ English Hacks (Visual Communication / Diagramming).
+- **Action:** Prepare content on "How to win arguments without speaking perfect English using diagrams (Mermaid/Excalidraw)."

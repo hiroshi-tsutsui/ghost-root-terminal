@@ -1,0 +1,18 @@
+Title: 【就活全否定】リクナビを閉じろ。「学生」を捨てて「即戦力」になりきらんと、米国AI企業には一生入れへん残酷な真実。
+File: james/notes/20260225_1502_Job_Hunt_Full_Denial_US_Style.txt
+Pillar: 就活サバイバル・裏ルート (Job Hunt / US Intern Strategy)
+
+Strategy:
+- **Target:** University students and young engineers trapped in the Japanese "Shukatsu" (job hunting) system.
+- **Hook:** Comparing Japanese job hunting to a "Cosplay Party" vs US Internships as "Auditions" / "Real Combat".
+- **Core Message:** Stop being a "student" who wants to learn. Start being a "pro" who delivers value immediately.
+- **Actionable Advice:**
+    1. Delete Riku-Navi accounts (Mental reset).
+    2. Contribute to OSS (even small fixes).
+    3. Read primary documentation in English (stop relying on Qiita).
+- **CTA:** Change self-introduction from "I am a student" to "I am an engineer (currently at university)".
+- **Cross-Sell:** Subtle mention of CleanShot X and Linear as pro tools (referencing past articles).
+
+Next Steps:
+- Monitor reaction (imaginary).
+- Next pillar should be **Pillar 3: English Hack** or **Pillar 4: Product Essence (Gadget)** to keep the rotation balanced. (English was done at 14:31, so maybe Gadget or Career again).

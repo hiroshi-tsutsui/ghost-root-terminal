@@ -1,0 +1,18 @@
+# Report: 20260301_1957
+
+## Output File
+`james/notes/20260301_1957_Survival_Strategy_Backdoor.txt`
+
+## Strategy: Job Hunting Survival (The Backdoor Route)
+- **Target Audience:** Students & Young Engineers frustrated with traditional Japanese job hunting (Shu-katsu).
+- **Core Message:** Reject the "Deductive Scoring" (Gen-ten) system of Japan. Embrace the "Additive" (Ka-ten) system of US Tech.
+- **Key Tactics:**
+    1.  **Internships as the Backdoor:** Skip "New Grad" (Shin-sotsu) lottery. Target local branches of US tech firms.
+    2.  **Document > English:** Use tools (DeepL, CleanShot X, Notion) to bypass language barriers.
+    3.  **Code Reading > Writing:** Position engineering background as a rare PM skill (estimating effort/feasibility).
+- **Tone:** Kansai dialect, fast-paced, authoritative but encouraging. "Survival instinct" over "Consciousness".
+- **Call to Action:** Create a LinkedIn account, stop selling yourself cheap in a market that doesn't value differentiation.
+
+## Next Steps
+- Monitor reaction (Ski/Follows).
+- If successful, follow up with specific tactical guides (Resume writing, LinkedIn profile hacks).

@@ -1,0 +1,48 @@
+# Note Strategy Report (2026-02-28 13:26)
+
+## Context Analysis
+Recent posts cycle:
+1. 12:50: Career (Engineer -> PM Pivot) - **Pillar 1**
+2. 12:18: Job Hunting (GitHub Backdoor) - **Pillar 2**
+3. 11:46: Gadgets (Investment Strategy) - **Pillar 4**
+4. 11:15: English Hack (Visual Violence) - **Pillar 3**
+
+The cycle seems to be completed recently (1 -> 2 -> 4 -> 3).
+Wait, the order in the prompt is 1, 2, 3, 4.
+The actual recent history is 1, 2, 4, 3.
+Technically, Pillar 3 (English Hack) was 11:15.
+Pillar 4 (Gadgets) was 11:46.
+Pillar 2 (Job Hunting) was 12:18.
+Pillar 1 (Career) was 12:50.
+
+So the most recent is Pillar 1. The next logical step in a 1-2-3-4 rotation would be Pillar 2 (Job Hunting).
+However, Pillar 2 was just done at 12:18 (2 slots ago).
+Pillar 3 (English Hack) was 11:15 (4 slots ago).
+Pillar 4 (Gadgets) was 11:46 (3 slots ago).
+
+Let's prioritize **Pillar 3 (English Hack)** or **Pillar 4 (Product/Gadgets)** to keep variety, as Pillar 1 and 2 are very recent.
+Actually, looking at the list again:
+- 12:50 (Pillar 1)
+- 12:18 (Pillar 2)
+- 11:46 (Pillar 4)
+- 11:15 (Pillar 3)
+
+The one that has been "neglected" the longest is Pillar 3 (English Hack). It was 11:15.
+Let's go with **Pillar 3: English Hack**. The prompt mentions "imperfect English (Junior High level) to manage US teams" and "asynchronous communication".
+
+## Strategy for this Article (Pillar 3: English Hack)
+**Theme**: "Why 'Perfect English' is the Enemy of a US PM Career: The 'Broken English' Survival Strategy."
+**Concept**: Stop trying to be fluent. Start being "Visual" and "Asynchronous".
+**Persona**: James (Kansai dialect, fast, efficient).
+**Key Takeaways**:
+- Native speakers don't read long emails.
+- "Broken English + Screenshot" > "Perfect English Text".
+- The "Silent PM" technique (Notion/Loom/CleanShot).
+- Real story of failing a meeting because of trying to speak too much.
+
+## Execution
+Title Ideas:
+- 【英語力ゼロ】米国PMが明かす「中学英語」で年収1000万を稼ぐ"泥臭い"生存戦略
+- TO BE DECIDED.
+
+Proceeding to write.

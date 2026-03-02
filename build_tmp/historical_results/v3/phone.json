@@ -1,0 +1,116 @@
+{
+  "inward_day_detector": {
+    "minconf_0.4_pres_0.1": {
+      "default": {
+        "total_videos": 52,
+        "total_detected": 20,
+        "phone": 19,
+        "cigarette": 1
+      }
+    },
+    "minconf_0.4_pres_0.2": {
+      "default": {
+        "total_videos": 52,
+        "total_detected": 12,
+        "phone": 11,
+        "cigarette": 1
+      }
+    },
+    "minconf_0.4_pres_0.3": {
+      "default": {
+        "total_videos": 52,
+        "total_detected": 10,
+        "phone": 9,
+        "cigarette": 1
+      }
+    },
+    "minconf_0.4_pres_0.4": {
+      "default": {
+        "total_videos": 52,
+        "total_detected": 6,
+        "phone": 5,
+        "cigarette": 1
+      }
+    },
+    "minconf_0.4_pres_0.5": {
+      "default": {
+        "total_videos": 52,
+        "total_detected": 3,
+        "phone": 3,
+        "cigarette": 0
+      }
+    },
+    "minconf_0.4_pres_0.6": {
+      "default": {
+        "total_videos": 52,
+        "total_detected": 3,
+        "phone": 3,
+        "cigarette": 0
+      }
+    },
+    "minconf_0.4_pres_0.7": {
+      "default": {
+        "total_videos": 52,
+        "total_detected": 2,
+        "phone": 2,
+        "cigarette": 0
+      }
+    },
+    "minconf_0.5_pres_0.1": {
+      "default": {
+        "total_videos": 52,
+        "total_detected": 19,
+        "phone": 18,
+        "cigarette": 1
+      }
+    },
+    "minconf_0.5_pres_0.2": {
+      "default": {
+        "total_videos": 52,
+        "total_detected": 11,
+        "phone": 10,
+        "cigarette": 1
+      }
+    },
+    "minconf_0.5_pres_0.3": {
+      "default": {
+        "total_videos": 52,
+        "total_detected": 9,
+        "phone": 8,
+        "cigarette": 1
+      }
+    },
+    "minconf_0.5_pres_0.4": {
+      "default": {
+        "total_videos": 52,
+        "total_detected": 6,
+        "phone": 5,
+        "cigarette": 1
+      }
+    },
+    "minconf_0.5_pres_0.5": {
+      "default": {
+        "total_videos": 52,
+        "total_detected": 3,
+        "phone": 3,
+        "cigarette": 0
+      }
+    },
+    "minconf_0.5_pres_0.6": {
+      "default": {
+        "total_videos": 52,
+        "total_detected": 3,
+        "phone": 3,
+        "cigarette": 0
+      }
+    },
+    "minconf_0.5_pres_0.7": {
+      "default": {
+        "total_videos": 52,
+        "total_detected": 1,
+        "phone": 1,
+        "cigarette": 0
+      }
+    }
+  }
+}

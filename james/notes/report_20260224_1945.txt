@@ -1,0 +1,20 @@
+ James_Txt_Factory_Deep
+Role: Pro Web Marketing Writer & Active US Tech PM (James)
+Task: Create a Note article based on the "English Hack" pillar.
+Status: COMPLETED.
+
+Output File: `james/notes/20260224_1945_English_Hack_Silence_is_Weapon.txt`
+
+Strategy:
+- **Pillar:** 3. English Hack (Async Comms) & 4. Product Essence (Tools).
+- **Hook:** "Stop making excuses about English fluency." Reframe weakness (bad speaking) as a strength (documentation power).
+- **Core Value:** "He who controls the document controls the meeting."
+- **Actionable Advice:**
+    1.  **Pre-read:** Force async reviews to minimize speaking time.
+    2.  **Visuals:** Use CleanShot X to replace verbal explanations.
+    3.  **Scribe:** Dominate the meeting by typing the minutes (live editing).
+- **Tone:** Aggressive yet logical Kansai dialect. Highlighting "Scarcity" of this skill set.
+
+Next Step:
+- Rotate to Pillar 1 (Career) or 2 (Job Hunting) for the next cycle to maintain variety.
+- Focus on "Job Hunting Backdoor" specifically for students/juniors next, as it had high traction in simulated research.

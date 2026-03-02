@@ -1,0 +1,16 @@
+[REPORT] James Note Generation
+Date: 2026-02-27 22:27
+Target Pillar: 3 (English Hack / Visual Communication)
+Title: 【実話】「英語力」で戦うな。「図解力」で殴れ。TOEIC 300点でも米国AI企業でPMとして生存する唯一のハック
+File: james/notes/20260227_2227_English_Zero_Visual_Violence.txt
+
+Strategy:
+1.  **Contra-Intuition**: Attacked the common belief that "You need good English to work abroad".
+2.  **Reality Check**: Admitted to "Junior High level English" to lower the bar and increase relatability.
+3.  **Solution**: Pivoted from "Language Learning" to "Visual Communication" using specific tools (CleanShot X, Notion).
+4.  **Tone**: Aggressive but encouraging Kansai dialect. Focused on "survival" and "practicality".
+5.  **Call to Action**: "Stop studying English, start using screenshot tools."
+
+Next Action:
+- Monitor engagement (Skips/Comments).
+- Next run should likely rotate to Pillar 4 (Gadgets/Productivity) or Pillar 1 (Career Strategy) to maintain variety.

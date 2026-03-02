@@ -1,0 +1,5 @@
+Target: james/notes/20260301_1255_Engineer_To_PM_Survival_Route.txt
+Strategy: Pillar 1 (Career/Survival) - Focusing on "Engineer to PM" transition.
+Concept: Deny the "Technology Only" myth -> Introduce "PM OS" as a survival strategy -> 3 Actionable Steps (Why over How, Imperfect English, Visual Output) -> Emphasize "Dirty Work" reality.
+Tone: Kansai dialect, fast-paced, "tough love" for young engineers.
+Status: Completed.

@@ -1,0 +1,49 @@
+# Note Strategy Report: The "Anti-Resume" Offensive
+
+## 1. Context Analysis
+Current sequence:
+- [Recent] Career (Tech Debt Mindset)
+- English (Silent Visual Weapon)
+- Product (Gadget ROI)
+- Student (Trojan Horse)
+
+**Missing Pillar:** The cycle just restarted with "Career", but looking at the "Student/Job Hunting" pillar (`2125_Student_Hack...`), it's been a few turns. However, looking at the distribution, "Product/Gadget" hasn't been hit in a high-impact way for a few hours (since 21:57).
+
+Actually, let's look at the "English Hack" pillar again. The last one was `2230`.
+The "Career" pillar was just done at `2301`.
+
+Let's switch to **Pillar 2: Job Hunting/Survival (Student/Young Pro)** again, but with a specific twist. The previous student one was "Trojan Horse".
+Let's try **Pillar 4: Product Essence / Tooling** but framed through the lens of "Why your output sucks compared to US standards" (The Bridge).
+
+Actually, looking at the request: "Pillar 2: Job Hunt / Survival (New)" is highlighted.
+"日本の画一的な就活システムへの絶望を救う" (Saving them from the despair of standardized Japanese job hunting).
+
+Let's go with **Pillar 2 (Job Hunting/Career Entry)** but focused on the **"Portfolio vs Resume"** war. Japan loves resumes (Rirekisho). US Tech loves "What have you built?".
+
+**Title Idea:**
+「履歴書を燃やせ。GitHubとNotionだけで米国企業に『刺さる』ポートフォリオの作り方【学歴不問】」
+(Burn the Resume. How to build a portfolio that 'stabs' US companies using only GitHub and Notion [No Degree Required])
+
+**Concept:**
+- **Problem:** Japanese students obsess over ES (Entry Sheets) and SPI (tests).
+- **Reality:** US PMs/Engineers look at your repo and your documentation.
+- **Solution:** A specific structure for a "Product-First" portfolio. Not just code, but the *Thinking Process* (PM OS).
+- **Hook:** "I don't care about your university. I care about your README."
+
+## 2. Market Research (Simulated based on search)
+- **Winning Notes:** Specific, actionable guides on *how* to write a README or design docs that got people hired. "I got offers from GAFAM using this Notion template."
+- **Losing Notes:** Generic "Self Analysis" (Jiko-bunseki) diaries. "My thoughts on job hunting." No one cares.
+
+## 3. Article Structure (James Style)
+- **Tone:** Kansai dialect, fast, cutting through the BS.
+- **Title:** Provocative. "Stop doing self-analysis."
+- **Intro:** "Why are you memorizing answers for interviews? That's why you lose."
+- **Body:**
+    - The "Artifact" rule. If it's not a URL, it doesn't exist.
+    - The "3-Second Rule" of a US Recruiter/PM.
+    - How to turn a mediocre school project into a "Product" via documentation.
+    - **CleanShot X** mention: Screenshots sell software.
+- **Conclusion:** "Your degree is a label. Your portfolio is your weapon."
+
+## 4. Execution
+Writing the file now.

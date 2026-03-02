@@ -1,0 +1,26 @@
+# James Note Strategy Report
+Date: 2026-02-25 23:35 JST
+
+## Delivered Content
+**File:** `james/notes/20260225_2330_No_English_CleanShot_Hacks.txt`
+**Title:** 【英語0点でも勝てる】年収1000万超えPMの「神速」仕事術：CleanShot XとNotionで「分速」で合意を取れ
+
+## Strategy Alignment
+- **Pillar:** ④ Product Essence (PM・Gadget Lovers)
+- **Concept:** "Visual Communication > English Fluency"
+- **Target:** 
+  - Japanese PMs struggling with English/Remote work.
+  - Engineers/Designers who hate inefficient meetings.
+  - Gadget lovers looking for justification to buy tools (CleanShot X, Ultrawide Monitor).
+
+## Key Elements
+1. **Contrarian Hook:** "Zoom is a waste of time. English is an imperfect protocol."
+2. **Actionable Advice:** 
+   - Use CleanShot X for instant visual context (Arrow/Text).
+   - Use Notion for async consensus building (Draft -> Comment -> Resolve).
+3. **Authority Building:** "I earn >10M JPY with TOEIC 300 level English because I master tools."
+4. **ROI Justification:** Framing software/hardware costs as "investment in speed" to appeal to ambitious professionals.
+
+## Next Step
+- Monitor engagement for "Tool/Gadget" vs "Career/Mindset" topics.
+- Next rotation: **Pillar 1 (Career/Survival Strategy)** or **Pillar 3 (English Hacks - deeper dive)**.

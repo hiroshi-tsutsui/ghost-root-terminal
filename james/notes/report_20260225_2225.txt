@@ -1,0 +1,19 @@
+# Report: 20260225_2225 Note Creation
+
+## Execution Details
+- **Date:** 2026-02-25 22:25
+- **File:** `james/notes/20260225_2225_Tech_to_PM_Survival_Strategy.txt`
+- **Pillar:** 1 (Career/Survival Strategy)
+- **Title:** 【残酷な現実】「技術力さえあれば食っていける」は嘘。年収1000万への最短ルートは "コードを書かないエンジニア" への転身やった話
+
+## Strategy
+1. **Target:** Mid-level engineers in Japan feeling stuck or underpaid ("Sler" fatigue).
+2. **Hook:** Denying the common belief that "improving technical skills = job security".
+3. **Differentiation:** Positioning "Technical PM" not as a non-technical role, but as a "Leveraged Engineer".
+4. **Actionable Advice:**
+   - Act as a translator between Biz and Tech.
+   - Use documents (PR/FAQ) to define "Why" before "How".
+   - Use technical knowledge to say "No" effectively.
+
+## Next Step
+- Next pillar in rotation: **Pillar 2 (Job Hunting / University Students)** or **Pillar 3 (English Hack)** depending on immediate trends, but strictly following the cycle, Pillar 2 is next.

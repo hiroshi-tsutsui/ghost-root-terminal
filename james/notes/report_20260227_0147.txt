@@ -1,0 +1,17 @@
+# Report: 2026-02-27 01:47 JST
+
+## Strategy Execution
+- **Pillar Selected:** ③ English Hack (Visual Violence / Non-native Survival)
+- **Target Audience:** Engineers/PMs with English complexes, aiming for global careers but blocked by language barriers.
+- **Key Concept:** "Visual Violence" - Replacing imperfect verbal communication with high-resolution visual documentation (Screenshots, Diagrams, Recordings).
+- **Tools Mentioned:** CleanShot X, Raycast, Figma, Miro, Notion.
+
+## Output
+- **File:** `james/notes/20260227_0147_English_Hack_Visual_Violence_Strategy.txt`
+- **Title:** 【実録】「英語力」で戦うな。「可視化」で殴れ。TOEIC 500点台の僕が米国AI企業でPMをやれている本当の理由
+- **Word Count:** ~3,500 chars (estimated)
+
+## Next Steps
+- **Next Pillar:** ② Job Hunting Survival (New Grad / Backdoor Strategy)
+- **Reasoning:** The postscript teases a "Job Hunting Backdoor" article next. This aligns with the "New" pillar focus and addresses the "Market Research" directive to dig deeper into the job hunting genre.
+- **Action:** Prepare research on "Job Hunting Backdoor" success stories (or failures to avoid) for the next run.

@@ -1,0 +1,25 @@
+# Report: 2026-02-25 21:50 (Pillar 4 Execution)
+
+## 1. Generated Content
+- **File:** `james/notes/20260225_2150_Buy_Time_With_Money_ROI.txt`
+- **Title:** 【年収1000万の思考法】たった29ドルをケチって「人生の損益分岐点」を割るな。PMが秒で課金すべき“神ツール”のROI論
+- **Pillar:** ④ Product Essence (ROI / Tools / Gadgets)
+
+## 2. Strategy & Rationale
+- **Target:** PMs, Engineers, and Product lovers who hesitate to spend money on productivity tools.
+- **Hook:** "Don't sell your time cheap." Comparing the cost of a tool ($29) vs. the user's potential hourly wage (aiming for 10M JPY).
+- **Key Tools Mentioned:**
+  1.  **CleanShot X:** Visual communication weapon (connects to English deficiency hacks).
+  2.  **Linear:** Speed & Aesthetics (vs. Jira sluggishness).
+  3.  **Raycast:** OS-level AI integration.
+  4.  **Hardware (MX Master 3S, Noise Cancelling Headphones):** Physical investments for "intellectual athletes".
+- **Tone:** Aggressive but logical. "Kansai dialect" used to soften the blow of calling out "free tool" mindsets.
+
+## 3. Market Analysis (Simulated)
+- **Winning Pattern:** Articles that justify "spending money" with "earning potential" tend to have high engagement (Skis/Saves) because they validate the user's desire to buy gadgets/tools.
+- **Losing Pattern:** Just listing tools without context ("Top 10 Tools").
+- **Differentiation:** James focuses on **ROI (Time = Money)** and **Career Impact**, not just "features".
+
+## 4. Next Steps
+- **Next Pillar:** Back to **① Career / Survival Strategy** or **② Job Hunting (New Pillar)**.
+- **Suggestion:** The "Job Hunting" pillar is fresh and high-impact for Q1/Q2 (recruitment season). Consider a deep dive into "Why Japanese Internships are a Trap" next.

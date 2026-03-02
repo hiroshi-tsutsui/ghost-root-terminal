@@ -1,0 +1,6 @@
+Title: 20260228_2211_Consensus_Disease_Strategy.txt
+Strategy: Pillar 4 (Product Essence / Mindset) - "Consensus Disease vs Decision Velocity"
+Angle: "Stop bringing things back for consideration" (持ち帰り検討). Focus on the "2-way door" decision making framework to increase value and speed, contrasting Japanese "consensus" culture with US "speed" culture.
+Target: Mid-level Engineers/PMs who feel stuck in endless meetings.
+Key Takeaway: "Reversible decisions should be made instantly."
+Status: Completed.

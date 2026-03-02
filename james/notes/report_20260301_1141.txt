@@ -1,0 +1,27 @@
+James Note Strategy Report
+--------------------------
+Date: 2026-03-01 11:41 (JST)
+
+1. Context Analysis:
+   - 11:15: CleanShot X (Pillar 4: Product/Gadget) - *Note: Detected in listing, treated as existing context.*
+   - 10:40: US Tech Job Hunting (Pillar 2: Job Hunting)
+   - 10:01: Signature Move (Pillar 1: Career/Survival)
+   - 09:40: HHKB/MX ERGO (Pillar 4: Product/Gadget)
+   - 08:24: English Survival (Pillar 3: English)
+
+   Recent Cycle: 3 -> 4 -> 1 -> 2 -> 4.
+   
+   Next Logical Step: Pillar 3 (English Hacks).
+   Although the 11:15 post (CleanShot X) touches on English, it is heavily tool-focused.
+   The user explicitly requested "English Hacks" (non-fluent methods, async comms).
+   Therefore, I wrote an article that bridges Pillar 3 (English) and Pillar 4 (Tool), positioning CleanShot X *specifically* as an English survival tool, not just a productivity tool.
+
+2. Content Delivered:
+   - Title: 【実録】米国PMが明かす。「英語力」より「図解力」で殴れ。TOEIC900点よりCleanShot Xが年収を上げる理由。
+   - File: `james/notes/20260301_1141_English_Hack_CleanShotX.txt`
+   - Pillar: 3 (English Hacks) & 4 (Product Essence).
+   - Core Message: "Stop learning English, start using Visuals."
+
+3. Next Steps:
+   - Monitor performance of "Visual/English" angle.
+   - Next rotation should return to Pillar 1 (Career/Survival) or 2 (Job Hunting).

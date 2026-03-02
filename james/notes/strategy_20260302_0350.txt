@@ -1,0 +1,23 @@
+# James Note Strategy Analysis & Execution Plan
+
+## 1. Context Analysis (Last 24h)
+Recent topics covered:
+- **Pillar 2 (Job Hunting):** 3 recent articles (NewGrad Survival, GitHub/Zenn Hack, Backdoor). Heavily focused on.
+- **Pillar 3 (English Hack):** 3 recent articles (Visual Async, Async Magic, Zero To Hero). Well covered.
+- **Pillar 1 (Career):** 2 recent articles (Tech Skill Trap, Done Is Better). Covered.
+- **Pillar 4 (Product/Gadget/PM Realism):** Only `20260302_0030_Linear_Revolution_Jira_Alternative.txt` and `20260301_2255_Visual_Communication_CleanShot_Strategy.txt` recently.
+
+**Gap:** Pillar 4 (Product Essence / PM Realism / Gadgets) is slightly underrepresented compared to the intense focus on Job Hunting and English hacks in the very last few hours. The most recent file was Job Hunting.
+
+**Decision:** I will execute **Pillar 4: Product Essence & PM Realism**.
+Specifically, I'll focus on the "PM's ROI-driven Gadget/Tool Philosophy" to link to the "Speed" and "1 second decision" aspect of US AI companies. This differentiates from generic gadget reviews.
+
+## 2. Topic Selection
+**Theme:** "Why I throw away tools that take more than 0.5 seconds to load: The ROI of Speed in US AI Tech."
+**Angle:** Speed is not just convenience; it's survival. In a US AI startup, if you are slow, you are dead. This applies to your physical environment (Keyboards, Mice, Monitors) and your software (Linear vs Jira, Arc vs Chrome).
+**Tone:** Aggressive, Kansai-ben, "Efficiency Otaku".
+**Target:** PMs, Engineers, Gadget lovers who want to justify their expensive purchases as "investment".
+
+## 3. Execution (Writing)
+File: `james/notes/20260302_0350_Speed_Is_Justice_ROI_Gadget.txt`
+Title: 【年収1000万のデスク】「0.5秒」で捨てる。米国AI企業PMが選ぶ "秒速" ガジェット投資論

@@ -1,0 +1,18 @@
+# 2026/03/01 03:36 - Article Report
+
+## Article Info
+- **File**: `james/notes/20260301_0336_English_Is_Tool_Visual_Is_Weapon.txt`
+- **Title**: 【年収1000万の壁】「英語力」で勝負するな。「図解力」で殴れ。米国AI企業のリアルな生存戦略
+- **Pillar**: 3 (English Hack / Practical Strategy)
+- **Target**: Engineers/PMs aiming for global careers but insecure about English.
+
+## Strategy Analysis
+1.  **Context**: The last article was Pillar 2 (Job Hunting). This article switches to Pillar 3 (English Hack) to maintain variety.
+2.  **Market Need**: Japanese tech workers often have an "English Complex". This article addresses that pain point directly ("Don't fight with English, fight with Visuals/Documents").
+3.  **Contrarian Take**: "Stop studying TOEIC. Install CleanShot X." This challenges the conventional wisdom of "English first" for global careers.
+4.  **Actionable Advice**: Specific tools (Notion, Linear, CleanShot X, Loom, Mermaid.js) are recommended with concrete use cases (Async communication, GIF bug reports).
+5.  **Branding**: Reinforces James's image as a "Practical Efficiency Geek" and "US PM survivor" who uses tools to overcome language barriers.
+
+## Next Steps
+- Next article should likely circle back to Pillar 4 (Product Essence / Gadget ROI) or Pillar 1 (Career Survival) to keep the mix fresh.
+- Monitor reaction to specific tool recommendations (potential for affiliate links in future iterations).

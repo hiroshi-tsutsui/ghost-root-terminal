@@ -1,0 +1,21 @@
+# Report: 2026-03-02 03:20 JST
+
+## Created Content
+- **File:** `james/notes/20260302_0320_NewGrad_Survival_Backdoor.txt`
+- **Title:** 【就活生/若手閲覧注意】「自己分析」と「ガクチカ」に人生賭けてる時点で、君の年収は一生400万止まりやで。
+- **Pillar:** 2. 就活サバイバル・裏ルート（大学生・就活生向け）
+
+## Strategy Execution
+1.  **Targeting:** Explicitly targeted "New Grads / Young Engineers" who are stuck in the traditional Japanese job-hunting system (Rikunabi, Self-Analysis).
+2.  **differentiation:**
+    - **Denied "Self-Analysis":** Positioned it as a waste of time compared to "Output" (GitHub/Note).
+    - **Redefined "Leadership":** Shifted focus from "Vice President of Circle" (role) to "Solving unasked problems" (Ownership).
+    - **"Backdoor" Tactic:** Encouraged direct DMs to engineers/PMs with value propositions, bypassing HR/Entry Sheets.
+3.  **Tone & Style:**
+    - High-pressure Kansai dialect ("アホか", "寝たほうがマシや").
+    - Short, punchy sentences to maximize readability on mobile.
+    - Used bolding (**text**) for skimming.
+
+## Next Steps
+- **Pillar Rotation:** Next should be **Pillar 4 (Product Essence / Gadget ROI)** to balance the "Mindset" heavy recent posts.
+- **Linkage:** The P.S. section links to the "English Hack" article, creating an internal loop.

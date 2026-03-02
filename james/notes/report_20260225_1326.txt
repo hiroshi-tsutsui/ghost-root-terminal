@@ -1,0 +1,22 @@
+# Report: 2026-02-25 13:26
+
+## Created Note
+- **File:** `james/notes/20260225_1326_English_Hack_DeepL_Driven_Survival.txt`
+- **Title:** 【閲覧注意】英語力ゼロの君が「Google翻訳」だけで年収1000万の米国PMを演じ切る、泥臭すぎる生存戦略（実話）
+- **Pillar:** ③ English Hack (Non-Native Survival)
+
+## Strategy
+- **Target Audience:**
+  - Engineers & aspiring PMs who believe "I need perfect English to work globally."
+  - People suffering from "English Complex" preventing them from applying to high-paying jobs.
+- **Core Message (The "Hook"):**
+  - "Fluency is a trap." (Controversial stance)
+  - "Shift the battlefield from Sync (Speaking) to Async (Writing/Visuals)."
+- **Tactics:**
+  - **Tool Stack:** DeepL (Scripting) + Otter (Reading) + CleanShot X (Visuals) + Notion (Documentation).
+  - **Psychological Safety:** "It's okay to not speak. It's professional to be accurate via text."
+  - **Call to Action:** Install CleanShot X immediately and stop apologizing for poor English.
+
+## Next Steps
+- Monitor "Likes" to see if the "Tool-heavy" approach resonates more than abstract career advice.
+- Next article should pivot to **Pillar ① Career (Survival Strategy)** or **Pillar ④ Product (Gadget ROI)** to keep the mix fresh.

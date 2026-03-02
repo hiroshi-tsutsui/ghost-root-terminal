@@ -1,0 +1,22 @@
+# Report: 20260227_1417_Visual_Violence_Survival
+
+## Strategy Execution
+- **Pillar**: 3. English Hacks (with 4. Product Essence - CleanShot X crossover)
+- **Target**: Engineers/PMs with "English Complex" (TOEIC ~500, Pure Japanese)
+- **Concept**: "Visual Violence" over "Fluent English".
+- **Key Message**: You don't need native-level English. You need "Visual Facilitation" (Screenshots, Arrows, Scripts) to survive in US Tech.
+- **Tone**: Kansai dialect, fast-paced, authoritative yet self-deprecating about English skills.
+
+## Content Analysis
+- **Title**: 【実話】「英語力」よりも「図解力」で殴れ。TOEIC 500点でも米国AI企業でPMとして生存する唯一の解
+- **Structure**:
+    1.  **Hook**: "TOEIC 500, No Study Abroad" -> "US PM, 10M+ JPY". Destroys the "Native Speaker" myth.
+    2.  **Pain Point**: Fear of speaking, Zoom meetings.
+    3.  **Solution 1 (Mindset)**: "Verbal commitment is nothing." Force async/documentation.
+    4.  **Solution 2 (Tool)**: "Visual Violence" with CleanShot X. 0.1s understanding > 10m explanation.
+    5.  **Solution 3 (Hack)**: Scripting/Snippets ("Command Input" metaphor).
+    6.  **Call to Action**: Stop English school, install CleanShot X/Notion/Figma.
+
+## Next Steps
+- Rotate to **Pillar 1: Career/Survival Strategy** or **Pillar 4: Product Essence** (Pure Gadget ROI) for the next article.
+- Monitor reaction to "Visual Violence" keyword.

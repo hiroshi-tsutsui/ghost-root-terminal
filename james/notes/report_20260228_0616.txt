@@ -1,0 +1,7 @@
+Title: 【就活ハック】「ガクチカ」で嘘をつくな。GitHubの草を生やして、リクナビを無視しろ。
+File: james/notes/20260228_0616_Job_Hunting_Backdoor_GitHub_Output.txt
+Strategy: 
+- Pillar: 就活サバイバル・裏ルート（大学生・就活生向け）
+- Concept: 日本の画一的な「ガクチカ（学生時代に力を入れたこと）」文化を否定し、エンジニア/PM志望者に向けて「GitHubの草（Contributions）」や「アウトプット（URL）」こそが最強の履歴書であると説く。
+- Key Action: リクナビや自己分析を捨て、GitHubで草を生やし、勝手に企業の改善案を作ってURLを送りつける「ドキュメント駆動就活」を提唱。
+- Tone: 強気な関西弁、断定的な表現（「無駄」「燃やせ」）。

@@ -1,0 +1,23 @@
+# Report: 2026-03-02 01:36
+
+## Generated Content
+- **File:** `james/notes/20260302_0136_Career_Survival_Done_Is_Better.txt`
+- **Title:** 【年収1000万への最短距離】「クオリティ」を捨てろ。米国テック企業で生き残るための「80点主義」と「スピードの正体」
+
+## Strategy Execution
+1.  **Pillar Selection:** **Career/Survival Strategy**.
+    - Rationale: The rotation cycle completed (Career -> Product -> Job Hunting -> English). It was time to return to the core "Career/Mindset" pillar to reinforce the high-income branding.
+2.  **Target Audience:** Japanese engineers and PMs who suffer from "Perfectionism" and "Over-engineering" (High context culture trap).
+3.  **Differentiation:**
+    - Challenged the traditional Japanese virtue of "High Quality" and "Politeness".
+    - Framed "Low Quality" (80%) as a strategic advantage for speed and ROI in US Tech.
+    - Used specific examples: "Releasing with known bugs", "Documents as Maps not Art", "Broken English is fine".
+4.  **Actionable Advice:**
+    - "Stop using PowerPoint/Excel for internal specs."
+    - "Use Notion/Loom/CleanShot X for async speed."
+    - "Cut 'Otsukaresama-desu' and get to the point."
+
+## Next Steps
+- Monitor reaction to the "Anti-Quality" stance. If controversial, follow up with a nuance piece ("When Quality DOES matter").
+- Next pillar rotation: **Product Essence** or **Job Hunting** (New Grad angle again).
+- Consider a deep dive into "Perplexity AI" or "Raycast" as a standalone Product article.

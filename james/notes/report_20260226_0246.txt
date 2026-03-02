@@ -1,0 +1,21 @@
+# Report: James Note Generation
+
+## File Info
+- Path: `james/notes/20260226_0246_Survival_Gadgets_ROI_English_Hack.txt`
+- Title: 米国AI企業の現場で「英語できないPM」が生存するために買った「最強の武器」5選（ROI思考）
+- Date: 2026-02-26 02:46
+
+## Strategy
+- **Pillar**: Mixed Pillar 3 (English Hack) & Pillar 4 (Product Essence/Gadgets).
+- **Target**: Aspiring global PMs and tech enthusiasts who feel limited by English skills.
+- **Concept**: "Gadgets are not for luxury, but for survival." Framing hardware/software investment as a way to compensate for language barriers (ROI perspective).
+- **Key Items**:
+  1. Sony LinkBuds S (Hearing augmentation)
+  2. CleanShot X (Visual communication > Verbal)
+  3. HHKB Professional HYBRID Type-S (Input speed/thinking flow)
+  4. MacBook Pro (Speed = Justice)
+  5. Dual 4K Monitors (Information dominance)
+
+## Next Steps
+- Monitor reaction to "Physical Gadgets" content.
+- Next cycle should likely return to Pillar 1 (Career/Survival Strategy) or Pillar 2 (Job Hunt) to maintain balance.

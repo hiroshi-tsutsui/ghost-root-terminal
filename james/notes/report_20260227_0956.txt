@@ -1,0 +1,14 @@
+Target: james/notes/20260227_0956_Engineer_to_PM_Survival_Strategy.txt
+Strategy: Pillar 1 (Career/Survival Strategy) - Reinforcing the core "Engineer to PM" narrative.
+Rationale:
+- Recent posts focused heavily on Job Hunting (Pillar 2) and English (Pillar 3).
+- To establish the "US AI Company PM" branding, we need to return to the technical/career pivot strategy.
+- Addressed the common pain point of engineers feeling undervalued despite high technical skills.
+Key Elements:
+- Title: Provocative "Exploitation" angle to grab attention.
+- Hook: The "Skill != Income" reality check.
+- Concept: "PM OS" - transforming technical knowledge into business value.
+- Actionable: Specific steps (Question Why, Document Driven, Cut Features) to start acting like a PM immediately.
+- CTA: Encouraging the shift from "How" to "What/Why" and teasing the next topic (English scripts).
+Status: Completed.
+Next: Consider rotating to Pillar 4 (Product/Gadget) or a deep dive into Pillar 3 (English Scripts) as teased.

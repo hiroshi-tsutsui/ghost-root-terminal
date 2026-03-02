@@ -1,0 +1,23 @@
+# Report: 20260302_0705
+
+## File Info
+- **File Path:** `james/notes/20260302_0705_English_Hack_Visual_Punch.txt`
+- **Title:** 米国AI企業の「泥臭い」現場：PMは「英語」を捨てて「図解」で殴れ。
+- **Pillar:** 3. English Hacks (Visual & Async Communication)
+
+## Strategy Execution
+1.  **Concept:** "Anti-English Fluency Myth."
+    -   Targeted the common insecurity of Japanese engineers/PMs: "I can't work in the US because my English isn't perfect."
+    -   Flipped the script: "Perfect English is unnecessary; Visuals (CleanShot X, Notion, Loom) are faster and clearer."
+2.  **Persona Tone:**
+    -   Aggressive Kansai dialect ("そんなわけあるかい").
+    -   Authority based on survival ("Managed to survive with middle-school English").
+    -   Pragmatic/ROI-focused ("Think about your hourly rate").
+3.  **Content Structure:**
+    -   **Hook:** Denial of TOEIC/Native-level necessity.
+    -   **Solution (The "How"):** 3 specific tools (CleanShot X, Notion, Loom) with concrete usage scenarios (5-second screenshot, agenda as script, async video).
+    -   **Closing:** Encouragement to use technical background as a bridge, positioning "Visual Skills" as the missing PM OS.
+
+## Next Steps
+-   Monitor reaction to "Tool-heavy" advice.
+-   Next rotation should likely be **Pillar 4 (Product Essence/Gadgets)** or **Pillar 1 (Career Strategy)** to maintain variety.

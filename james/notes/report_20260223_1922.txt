@@ -1,0 +1,19 @@
+# Report: 2026/02/23 19:22 Strategy Execution
+
+## Target Pillar
+**② 就活サバイバル・裏ルート（大学生・就活生向け）**
+- **Context:** Previous article was "Career/Survival" (Engineer -> PM). To avoid duplication and target the new pillar, I focused on "Job Hunting" (University Students).
+- **Core Concept:** "Permissionless Apprenticeship" (Doing work without being asked). Stop doing "ES" (Entry Sheets) and start doing "Mock PRs" or "Improvement Proposals".
+
+## Content Strategy
+1.  **Title:** Impactful & Controversial. "Throw away ES/Gakuchika" + "F-Rank/Arts Major" -> "US AI Company PM".
+2.  **Introduction:** Validate the reader's pain (Japanese job hunting is insane/broken). Establish authority (I won by ignoring it).
+3.  **Mechanism:** Explain *why* normal entry fails (ATS, filters) and *how* the backdoor works (Direct DM with value).
+4.  **Actionable Advice:**
+    - Pick 1 company.
+    - Find flaws (PM perspective).
+    - Send unsolicited improvement proposals (Figma/CleanShot).
+5.  **Tools:** CleanShot X, Figma, Loom. (Visual communication over English fluency).
+
+## File
+`james/notes/20260223_1922_Job_Hunt_Backdoor_Strategy.txt`

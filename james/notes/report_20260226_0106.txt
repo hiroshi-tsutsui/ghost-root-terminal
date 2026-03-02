@@ -1,0 +1,12 @@
+Title: 米国AI企業の現場は「1秒」が全て。日本のPMが今すぐ捨てるべき3つの「無駄」と、生き残るための「ドキュメント駆動」戦略
+File: james/notes/20260226_0106_Speed_Document_Or_Death.txt
+Strategy: Pillar 4 (Product Essence/ROI) + Pillar 3 (English/Visuals)
+Key Themes:
+- Denial of Japanese Meeting Culture ("Synchronous is expensive")
+- "Document Driven" as the core survival skill
+- "Visual Violence" with CleanShot X (Tool ROI)
+- Hardware Optimization (MX Master 3S)
+- Professional branding: "Speed = Trust"
+Character Count: ~4500 (13KB)
+Status: Ready for Note publication.
+Next Action: Monitor reaction to the "Anti-Meeting" stance.

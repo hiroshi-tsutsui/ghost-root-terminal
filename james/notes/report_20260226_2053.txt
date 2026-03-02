@@ -1,0 +1,18 @@
+# Note Production Report
+Date: 2026-02-26 20:53 JST
+File: `james/notes/20260226_2053_Engineer_PM_OS_Survival_Strategy.txt`
+Topic: Career / Survival Strategy (Pillar 1)
+
+## Strategy
+- **Target:** Engineers stuck in the "skill-up loop" without salary increase.
+- **Concept:** "PM OS Installation" - positioning PM skills not as a job change, but as an operating system upgrade for engineers.
+- **Hook:** "Technology faith is a curse." "Coding is commoditized."
+- **Actionable Advice:**
+  1. Add business impact to PR descriptions.
+  2. Write "decisions" not "minutes" in Slack.
+  3. Read US tech blogs for "logic" not just code.
+- **Tone:** Aggressive yet encouraging. "Safety zone" framing.
+
+## Next Step
+- Next slot should rotate to **Pillar 2 (Job Hunting/Student)** or **Pillar 4 (Product Essence)** to maintain balance.
+- Given the strong career focus here, a shift to a specific tool (Pillar 4) or a student-focused piece (Pillar 2) would be best.

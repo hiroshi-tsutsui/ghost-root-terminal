@@ -27,16 +27,16 @@ Long-term memory for Natasha.
   - **Retraining**: Currently BLOCKED by Cloud Batch environment issues (Exit Code 1). Bypassed via local injection for experiments.
 
 - **Project Omega (Math App)**:
-  - **Status**: Live at `https://projectomega-tau.vercel.app` (v2.7.0). Deployment SUCCESS (Manual Force).
+  - **Status**: Live at `https://projectomega-tau.vercel.app` (v2.8.0). Local dev stable at `localhost:3000`.
   - **Branding**: "プロジェクト・オメガ" (Project Omega JP).
-  - **Modules**: Data, Calculus, Vectors, Trig, Sequences, Quadratic.
-  - **Recent Update**: Fully Localized "Calibration Protocol" (Quiz) & Tiers. Fixed `DATA_ARCHIVE` EN text.
+  - **Modules**: Data, Calculus, Vectors, Trig, Sequences, Quadratics (v2.0).
+  - **Recent Update**: Added "Tactical Exercises" and dynamic parameter analysis to Quadratics module. Fixed `/quiz` crash. Unified module IDs.
 
 - **GHOST_ROOT (Hacker Game)**:
   - **Status**: Live at `https://ghost-root-terminal.vercel.app`.
   - **Goal**: Realistic Web TUI (ZSH-like), Red Herrings, Math Puzzles.
   - **Repo**: `ghost_root/`.
-  - **Recent Cycle**: Cycle 49 "The Insecure Wildcard" (Tar Wildcard Injection).
+  - **Recent Cycle**: Cycle 255 "The Process Trace" (Strace & Ltrace).
   - **Features**: `whois`, `decrypt`, `sat`, `irc`, `jobs`/`fg`/`bg`, Mission Tracker, Rank Progression.
 
 ## Capabilities

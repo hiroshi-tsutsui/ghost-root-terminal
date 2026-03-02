@@ -1,0 +1,20 @@
+# Report: 20260228_0650
+
+## Strategy
+- **Pillar:** 2. 就活サバイバル・裏ルート (Job Hunting Survival/Backdoor Route)
+- **Concept:** Reject the traditional Japanese "Job Hunting" system (Riku-Navi, Suits, ES) and advocate for a "Mercenary" approach using GitHub/Portfolios and direct negotiation.
+- **Target:** University students and job seekers frustrated with the status quo.
+- **Key Takeaway:** "Don't do Job Hunting, do Business Negotiations." (就活をするな、商談をしろ)
+
+## Execution
+- **File:** `james/notes/20260228_0650_JobHunting_Survival_Route.txt`
+- **Tone:** Aggressive, confident Kansai dialect.
+- **Structure:**
+  1. Problem: The "Game" of Japanese Job Hunting is rigged against talent.
+  2. Solution: US Tech companies look for "Proof of Concept" (Product), not "Potential".
+  3. Action: 3 Steps (Mercenary Intern, Portfolio Weaponization, AI-Assisted English).
+  4. Closing: Encouragement to go off-rails.
+
+## Notes
+- `web_search` failed (missing API key), so I relied on the internal persona database and previous context to construct the market analysis and content.
+- The article focuses heavily on the "Mindset Shift" from student to professional.

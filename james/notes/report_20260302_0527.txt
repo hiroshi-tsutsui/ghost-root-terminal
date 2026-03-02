@@ -1,0 +1,19 @@
+# Report: 2026-03-02 05:27 Execution
+
+## Output File
+`james/notes/20260302_0527_Job_Hunting_Denial_Backdoor_Route.txt`
+
+## Strategy: Pillar 2 (Job Hunting / Backdoor)
+- **Concept**: Total denial of the traditional Japanese job-hunting system (Shu-katsu).
+- **Target**: University students and young engineers brainwashed by the "potential hiring" system.
+- **Hook**: "If you say 'Your company is my first choice' with a straight face, your market value is zero."
+- **Solution (The Backdoor)**:
+    1.  **Become an anomaly on GitHub/Zenn**: Don't just make generic apps; fix bugs in niche OSS or write deep verification articles (English translation essential).
+    2.  **Cold DM > Entry Form**: Bypass HR. Send "Give First" DMs to CTOs/Engineers with specific fixes or insights.
+    3.  **Contractor First**: Aim for contract work to bypass visa hurdles and prove value, then convert to Full-time.
+- **English Hack Integration**: Even without fluency, use visual tools (CleanShot X, Loom, Notion) to "punch with clarity" rather than speech.
+- **Tone**: Aggressive, Kansai dialect, fast-paced. "Don't be a mob."
+
+## Next Steps
+- Rotate to **Pillar 4 (Product Essence / Gadgets)** or **Pillar 3 (English Hacks)** in the next iteration to maintain variety.
+- Monitor engagement for "Job Hunting" themes, as this is a high-stakes topic for the target audience.

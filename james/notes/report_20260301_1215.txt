@@ -1,0 +1,14 @@
+# Report: 2026-03-01 12:15
+
+## Strategy
+- **Pillar:** 3. English Hack (Survival for Non-Natives)
+- **Concept:** "Visual First" Strategy. Counterintuitive approach: don't improve speaking, improve visualizing. Use tools like CleanShot X / Miro to dominate meetings visually.
+- **Target:** Engineers/PMs with English complexes who want to work in global tech but feel their language skills are a barrier.
+- **Tone:** Aggressive confidence. "Stop studying English, start drawing."
+
+## File
+- `james/notes/20260301_1215_English_Hack_Visual_First_Strategy.txt`
+
+## Next Steps
+- Monitor reaction to "English is unnecessary" angle.
+- Next rotation: Pillar 1 (Career Strategy) or Pillar 2 (Job Hunting) to keep variety.

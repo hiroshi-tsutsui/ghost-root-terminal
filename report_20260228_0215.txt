@@ -1,0 +1,15 @@
+Title: James Note Strategy Report
+Date: 2026-02-28 02:15
+
+## Execution Summary
+- **Target**: "英語会議で地蔵になっている日本人エンジニア/PM" (Japanese engineers/PMs who freeze in English meetings)
+- **Strategy**: "英語ハック" (English Hack) × "生存戦略" (Survival Strategy)
+    - Shift the paradigm from "Speaking is Value" to "Silence + Document is Value".
+    - Promote "Async Document Violence" using CleanShot X, DeepL, and Notion.
+- **Output**: `james/notes/20260228_0215_English_Hack_Silent_Document_Weapon.txt`
+- **Key Message**: "Don't force yourself to speak. Write documents instead. That's the only way for a mediocre PM to survive in a US AI company."
+
+## Next Steps
+- Monitor reader reaction to the "Silence" strategy.
+- If positive, follow up with the "虎の巻スクリプト" (Cheat Sheet Script) mentioned in the P.S.
+- Next article candidate: Deep dive into "Notion Structure" or "Linear Workflow" as part of the "Document Violence" series.

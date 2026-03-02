@@ -1,0 +1,31 @@
+# Report: Note Strategy & Execution
+
+## 1. Context & Strategy
+Existing files indicate a strong recent push on "Job Hunting" (`Throw_Away_Gakuchika`, `A_Shukatsu_Ignore`) and "English Hacks".
+To balance the pillars and target the "Product Essence" (Pillar 4) combined with "Career Survival" (Pillar 1), I will focus on the **"Real-world PM Reality"** vs **"Japanese Traditional Work Style"**.
+
+**Selected Theme:** Product Essence & Career Survival (Pillar 4 & 1 Hybrid)
+**Title Concept:** "Why Japanese 'High Quality' Fails in US Tech" or "Speed vs Perfection".
+**Target:** Engineers/PMs who are stuck in perfectionism and want to know how US tech moves.
+
+## 2. Market Research (Internal Knowledge Simulation)
+- **Winning Pattern (100+ Likes):**
+    - "I stopped doing X and my salary went up."
+    - Specific tool usage (e.g., Notion templates, Linear workflows).
+    - Brutal honesty about failure (e.g., "I got fired because I was too slow").
+- **Losing Pattern:**
+    - "I am so successful because I am smart." (Arrogance without actionable advice).
+    - Generic advice ("Communication is key").
+
+## 3. Article Structure (James Style)
+- **Title:** 【残酷な真実】「完璧なコード」を書くエンジニアが、米国AI企業で真っ先にクビになる理由【年収1000万の分水嶺】
+- **Intro:** "Quality is King? No. Speed is God." Break the Japanese myth of craftsmanship.
+- **Body:**
+    - Real story: My feature was "perfect" but "late". Result: Scrapped.
+    - The "80% Rule": Release at 80%, fix later.
+    - Tools: How we use Linear/Notion to force speed over quality.
+- **Action:** Stop polishing. Start shipping. Use CleanShot X to communicate bugs instantly instead of writing long tickets.
+- **Conclusion:** Move to the "Product Side" or die as a "Craftsman".
+
+## 4. Execution
+Writing the file now.

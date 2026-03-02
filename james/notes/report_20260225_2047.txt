@@ -1,0 +1,19 @@
+# Report: 20260225_2047_English_Zero_Screenshot_Weapon
+
+## Execution Details
+- **Date:** 2026-02-25 20:47 (JST)
+- **File:** `james/notes/20260225_2047_English_Zero_Screenshot_Weapon.txt`
+- **Pillar:** 3. English Hack (Visual Communication / Tool-Assisted)
+- **Target:** Engineers/PMs with "English Complex" (Low confidence in English) aiming for global careers.
+
+## Strategy: "The Anti-English English Strategy"
+- **Hook:** "Stop studying English." A provocative statement to grab attention from the "I need 900 TOEIC points first" crowd.
+- **Pain Point:** The fear of speaking/meetings in English.
+- **Solution:** Shift the battlefield from "Verbal/Synchronous" to "Visual/Asynchronous" using specific tools (CleanShot X, Loom).
+- **Authority:** Leveraging James's "Real US PM" status to validate that "Simple English + Great Visuals" > "Perfect English".
+- **Actionable Advice:** Immediate tool adoption (CleanShot X) as a proxy for language skills.
+
+## Next Steps
+- Monitor reaction to "Tool-based survival" vs "Mindset-based survival".
+- If successful, follow up with the "Interview Script" teaser mentioned at the end.
+- Next rotation should likely return to Pillar 2 (Job Hunting/Student) or Pillar 4 (Product/Gadget) to maintain variety.

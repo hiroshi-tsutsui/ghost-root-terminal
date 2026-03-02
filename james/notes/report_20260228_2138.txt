@@ -1,0 +1,9 @@
+Title: 【就活破壊】ES（エントリーシート）書く暇あったらGitHubの草生やせ。米国AI企業が「学歴」を秒でゴミ箱に捨てる理由【年収1000万への裏ルート】
+File: james/notes/20260228_2138_ES_Burn_GitHub_Grow_Strategy.txt
+Strategy:
+1.  **Attack the Norm (Pillar 2 Focus)**: Directly attacked the "Entry Sheet" culture, a major pain point for Japanese students.
+2.  **US PM Authority**: Leveraged "US AI Company PM" status to validate the "Output > Potential" hiring philosophy.
+3.  **Actionable Advice**: Instead of vague "try hard," gave specific actions: "GitHub commits," "English LinkedIn profile," "Fix OSS bugs instead of emailing."
+4.  **Tone**: Maintained the "James" persona—fast, efficient, slightly abrasive but ultimately empowering.
+5.  **Market Gap**: Targeted students who feel alienated by the rigid Japanese system, offering a "survival route" via technical skills and English.
+Next Step: Rotate to Pillar 1 (Career/Survival) or Pillar 3 (English Hacks) depending on engagement, but given the strong tone here, a "How to actually write that English documentation" (Pillar 3) might be a good follow-up.

@@ -1,0 +1,26 @@
+# Report: 20260227_1028_English_Hack_Muddy_Survival
+
+## 1. File Path
+`james/notes/20260227_1028_English_Hack_Muddy_Survival.txt`
+
+## 2. Strategy Analysis
+### Pillars Rotation
+- **Previous**: Job Hunting / Career (Pillar 1 & 2) were heavily featured recently.
+- **Selected**: **Pillar 3: English Hack (実践者・海外志向向け)**
+- **Reasoning**: It has been a while since a pure "English Hack" article. The last one was `0820_English_Hack_Zero_Score_Survival.txt` but focused on "Zero Score". This new one focuses on **"Visual Violence" and "Async Communication"** (Muddy Tactics), providing actionable "How-to" rather than just mindset.
+
+### Content Strategy
+- **Target**: People with "English Complex" (TOEIC 300 level) who want to work abroad but feel blocked.
+- **Hook**: "Don't study English, Hack it." (Study is useless, Survival is key).
+- **Differentiation**: 
+    - Most "English learning" notes are about "How to study" or "Pronunciation". 
+    - James's note is about **"How to survive WITHOUT studying"** using tools (Miro, DeepL, CleanShot X).
+    - Keywords: **"Visual Violence"**, **"Async"**, **"Scripting"**.
+
+## 3. Execution Status
+- **Tone**: Aggressive Kansai dialect, fast-paced.
+- **Formatting**: Heavy use of bolding and bullet points for readability.
+- **Call to Action**: Clear steps (Open DeepL, Use Miro).
+
+## 4. Next Steps
+- Next Cycle should probably rotate to **Pillar 4: Product Essence** (Gadgets/ROI) or back to **Pillar 1: Career Strategy** depending on user feedback/engagement simulation.

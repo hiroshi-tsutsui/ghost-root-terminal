@@ -1,0 +1,26 @@
+# James's Note Strategy Report
+Date: 2026-03-01 06:48
+
+## Context Check
+- Latest posts cover: Job Hunting (OB visits), Product (Consensus), Job Hunting (Gakuchika), Career (SES).
+- The "English" pillar (Pillar 3) has not been touched since 03:36 ("Visual Is Weapon").
+- It is time to revisit the "English Hacks" pillar.
+
+## Strategy: Pillar 3 (English Hacks)
+- **Theme**: "Imperfect English x US Tech Team Management".
+- **Focus**: How to survive/thrive in a US company meeting without being fluent. The "Document-First" culture.
+- **Title Concept**: "TOEIC 900 is meaningless. Can you drive a decision in 30 seconds?"
+- **Key Message**: Native speakers talk too fast. Don't compete on listening/speaking. Compete on "Logic" and "Text".
+- **Actionable Advice**:
+  1.  **"Pre-read"**: Send the agenda/doc 24h in advance.
+  2.  **"Silent Reading Time"**: Amazon-style "6-pager" start to meetings. Everyone reads silently for 10-15 mins.
+  3.  **"Comment War"**: Decisions happen in Google Docs/Notion comments, not verbal debate.
+  4.  **Tool**: Grammarly/DeepL is obvious, but *how* to use them (context switching speed).
+
+## Tone
+- Fast-paced Kansai dialect.
+- "英語勉強する暇あったらドキュメント書け" (If you have time to study English, write a document).
+- "発音なんかどうでもええ。中身がゴミなら流暢でもゴミや" (Pronunciation doesn't matter. If the content is trash, fluent trash is still trash).
+
+## File
+- `james/notes/20260301_0648_English_Meeting_Survival_Document_First.txt`

@@ -1,0 +1,24 @@
+# Report: James Note Strategy - 2026/02/24 13:02
+
+## 1. Created File
+- **Path:** `james/notes/20260224_1302_Backdoor_Job_Hunting_Strategy.txt`
+- **Title:** 【就活破壊】「御社が第一志望です」とか言うてる時点で君の負け確。米国AI企業に潜り込む“裏口入学”ルート、全部教えたるわ。
+
+## 2. Strategy Execution (Pillar: Job Hunting Survival/Backdoor)
+- **Target Audience:** University students and new graduates frustrated with the traditional Japanese job hunting system (Shukatsu).
+- **Core Message:** "Stop playing the rigged game of traditional job hunting. Create your own backdoor ('Permissionless Apprenticeship') by proving value to US startups before they even ask."
+- **Key Tactics Used:**
+    - **Contrarian Opening:** Immediately attacked the norm of "ES/Interviews" as a path to commoditization.
+    - **Authority Building:** Referenced own US PM position and salary (>10M) not as innate talent but as a result of strategy.
+    - **Actionable Advice:** Specific steps for "Permissionless Apprenticeship" (Find product -> Use -> Improve/Translate -> DM CEO).
+    - **Tool ROI:** Integrated DeepL Pro and CleanShot X as essential weapons, linking to the "Product/Gadget" pillar subtly.
+    - **Tone:** Aggressive, fast-paced Kansai dialect ("James" persona), positioning as a mentor who knows the "cheat codes."
+
+## 3. Market Analysis (Internal Simulation)
+- **Why this wins:** Japanese students are increasingly anxious about "Galapagos" careers but lack concrete alternatives to the Rikunabi/Mynavi route. This article offers a specific, high-reward alternative that feels like a "secret hack."
+- **differentiation:** Most career advice is "how to pass interviews." This advice is "how to skip interviews."
+- **Virality Potential:** The concept of "Permissionless Apprenticeship" (勝手に弟子入り) is powerful and counter-intuitive in the Japanese context, likely to generate shares among conscious students and early-career tech workers.
+
+## 4. Next Steps
+- Rotate to **Pillar 3: English Hacks** or **Pillar 4: Product Essence** for the next article to maintain variety.
+- Monitor reaction (simulated) to the "Permissionless" concept; if high engagement, expand into a specific "How to write the Cold DM" guide.

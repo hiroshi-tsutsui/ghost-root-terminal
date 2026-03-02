@@ -1,0 +1,22 @@
+# Report: 2026-02-28 18:54 Job Hunting Survival Strategy
+
+## Strategy Execution
+- **Pillar:** 2. 就活サバイバル・裏ルート (Job Hunting Survival/Backdoor)
+- **Target Audience:** Frustrated job hunters, students tired of the "Riku-Navi" system, high-potential "good kids" failing at interviews.
+- **Key Message:** "Being a 'Good Student' (GPA, Circle Leader) is a death sentence in US Tech. Be a 'Problem Solver' instead."
+- **Tone:** Aggressive, provocative, blunt (Kansai dialect).
+
+## Content Analysis
+- **Differentiation:** Unlike standard career advice ("be nice," "prepare for behavioral questions"), this article advocates for *ignoring* standard metrics (GPA) in favor of *tangible output* (GitHub, Zenn, tool-based English hacks).
+- **Hooks:**
+  - "Your strategy is already dead."
+  - "We don't look at your GPA."
+  - "English isn't for studying; it's for bludgeoning with tools."
+- **Call to Action:** "Stop being a good kid. Go create a GitHub account or write a Zenn article right now."
+
+## Next Steps
+- Monitor reaction to the "English Hack" tease in the P.S. to see if we should pivot back to Pillar 3 next.
+- Consider a "Visual Documentation" deep dive (Pillar 3/4) linking to CleanShot X or Notion templates mentioned here.
+
+## File
+`james/notes/20260228_1854_Job_Hunting_Dead_Student_Survival_Strategy.txt`

@@ -1,0 +1,17 @@
+# Report: 20260225_0802
+
+## Output
+- **File:** `james/notes/20260225_0802_Career_Hack_Engineer_To_PM_Survival.txt`
+- **Title:** 【残酷な現実】「技術力があれば年収1000万」は嘘。米国AI企業で見た「エンジニアがPMに転生して勝つ」唯一の生存戦略
+
+## Strategy Analysis
+- **Pillar:** 1. Career/Survival (Engineers -> PM)
+- **Target:** Mid-level Japanese engineers (Age 28-35) stuck at 6-8M JPY salary cap.
+- **Hook:** Challenging the "Technical Skill = Salary" myth. This is a common frustration point for engineers who see less technical "managers" earning more.
+- **Value Proposition:** Positioning "Engineer PM" as the highest ROI career pivot. Validating their technical background while pushing them toward business logic.
+- **Tone:** Provocative ("Cruel reality", "Lie") but ultimately empowering ("You are the strongest weapon").
+
+## Next Actions
+- Monitor engagement (hypothetically).
+- Next rotation should focus on **Pillar 2 (Student/Job Hunt)** or **Pillar 4 (Product/Gadget)** to keep variety high.
+- **Idea for Next:** "Why buying a $300 keyboard is the highest ROI investment for a PM (and how to explain it to your boss)." (Pillar 4)

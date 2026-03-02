@@ -1,0 +1,116 @@
+{
+  "inward_day_detector": {
+    "minconf_0.4_pres_0.1": {
+      "default": {
+        "total_videos": 39,
+        "total_detected": 23,
+        "phone": 3,
+        "cigarette": 20
+      }
+    },
+    "minconf_0.4_pres_0.2": {
+      "default": {
+        "total_videos": 39,
+        "total_detected": 14,
+        "phone": 2,
+        "cigarette": 12
+      }
+    },
+    "minconf_0.4_pres_0.3": {
+      "default": {
+        "total_videos": 39,
+        "total_detected": 6,
+        "phone": 1,
+        "cigarette": 5
+      }
+    },
+    "minconf_0.4_pres_0.4": {
+      "default": {
+        "total_videos": 39,
+        "total_detected": 2,
+        "phone": 1,
+        "cigarette": 1
+      }
+    },
+    "minconf_0.4_pres_0.5": {
+      "default": {
+        "total_videos": 39,
+        "total_detected": 2,
+        "phone": 1,
+        "cigarette": 1
+      }
+    },
+    "minconf_0.4_pres_0.6": {
+      "default": {
+        "total_videos": 39,
+        "total_detected": 1,
+        "phone": 0,
+        "cigarette": 1
+      }
+    },
+    "minconf_0.4_pres_0.7": {
+      "default": {
+        "total_videos": 39,
+        "total_detected": 1,
+        "phone": 0,
+        "cigarette": 1
+      }
+    },
+    "minconf_0.5_pres_0.1": {
+      "default": {
+        "total_videos": 39,
+        "total_detected": 22,
+        "phone": 2,
+        "cigarette": 20
+      }
+    },
+    "minconf_0.5_pres_0.2": {
+      "default": {
+        "total_videos": 39,
+        "total_detected": 9,
+        "phone": 1,
+        "cigarette": 8
+      }
+    },
+    "minconf_0.5_pres_0.3": {
+      "default": {
+        "total_videos": 39,
+        "total_detected": 3,
+        "phone": 1,
+        "cigarette": 2
+      }
+    },
+    "minconf_0.5_pres_0.4": {
+      "default": {
+        "total_videos": 39,
+        "total_detected": 2,
+        "phone": 1,
+        "cigarette": 1
+      }
+    },
+    "minconf_0.5_pres_0.5": {
+      "default": {
+        "total_videos": 39,
+        "total_detected": 2,
+        "phone": 1,
+        "cigarette": 1
+      }
+    },
+    "minconf_0.5_pres_0.6": {
+      "default": {
+        "total_videos": 39,
+        "total_detected": 1,
+        "phone": 0,
+        "cigarette": 1
+      }
+    },
+    "minconf_0.5_pres_0.7": {
+      "default": {
+        "total_videos": 39,
+        "total_detected": 1,
+        "phone": 0,
+        "cigarette": 1
+      }
+    }
+  }
+}

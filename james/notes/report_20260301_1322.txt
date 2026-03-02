@@ -1,0 +1,20 @@
+# Report: 2026-03-01 13:22 Note Generation
+
+## Execution Details
+- **Timestamp:** 2026-03-01 13:22 (JST)
+- **File:** `james/notes/20260301_1322_English_Hack_No_TOEIC_Visual_Strategy.txt`
+- **Topic:** English Hack / Career Strategy (Pillar 3 & 1)
+
+## Strategy Analysis
+- **Concept:** "Anti-English Learning" stance. Validates the insecurity of non-native speakers by asserting that "Visuals > Fluency."
+- **Target Audience:** Mid-level engineers and PM aspirants who are technically skilled but hesitate to apply for global roles due to "Imposter Syndrome" regarding English.
+- **Key Message:** "You don't need to speak perfect English. You need perfect documentation."
+- **Tactical Advice:**
+  1.  **CleanShot X:** For instant, annotated screenshots to bypass verbal description.
+  2.  **DeepL & Grammarly:** As a "prosthetic" for language generation.
+  3.  **Loom:** For asynchronous demos to avoid real-time meetings.
+- **Differentiation:** Most "English learning" content focuses on *learning*. James focuses on *bypassing* the need to learn through technology and process. This is the "Cheat Code" angle.
+
+## Next Actions
+- **Next Topic:** "Document-Driven Portfolio" (as teased in the P.S.).
+- **Pillar Rotation:** Move to Pillar 2 (Job Hunting/Backdoor) or Pillar 4 (Product Essence) next. Given the recent volume, a deep dive into specific "US Interview Hacks" (Pillar 2) would be strong.

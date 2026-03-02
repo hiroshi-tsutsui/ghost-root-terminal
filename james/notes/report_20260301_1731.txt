@@ -1,0 +1,11 @@
+Title: 米国AI企業のPMが教える「就活の裏ルート」：リクナビ・マイナビを捨てて、GithubとTwitterで殴り込め
+File: james/notes/20260301_1731_Job_Hunting_Backdoor_Route_Build_In_Public.txt
+Theme: Job Hunting Survival / Backdoor Route (Pillar 2)
+Target: University Students / Job Seekers
+Strategy:
+- Reject the traditional Japanese job hunting system (Rikunabi, suits).
+- Focus on "Build in Public" using GitHub, Zenn/Qiita, and Twitter.
+- Emphasize "showing the process" over just the final result.
+- Introduce tools like CleanShot X as essential for showcasing work.
+- Encouraged direct approach via Wantedly/LinkedIn.
+Next Action: Continue cycling through pillars (Next: English Hack or Product Essence).

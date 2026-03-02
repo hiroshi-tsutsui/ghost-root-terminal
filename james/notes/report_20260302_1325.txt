@@ -1,0 +1,22 @@
+# James Note Strategy Report
+Date: 2026-03-02 13:25 JST
+
+## Output
+- File: `james/notes/20260302_1320_Tech_Faith_Discard_PM_OS_Install.txt`
+- Title: 米国AI企業PMが教える「技術信仰」を捨てて年収1000万を超えるための「PM OS」インストールガイド
+
+## Strategy & Analysis
+- **Pillar:** ① Career/Survival Strategy (Young Engineers -> PM)
+- **Concept:** Challenging the "Tech Faith" (blind belief that coding skills = salary).
+- **Target:** Skilled engineers frustrated by salary caps in Japan.
+- **Hook:** "Your code is not an asset if it doesn't generate money."
+- **Actionable Advice:**
+    1.  Shift from "How" to "Why".
+    2.  Use CleanShot X for visual prototyping (speed > quality).
+    3.  Master "One Pagers" (Notion) to dominate meetings with low English skills.
+    4.  Hack LinkedIn resumes with business impact verbs.
+
+## Next Steps
+- Monitor reaction (Note "Likes" and Twitter engagement).
+- Next rotation: Shift back to **Pillar 2 (Job Hunting/Students)** or **Pillar 4 (Gadgets)** to keep variety.
+    - *Idea:* "How I got a US internship by ignoring Rikunabi completely."

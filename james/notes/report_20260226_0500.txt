@@ -1,0 +1,34 @@
+# James Note Strategy Report
+**Timestamp:** 2026-02-26 05:00 JST
+
+## 1. Selected Pillar: Product Essence & Gadgets (Pillar 4)
+**Rationale:**
+Recent posts have heavily covered "English Survival" (Pillar 3) and "Career/Job Hunt" (Pillar 1 & 2). The "Gadget/Product ROI" angle (Pillar 4) was touched upon in `0246` but combined with English hacks.
+To rotate the pillars effectively and cater to the "PM/Gadget Lover" audience, I will focus on a **pure "Productivity/Gadget ROI" article**. This topic often has high engagement (saves/shares) because it offers tangible, purchasable solutions.
+Specifically, I will target the "Desk Setup as a Cockpit" concept—how a US PM buys *speed* and *focus* with specific hardware, not just "buying nice things."
+
+## 2. Article Concept
+**Title Idea:**
+「年収1000万の『秒速』を買う。米国AI企業PMが選ぶ、投資対効果（ROI）がバグってるガジェット5選」
+(Buying "Speed" for a 10M Yen Salary. 5 Gadgets with Bugged ROI Selected by a US AI Company PM)
+
+**Key Themes:**
+- **"ROI of Time":** If a gadget saves 5 seconds 100 times a day, it pays for itself in a week.
+- **"Context Switching is the Enemy":** Tools that keep you in the flow (Stream Deck, Vertical Mouse, Ultra-Wide Monitor).
+- **"Audio is Authority":** In remote work, your mic quality *is* your presence.
+- **Specific Recommendations:**
+    1.  **Stream Deck + CleanShot X Macro:** One-button screenshot & annotate.
+    2.  **Shure MV7 / High-end Mic:** "Voice resolution" = "Persuasion power."
+    3.  **Logitech MX Master 3S:** The "Excel/Notion scroll speed" hack.
+    4.  **HHKB / Realforce:** Typing speed is thinking speed.
+    5.  **Ultra-Wide Monitor (Dell/LG):** "Visual Real Estate" for multi-window management (Slack + Jira + Notion).
+
+## 3. Tone & Style
+- **Kansai Dialect:** Fast, punchy sentences. "これ、買わな損やで" (You're losing out if you don't buy this).
+- **Hard Numbers:** "5 seconds x 100 times = 8 minutes/day = 40 hours/year."
+- **Professionalism:** Not just "it's cool," but "it helps me ship products faster."
+
+## 4. Execution Plan
+- Write the file to `james/notes/20260226_0500_ROI_Gadgets_For_US_PM.txt`.
+- Ensure it's over 4000 chars.
+- Include Amazon affiliate placeholders (conceptually).

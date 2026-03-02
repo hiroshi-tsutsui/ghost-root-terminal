@@ -1,0 +1,22 @@
+# Report: 20260225_1638_Survival_Strategy_Visual_Hack
+
+## Executed Strategy
+- **Pillar:** 3. English Hack (Practitioners) & 1. Career/Survival Strategy
+- **Concept:** "Visual Communication > English Fluency"
+- **Target:** Engineers/PMs with "Imposter Syndrome" regarding English.
+- **Key Takeaway:** Stop obsessing over grammar. Use tools (CleanShot X, DeepL) to force clarity and shift the battlefield to asynchronous written communication where you have time to think.
+
+## Content Structure
+1. **Introduction:** Validating the pain of "I can't speak English well enough."
+2. **The Shift:** "Fluency is a myth. Clarity is king."
+3. **Weapon 1 (CleanShot X):** "One screenshot kills 10 minutes of confused talking."
+4. **Weapon 2 (DeepL):** "It's not a translator; it's a logic linter for your Japanese thought process."
+5. **Tactical Shift:** "Move the war from sync (meetings) to async (docs)."
+6. **Conclusion:** "Invest in tools. Don't use 'bad English' as an excuse."
+
+## File Path
+`james/notes/20260225_1638_Survival_Strategy_Visual_Hack.txt`
+
+## Next Steps
+- Consider a follow-up on "Specific Notion Templates for Async PM work."
+- Rotate to Pillar 2 (Job Hunt Survival) next to capture the student demographic.

@@ -1,48 +1,28 @@
-  - [x] Monitor and download 6 precision test results (STRICT ID CHECK):
-    - [x] others-v1: falcon-infer-others-baseline-20260220-131956 (SUCCEEDED)
-    - [x] phone-v1: falcon-infer-phone-baseline-20260220-131958 (SUCCEEDED)
-    - [x] cigarette-v1: falcon-infer-cigarette-baseline-20260220-132000 (SUCCEEDED)
-    - [x] others-v2: falcon-infer-others-v2-20260220-134909 (SUCCEEDED)
-    - [x] phone-v2: falcon-infer-phone-v2-20260220-134911 (SUCCEEDED)
-    - [x] cigarette-v2: falcon-infer-cigarette-v2-20260220-134912 (SUCCEEDED)
-    Only download once status is SUCCEEDED for each ID.
-  - [x] Cycle 276: "The Immutable File" (Chattr). (Status: DEPLOYED).
-  - [x] Cycle 270: "The Corrupted Environment" (Env Vars / Base64). (Status: DEPLOYED).
-  - [x] Cycle 271: "The Configuration Drift" (Diff). (Status: DEPLOYED).
-  - [x] Cycle 272: "The Missing Capability" (Setcap). (Status: DEPLOYED).
-  - [x] Cycle 273: "The Iptables Firewall" (Iptables). (Status: DEPLOYED).
-  - [x] Cycle 274: "The System Time" (NTP). (Status: DEPLOYED - Code Ready).
-  - [x] Cycle 269: "The SSL Expiry" (File Copy / Verification). (Status: DEPLOYED).
-  - [x] Cycle 268: "The Deep Archive" (Grep / Find). (Status: DEPLOYED).
-  - [x] Cycle 267: "The Zombie Parent" (Kill / PPID). (Status: DEPLOYED).
-  - [x] Cycle 266: "The Log Rotation" (Sysadmin / Log Management). (Status: DEPLOYED).
-  - [x] Cycle 265: "The DNS Poisoning" (Sysadmin / DNS). (Status: DEPLOYED).
-  - [x] Cycle 264: "The Listen Port" (Sysadmin / Netstat). (Status: DEPLOYED).
-  - [x] Cycle 263: "The Stale Lock" (Sysadmin / Lockfile Cleanup). (Status: DEPLOYED).
-  - [x] Cycle 262: "The Hidden User" (Sysadmin / User Audit). (Status: DEPLOYED).
-  - [x] Cycle 259: "The Frequency Modulation" (Man Pages). (Status: DEPLOYED).
-  - [x] Cycle 258: "The Broken Service" (Systemctl). (Status: DEPLOYED).
-  - [x] Cycle 257: "The Missing Library" (LD_LIBRARY_PATH). (Status: DEPLOYED).
-  - [x] Cycle 256: "The Group Policy" (Sysadmin / Group Permissions). (Status: DEPLOYED).
-  - [x] Cycle 255: "The Process Trace" (Strace). (Status: DEPLOYED - Strace Logic Optimized).
-  - [x] Cycle 254: "The Encoded Payload" (Base64). (Status: DEPLOYED).
-  - [x] Cycle 253: "The Data Leak" (Sysadmin / Find Size). (Status: DEPLOYED).
-  - [x] Cycle 252: "The Archive Recovery" (Tar). (Status: DEPLOYED).
-  - [x] Cycle 250: "The Checksum Mismatch" (Integrity / md5sum). (Status: DEPLOYED).
-  - [x] Cycle 248: "The Hidden Volume" (Mount / Storage). (Status: DEPLOYED).
-  - [x] Cycle 247: "The Unkillable Process" (Kill / Signals). (Status: DEPLOYED).
-  - [x] Cycle 246: "The Environment Key" (Env Vars). (Status: DEPLOYED).
-  - [x] Cycle 245: "The Private Key" (SSH Security / Permissions). (Status: DEPLOYED).
-  - [x] Cycle 244: "The Disk Hog" (Sysadmin / Disk Space). (Status: DEPLOYED).
-  - [x] Cycle 242: "The Broken Symlink" (Config Fix). (Status: DEPLOYED).
-  - [x] Cycle 241: "The Corrupted Rescue" (Script Fix). (Status: DEPLOYED).
-  - [x] Cycle 240: "The System Breach" (Grep). (Status: DEPLOYED).
-  - [x] Cycle 238: "The Permission Fix" (chmod +x). (Status: DEPLOYED).
-  - [x] Cycle 237: "The Environment Key" (env var). (Status: DEPLOYED).
-  - [x] Cycle 236: "The Log Rotation" (logrotate). (Status: DEPLOYED).
-  - [x] Cycle 235: "The Hidden Dotfile" (ls -a / cp). (Status: DEPLOYED).
-  - [x] Cycle 234: "The Zombie Process" (zombie/parent). (Status: DEPLOYED).
-  - [x] Cycle 233: "The Pipeline" (grep/sort/uniq). (Status: DEPLOYED).
-  - [x] Cycle 230: "The Path Hijack" ($PATH). (Status: DEPLOYED).
-  - [x] Cycle 229: "The Stderr Leak" (2> /dev/null). (Status: DEPLOYED).
-  - [x] Cycle 227: "The Integrity Check" (md5sum). (Status: DEPLOYED).
+- [ ] Monitor Batch Jobs (Falcon Classification v6 - 4xGPU):
+  - [x] falcon-cls-v6-s-20260226-051400 (Status: SUCCESS - Model Found at gs://yolo-gcp/falcon/train/output/classification/v6/falcon-cls-s/)
+- [ ] Monitor Inference Jobs (Following Distance - 2026-03-02):
+  - [x] following-distance-infer-20260302-141034 (Status: FAILED - Exit Code 1)
+  - [x] following-distance-infer-20260302-123021 (Status: FAILED - Exit Code 1)
+  - [x] following-distance-infer-20260302-110710 (Status: FAILED - Exit Code 1)
+- [ ] Monitor Inference Jobs (v5 Relaxed Temporal):
+  - [x] falcon-inf-v5-relaxed-* (Status: SUCCEEDED - All 3 jobs completed successfully)
+- [ ] Monitor Inference Jobs (v5 Strict Logic):
+  - [x] falcon-inf-v5-strict-* (Status: SUCCEEDED - All 3 jobs completed successfully)
+- [ ] Monitor Inference Jobs (v6 Precision Test - Purity Logic - v4 Script):
+  - [x] falcon-inf-v6-purity-ph-* (Status: COMPLETED - Results Analyzed (Significant Recall Improvement))
+  - [x] falcon-inf-v6-purity-ot-* (Status: COMPLETED - Results Analyzed (Significant Recall Improvement))
+  - [x] falcon-inf-v6-purity-cg-* (Status: COMPLETED - Results Analyzed (Significant Recall Improvement))
+- [ ] Monitor Inference Jobs (v6 Precision Test - Hybrid Logic):
+  - [x] falcon-inf-v6-hybrid-s-ph-* (Status: COMPLETED - Results Analyzed (Identical to Original))
+  - [x] falcon-inf-v6-hybrid-s-ot-* (Status: COMPLETED - Results Analyzed (Identical to Original))
+  - [x] falcon-inf-v6-hybrid-s-cg-* (Status: COMPLETED - Results Analyzed (Identical to Original))
+- [ ] Monitor Inference Jobs (v6 Precision Test - Original):
+  - [x] falcon-inf-v6-s-ph-* (Status: COMPLETED - Results Received)
+  - [x] falcon-inf-v6-s-ot-* (Status: COMPLETED - Results Received)
+  - [x] falcon-inf-v6-s-cg-* (Status: COMPLETED - Results Received)
+- [ ] Monitor Batch Jobs (Falcon Inference v6 - Hybrid All):
+  - [x] falcon-inf-v6-purity-all-* (Status: SUCCEEDED - Job: falcon-inf-v6-purity-all-202602271651)
+- [ ] Monitor Batch Jobs (Falcon Inference v6 - Purity v2 All):
+  - [x] falcon-inf-v6-purity-v2-all-* (Status: SUCCEEDED - Job: falcon-inf-v6-purity-v2-all-202602271829)
+- [ ] Cloud Batch Auth:
+  - [x] Reauthenticated (james@dotsfty.com)

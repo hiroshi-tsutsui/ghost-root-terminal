@@ -1,0 +1,23 @@
+# Report: Job Hunting Survival Strategy (Trojan Horse)
+
+## Execution Details
+- **Date:** 2026-02-24 21:25 (JST)
+- **File:** `james/notes/20260224_2125_Student_Hack_Trojan_Horse_Strategy.txt`
+- **Topic:** Pillar 2 (Job Hunting Survival / Backdoor)
+- **Target:** Frustrated University Students / New Grads
+
+## Strategy Analysis
+1.  **Differentiation:**
+    - Unlike standard "ES correction" or "Interview prep" articles, this proposes **bypassing HR entirely**.
+    - Focuses on the "Internship as a 3-month trial" concept, which is standard in the US but alien to the Japanese "mass hiring" system.
+2.  **Trojan Horse Concept:**
+    - "Don't ask for a job; do the work first and send it."
+    - This aligns with the "Give First" culture of Silicon Valley and filters for high-agency candidates.
+3.  **Tool Integration:**
+    - Reinforced the "Document > English" theme using **CleanShot X** and **Notion**.
+    - Framed "imperfection" (poor English) as a solvable constraint via tools, lowering the psychological barrier for students.
+
+## Next Steps
+- Monitor reaction (imaginary metrics: "Skis" and "DM volume").
+- Next turn should rotate to **Pillar 3 (English Hacks)** or **Pillar 4 (Product/Gadget)** to maintain variety.
+- Specifically, a "Product Analysis" article linking a physical tool (e.g., specific mouse/keyboard) to PM efficiency would balance the abstract career advice.

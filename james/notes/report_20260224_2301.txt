@@ -1,0 +1,43 @@
+# James Note Strategy Analysis (2026-02-24 23:01 JST)
+
+## 1. Context & Pillar Rotation
+**Recent History (Last 24hrs):**
+- 22:30 [English Hack] Visual Weapon
+- 21:57 [Product Hack] Gadget ROI
+- 21:25 [Job Hunt] Trojan Horse (Internships)
+- 20:41 [English Hack] Structure > Fluency
+- 20:07 [Job Hunt] Portfolio Hack (Notion/CleanShot)
+- 19:45 [English Hack] Silence is Weapon
+- 19:03 [Career Hack] Tech Trap (Install PM OS)
+
+**Observation:**
+- "English Hack" and "Job Hunt" are heavily represented.
+- "Product Hack" just ran.
+- **"Career Strategy" (Pillar 1)** was last touched at 19:03 (4 hours ago). It's a strong pillar for the "1000万" branding.
+- The prompt emphasizes "Establish the branding of US AI Company PM / >10M JPY income".
+
+**Decision:**
+I will execute **Pillar 1: Career & Survival Strategy (Career/Survival)**.
+Theme: "Why good engineers fail to become high-earning PMs (The 'Technical Debt' of Mindset)".
+Target: Mid-level engineers stuck at 6M-8M JPY who want to break the 10M wall but think "learning more code" is the answer. It's not. It's about "Deleting Code" (Metaphor for reducing complexity).
+
+## 2. Market Research (Simulated for Note.com)
+**Winning Pattern (100+ Skis):**
+- Title: "Why I threw away my code to earn 15M JPY" (Controversial + Numbers)
+- Structure: "I used to think code quality was everything -> Got crushed by a US PM who couldn't code but controlled the roadmap -> Realized 'Impact > Output' -> Here is the framework I used."
+- Tone: Vulnerable confession followed by arrogant/confident solution.
+
+**Losing Pattern (Self-absorbed):**
+- Title: "My thoughts on PMing in the US" (Too vague)
+- Content: "Meetings are hard, English is tough, but I try my best." (No actionable value, just a diary).
+- Outcome: 3 likes (Mom and 2 friends).
+
+## 3. Article Draft Plan
+**Title:** 【年収1000万の分水嶺】「コードが書けるPM」がシリコンバレーで"通用しない"残酷な理由（と、生存戦略）
+**Hook:** "Technical skills are a weapon, but relying on them is suicide."
+**Core Value:** The shift from "How to build" (Engineer) to "What NOT to build" (PM).
+**Action:** The "Kill Feature" framework. How to use data to kill features, not build them.
+**Tone:** Kansai / Fast-paced / Tech-savvy.
+
+---
+Generating Article...

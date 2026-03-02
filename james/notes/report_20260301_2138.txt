@@ -1,0 +1,25 @@
+# Report: 20260301_2138
+
+## Generated Article
+- **File:** `james/notes/20260301_2138_English_Hack_Zero_To_Hero.txt`
+- **Title:** 米国AI企業のPMが教える「英語力ゼロ」で生き残るための生存戦略：TOEIC 900点より「スクショ1枚」が強い理由
+
+## Strategy Execution
+- **Pillar Selected:** Pillar 3 (English Hack / Practical Survival)
+- **Rationale:**
+  - Previous post (21:03) was Pillar 2 (Job Hunting).
+  - Before that (20:30) was Pillar 4 (Product/Gadget).
+  - Rotated back to Pillar 3 to reinforce the "Tech Skills > Language Skills" narrative, which is a key differentiator for the James brand.
+  - Targeted the "Inferiority Complex" many Japanese engineers feel about English, flipping it into a "Use Tools" advantage.
+
+## Key Elements
+- **Hook:** "Stop studying English immediately." (Controversial/Strong stance)
+- **Solution:** Visual Communication (CleanShot X, Figma, Miro).
+- **Tactics:**
+  - "Don't speak, show."
+  - Using SQL/Code as a common language.
+  - Pre-written scripts in Notion/DeepL.
+- **Call to Action:** Abandon perfectionism, use tools, focus on "Execution."
+
+## Next Steps
+- Consider rotating to Pillar 1 (Career/Survival) for the next slot to address the "Money/Career Path" angle directly again, or Pillar 4 (Product) with a specific tool review (e.g., Notion templates for PMs).

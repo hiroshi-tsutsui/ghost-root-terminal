@@ -1,0 +1,10 @@
+Title: 米国AI企業PM（年収1000万超）が教える、エンジニアが「技術力」だけで食えなくなる日。
+File: james/notes/20260225_0112_Career_Hack_Tech_Alone_Is_Dead.txt
+Strategy: Pillar 1 (Career/Survival) - Engineer to PM Transition.
+Key Concept: "Technical Debt" vs "Business Value" - stopping the obsession with clean code and starting to obsess over ROI.
+Features: 
+- Case Study: A vs B engineer comparison (Income disparity).
+- Tools: CleanShot X for visual communication.
+- Tone: Kansai dialect, blunt truth about capitalism vs engineering pride.
+Status: COMPLETED.
+Next: Pillar 4 (Product/Gadget) or 2 (Student/Job Hunt) - Consider "The 30-Day PM Bootcamp for Students" or "Why I Bought a $300 Keyboard (ROI Analysis)".

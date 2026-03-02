@@ -1,0 +1,10 @@
+Title: 【年収1000万超】米国AI企業のPMが教える「英語力ゼロ」でも生き残るための「非同期コミュニケーション」の極意
+File: james/notes/20260228_1539_Async_Communication_Survival_Strategy.txt
+Strategy: Pillar 3 (English Hack) + Pillar 1 (Career).
+Focus: Breaking the "Fluent English = Success" myth. Positioning "Async Communication" and "Document Driven" workflow as the ultimate weapon for non-native PMs to survive and thrive in US tech companies.
+Key Elements:
+- Rebranding "English weakness" as a catalyst for "Structural Thinking" and "Visual Communication".
+- Concrete tactics: Pre-meeting 1-Pager (Notion), "Visual Violence" (CleanShot X), Live Minutes.
+- Emotional hook: The fear of being invisible in meetings vs. the power of async contribution.
+- Call to Action: Stop learning English conversation, start "installing PM OS" (writing & visual tools).
+Next Steps: Monitor engagement. If high, expand on specific document templates or "Interview Hacks" (Pillar 2).

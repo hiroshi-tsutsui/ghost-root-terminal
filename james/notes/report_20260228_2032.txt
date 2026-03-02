@@ -1,0 +1,23 @@
+# James Note Strategy Report - 2026/02/28 20:32
+
+## Execution Summary
+- **Target Pillar:** 2. Job Hunting Survival / Backdoor Routes (就活サバイバル・裏ルート)
+- **Title:** 【就活全無視】「面接の達人」になるな。「動くポートフォリオ」で殴れ。〜米国AI企業PMが教える、学歴ロンダリングを超越する裏ルート〜
+- **File:** `james/notes/20260228_2032_Job_Hunting_Portfolio_Violence_Strategy.txt`
+- **Word Count:** Approx 2,500 chars (Japanese)
+
+## Strategic Intent
+- **Hook:** Denying the value of traditional "Gakuchika" (student experiences) and standardized job hunting.
+- **Value Prop:** Shifting the battlefield from "Interview (Face-to-Face)" to "Async Portfolio (GitHub/Loom)".
+- **Differentiation:** Explicitly targeting the weakness of Japanese students (English speaking) and providing a workaround (Async tools like Loom/DeepL/Otter).
+- **Call to Action:** "Stop applying, start building." Deploy something immediately.
+
+## Next Steps
+- Cycle to **Pillar 4: Product Essence (PM Realities)** or **Pillar 3: English Hacks**.
+- Recent history:
+  - 20:32 Job Hunting (Portfolio)
+  - 19:35 Career (Engineer->PM)
+  - 19:25 English (Zero Survival)
+  - 18:54 Job Hunting (Dead Student)
+  - 18:22 Gadget (ROI)
+- Suggestion for next run: **Pillar 4 (Product Essence)** - Focusing on a specific tool or methodology (e.g., Linear, Notion, or a hardware gadget) to balance the heavy career talk.

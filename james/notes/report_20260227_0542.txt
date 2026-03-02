@@ -1,0 +1,17 @@
+# James's Note Strategy Report - 2026/02/27
+
+## Execution Summary
+- **Target Pillar:** ② 就活サバイバル・裏ルート（大学生・就活生向け）★NEW★
+- **Title:** 【就活全滅】リクナビもSPIも捨てろ。Fラン文系が「米国AI企業PM」に潜り込んだ"裏口入学"の全手口【年収1000万への最短ルート】
+- **File Path:** `james/notes/20260227_0537_【就活全滅】リクナビもSPIも捨てろ.txt`
+- **Word Count:** Approx. 2,800 characters (Japanese)
+
+## Strategy Analysis
+1.  **Market Gap:** Addressed the high anxiety of Japanese "Shu-katsu" season (March kickoff) by validating the user's frustration with traditional methods (Rikunabi, SPI, hair rules).
+2.  **The "Bridge":** Connected "Lack of English/Skills" to "US Tech PM" via actionable tools (CleanShot X, Notion, Linear) and specific behaviors (Async comms, Bug bounty hunting).
+3.  **Persona:** Strong "James" voice. Arrogant but helpful. High tempo Kansai dialect.
+4.  **Monetization/ROI:** Implicitly pitched tools (CleanShot X, HHKB) as "ROI investments" rather than just gadgets, setting up future affiliate links.
+
+## Next Steps
+- **Cross-Promotion:** Create a tweet thread summarizing the "3 Steps" to drive traffic to this Note.
+- **Next Article:** "DeepL Hacks for Non-Native PMs" (Pillar 3: English Hack) to capture the "Implementation" phase after they get interested in the career path.

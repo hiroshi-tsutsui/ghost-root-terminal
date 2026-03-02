@@ -1,0 +1,22 @@
+# Report: 2026-02-25 Note Strategy
+
+## Execution Details
+- **Date**: 2026-02-25 02:13 JST
+- **File**: `james/notes/20260225_0213_Job_Hunt_Backdoor_Strategy_Full_Denial.txt`
+- **Pillar**: ② Job Hunting Survival / Backdoor Routes (Target: Students/Job Seekers)
+
+## Strategy Analysis
+- **Concept**: "Full Denial of Japanese Job Hunting System". Positioning James as the "heretic savior" who offers a shortcut to high-income global careers.
+- **Hook**: "Close your browser immediately if you are doing self-analysis on Rikunabi." -> High-impact opening to grab attention.
+- **Value Proposition**:
+    - Debunking the myth of "English fluency first".
+    - Introducing "Async/Visual Communication" (CleanShot X) as the real weapon for non-native speakers.
+    - Providing concrete "Backdoor Steps":
+        1. Create unsolicited improvements (Permissionless Work).
+        2. DM directly (Skip HR/Entry forms).
+        3. Script the interview (Hack the process).
+- **Differentiation**: Unlike typical "study abroad" or "learn English" advice, this focuses on *bypassing* the system through *tangible output* and *strategic audacity*.
+
+## Next Steps
+- Monitor reaction to the "Backdoor" concept. If successful, expand on specific "Permissionless Work" examples in the next Product/Dev pillar.
+- Next pillar rotation: ③ English Hacks (Practical application of the "scripting" mentioned here).

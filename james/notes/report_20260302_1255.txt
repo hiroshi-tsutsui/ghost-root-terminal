@@ -1,0 +1,20 @@
+# Report: 2026-03-02 12:55 PM
+
+## 1. Created File
+- **Path:** `james/notes/20260302_1250_JobHunting_Survival_Backdoor.txt`
+- **Title:** 【就活全否定】リクナビを閉じて「GitHub」を開け。Fラン学生がGoogleに潜り込むための「裏口入学」マニュアル
+
+## 2. Strategy Execution
+- **Pillar:** 2. Job Hunting Survival / Backdoor Route (Students/New Grads)
+- **Target:** Students frustrated with traditional Japanese job hunting (Rikunabi/Suits).
+- **Core Message:** "Delete Rikunabi, Open GitHub."
+- **Logic:**
+    - Corporate "potential" hiring is a lie; they want immediate capability.
+    - Portfolios (GitHub) weigh more than resumes.
+    - Internships are mercenary work, not learning opportunities.
+    - English is a tool, not a barrier (code is the common language).
+- **Differentiation:** Strong negation of the status quo ("Rikunabi is a waste of time") + Actionable alternative (GitHub/OSS contribution).
+
+## 3. Next Steps
+- Monitor reaction to the "Anti-Job Hunting" stance.
+- Next cycle should rotate to **Pillar 4: Product Essence** (Gadgets/Tools) or **Pillar 1: Career Survival** (Mid-career).

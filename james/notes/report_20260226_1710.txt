@@ -1,0 +1,14 @@
+# Report: 20260226_1710
+
+## 執筆記事
+`james/notes/20260226_1710_English_Hack_Visual_Violence_US_PM.txt`
+
+## 戦略的意図
+1.  **Pillar Selection**: Pillar 3 (English Hack). 直近の記事でキャリア論、就活論、ガジェット論が続いていたため、最も「再現性」が高く、読者のペインが深い「英語」を投入。
+2.  **Concept**: "Visual Violence" (視覚的暴力) というパワーワードを軸に、「英語学習＝会話」という固定観念を破壊。
+3.  **Differentiation**: 既存の英語系noteは「TOEIC勉強法」や「留学キラキラ日記」が多い。Jamesのポジションは「泥臭い現場の生存戦略」。あえて「聴き取るな」「会話するな」と逆張りをし、エンジニア/PM層の共感を狙う。
+4.  **CTA**: CleanShot Xへの布石（次回予告）を打ち、ツール紹介記事への回遊を設計。
+
+## Next Action
+- 次回は **Pillar 1 (Career/Survival)** または **Pillar 4 (Product/Gadget)** に戻し、実利的なテクニック論を展開する。
+- "Visual Violence" の反響を見て、具体的な図解作成フロー（Notion + Mermaid/Draw.io）の解説記事を準備する。

@@ -1,0 +1,21 @@
+2026/02/28 11:15 Strategy Report
+
+## Written Content
+- **File:** `james/notes/20260228_1115_Visual_Violence_Survival_Strategy.txt`
+- **Title:** 【閲覧注意】「英語力」で戦うな。「視覚的暴力」で殴れ。TOEIC 975の米国PMが明かす、沈黙の生存戦略
+- **Pillar:** 3. English Hack (Visuals/Non-verbal Communication)
+- **Target:** Engineers/Business professionals struggling with English in global environments.
+
+## Strategy Analysis
+- **Differentiation:**
+  - Shifted focus from "improving English" to "making English irrelevant" via visual tools.
+  - Used strong, provocative language ("Violence", "Noise") to grab attention.
+  - Positioned tools (CleanShot X, Figma) as essential survival gear, not just utilities.
+- **Brand Alignment:**
+  - Reinforces the "Pragmatic/Survivalist" persona of James.
+  - Highlights the specific value proposition: "High impact with low English fluency".
+  - Directly addresses the pain point of "being ignored/misunderstood" in international teams.
+
+## Next Steps
+- **Pillar Rotation:** Next topic should address Pillar 4 (Product Essence/Gadgets) or Pillar 1 (Career Strategy) to maintain variety.
+- **Market Feedback:** Monitor reactions to the "Visual Violence" concept. If successful, expand on specific diagramming techniques in future notes.

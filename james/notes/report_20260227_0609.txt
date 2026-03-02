@@ -1,0 +1,17 @@
+# James Note Strategy Report
+**Time:** 2026-02-27 06:09 JST
+**File:** `james/notes/20260227_0609_Job_Hunting_Backdoor_Route.txt`
+**Theme:** Pillar 2 - 就活サバイバル・裏ルート (Job Hunting Survival / Backdoor Route)
+
+## Strategy Execution
+- **Concept:** "Job Hunting Suicide Mission" vs "Backdoor Entry."
+- **Key Message:** Traditional Japanese job hunting is a "deduction game" (don't stand out), while US Tech is an "addition game" (show unique value).
+- **Tactics:**
+  - **Reject the Norm:** Explicitly tell readers to throw away "Rikunabi" and "SPI books."
+  - **The Backdoor:** Instead of applying to internships, become a "Contributor" by fixing bugs or improving docs for early-stage startups.
+  - **Tools as Weapons:** Position CleanShot X, Miro, and Notion as essential skills for "Async Communication" which bypasses the language barrier.
+- **Persona:** High-tempo Kansai dialect, disdain for "salaryman" culture, focus on ROI.
+
+## Next Steps
+- **Cross-Promotion:** Tweet about "Why I threw away my recruit suit" to drive traffic.
+- **Follow-up:** The next article is teased as "DeepL Hacks" (Pillar 3) to give practical tools for those who accept this mindset shift.

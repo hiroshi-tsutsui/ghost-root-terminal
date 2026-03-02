@@ -1,0 +1,36 @@
+# Market Research: High-Performing Note Articles (Simulated Analysis)
+
+## 1. Top Performers (100+ Skis)
+- **Characteristics:**
+    - **Specific Numbers in Titles:** "Annual income increased by 2M yen" or "Saved 150 hours/year."
+    - **"Tool" as a means, not an end:** They don't just review the tool; they review the *lifestyle change* caused by the tool.
+    - **Contrarian View:** "Why I stopped using notion for X" or "Don't buy an iPad if you want to be productive."
+    - **Targeting Pain Points:** Remote work fatigue, "imposter syndrome" in tech, inefficient meetings.
+
+## 2. Low Performers (Self-Indulgent Diaries)
+- **Characteristics:**
+    - **Vague Titles:** "My thoughts on AI."
+    - **No Actionable Advice:** Just complaining about work without a solution.
+    - **Pure Specs:** Listing CPU speeds without context of *business value*.
+
+# Strategy for Next Article: Category 4 - Product Essence / Productivity ROI
+
+**Theme:** "The 'Second Brain' for PMs: Why Obsidian/Notion isn't enough, and how I use CleanShot X + Raycast to dominate communication."
+**Angle:** Speed is the only metric that matters.
+
+**Why this fits:**
+- Fits "Product Essence" (Category 4).
+- Differentiates from generic "Notion setup" posts.
+- Focuses on *visual communication* which ties into the "English Hack" (Category 3) theme subtly but stands on its own as a productivity booster.
+- Promoting specific tools (CleanShot X / Raycast) allows for high-trust recommendations.
+
+**Title Idea:**
+"【年収1000万の思考法】PMの仕事は『文字』を書くな。『図』で殺せ。——シリコンバレー流・秒速合意形成術 (CleanShot X / Raycast)"
+(PM Work isn't about writing. It's about killing with visuals. Silicon Valley Instant Consensus Strategy)
+
+**Structure:**
+1.  **Hook:** "Do you still write long Specs? That's why your project is delayed."
+2.  **Reality:** In US Tech, nobody reads long texts. English is a barrier. Visuals are universal.
+3.  **Tool:** CleanShot X (Annotation) + Raycast (Snippets).
+4.  **ROI:** Saving 20 minutes per ticket = 100s of hours = Promotion.
+5.  **CTA:** Download the tools, change the workflow today.

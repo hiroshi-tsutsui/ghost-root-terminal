@@ -1,0 +1,20 @@
+# Report: 2026-02-23 17:41
+
+## Status
+Completed.
+
+## Output
+File: `james/notes/20260223_1741_Job_Hunt_Survival_No_ES.txt`
+Title: 【就活生存戦略】「御社のビジョンに共感」とか言うな。米国AI企業が欲しがるのは『即戦力』じゃなくて『生存本能』や。
+
+## Strategy (Pillar 2: Job Hunt Survival)
+*   **Target:** University students and second-career seekers frustrated with traditional Japanese "Shukatsu" (Job Hunting).
+*   **Concept:** "The Resume is Dead. Long Live the Product."
+*   **Key Message:** US Tech companies value "Survival Instinct" (solving problems without instruction) over "Obedience" (perfect ES/Suits).
+*   **James's Twist:** Shift from "asking for a job" to "demonstrating value" via micro-products and async communication (documents).
+*   **Next Steps:** The next article should naturally flow into **Pillar 3 (English)** or **Pillar 1 (Career)** to maintain the cycle.
+
+## Metrics (Simulated)
+*   Expected PV: 3,000+
+*   Target "Likes": 150+
+*   CTA: Encouraging users to "build something" and "stop writing ES".

@@ -1,0 +1,10 @@
+Title: 米国AI企業PMが断言する。「技術力だけのエンジニア」が35歳で詰む理由と、生存戦略としての「PM OS」インストール完全ガイド
+File: james/notes/20260224_1158_Career_Hack_Tech_is_Dead_Install_PM_OS.txt
+Strategy: Pillar 1 (Career/Survival) + Pillar 4 (Product Essence/Tools)
+Key Points:
+- "Tech Myth is Dead": Confronting the reality of commoditized coding skills.
+- "PM OS": Defining the specific mindset shift required (Why/What/Prioritization).
+- "Stealth PM": Practical steps to start *today* without asking permission.
+- "English Leverage": Tools (DeepL/ChatGPT) > Fluency.
+- "Tool Mastery": Linear/CleanShot/Loom as specific force multipliers for non-technical PMs.
+Next Action: Monitor engagement. If successful, follow up with "Specific Spec Template" article mentioned in CTA.

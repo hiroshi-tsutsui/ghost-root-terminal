@@ -1,0 +1,12 @@
+Title: 【就活・転職】GitHubの草より「ドキュメント」を見せろ。年収1000万超えPMが教える「最強のポートフォリオ」作成術
+Category: Job Hunting Survival / Career Strategy
+Target: Engineers, Students, Aspiring PMs
+Strategy:
+- Problem: Most students focus on "Tech Stack" (React/Next.js) and GitHub contributions, which recruiters ignore if the product has no business value.
+- Solution: Shift focus to "Business Impact" via PRD (Product Requirement Document).
+- Action: Write a PRD (Problem -> Hypothesis -> Solution -> Outcome) and link it in the portfolio. Use CleanShot X for visual impact.
+- Bonus: "Copycat Strategy" for those without ideas.
+Status: COMPLETED
+File: james/notes/20260224_1437_Portfolio_Hack_PRD_Strategy.txt
+Character Count: ~2000 Japanese characters (estimated 6KB).
+Next Steps: Monitor reaction (imaginary) and perhaps follow up with "How to write a PRD in Notion" template.

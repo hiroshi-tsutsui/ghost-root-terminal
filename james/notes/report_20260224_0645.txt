@@ -1,0 +1,22 @@
+# Report: 20260224_0645
+
+## Execution Summary
+- **File:** `james/notes/20260224_0645_Survival_Strategy_Translator_PM.txt`
+- **Theme:** Career/Survival Strategy (Pillar 1)
+- **Target Audience:** Engineers (20s-30s) anxious about AI replacing their coding jobs.
+- **Key Concept:** "Stop just writing code. Become a Translator (Bridge) between Tech & Business."
+- **Tone:** Aggressive opening ("Fight me"), empathetic middle (shared struggle), authoritative closing (call to action).
+
+## Strategy Analysis
+1.  **Context:** Previous articles focused heavily on "Job Hunt" and "English Hacks". To maintain balance, I rotated back to "Career/Survival" (Pillar 1) which hasn't been the primary focus in the very last few files (though present in recent history).
+2.  **Hook:** Addressed the elephant in the room: "Will AI take my job?" Validated the fear but pivoted to a new solution (PM/Translator role) rather than just "study more tech".
+3.  **Differentiation:** Emphasized that "Technical Skills != Salary" in the eyes of business, a hard pill to swallow for many engineers but a necessary realization for the target income bracket (10M+ JPY).
+4.  **Actionable Advice:**
+    - Document Driven Development (Why/What > How).
+    - Visual Communication (Figma/CleanShot X over perfect English).
+    - ROI Thinking (Refactoring as investment).
+5.  **Branding:** Reinforced "US AI Company PM" authority by mentioning the "monsters" (genius engineers) in Silicon Valley and how James manages them not by better code, but by better translation/business logic.
+
+## Next Steps
+- Next article should rotate to **Pillar 2 (Job Hunt)** or **Pillar 4 (Product Essence)** to keep the mix dynamic.
+- Consider a deep dive into specific documentation frameworks or a specific gadget review (ROI focused) for Pillar 4.

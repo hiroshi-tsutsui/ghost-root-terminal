@@ -1,0 +1,10 @@
+Title: 【就活】「ガクチカ」なんぞ捨てろ。米国AI企業に潜り込む“裏口”ルート（年収1000万への最短切符）
+File: james/notes/20260224_0432_Job_Hunt_Hack_Permissionless_Apprenticeship.txt
+Pillar: 2. 就活サバイバル・裏ルート
+Strategy:
+- **Pain Point:** 日本の画一的な就活（リクナビ、SPI、ガクチカ）への閉塞感と無意味さを指摘。
+- **Counter-Intuitive Truth:** 米国テック企業は「ポテンシャル」ではなく「即戦力（Permissionless Apprenticeship）」しか見ない。
+- **Actionable Advice:** 1社に絞り、勝手に課題を見つけ、勝手に解決策（プロトタイプ/ドキュメント）を送りつける「許可なき徒弟制度」の実践。
+- **Tone:** 関西弁、早口、煽り強めだが、本質的な生存戦略を提示。
+Status: Completed.
+Next Pillar: 3. 英語ハック（実践者・海外志向向け）
