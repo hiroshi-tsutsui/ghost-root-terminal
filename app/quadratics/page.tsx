@@ -98,7 +98,7 @@ export default function MathTactixEvolutionV1() {
 
       // Level 5 Override: Inequality Demo (Use fixed params with real roots)
       if (level === 5) {
-        curA = 1; curP = 2; curQ = q_vertex; // Only vertical shift for now
+        curA = 1; curP = p_vertex; curQ = q_vertex; // Allow both P and Q movement
       }
       
       // Moving Domain logic (Lesson 05 / Level 4)
@@ -126,8 +126,8 @@ export default function MathTactixEvolutionV1() {
 
          if (q < 0) {
             const delta = Math.sqrt(-q);
-            const r1 = 2 - delta;
-            const r2 = 2 + delta;
+            const r1 = curP - delta;
+            const r2 = curP + delta;
             const isOutside = ineqType === 'gt' || ineqType === 'ge';
             const isStrict = ineqType === 'gt' || ineqType === 'lt';
 
@@ -177,7 +177,7 @@ export default function MathTactixEvolutionV1() {
             ctx.fill(); ctx.stroke();
 
          } else if (q === 0) {
-            const r = 2;
+            const r = curP;
             const isOutside = ineqType === 'gt' || ineqType === 'ge';
             const isStrict = ineqType === 'gt' || ineqType === 'lt';
 
@@ -193,7 +193,7 @@ export default function MathTactixEvolutionV1() {
                }
             } else {
                // Inside (lt/le)
-               if (!isStrict) { // le (<= 0) -> Just the point x=2
+               if (!isStrict) { // le (<= 0) -> Just the point x=r
                   ctx.globalAlpha = 1.0;
                   ctx.lineWidth = 4;
                   ctx.strokeStyle = '#f59e0b';
@@ -272,7 +272,7 @@ export default function MathTactixEvolutionV1() {
             <motion.div key={mode + level} initial={{ y: -5, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-xl shadow-sm border border-slate-100 text-blue-600 font-bold text-xs">
                {level < 4 && <MathComponent tex="y = (x - 2)^2 + 1" />}
                {level === 4 && <MathComponent tex="a \le x \le a + 2" />}
-               {level === 5 && <MathComponent tex={`y = (x - 2)^2 ${q_vertex >= 0 ? '+' : ''}${Math.abs(q_vertex) < 0.05 ? '0' : q_vertex.toFixed(1)}`} />}
+               {level === 5 && <MathComponent tex={`y = (x - ${p_vertex.toFixed(1)})^2 ${q_vertex >= 0 ? '+' : ''}${Math.abs(q_vertex) < 0.05 ? '0' : q_vertex.toFixed(1)}`} />}
                {level === 6 && <MathComponent tex={`y = (x - ${p_vertex.toFixed(1)})^2 ${q_vertex >= 0 ? '+' : ''}${Math.abs(q_vertex) < 0.05 ? '0' : q_vertex.toFixed(1)}`} />}
             </motion.div>
           </div>
@@ -349,10 +349,16 @@ export default function MathTactixEvolutionV1() {
                        </button>
                     </div>
 
-                        <div className="bg-slate-50 p-6 rounded-3xl border border-slate-100 space-y-4">
-                           <div className="flex justify-between items-center"><span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">グラフの高さ (q)</span><span className="font-mono font-bold text-blue-600">q = {q_vertex.toFixed(1)}</span></div>
-                           <input type="range" min="-4" max="2" step="0.1" value={q_vertex} onChange={e => setQVertex(Number(e.target.value))} className="w-full h-1.5 bg-slate-200 rounded-full appearance-none accent-blue-600 cursor-pointer" />
-                           <div className="text-[10px] text-slate-400 text-center">上下に動かして解の個数と領域の変化を確認せよ</div>
+                        <div className="bg-slate-50 p-6 rounded-3xl border border-slate-100 space-y-6">
+                           <div className="space-y-4">
+                              <div className="flex justify-between items-center"><span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">グラフの左右 (p)</span><span className="font-mono font-bold text-blue-600">p = {p_vertex.toFixed(1)}</span></div>
+                              <input type="range" min="-3" max="7" step="0.5" value={p_vertex} onChange={e => setPVertex(Number(e.target.value))} className="w-full h-1.5 bg-slate-200 rounded-full appearance-none accent-blue-600 cursor-pointer" />
+                           </div>
+                           <div className="space-y-4">
+                              <div className="flex justify-between items-center"><span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">グラフの高さ (q)</span><span className="font-mono font-bold text-blue-600">q = {q_vertex.toFixed(1)}</span></div>
+                              <input type="range" min="-4" max="2" step="0.1" value={q_vertex} onChange={e => setQVertex(Number(e.target.value))} className="w-full h-1.5 bg-slate-200 rounded-full appearance-none accent-blue-600 cursor-pointer" />
+                              <div className="text-[10px] text-slate-400 text-center">上下左右に動かして領域の変化を確認せよ</div>
+                           </div>
                         </div>
 
                         <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100 text-sm space-y-3">

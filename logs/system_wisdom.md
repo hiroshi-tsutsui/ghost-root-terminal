@@ -21,6 +21,9 @@
 - **Cycle 06 (Graph Transformation)**: 
   - **Vertex Control**: Allowing free movement of $p$ (horizontal) and $q$ (vertical) simultaneously reinforces the concept of parallel translation. 
   - **Equation Updates**: The equation $y = (x - p)^2 + q$ must update dynamically in the sticky header to reinforce the link between visual position and algebraic form.
+- **Cycle 07 (Inequalities Advanced)**:
+  - **Full Vertex Control**: Extending Level 5 to allow horizontal movement ($p$) proves that the inequality solution set ($x < \alpha$) shifts rigidly with the graph. This bridges the gap between static algebra and dynamic geometry.
+  - **Visual Consistency**: Ensuring the equation display `y = (x - p)^2 + q` matches the visual state in all modes (Inequalities vs Graph Transformation) prevents cognitive dissonance.
 
 ## 🚫 Avoid List
 - **Path Ambiguity**: When working in a multi-directory repo, always use absolute paths for file writes to ensure the correct Next.js project is updated.
